@@ -6,3 +6,6 @@ sqlparse==0.4.1
 
 # Web server
 gunicorn==20.0.4
+
+# Development dependencies
+honcho==1.0.1
