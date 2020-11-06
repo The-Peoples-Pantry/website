@@ -14,6 +14,20 @@
     <title>{% block title %}The People's Pantry{% endblock %}</title>
   </head>
   <body>
+    {% block navigation %}
+    <nav>
+      <ul>
+        <li><a href="{% url 'public:index' %}">Home</a></li>
+        <li>
+          <a href="{% url 'recipients:new' %}">Recipient: Submit a request</a>
+        </li>
+        <li>
+          <a href="{% url 'volunteers:index' %}">Volunteer: View requests</a>
+        </li>
+      </ul>
+    </nav>
+    {% endblock %}
+
     {% block content %}{% endblock %}
   </body>
 </html>
