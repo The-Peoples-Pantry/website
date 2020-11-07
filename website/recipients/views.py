@@ -14,11 +14,13 @@ def index(request):
     return render(request, 'recipients/index.html')
 
 
-def new(request):
-    if request.method == 'POST':
-        form = MealRequestForm(request.POST)
-        request_uuid = uuid.uuid4()
+def new(http_request):
+    if http_request.method == 'POST':
+        form = MealRequestForm(http_request.POST)
         if form.is_valid():
-            return render(request, 'recipients/confirmation.html', {"name": request.POST['name'], "uuid": request_uuid})
+            request_uuid = uuid.uuid4()
+            form.save()
+            return render(http_request, 'recipients/confirmation.html',
+                          {"name": http_request.POST['name'], "uuid": request_uuid})
 
-    return render(request, 'recipients/new.html', {"request_form": MealRequestForm()})
+    return render(http_request, 'recipients/new.html', {"request_form": MealRequestForm()})
