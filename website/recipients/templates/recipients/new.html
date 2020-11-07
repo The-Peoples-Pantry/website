@@ -2,4 +2,9 @@
 
 {% block content %}
 <h1>Create a new request</h1>
+<form action="/recipients/new" method="post">
+    {% csrf_token %}
+    {{ request_form }}
+    <input type="submit" value="Submit"/>
+</form>
 {% endblock %}
