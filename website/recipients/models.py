@@ -77,7 +77,7 @@ class MealRequest(models.Model):
         default=Cities.TORONTO,
     )
     postal_code = models.CharField(max_length=POSTAL_CODE_LENGTH)
-    notes = models.TextField()
+    notes = models.TextField(blank=True)
 
     # Information about community status
     bipoc = models.BooleanField()
