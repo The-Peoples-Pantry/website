@@ -56,11 +56,11 @@ class Days(models.TextChoices):
 
 
 class TimePeriods(models.TextChoices):
-    PERIOD_12_14 = '12 - 2 PM'
-    PERIOD_14_16 = '2 - 4 PM'
-    PERIOD_16_18 = '4 - 6 PM'
-    PERIOD_16_20 = '6 - 8 PM'
-    PERIOD_20_22 = '8 - 10 PM'
+    PERIOD_12_14 = '12 - 2 PM', '12 - 2 PM'
+    PERIOD_14_16 = '2 - 4 PM', '2 - 4 PM'
+    PERIOD_16_18 = '4 - 6 PM', '4 - 6 PM'
+    PERIOD_16_20 = '6 - 8 PM', '6 - 8 PM'
+    PERIOD_20_22 = '8 - 10 PM', '8 - 10 PM'
 
 
 class MealRequest(models.Model):
