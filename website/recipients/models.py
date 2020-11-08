@@ -121,14 +121,17 @@ class MealRequest(models.Model):
         "Ages of children",
         help_text="When able, we will try to provide additional snacks for children. If this is something you would be interested in, please list the ages of any children in the household so we may try to provide appropriate snacks for their age group.",
         max_length=DEFAULT_LENGTH,
+        blank=True,
     )
     food_allergies = models.TextField(
         "Food allergies",
-        help_text="Please list any allergies or dietary restrictions"
+        help_text="Please list any allergies or dietary restrictions",
+        blank=True,
     )
     food_preferences = models.TextField(
         "Food preferences",
         help_text="Please list any food preferences (eg. meat, pasta, veggies, etc.)",
+        blank=True,
     )
     will_accept_vegan = models.BooleanField(
         "Will accept vegan",
@@ -192,6 +195,7 @@ class MealRequest(models.Model):
         "Your phone number",
         help_text="Use the format 555-555-5555",
         max_length=PHONE_NUMBER_LENGTH,
+        null=True
     )
 
     # Legal
