@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 
 DEFAULT_LENGTH = 256
@@ -185,17 +186,17 @@ class MealRequest(models.Model):
     requester_name = models.CharField(
         "Your full name",
         max_length=NAME_LENGTH,
-        null=True
+        blank=True,
     )
     requester_email = models.EmailField(
         "Your email address",
-        null=True
+        blank=True,
     )
     requester_phone_number = models.CharField(
         "Your phone number",
         help_text="Use the format 555-555-5555",
         max_length=PHONE_NUMBER_LENGTH,
-        null=True
+        blank=True,
     )
 
     # Legal
