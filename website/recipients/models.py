@@ -203,5 +203,6 @@ class MealRequest(models.Model):
     accept_terms = models.BooleanField("Accept terms")
 
     # System
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
