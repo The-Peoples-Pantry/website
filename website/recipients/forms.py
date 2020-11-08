@@ -1,8 +1,20 @@
-from django.forms import ModelForm
-from .models import MealRequest
+from django import forms
+from .models import MealRequest, Days, TimePeriods
 
 
-class MealRequestForm(ModelForm):
+class MealRequestForm(forms.ModelForm):
+    # Field overrides
+    available_days = forms.MultipleChoiceField(
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+        choices=Days.choices,
+    )
+    available_time_periods = forms.MultipleChoiceField(
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+        choices=TimePeriods.choices,
+    )
+
     class Meta:
         model = MealRequest
         fields = [
