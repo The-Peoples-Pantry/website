@@ -65,62 +65,137 @@ class TimePeriods(models.TextChoices):
 
 class MealRequest(models.Model):
     # Information about the recipient
-    name = models.CharField(max_length=NAME_LENGTH)
-    email = models.EmailField()
-    phone_number = models.CharField(max_length=PHONE_NUMBER_LENGTH)
-    can_receive_texts = models.BooleanField()
-    address_1 = models.CharField(max_length=ADDRESS_LENGTH)
-    address_2 = models.CharField(max_length=ADDRESS_LENGTH)
+    name = models.CharField(
+        "Full name",
+        max_length=NAME_LENGTH
+    )
+    email = models.EmailField("Email address")
+    phone_number = models.CharField(
+        "Phone number",
+        help_text="Use the format 555-555-5555",
+        max_length=PHONE_NUMBER_LENGTH,
+    )
+    can_receive_texts = models.BooleanField(
+        "Can receive texts",
+        help_text="Can the phone number provided receive text messages?",
+    )
+    address_1 = models.CharField(
+        "Address line 1",
+        help_text="Street name and number",
+        max_length=ADDRESS_LENGTH
+    )
+    address_2 = models.CharField(
+        "Address line 2",
+        help_text="Apartment, Unit, or Suite number",
+        max_length=ADDRESS_LENGTH,
+    )
     city = models.CharField(
+        "City",
         max_length=CITY_LENGTH,
         choices=Cities.choices,
         default=Cities.TORONTO,
     )
-    postal_code = models.CharField(max_length=POSTAL_CODE_LENGTH)
-    notes = models.TextField(blank=True)
+    postal_code = models.CharField(
+        "Postal code",
+        max_length=POSTAL_CODE_LENGTH
+    )
+    notes = models.TextField(
+        "Additional information",
+        help_text="Is there anything else we should know about you or the person you are requesting support for that will help us complete the request better?",
+        blank=True,
+    )
 
     # Information about community status
-    bipoc = models.BooleanField()
-    lgbtq = models.BooleanField()
-    has_disability = models.BooleanField()
-    immigrant_or_refugee = models.BooleanField()
-    housing_issues = models.BooleanField()
-    sex_worker = models.BooleanField()
-    single_parent = models.BooleanField()
+    bipoc = models.BooleanField("Black, Indigenous, and People of Colour (BIPOC)")
+    lgbtq = models.BooleanField("Lesbian, Gay, Bisexual, Trans, Queer (LGBTQ), gender non-conforming or non-binary")
+    has_disability = models.BooleanField("Living with disabilities")
+    immigrant_or_refugee = models.BooleanField("Newly arrived immigrant or refugee")
+    housing_issues = models.BooleanField("Precariously housed (no fixed address, living in a shelter, etc.)")
+    sex_worker = models.BooleanField("Sex worker")
+    single_parent = models.BooleanField("Single parent")
 
     # Information about the request itself
-    num_adults = models.PositiveSmallIntegerField()
-    num_children = models.PositiveSmallIntegerField()
-    children_ages = models.CharField(max_length=DEFAULT_LENGTH)
-    food_allergies = models.TextField()
-    food_preferences = models.TextField()
-    will_accept_vegan = models.BooleanField(default=True)
-    will_accept_vegetarian = models.BooleanField(default=True)
+    num_adults = models.PositiveSmallIntegerField("Number of adults in the household")
+    num_children = models.PositiveSmallIntegerField("Number of children in the household")
+    children_ages = models.CharField(
+        "Ages of children",
+        help_text="When able, we will try to provide additional snacks for children. If this is something you would be interested in, please list the ages of any children in the household so we may try to provide appropriate snacks for their age group.",
+        max_length=DEFAULT_LENGTH,
+    )
+    food_allergies = models.TextField(
+        "Food allergies",
+        help_text="Please list any allergies or dietary restrictions"
+    )
+    food_preferences = models.TextField(
+        "Food preferences",
+        help_text="Please list any food preferences (eg. meat, pasta, veggies, etc.)",
+    )
+    will_accept_vegan = models.BooleanField(
+        "Will accept vegan",
+        help_text="Are you willing to accept a vegan meal even if you are not vegan?",
+        default=True,
+    )
+    will_accept_vegetarian = models.BooleanField(
+        "Will accept vegetarian",
+        help_text="Are you willing to accept a vegetarian meal even if you are not vegetarian?",
+        default=True,
+    )
 
     # Information about the delivery
-    can_meet_for_delivery = models.BooleanField()
-    delivery_details = models.TextField()
-    available_days = models.CharField(max_length=DEFAULT_LENGTH)
-    available_time_periods = models.CharField(max_length=DEFAULT_LENGTH)
+    can_meet_for_delivery = models.BooleanField(
+        "Able to meet delivery driver",
+        help_text="We care about safety. Thus, we try to avoid delivery volunteers going into buildings or houses. Would you / the person requiring support be able to meet the delivery person in the lobby or door of the residence?",
+    )
+    delivery_details = models.TextField(
+        "Delivery details",
+        help_text="Please provide us with any details we may need to know for the delivery",
+    )
+    available_days = models.CharField(
+        "Available days",
+        help_text="What days are you (or the person you're requesting for) available for receiving the delivery?",
+        max_length=DEFAULT_LENGTH,
+    )
+    available_time_periods = models.CharField(
+        "Available time periods",
+        help_text="What times are you (or the person you're requesting for) available for receiving the delivery?",
+        max_length=DEFAULT_LENGTH,
+    )
 
     # Dietary restrictions
-    dairy_free = models.BooleanField()
-    gluten_free = models.BooleanField()
-    halal = models.BooleanField()
-    low_carb = models.BooleanField()
-    vegan = models.BooleanField()
-    vegetarian = models.BooleanField()
+    dairy_free = models.BooleanField("Dairy free")
+    gluten_free = models.BooleanField("Gluten free")
+    halal = models.BooleanField("Halal")
+    low_carb = models.BooleanField("Low Carbohydrate")
+    vegan = models.BooleanField("Vegan")
+    vegetarian = models.BooleanField("Vegetarian")
 
     # Information about the requester
     # Will be null if on_behalf_of is False, indicating request was by the recipient
-    on_behalf_of = models.BooleanField()
-    recipient_notified = models.BooleanField()
-    requester_name = models.CharField(max_length=NAME_LENGTH, null=True)
-    requester_email = models.EmailField(null=True)
-    requester_phone_number = models.CharField(max_length=PHONE_NUMBER_LENGTH)
+    on_behalf_of = models.BooleanField(
+        "On someone's behalf",
+        help_text="Are you filling out this form on behalf of someone else?",
+    )
+    recipient_notified = models.BooleanField(
+        "Recipient has been notified",
+        help_text="Has the person you're filling out the form for been informed they will get a delivery?",
+    )
+    requester_name = models.CharField(
+        "Your full name",
+        max_length=NAME_LENGTH,
+        null=True
+    )
+    requester_email = models.EmailField(
+        "Your email address",
+        null=True
+    )
+    requester_phone_number = models.CharField(
+        "Your phone number",
+        help_text="Use the format 555-555-5555",
+        max_length=PHONE_NUMBER_LENGTH,
+    )
 
     # Legal
-    accept_terms = models.BooleanField()
+    accept_terms = models.BooleanField("Accept terms")
 
     # System
     created_at = models.DateTimeField(auto_now_add=True)
