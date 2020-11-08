@@ -2,6 +2,18 @@ from django import forms
 from .models import MealRequest, Days, TimePeriods
 
 
+class TelephoneInput(forms.TextInput):
+    input_type = 'tel'
+
+    def __init__(self, attrs=None):
+        attrs = {} if attrs is None else attrs
+        super().__init__(attrs={
+            'pattern': r'\(?[0-9]{3}\)?[- ]?[0-9]{3}[- ]?[0-9]{4}',
+            'title': 'Telephone input in the form xxx-xxx-xxxx',
+            **attrs,
+        })
+
+
 class MealRequestForm(forms.ModelForm):
     # Field overrides
     available_days = forms.MultipleChoiceField(
@@ -64,3 +76,8 @@ class MealRequestForm(forms.ModelForm):
 
             'accept_terms',
         ]
+
+        widgets = {
+            'phone_number': TelephoneInput(),
+            'requester_phone_number': TelephoneInput(),
+        }
