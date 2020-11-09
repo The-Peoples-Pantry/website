@@ -154,6 +154,7 @@ class MealRequest(models.Model):
     delivery_details = models.TextField(
         "Delivery details",
         help_text="Please provide us with any details we may need to know for the delivery",
+        blank=True,
     )
     available_days = models.CharField(
         "Available days",
