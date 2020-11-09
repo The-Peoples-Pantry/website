@@ -2,4 +2,14 @@
 
 {% block content %}
 <h1>Volunteers</h1>
+<table>
+    <tr>
+        <th>Name</th>
+    </tr>
+    {% for request in requests %}
+    <tr>
+        <td>{{ request.name }}</td>
+    </tr>
+    {% endfor %}
+</table>
 {% endblock %}
