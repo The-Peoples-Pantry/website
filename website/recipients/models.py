@@ -89,6 +89,7 @@ class MealRequest(models.Model):
         "Address line 2",
         help_text="Apartment, Unit, or Suite number",
         max_length=ADDRESS_LENGTH,
+        blank=True,
     )
     city = models.CharField(
         "City",
