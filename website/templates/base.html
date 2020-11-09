@@ -1,33 +1,44 @@
 {% load static %}
+{% load bootstrap4 %}
 
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <link rel="icon" type="image/png" href="{% static 'favicon.ico' %}" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="theme-color" content="#000000" />
     <meta
       name="description"
       content="A mutual aid project providing free hot meals and grocery care packages to anyone impacted by COVID-19 across Toronto"
     />
+    {% bootstrap_css %}
     <title>{% block title %}The People's Pantry{% endblock %}</title>
   </head>
   <body>
     {% block navigation %}
     <nav>
-      <ul>
-        <li><a href="{% url 'public:index' %}">Home</a></li>
-        <li>
-          <a href="{% url 'recipients:new' %}">Recipient: Submit a request</a>
+      <ul class="nav">
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'public:index' %}">
+            Home
+          </a>
         </li>
-        <li>
-          <a href="{% url 'volunteers:index' %}">Volunteer: View requests</a>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'recipients:new' %}">
+            Submit a request
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'volunteers:index' %}">
+            View requests
+          </a>
         </li>
       </ul>
     </nav>
     {% endblock %}
 
-    {% block content %}{% endblock %}
+    <div class="container">{% block content %}{% endblock %}</div>
+    {% bootstrap_javascript jquery='slim' %}
   </body>
 </html>

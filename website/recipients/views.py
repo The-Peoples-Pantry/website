@@ -1,26 +1,22 @@
-import uuid
+from django.views.generic.edit import FormView
 from django.shortcuts import render
-from django.forms import ModelForm
-from .models import MealRequest
-
-
-class MealRequestForm(ModelForm):
-    class Meta:
-        model = MealRequest
-        exclude = []
+from django.urls import reverse_lazy
+from .forms import MealRequestForm
 
 
 def index(request):
     return render(request, 'recipients/index.html')
 
+  
+class MealRequestView(FormView):
+    template_name = 'recipients/new.html'
+    form_class = MealRequestForm
+    success_url = reverse_lazy('recipients:success')
 
-def new(http_request):
-    if http_request.method == 'POST':
-        form = MealRequestForm(http_request.POST)
-        if form.is_valid():
-            request_uuid = uuid.uuid4()
-            form.save()
-            return render(http_request, 'recipients/confirmation.html',
-                          {"name": http_request.POST['name'], "uuid": request_uuid})
+    def form_valid(self, form):
+        form.save()
+        return super().form_valid(form)
 
-    return render(http_request, 'recipients/new.html', {"request_form": MealRequestForm()})
+
+def success(request):
+    return render(request, 'recipients/success.html')
