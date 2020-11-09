@@ -26,6 +26,7 @@ class MealRequestForm(forms.ModelForm):
         widget=forms.CheckboxSelectMultiple,
         choices=TimePeriods.choices,
     )
+    accept_terms = forms.BooleanField(required=True)
 
     class Meta:
         model = MealRequest
@@ -34,4 +35,8 @@ class MealRequestForm(forms.ModelForm):
         widgets = {
             'phone_number': TelephoneInput(),
             'requester_phone_number': TelephoneInput(),
+            'food_allergies': forms.Textarea(attrs={'rows': 3}),
+            'food_preferences': forms.Textarea(attrs={'rows': 3}),
+            'delivery_details': forms.Textarea(attrs={'rows': 3}),
+            'notes': forms.Textarea(attrs={'rows': 3}),
         }
