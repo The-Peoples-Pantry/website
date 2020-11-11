@@ -101,6 +101,11 @@ class MealRequest(models.Model):
         "Postal code",
         max_length=POSTAL_CODE_LENGTH
     )
+    major_intersection = models.CharField(
+        "Nearest major intersection",
+        max_length=DEFAULT_LENGTH,
+        help_text="List the nearest intersection close to your address to help our drivers",
+    )
     notes = models.TextField(
         "Additional information",
         help_text="Is there anything else we should know about you or the person you are requesting support for that will help us complete the request better?",
