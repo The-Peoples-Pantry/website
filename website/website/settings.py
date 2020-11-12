@@ -127,5 +127,8 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'static'
 
+# Auth settings
+LOGOUT_REDIRECT_URL = '/'
+
 # Configure hosted settings automatically using django_heroku
 django_heroku.settings(locals())
