@@ -127,5 +127,17 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'static'
 
+
+# Email
+# https://docs.djangoproject.com/en/3.1/topics/email/
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+
+# Authentication
+# https://docs.djangoproject.com/en/3.1/topics/auth/default/
+
+LOGOUT_REDIRECT_URL = '/'
+
 # Configure hosted settings automatically using django_heroku
 django_heroku.settings(locals())

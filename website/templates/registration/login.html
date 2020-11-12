@@ -1,0 +1,24 @@
+{% extends "registration/base.html" %}
+{% load bootstrap4 %}
+
+{% block content %}
+{% if next %}
+  <div class="alert alert-warning" role="alert">
+    {% if user.is_authenticated %}
+      Your account doesn't have access to this page. To proceed, please login with an account that has access.
+    {% else %}
+      Please login to see this page.
+    {% endif %}
+  </div>
+{% endif %}
+
+<form method="post" action="{% url 'login' %}">
+  {% csrf_token %}
+  <input type="hidden" name="next" value="{{ next }}">
+  {% bootstrap_form form %}
+  {% buttons submit="Login"%}
+    <a href="{% url 'password_reset' %}">Lost password?</a>
+  {% endbuttons %}
+</form>
+
+{% endblock %}
