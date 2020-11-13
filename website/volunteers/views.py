@@ -1,9 +1,10 @@
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django_tables2 import SingleTableView
 from recipients.models import MealRequest
+from .tables import MealRequestTable
 
 
-@login_required
-def index(http_request):
-    requests = MealRequest.objects.all()
-    return render(http_request, "volunteers/index.html", {"requests": requests})
+class IndexView(LoginRequiredMixin, SingleTableView):
+    model = MealRequest
+    table_class = MealRequestTable
+    template_name = "volunteers/index.html"
