@@ -89,6 +89,7 @@ class MealRequest(models.Model):
         "Address line 2",
         help_text="Apartment, Unit, or Suite number",
         max_length=ADDRESS_LENGTH,
+        blank=True,
     )
     city = models.CharField(
         "City",
@@ -153,6 +154,7 @@ class MealRequest(models.Model):
     delivery_details = models.TextField(
         "Delivery details",
         help_text="Please provide us with any details we may need to know for the delivery",
+        blank=True,
     )
     available_days = models.CharField(
         "Available days",

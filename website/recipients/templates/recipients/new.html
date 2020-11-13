@@ -2,13 +2,127 @@
 {% load bootstrap4 %}
 
 {% block content %}
-<h1>Create a new request</h1>
+<div class="row">
+  <div class="col-lg-2"></div>
+  <div class="col-lg-8">
+    <h1>Meal delivery request</h1>
+    <form method="post" class="form">
+      {% csrf_token %}
 
-<form method="post" class="form">
-    {% csrf_token %}
-    {% bootstrap_form form %}
-    {% buttons %}
-        <button type="submit" class="btn btn-primary">Submit</button>
-    {% endbuttons %}
-</form>
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">Recipient details</h5>
+          <div class="row">
+            <div class="col-sm">{% bootstrap_field form.name %}</div>
+            <div class="col-sm">{% bootstrap_field form.email %}</div>
+          </div>
+          {% bootstrap_field form.phone_number %}
+          {% bootstrap_field form.can_receive_texts %}
+        </div>
+      </div>
+
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">Requesting for someone else?</h5>
+          <p class="card-text text-muted">
+            If you're filling this request out on someone else's behalf, please complete this section.
+          </p>
+          {% bootstrap_field form.on_behalf_of %}
+          {% bootstrap_field form.recipient_notified %}
+          <div class="row">
+            <div class="col-sm">{% bootstrap_field form.requester_name %}</div>
+            <div class="col-sm">{% bootstrap_field form.requester_email %}</div>
+          </div>
+          {% bootstrap_field form.requester_phone_number %}
+        </div>
+      </div>
+
+
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">Delivery details</h5>
+          <div class="row">
+            <div class="col-sm-8">{% bootstrap_field form.address_1 %}</div>
+            <div class="col-sm-4">{% bootstrap_field form.address_2 %}</div>
+          </div>
+          <div class="row">
+            <div class="col-sm-8">{% bootstrap_field form.city %}</div>
+            <div class="col-sm-4">{% bootstrap_field form.postal_code %}</div>
+          </div>
+          {% bootstrap_field form.delivery_details %}
+          {% bootstrap_field form.can_meet_for_delivery %}
+          <div class="row">
+            <div class="col-sm">{% bootstrap_field form.available_days %}</div>
+            <div class="col-sm">{% bootstrap_field form.available_time_periods %}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">Meal details</h5>
+          <div class="row">
+            <div class="col-sm">{% bootstrap_field form.num_adults %}</div>
+            <div class="col-sm">{% bootstrap_field form.num_children %}</div>
+          </div>
+          {% bootstrap_field form.children_ages %}
+          <div class="form-group">
+            <label>Dietary restrictions</label>
+            <div class="row">
+              <div class="col-sm">
+                {% bootstrap_field form.dairy_free %}
+                {% bootstrap_field form.gluten_free %}
+                {% bootstrap_field form.halal %}
+              </div>
+              <div class="col-sm">
+                {% bootstrap_field form.low_carb %}
+                {% bootstrap_field form.vegan %}
+                {% bootstrap_field form.vegetarian%}
+              </div>
+            </div>
+          </div>
+          {% bootstrap_field form.food_allergies %}
+          {% bootstrap_field form.food_preferences %}
+          <div class="row">
+            <div class="col-sm">{% bootstrap_field form.will_accept_vegan %}</div>
+            <div class="col-sm">{% bootstrap_field form.will_accept_vegetarian %}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">Community (optional)</h5>
+          <p class="card-text text-muted">
+            Do you or the person you are requesting support for belong to any of the follow communities? Check ALL that apply.
+          </p>
+          {% bootstrap_field form.bipoc %}
+          {% bootstrap_field form.lgbtq %}
+          {% bootstrap_field form.has_disability %}
+          {% bootstrap_field form.immigrant_or_refugee %}
+          {% bootstrap_field form.housing_issues %}
+          {% bootstrap_field form.sex_worker %}
+          {% bootstrap_field form.single_parent %}
+        </div>
+      </div>
+
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">Additional information</h5>
+          {% bootstrap_field form.notes %}
+        </div>
+      </div>
+
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">Terms of service</h5>
+          <textarea class="form-control mb-3" readonly rows="10">{{ form.terms_of_service_text }}</textarea>
+          {% bootstrap_field form.accept_terms %}
+        </div>
+      </div>
+
+      {% buttons submit="Submit"%}{% endbuttons %}
+    </form>
+  </div>
+  <div class="col-lg-2"></div>
 {% endblock %}

@@ -8,7 +8,7 @@ from website import maps
 def index(request):
     return render(request, 'recipients/index.html')
 
-
+  
 class MealRequestView(FormView):
     template_name = 'recipients/new.html'
     form_class = MealRequestForm
