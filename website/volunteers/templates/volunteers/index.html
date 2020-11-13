@@ -1,5 +1,48 @@
 {% extends 'base.html' %}
 
+{% block head %}
+<script
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCO1r4-P2e5ASqVp1Wgw6jAnFBaOEyGo-s&callback=initMap&libraries=&v=weekly"
+        defer
+></script>
+
+<script>
+    let anonymized_latitudes = {{ anonymized_latitudes|safe }};
+    let anonymized_longitudes = {{ anonymized_longitudes|safe }};
+    function initMap() {
+        const toronto = {lat: 43.6532, lng: -79.3832};
+        const map = new google.maps.Map(document.getElementById("map"), {
+            zoom: 13,
+            center: toronto,
+        });
+
+        for (let i = 0; i < anonymized_latitudes.length; i++) {
+            new google.maps.Circle({
+              strokeColor: "#ff0000",
+              strokeOpacity: 0.5,
+              strokeWeight: 2,
+              fillColor: "#ff0000",
+              fillOpacity: 0.3,
+              map,
+              center: {lat: anonymized_latitudes[i], lng: anonymized_longitudes[i]},
+              radius: 200,
+            });
+        }
+    }
+</script>
+
+<style type="text/css">
+    /* Set the size of the div element that contains the map */
+    #map {
+        height: 400px;
+        /* The height is 400 pixels */
+        width: 100%;
+        /* The width is the width of the web page */
+    }
+</style>
+{% endblock head %}
+
 {% block content %}
 <h1>Volunteers</h1>
-{% endblock %}
+<div id="map"></div>
+{% endblock content %}

@@ -206,3 +206,5 @@ class MealRequest(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    anonymized_latitude = models.FloatField(default=43.651070)  # default: Toronto latitude
+    anonymized_longitude = models.FloatField(default=-79.347015)  # default: Toronto longitude
