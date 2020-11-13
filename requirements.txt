@@ -21,3 +21,6 @@ django-extensions==3.0.9
 
 # Allow Bootstrap styling within Django
 django-bootstrap4==2.3.1
+
+# Allows simple table building
+django-tables2==2.3.3

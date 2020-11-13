@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_extensions',
     'bootstrap4',
+    'django_tables2',
     'core',
     'public',
     'volunteers',
@@ -139,6 +140,12 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # https://docs.djangoproject.com/en/3.1/topics/auth/default/
 
 LOGOUT_REDIRECT_URL = '/'
+
+
+# django-tables2
+# https://django-tables2.readthedocs.io/en/latest/index.html
+
+DJANGO_TABLES2_TEMPLATE = "django_tables2/bootstrap4.html"
 
 # Configure hosted settings automatically using django_heroku
 django_heroku.settings(locals())
