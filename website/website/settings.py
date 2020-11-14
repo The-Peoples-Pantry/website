@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'bootstrap4',
     'django_tables2',
+    'django_filters',
     'core',
     'public',
     'volunteers',

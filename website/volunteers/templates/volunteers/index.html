@@ -1,8 +1,15 @@
 {% extends 'base.html' %}
 {% load django_tables2 %}
+{% load bootstrap4 %}
 
 
 {% block content %}
 <h1>Volunteers</h1>
+{% if filter %}
+  <form action="" method="get" class="form">
+    {% bootstrap_form filter.form layout='inline' %}
+    {% bootstrap_button 'filter' %}
+  </form>
+{% endif %}
 {% render_table table %}
 {% endblock %}
