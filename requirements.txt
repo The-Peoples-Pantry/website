@@ -24,3 +24,7 @@ django-bootstrap4==2.3.1
 
 # Allows simple table building
 django-tables2==2.3.3
+
+# Allows us to generate fake data for seeding the database while testing
+faker==4.14.2
+factory-boy==3.1.0
