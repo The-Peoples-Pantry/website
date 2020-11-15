@@ -20,4 +20,16 @@ class MealRequestFilter(FilterSet):
     class Meta:
         form = HiddenValidationForm
         model = MealRequest
-        fields = ('city', 'num_adults')
+        fields = {
+            'city': ['exact'],
+            'num_adults': ['lt'],
+            'num_children': ['lt'],
+            'will_accept_vegan': ['exact'],
+            'will_accept_vegetarian': ['exact'],
+            'dairy_free': ['exact'],
+            'gluten_free': ['exact'],
+            'halal': ['exact'],
+            'low_carb': ['exact'],
+            'vegan': ['exact'],
+            'vegetarian': ['exact'],
+        }
