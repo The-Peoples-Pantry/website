@@ -13,6 +13,15 @@
       content="A mutual aid project providing free hot meals and grocery care packages to anyone impacted by COVID-19 across Toronto"
     />
     {% bootstrap_css %}
+    <style type="text/css">
+      /* Style ascending/descending filters with arrows */
+      .asc::before {
+        content: "\25B2";
+      }
+      .desc::before {
+        content: "\25BC";
+      }
+    </style>
     <title>{% block title %}The People's Pantry{% endblock %}</title>
   </head>
   <body>

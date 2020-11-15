@@ -1,15 +1,30 @@
 {% extends 'base.html' %}
+{% load django_tables2 %}
+{% load bootstrap4 %}
+
 
 {% block content %}
+
 <h1>Volunteers</h1>
-<table>
-    <tr>
-        <th>Name</th>
-    </tr>
-    {% for request in requests %}
-    <tr>
-        <td>{{ request.name }}</td>
-    </tr>
-    {% endfor %}
-</table>
+
+<div class="row">
+  <div class="col-md-3 order-md-2">
+    {% if filter %}
+      <form action="" method="get" class="form">
+        <h4>Filters</h4>
+        {% bootstrap_form filter.form %}
+        {% bootstrap_button 'Filter' %}
+      </form>
+    {% endif %}
+  </div>
+  <div class="col-md-9 order-md-1">
+    <h4>Meal Requests</h4>
+    {% if 25 < table.paginator.count %}
+      <small class="text-muted">
+        Showing 25 of {{ table.paginator.count }} requests
+      </small>
+    {% endif %}
+    {% render_table table %}
+  </div>
+</div>
 {% endblock %}
