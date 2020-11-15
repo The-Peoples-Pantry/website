@@ -7,8 +7,8 @@
 <h1>Volunteers</h1>
 {% if filter %}
   <form action="" method="get" class="form">
-    {% bootstrap_form filter.form layout='inline' %}
-    {% bootstrap_button 'filter' %}
+    {% bootstrap_form filter.form %}
+    {% bootstrap_button 'Filter' %}
   </form>
 {% endif %}
 {% render_table table %}
