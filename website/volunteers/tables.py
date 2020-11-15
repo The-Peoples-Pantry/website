@@ -2,7 +2,19 @@ import django_tables2 as tables
 from recipients.models import MealRequest
 
 
+class WideColumn(tables.Column):
+    """Use a wider-than-usual column for the table field"""
+    def __init__(self, **kwargs):
+        attrs = {'cell': {'style': 'min-width: 300px'}}
+        super().__init__(attrs=attrs, **kwargs)
+
+
 class MealRequestTable(tables.Table):
+    notes = WideColumn()
+    food_allergies = WideColumn()
+    food_preferences = WideColumn()
+    delivery_details = WideColumn()
+
     class Meta:
         model = MealRequest
         attrs = {"class": "table table-hover table-responsive"}
