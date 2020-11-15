@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 from pathlib import Path
 
 import django_heroku
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -147,6 +149,23 @@ LOGOUT_REDIRECT_URL = '/'
 # https://django-tables2.readthedocs.io/en/latest/index.html
 
 DJANGO_TABLES2_TEMPLATE = "django_tables2/bootstrap4.html"
+
+
+# sentry-sdk
+# https://docs.sentry.io/platforms/python/guides/django/
+
+sentry_sdk.init(
+    # This key is safe to store in version control
+    # Learn more here: https://docs.sentry.io/product/sentry-basics/dsn-explainer/
+    dsn="https://a36fac205d4a42cb9fcff9c11355707b@o477092.ingest.sentry.io/5517507",
+    integrations=[DjangoIntegration()],
+    traces_sample_rate=1.0,
+
+    # If you wish to associate users to errors (assuming you are using
+    # django.contrib.auth) you may enable sending PII data.
+    send_default_pii=True
+)
+
 
 # Configure hosted settings automatically using django_heroku
 django_heroku.settings(locals())
