@@ -180,3 +180,14 @@ if not DEBUG:
 
 # Configure hosted settings automatically using django_heroku
 django_heroku.settings(locals())
+
+
+# Model constants
+DEFAULT_LENGTH = 256
+NAME_LENGTH = DEFAULT_LENGTH
+PHONE_NUMBER_LENGTH = 20
+ADDRESS_LENGTH = DEFAULT_LENGTH
+CITY_LENGTH = 50
+POSTAL_CODE_LENGTH = 7  # Optional space
+DAY_LENGTH = 9  # Longest is "Wednesday"
+LONG_TEXT_LENGTH = 1024
