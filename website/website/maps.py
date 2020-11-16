@@ -3,8 +3,6 @@ from random import uniform, choice
 
 from website.settings import MAPQUEST_API_KEY
 
-# TODO: manage this; this is currently Eric's free MapQuest dev account.
-
 DEGREE_RANGE_LOWER = 0.0004
 DEGREE_RANGE_HIGHER = 0.0008
 
