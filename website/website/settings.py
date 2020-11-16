@@ -10,11 +10,21 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
+from os import getenv
 from pathlib import Path
 
 import django_heroku
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
+
+
+def getenv_bool(key, default=False):
+    """Retrieve an environment variable with a value like "1" or "0" and cast to boolean."""
+    val = getenv(key)
+    if val is None:
+        return default
+    return bool(int(val))
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,7 +37,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = '823_^#-f(2u@za-3%f0j5!-jy=e4i0yjt_&2v*&o80j0d^17en'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = getenv_bool("DEBUG", False)
 
 ALLOWED_HOSTS = []
 
