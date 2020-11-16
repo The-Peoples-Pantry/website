@@ -1,14 +1,6 @@
 import uuid
 from django.db import models
-
-DEFAULT_LENGTH = 256
-NAME_LENGTH = DEFAULT_LENGTH
-PHONE_NUMBER_LENGTH = 20
-ADDRESS_LENGTH = DEFAULT_LENGTH
-CITY_LENGTH = 50
-POSTAL_CODE_LENGTH = 7  # Optional space
-DAY_LENGTH = 9  # Longest is "Wednesday"
-
+from django.conf import settings
 
 class Cities(models.TextChoices):
     AJAX = 'Ajax', 'Ajax'
@@ -68,13 +60,13 @@ class MealRequest(models.Model):
     # Information about the recipient
     name = models.CharField(
         "Full name",
-        max_length=NAME_LENGTH
+        max_length=settings.NAME_LENGTH
     )
     email = models.EmailField("Email address")
     phone_number = models.CharField(
         "Phone number",
         help_text="Use the format 555-555-5555",
-        max_length=PHONE_NUMBER_LENGTH,
+        max_length=settings.PHONE_NUMBER_LENGTH,
     )
     can_receive_texts = models.BooleanField(
         "Can receive texts",
@@ -83,28 +75,23 @@ class MealRequest(models.Model):
     address_1 = models.CharField(
         "Address line 1",
         help_text="Street name and number",
-        max_length=ADDRESS_LENGTH
+        max_length=settings.ADDRESS_LENGTH
     )
     address_2 = models.CharField(
         "Address line 2",
         help_text="Apartment, Unit, or Suite number",
-        max_length=ADDRESS_LENGTH,
+        max_length=settings.ADDRESS_LENGTH,
         blank=True,
     )
     city = models.CharField(
         "City",
-        max_length=CITY_LENGTH,
+        max_length=settings.CITY_LENGTH,
         choices=Cities.choices,
         default=Cities.TORONTO,
     )
     postal_code = models.CharField(
         "Postal code",
-        max_length=POSTAL_CODE_LENGTH
-    )
-    major_intersection = models.CharField(
-        "Nearest major intersection",
-        max_length=DEFAULT_LENGTH,
-        help_text="List the nearest intersection close to your address to help our drivers",
+        max_length=settings.POSTAL_CODE_LENGTH
     )
     notes = models.TextField(
         "Additional information",
@@ -127,7 +114,7 @@ class MealRequest(models.Model):
     children_ages = models.CharField(
         "Ages of children",
         help_text="When able, we will try to provide additional snacks for children. If this is something you would be interested in, please list the ages of any children in the household so we may try to provide appropriate snacks for their age group.",
-        max_length=DEFAULT_LENGTH,
+        max_length=settings.DEFAULT_LENGTH,
         blank=True,
     )
     food_allergies = models.TextField(
@@ -164,12 +151,12 @@ class MealRequest(models.Model):
     available_days = models.CharField(
         "Available days",
         help_text="What days are you (or the person you're requesting for) available for receiving the delivery?",
-        max_length=DEFAULT_LENGTH,
+        max_length=settings.DEFAULT_LENGTH,
     )
     available_time_periods = models.CharField(
         "Available time periods",
         help_text="What times are you (or the person you're requesting for) available for receiving the delivery?",
-        max_length=DEFAULT_LENGTH,
+        max_length=settings.DEFAULT_LENGTH,
     )
 
     # Dietary restrictions
@@ -192,7 +179,7 @@ class MealRequest(models.Model):
     )
     requester_name = models.CharField(
         "Your full name",
-        max_length=NAME_LENGTH,
+        max_length=settings.NAME_LENGTH,
         blank=True,
     )
     requester_email = models.EmailField(
@@ -202,14 +189,68 @@ class MealRequest(models.Model):
     requester_phone_number = models.CharField(
         "Your phone number",
         help_text="Use the format 555-555-5555",
-        max_length=PHONE_NUMBER_LENGTH,
+        max_length=settings.PHONE_NUMBER_LENGTH,
         blank=True,
     )
 
     # Legal
     accept_terms = models.BooleanField("Accept terms")
 
+    # Admin
+    delivery_date = models.DateField(blank=True, null=True)
+
     # System
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+
+class Status(models.TextChoices):
+    UNCONFIRMED = 'Unconfirmed', 'Unconfirmed'
+    CHEF_ASSIGNED = 'Chef Assigned', 'Chef Assigned'
+    SCHEDULED = 'Scheduled for Delivery', 'Scheduled for Delivery'
+    CONFIRMED = 'Delivery Confirmed', 'Delivery Confirmed'
+    RESCHEDULED = 'Rescheduled', 'Rescheduled'
+    DELIVERED = 'Delivered', 'Delivered'
+
+
+class UpdateNote(models.Model):
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET(get_sentinel_user),
+        blank=True
+    )
+    request_id = models.ForeignKey(MealRequest, on_delete=models.CASCADE)
+    note = models.CharField(max_length=settings.LONG_TEXT_LENGTH)
+
+    # System
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+class Delivery(models.Model):
+    chef = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET(get_sentinel_user),
+        related_name="assigned_chef"
+    )
+    deliverer = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET(get_sentinel_user),
+        related_name="assigned_deliverer"
+    )
+    request = models.ForeignKey(MealRequest, on_delete = models.CASCADE)
+    status = models.CharField(
+        "Status",
+        max_length=settings.DEFAULT_LENGTH,
+        choices=Status.choices,
+        default=Status.UNCONFIRMED
+    )
+    pickup_start = models.DateTimeField(blank=True)
+    pickup_end = models.DateTimeField(blank=True)
+    dropoff_start = models.DateTimeField(blank=True)
+    dropoff_start = models.DateTimeField(blank=True)
+
+    # System
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
+    created_at = models.DateTimeField(auto_now_add=True)
