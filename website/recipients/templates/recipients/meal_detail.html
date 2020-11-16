@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% load django_tables2 %}
+{% load bootstrap4 %}
+
+{% block content %}
+
+<h1>Details for request #{{ mealrequest.id }}</h1>
+{{ mealrequest.name }}
+{% endblock %}

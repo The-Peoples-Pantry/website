@@ -1,13 +1,21 @@
 from textwrap import dedent
 from django.core.mail import send_mail
 from django.views.generic.edit import FormView
+from django.views.generic import DetailView
 from django.shortcuts import render
 from django.urls import reverse_lazy
-from .forms import MealRequestForm
+from django_tables2 import SingleTableMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 
+from .forms import MealRequestForm
+from .models import MealRequest
 
 def index(request):
     return render(request, 'recipients/index.html')
+
+
+def success(request):
+    return render(request, 'recipients/success.html')
 
 
 class MealRequestView(FormView):
@@ -33,5 +41,6 @@ class MealRequestView(FormView):
         return super().form_valid(form)
 
 
-def success(request):
-    return render(request, 'recipients/success.html')
+class MealRequestDetail(LoginRequiredMixin, DetailView):
+	model = MealRequest
+	template_name = "recipients/meal_detail.html"
