@@ -9,6 +9,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .forms import MealRequestForm
 from .models import MealRequest
+from website.maps import geocode_anonymized
 
 
 def index(request):
@@ -46,7 +47,7 @@ class MealRequestView(FormView):
             instance.city,
             instance.postal_code,
         ])
-        instance.anonymized_latitude, instance.anonymized_longitude = maps.geocode_anonymized(entire_address)
+        instance.anonymized_latitude, instance.anonymized_longitude = geocode_anonymized(entire_address)
         instance.save()
 
         return super().form_valid(form)
