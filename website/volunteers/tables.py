@@ -15,6 +15,8 @@ class MealRequestTable(tables.Table):
     food_preferences = WideColumn()
     delivery_details = WideColumn()
 
+    id = tables.Column(linkify=True)
+
     class Meta:
         model = MealRequest
         attrs = {"class": "table table-hover table-responsive"}

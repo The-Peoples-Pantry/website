@@ -1,6 +1,9 @@
 import uuid
 from django.db import models
 from django.conf import settings
+from django.urls import reverse_lazy
+
+from core.models import get_sentinel_user
 
 class Cities(models.TextChoices):
     AJAX = 'Ajax', 'Ajax'
@@ -203,6 +206,9 @@ class MealRequest(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def get_absolute_url(self):
+        return reverse_lazy('recipients:request_detail', args=[str(self.id)])
 
 
 class Status(models.TextChoices):

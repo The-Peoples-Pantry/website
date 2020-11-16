@@ -2,10 +2,9 @@
 {% load django_tables2 %}
 {% load bootstrap4 %}
 
-
 {% block content %}
 
-<h1>Volunteers</h1>
+<h1>View All Meal Requests</h1>
 
 <div class="row">
   <div class="col-md-3 order-md-2">
@@ -18,7 +17,6 @@
     {% endif %}
   </div>
   <div class="col-md-9 order-md-1">
-    <h4>Meal Requests</h4>
     {% if 25 < table.paginator.count %}
       <small class="text-muted">
         Showing 25 of {{ table.paginator.count }} requests
