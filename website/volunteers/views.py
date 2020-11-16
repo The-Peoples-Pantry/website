@@ -21,7 +21,7 @@ def chef_success(request):
     return render(request, 'volunteers/chef_success.html')
 
 
-class IndexView(SingleTableMixin, FilterView):
+class IndexView(LoginRequiredMixin, SingleTableMixin, FilterView):
     model = MealRequest
     table_class = MealRequestTable
     filterset_class = MealRequestFilter
