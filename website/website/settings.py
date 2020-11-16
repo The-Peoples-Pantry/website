@@ -29,7 +29,6 @@ def getenv_bool(key, default=False):
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
@@ -40,7 +39,6 @@ SECRET_KEY = '823_^#-f(2u@za-3%f0j5!-jy=e4i0yjt_&2v*&o80j0d^17en'
 DEBUG = getenv_bool("DEBUG", False)
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -91,7 +89,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'website.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
@@ -101,7 +98,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
@@ -121,7 +117,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
@@ -135,31 +130,26 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'static'
 
-
 # Email
 # https://docs.djangoproject.com/en/3.1/topics/email/
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
 
 # Authentication
 # https://docs.djangoproject.com/en/3.1/topics/auth/default/
 
 LOGOUT_REDIRECT_URL = '/'
 
-
 # django-tables2
 # https://django-tables2.readthedocs.io/en/latest/index.html
 
 DJANGO_TABLES2_TEMPLATE = "django_tables2/bootstrap4.html"
-
 
 # sentry-sdk
 # https://docs.sentry.io/platforms/python/guides/django/
@@ -177,10 +167,8 @@ if not DEBUG:
         send_default_pii=True
     )
 
-
 # Configure hosted settings automatically using django_heroku
 django_heroku.settings(locals())
-
 
 # Model constants
 DEFAULT_LENGTH = 256
@@ -191,3 +179,7 @@ CITY_LENGTH = 50
 POSTAL_CODE_LENGTH = 7  # Optional space
 DAY_LENGTH = 9  # Longest is "Wednesday"
 LONG_TEXT_LENGTH = 1024
+
+# Maps API keys
+MAPQUEST_API_KEY = "xvB2VYxUF6mByw32kqOszrCXfgC7CuUa"  # Eric's dev account - 15k requests/month
+GOOGLE_MAPS_API_KEY = "AIzaSyCO1r4-P2e5ASqVp1Wgw6jAnFBaOEyGo-s"  # Eric's dev account - hard limit at free tier

@@ -10,6 +10,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import MealRequestForm
 from .models import MealRequest
 
+
 def index(request):
     return render(request, 'recipients/index.html')
 
@@ -36,11 +37,21 @@ class MealRequestView(FormView):
         )
 
     def form_valid(self, form):
-        instance = form.save()
+        instance = form.save(commit=False)
         self.send_confirmation_email(instance)
+
+        entire_address = ' '.join([
+            instance.address_1,
+            instance.address_2,
+            instance.city,
+            instance.postal_code,
+        ])
+        instance.anonymized_latitude, instance.anonymized_longitude = maps.geocode_anonymized(entire_address)
+        instance.save()
+
         return super().form_valid(form)
 
 
 class MealRequestDetail(LoginRequiredMixin, DetailView):
-	model = MealRequest
-	template_name = "recipients/meal_detail.html"
+    model = MealRequest
+    template_name = "recipients/meal_detail.html"

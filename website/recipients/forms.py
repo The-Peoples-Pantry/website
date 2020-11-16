@@ -43,7 +43,7 @@ class MealRequestForm(forms.ModelForm):
 
     class Meta:
         model = MealRequest
-        exclude = ['uuid', 'created_at', 'updated_at']
+        exclude = ['uuid', 'created_at', 'updated_at', 'anonymized_latitude', 'anonymized_longitude']
 
         widgets = {
             'phone_number': TelephoneInput(),

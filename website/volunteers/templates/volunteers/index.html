@@ -2,11 +2,53 @@
 {% load django_tables2 %}
 {% load bootstrap4 %}
 
+{% block head %}
+<script
+        src="https://maps.googleapis.com/maps/api/js?key={{ view.google_maps_api_key }}&callback=initMap&libraries=&v=weekly"
+        defer
+></script>
+
+<script>
+    let anonymized_coordinates = {{ view.anonymized_coordinates|safe }}
+    function initMap() {
+        const toronto = {lat: 43.6532, lng: -79.3832};
+        const map = new google.maps.Map(document.getElementById("map"), {
+            zoom: 13,
+            center: toronto,
+        });
+
+        for (let i = 0; i < anonymized_coordinates.length; i++) {
+            new google.maps.Circle({
+              strokeColor: "#ff0000",
+              strokeOpacity: 0.5,
+              strokeWeight: 2,
+              fillColor: "#ff0000",
+              fillOpacity: 0.3,
+              map,
+              center: {lat: anonymized_coordinates[i][0], lng: anonymized_coordinates[i][1]},
+              radius: 200,
+            });
+        }
+    }
+</script>
+
+<style type="text/css">
+    /* Set the size of the div element that contains the map */
+    #map {
+        height: 400px;
+        /* The height is 400 pixels */
+        width: 100%;
+        /* The width is the width of the web page */
+    }
+</style>
+{% endblock head %}
+
 {% block content %}
 
 <h1>View All Meal Requests</h1>
 
 <div class="row">
+  <div id="map"></div>
   <div class="col-md-3 order-md-2">
     {% if filter %}
       <form action="" method="get" class="form">
@@ -25,4 +67,4 @@
     {% render_table table %}
   </div>
 </div>
-{% endblock %}
+{% endblock content %}

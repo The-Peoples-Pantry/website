@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.views.generic.edit import FormView
@@ -11,6 +12,7 @@ from .tables import MealRequestTable
 from .filters import MealRequestFilter
 from .forms import DeliverySignupForm, ChefSignupForm
 
+
 def delivery_success(request):
     return render(request, 'volunteers/delivery_success.html')
 
@@ -19,11 +21,21 @@ def chef_success(request):
     return render(request, 'volunteers/chef_success.html')
 
 
-class IndexView(LoginRequiredMixin, SingleTableMixin, FilterView):
+class IndexView(SingleTableMixin, FilterView):
     model = MealRequest
     table_class = MealRequestTable
     filterset_class = MealRequestFilter
     template_name = "volunteers/index.html"
+
+    def anonymized_coordinates(self):
+        instances = self.filterset.qs
+        return [
+            [instance.anonymized_latitude, instance.anonymized_longitude]
+            for instance in instances
+        ]
+
+    def google_maps_api_key(self):
+        return settings.GOOGLE_MAPS_API_KEY
 
 
 class DeliverySignupView(LoginRequiredMixin, FormView):
