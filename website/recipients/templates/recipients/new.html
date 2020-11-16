@@ -3,8 +3,7 @@
 
 {% block content %}
 <div class="row">
-  <div class="col-lg-2"></div>
-  <div class="col-lg-8">
+  <div class="col-lg-8 mr-auto ml-auto">
     <h1>Meal delivery request</h1>
     <form method="post" class="form">
       {% csrf_token %}
@@ -124,5 +123,5 @@
       {% buttons submit="Submit"%}{% endbuttons %}
     </form>
   </div>
-  <div class="col-lg-2"></div>
+</div>
 {% endblock %}
