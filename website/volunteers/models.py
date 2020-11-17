@@ -5,6 +5,7 @@ from django.db.models.signals import post_save
 from django.conf import settings
 from recipients.models import Cities
 
+
 class Volunteer(models.Model):
     user = models.OneToOneField(
         User,
@@ -35,14 +36,7 @@ class Volunteer(models.Model):
         max_length=settings.POSTAL_CODE_LENGTH,
         blank=True
     )
-    is_coordinator = models.BooleanField("Volunteer Coordinator")
-    is_driver = models.BooleanField("Driver")
-    is_chef = models.BooleanField("Chef")
-    training_complete = models.BooleanField("Training Complete")
-
-    class Meta:
-        managed = False
-        db_table = 'person'
+    training_complete = models.BooleanField("Training Complete", default=False)
 
 
 # When user is created or saved, also save volunteer
