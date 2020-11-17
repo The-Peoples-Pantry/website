@@ -26,9 +26,5 @@ class Migration(migrations.Migration):
                 ('is_chef', models.BooleanField(verbose_name='Chef')),
                 ('training_complete', models.BooleanField(verbose_name='Training Complete')),
             ],
-            options={
-                'db_table': 'person',
-                'managed': False,
-            },
         ),
     ]

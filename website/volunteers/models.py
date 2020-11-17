@@ -5,6 +5,7 @@ from django.db.models.signals import post_save
 from django.conf import settings
 from recipients.models import Cities
 
+
 class Volunteer(models.Model):
     user = models.OneToOneField(
         User,
@@ -39,10 +40,6 @@ class Volunteer(models.Model):
     is_driver = models.BooleanField("Driver")
     is_chef = models.BooleanField("Chef")
     training_complete = models.BooleanField("Training Complete")
-
-    class Meta:
-        managed = False
-        db_table = 'person'
 
 
 # When user is created or saved, also save volunteer
