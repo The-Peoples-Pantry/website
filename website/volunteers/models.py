@@ -36,7 +36,7 @@ class Volunteer(models.Model):
         max_length=settings.POSTAL_CODE_LENGTH,
         blank=True
     )
-    training_complete = models.BooleanField("Training Complete")
+    training_complete = models.BooleanField("Training Complete", default=False)
 
 
 # When user is created or saved, also save volunteer
