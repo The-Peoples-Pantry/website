@@ -31,10 +31,10 @@ class IndexView(PermissionRequiredMixin, LoginRequiredMixin, SingleTableMixin, F
 
     def anonymized_coordinates(self):
         instances = self.filterset.qs
-        return [
-            [instance.anonymized_latitude, instance.anonymized_longitude]
+        return {
+            instance.id: [instance.anonymized_latitude, instance.anonymized_longitude, instance.id]
             for instance in instances
-        ]
+        }
 
     def google_maps_api_key(self):
         return settings.GOOGLE_MAPS_API_KEY

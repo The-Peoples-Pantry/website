@@ -10,24 +10,57 @@
 
 <script>
     let anonymized_coordinates = {{ view.anonymized_coordinates|safe }}
+
     function initMap() {
+        // Adapted from https://jsfiddle.net/andriika/pdc2b85j
+        class CustomMarker extends google.maps.OverlayView {
+          constructor(params) {
+            super();
+            this.position = params.position;
+
+            const content = document.createElement('div');
+            content.classList.add('custom-map-marker', `marker-${params.label}`);
+            content.textContent = params.label;
+            content.style.position = 'absolute';
+
+            const container = document.createElement('div');
+            container.style.position = 'absolute';
+            container.style.cursor = 'pointer';
+            container.appendChild(content);
+
+            this.container = container;
+          }
+
+          onAdd() {
+            this.getPanes().floatPane.appendChild(this.container);
+          }
+
+          onRemove() {
+            this.container.remove();
+          }
+
+          draw() {
+            const pos = this.getProjection().fromLatLngToDivPixel(this.position);
+            this.container.style.left = pos.x + 'px';
+            this.container.style.top = pos.y + 'px';
+          }
+        }
+
         const toronto = {lat: 43.6532, lng: -79.3832};
         const map = new google.maps.Map(document.getElementById("map"), {
-            zoom: 13,
+            zoom: 12,
             center: toronto,
         });
 
-        for (let i = 0; i < anonymized_coordinates.length; i++) {
-            new google.maps.Circle({
-              strokeColor: "#ff0000",
-              strokeOpacity: 0.5,
-              strokeWeight: 2,
-              fillColor: "#ff0000",
-              fillOpacity: 0.3,
-              map,
-              center: {lat: anonymized_coordinates[i][0], lng: anonymized_coordinates[i][1]},
-              radius: 200,
+        for (let i of Object.keys(anonymized_coordinates)) {
+            const latlng = new google.maps.LatLng(anonymized_coordinates[i][0], anonymized_coordinates[i][1]);
+
+            const marker = new CustomMarker({
+              position: latlng,
+              label: i,
             });
+
+            marker.setMap(map);
         }
     }
 </script>
@@ -40,6 +73,23 @@
         width: 100%;
         /* The width is the width of the web page */
     }
+
+    /* Style of overlay */
+    .custom-map-marker {
+      color: white;
+      width: 40px;
+      height: 40px;
+      text-align: center;
+      font-size: 16px;
+      line-height: 30px;
+      border-radius: 50%;
+      background-color: black;
+      border: solid 1px white;
+      padding: 4px;
+      top: -25px;
+      left: -25px;
+    }
+
 </style>
 {% endblock head %}
 
