@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic.edit import FormView
@@ -22,11 +22,12 @@ def chef_success(request):
     return render(request, 'volunteers/chef_success.html')
 
 
-class IndexView(LoginRequiredMixin, SingleTableMixin, FilterView):
+class IndexView(PermissionRequiredMixin, LoginRequiredMixin, SingleTableMixin, FilterView):
     model = MealRequest
     table_class = MealRequestTable
     filterset_class = MealRequestFilter
     template_name = "volunteers/index.html"
+    permission_required = 'recipients.view_mealrequest'
 
     def anonymized_coordinates(self):
         instances = self.filterset.qs
