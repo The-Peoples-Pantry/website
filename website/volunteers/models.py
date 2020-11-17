@@ -36,9 +36,6 @@ class Volunteer(models.Model):
         max_length=settings.POSTAL_CODE_LENGTH,
         blank=True
     )
-    is_coordinator = models.BooleanField("Volunteer Coordinator")
-    is_driver = models.BooleanField("Driver")
-    is_chef = models.BooleanField("Chef")
     training_complete = models.BooleanField("Training Complete")
 
 
