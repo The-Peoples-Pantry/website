@@ -237,6 +237,9 @@ class UpdateNote(models.Model):
 
 
 class Delivery(models.Model):
+    class Meta:
+        verbose_name_plural = 'deliveries'
+
     chef = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET(get_sentinel_user),
