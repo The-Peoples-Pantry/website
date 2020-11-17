@@ -3,8 +3,10 @@ import factory
 import factory.fuzzy
 import factory.django
 import random
+from datetime import datetime, timedelta
 from django.core.management.base import BaseCommand
 from recipients.models import MealRequest, Cities, Days, TimePeriods
+from website.maps import geocode_anonymized
 
 factory.Faker.add_provider(faker.providers.phone_number)
 factory.Faker.add_provider(faker.providers.address)
@@ -67,8 +69,9 @@ class MealRequestFactory(factory.django.DjangoModelFactory):
     requester_email = factory.Faker('email')
     requester_phone_number = factory.Faker('phone_number')
 
-    accept_terms = True
+    delivery_date = factory.fuzzy.FuzzyDate(datetime.now() - timedelta(days=10), datetime.now() + timedelta(days=10))
 
+    accept_terms = True
 
 class Command(BaseCommand):
     help = 'Seed fake MealRequests into the database'
@@ -85,6 +88,14 @@ class Command(BaseCommand):
         count = options['count']
         for i in range(count):
             obj = MealRequestFactory.create()
+
+            addr = ' '.join([
+                obj.address_1,
+                obj.address_2,
+                obj.city,
+                obj.postal_code,
+            ])
+            obj.anonymized_latitude, obj.anonymized_longitude = geocode_anonymized(addr)
             obj.save()
 
             assert obj.id is not None, "Something went wrong"
