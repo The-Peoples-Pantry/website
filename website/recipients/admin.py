@@ -1,3 +1,7 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import MealRequest, UpdateNote, Delivery
+
+admin.site.register(MealRequest)
+admin.site.register(UpdateNote)
+admin.site.register(Delivery)
