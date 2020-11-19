@@ -6,6 +6,13 @@ from django.conf import settings
 from recipients.models import Cities
 
 
+# These choice values must match up with the name of the Groups
+class VolunteerRoles(models.TextChoices):
+    CHEFS = 'Chefs'
+    DELIVERERS = 'Deliverers'
+    ORGANIZERS = 'Organizers'
+
+
 class Volunteer(models.Model):
     user = models.OneToOneField(
         User,
@@ -37,6 +44,20 @@ class Volunteer(models.Model):
         blank=True
     )
     training_complete = models.BooleanField("Training Complete", default=False)
+
+
+class VolunteerApplication(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+    )
+    role = models.CharField(
+        max_length=50,
+        choices=VolunteerRoles.choices,
+    )
+    approved = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
 
 # When user is created or saved, also save volunteer
