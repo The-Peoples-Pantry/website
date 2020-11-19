@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic.edit import FormView
 from django.views.generic import ListView, TemplateView
@@ -46,6 +46,15 @@ class DeliveryApplicationView(LoginRequiredMixin, FormView):
     template_name = "volunteers/delivery_application.html"
     success_url = reverse_lazy('volunteers:delivery_application_received')
 
+    def get(self, request, *args, **kwargs):
+        has_applied = VolunteerApplication.objects.filter(
+            user=self.request.user,
+            role=VolunteerRoles.DELIVERERS,
+        ).exists()
+        if has_applied:
+            return redirect(self.success_url)
+        return super().get(request, *args, **kwargs)
+
     def form_valid(self, form):
         VolunteerApplication.objects.create(
             user=self.request.user,
@@ -78,6 +87,15 @@ class ChefApplicationView(LoginRequiredMixin, FormView):
     form_class = AcceptTermsForm
     template_name = "volunteers/chef_application.html"
     success_url = reverse_lazy('volunteers:chef_application_received')
+
+    def get(self, request, *args, **kwargs):
+        has_applied = VolunteerApplication.objects.filter(
+            user=self.request.user,
+            role=VolunteerRoles.CHEFS,
+        ).exists()
+        if has_applied:
+            return redirect(self.success_url)
+        return super().get(request, *args, **kwargs)
 
     def form_valid(self, form):
         VolunteerApplication.objects.create(
