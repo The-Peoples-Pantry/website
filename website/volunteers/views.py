@@ -12,6 +12,7 @@ from recipients.models import MealRequest, Delivery
 from .tables import MealRequestTable
 from .filters import MealRequestFilter
 from .forms import DeliverySignupForm, ChefSignupForm, AcceptTermsForm
+from .models import VolunteerApplication, VolunteerRoles
 
 
 def delivery_success(request):
@@ -45,6 +46,13 @@ class DeliveryApplicationView(LoginRequiredMixin, FormView):
     template_name = "volunteers/delivery_application.html"
     success_url = reverse_lazy('volunteers:delivery_application_received')
 
+    def form_valid(self, form):
+        VolunteerApplication.objects.create(
+            user=self.request.user,
+            role=VolunteerRoles.DELIVERERS,
+        )
+        return super().form_valid(form)
+
 
 class DeliveryApplicationReceivedView(LoginRequiredMixin, TemplateView):
     template_name = "volunteers/delivery_application_received.html"
@@ -70,6 +78,13 @@ class ChefApplicationView(LoginRequiredMixin, FormView):
     form_class = AcceptTermsForm
     template_name = "volunteers/chef_application.html"
     success_url = reverse_lazy('volunteers:chef_application_received')
+
+    def form_valid(self, form):
+        VolunteerApplication.objects.create(
+            user=self.request.user,
+            role=VolunteerRoles.CHEFS,
+        )
+        return super().form_valid(form)
 
 
 class ChefApplicationReceivedView(LoginRequiredMixin, TemplateView):
