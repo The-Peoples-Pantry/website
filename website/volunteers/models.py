@@ -47,6 +47,11 @@ class Volunteer(models.Model):
 
 
 class VolunteerApplication(models.Model):
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'role'], name='unique role per user application')
+        ]
+
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
