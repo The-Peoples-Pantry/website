@@ -3,7 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic.edit import FormView
-from django.views.generic import ListView
+from django.views.generic import ListView, TemplateView
 from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin
 
@@ -11,7 +11,7 @@ from recipients.models import MealRequest, Delivery
 
 from .tables import MealRequestTable
 from .filters import MealRequestFilter
-from .forms import DeliverySignupForm, ChefSignupForm
+from .forms import DeliverySignupForm, ChefSignupForm, AcceptTermsForm
 
 
 def delivery_success(request):
@@ -40,6 +40,16 @@ class IndexView(PermissionRequiredMixin, LoginRequiredMixin, SingleTableMixin, F
         return settings.GOOGLE_MAPS_API_KEY
 
 
+class DeliveryApplicationView(LoginRequiredMixin, FormView):
+    form_class = AcceptTermsForm
+    template_name = "volunteers/delivery_application.html"
+    success_url = reverse_lazy('volunteers:delivery_application_received')
+
+
+class DeliveryApplicationReceivedView(LoginRequiredMixin, TemplateView):
+    template_name = "volunteers/delivery_application_received.html"
+
+
 class DeliverySignupView(LoginRequiredMixin, FormView):
     model = Delivery
     template_name = "volunteers/delivery_signup.html"
@@ -54,6 +64,16 @@ class DeliverySignupView(LoginRequiredMixin, FormView):
 class DeliveryIndexView(LoginRequiredMixin, ListView):
     model = Delivery
     template_name = "volunteers/delivery_list.html"
+
+
+class ChefApplicationView(LoginRequiredMixin, FormView):
+    form_class = AcceptTermsForm
+    template_name = "volunteers/chef_application.html"
+    success_url = reverse_lazy('volunteers:chef_application_received')
+
+
+class ChefApplicationReceivedView(LoginRequiredMixin, TemplateView):
+    template_name = "volunteers/chef_application_received.html"
 
 
 class ChefSignupView(LoginRequiredMixin, FormView):
