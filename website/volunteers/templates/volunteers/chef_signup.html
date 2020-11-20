@@ -6,18 +6,26 @@
 <h1>Chef signup</h1>
 
 
+{% for meal in meals %}
 <form action="" method="post" class="form">
     {% csrf_token %}
 
-    {{ formset.management_form }}
-
+    <!-- {{ formset.management_form }} -->
+    <!-- {{ formset }} -->
     <ul>
-      {% for meal in formset %}
-        <li>{{ meal.id.value }}: {{ meal.name.value }} @ {{ meal.address_1.value }}, {{ meal.can_receive_texts.value }} on date {{ meal.delivery_date }}
-      {% endfor %}
+
+        <li>
+          {{ meal.name.value }} @ {{ meal.address_1.value }} on date
+          {{ meal.delivery_date }}
+          {{ meal.uuid }}
+
+          {% buttons submit="Submit"%}{% endbuttons %}
+
     </ul>
 
-    {% buttons submit="Submit"%}{% endbuttons %}
+
+
 </form>
+{% endfor %}
 
 {% endblock %}

@@ -203,7 +203,7 @@ class MealRequest(models.Model):
     delivery_date = models.DateField(blank=True, null=True)
 
     # System
-    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
+    uuid = models.UUIDField(default=uuid.uuid4, editable=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     anonymized_latitude = models.FloatField(default=43.651070)  # default: Toronto latitude
@@ -211,6 +211,10 @@ class MealRequest(models.Model):
 
     def get_absolute_url(self):
         return reverse_lazy('recipients:request_detail', args=[str(self.id)])
+
+
+class MealRequestAdmin(admin.ModelAdmin):
+    readonly_fields = ('uuid',)
 
 
 class Status(models.TextChoices):
