@@ -5,4 +5,19 @@
 {% block content %}
 <h1>Chef signup</h1>
 
+
+<form action="" method="post" class="form">
+    {% csrf_token %}
+
+    {{ formset.management_form }}
+
+    <ul>
+      {% for meal in formset %}
+        <li>{{ meal.id.value }}: {{ meal.name.value }} @ {{ meal.address_1.value }}, {{ meal.can_receive_texts.value }} on date {{ meal.delivery_date }}
+      {% endfor %}
+    </ul>
+
+    {% buttons submit="Submit"%}{% endbuttons %}
+</form>
+
 {% endblock %}
