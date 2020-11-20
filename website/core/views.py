@@ -7,7 +7,7 @@ from .forms import UserCreationForm
 
 class UserCreationView(FormView):
     form_class = UserCreationForm
-    template_name = "core/register.html"
+    template_name = "core/signup.html"
     success_url = reverse_lazy('public:index')
 
     def form_valid(self, form):
