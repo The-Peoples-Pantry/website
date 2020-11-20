@@ -68,7 +68,10 @@
     </nav>
     {% endblock %}
 
-    <div class="container">{% block content %}{% endblock %}</div>
+    <div class="container">
+      {% bootstrap_messages %}
+      {% block content %}{% endblock %}
+    </div>
     {% bootstrap_javascript jquery='slim' %}
   </body>
 </html>
