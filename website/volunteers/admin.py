@@ -1,4 +1,6 @@
 from django.contrib import admin, messages
+from django.contrib.auth.models import Group
+from django.db import transaction
 from django.utils.translation import ngettext
 
 from .models import Volunteer, VolunteerApplication
@@ -10,8 +12,20 @@ class VolunteerApplicationAdmin(admin.ModelAdmin):
     ordering = ('approved', )
     actions = ('approve', )
 
+    @transaction.atomic
     def approve(self, request, queryset):
-        updated = queryset.filter(approved=False).update(approved=True)
+        # De-select any values that have already been approved
+        queryset = queryset.filter(approved=False)
+
+        # Add each user to the appropriate group
+        for application in queryset:
+            user = application.user
+            group = Group.objects.get(name=application.role)
+            user.groups.add(group)
+
+        # Mark the applications as approved
+        updated = queryset.update(approved=True)
+
         if updated:
             self.message_user(request, ngettext(
                 "%d application was successfully approved.",
