@@ -1,3 +1,4 @@
+import datetime
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.shortcuts import render, redirect
@@ -64,15 +65,27 @@ class ChefSignupView(LoginRequiredMixin, FormView):
         try:
             instance = Delivery.objects.get(request=meal_object)
         except Delivery.DoesNotExist as exception:
-            instance = Delivery.objects.create(
+            meal_instance = Delivery.objects.create(
                 request=meal_object,
                 chef=user_object,
                 status=Status.CHEF_ASSIGNED,
                 pickup_start=data['start_time'],
                 pickup_end=data['end_time']
             )
-            instance.user = user_object
-            instance.save()
+            meal_instance.user = user_object
+            meal_instance.save()
+
+            if data['container_needed']:
+                meal_instance = Delivery.objects.create(
+                    request=meal_object,
+                    chef=user_object,
+                    status=Status.CHEF_ASSIGNED,
+                    pickup_start=data['start_time'],
+                    pickup_end=data['end_time'],
+                    container_delivery=True
+                )
+                meal_instance.user = user_object
+                meal_instance.save()
 
 
     def post(self, request):
@@ -81,16 +94,25 @@ class ChefSignupView(LoginRequiredMixin, FormView):
 
         try:
             if data['delivery_date']:
-                instance = MealRequest.objects.get(uuid=data['uuid'])
-                instance.delivery_date = data['delivery_date']
-                self.create_delivery(data, request.user)
+                delivery_date = datetime.datetime.strptime(data['delivery_date'], '%Y-%m-%d')
+                if delivery_date.date() >= datetime.datetime.today().date():
+                    instance = MealRequest.objects.get(uuid=data['uuid'])
+                    instance.delivery_date = data['delivery_date']
+                    self.create_delivery(data, request.user)
+                    instance.save()
+                    alerts['success'] = True
 
-                instance.save()
-                alerts['success'] = True
+                else:
+                    alerts['error'] = "You tried to sign up to cook on "\
+                        "%s, which is in the past. "\
+                        "Please sign up for a date in the future."\
+                        % data['delivery_date']
+
             else:
-                alerts['no_date'] = True
-        except:
-            print("Exception raised while saving a sign-up request")
+                alerts['error'] = "You didn't select a delivery date."
+
+        except Exception as e:
+            print("Exception raised while saving a sign-up request: %s" % e)
 
         return render(request, self.template_name, self.get_context_data(alerts))
 
@@ -102,7 +124,7 @@ class ChefIndexView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         user = self.request.user
-        return Delivery.objects.filter(chef=User.objects.get(pk=user.id))
+        return Delivery.objects.filter(chef=User.objects.get(pk=user.id)).order_by('request__delivery_date')
 
 
 class DeliveryApplicationView(LoginRequiredMixin, FormView):

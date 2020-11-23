@@ -267,6 +267,7 @@ class Delivery(models.Model):
     pickup_end = models.TimeField(null=True)
     dropoff_start = models.TimeField(null=True)
     dropoff_start = models.TimeField(null=True)
+    container_delivery = models.BooleanField(default=False)
 
     # System
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
