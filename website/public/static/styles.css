@@ -1,0 +1,22 @@
+.meals-list {
+	margin: 0;
+	padding: 0;
+}
+
+.meals-list .meals {
+	border: 1px solid #ccc;
+	padding: 1.5rem 1.5rem 0.5rem;
+	margin-bottom: 1.5rem;
+	border-radius: 1rem;
+	list-style: none;
+}
+
+.meals-list .meals label {
+	display: block;
+	font-weight: bold;
+	margin: 0.5rem 0 0;
+}
+
+.meal-signup-time {
+	margin: 0 0 1rem;
+}
