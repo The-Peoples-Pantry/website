@@ -3,6 +3,63 @@
 {% load bootstrap4 %}
 
 {% block content %}
-<h1>My cooking tasks</h1>
+<h1 class="mb-3">My cooking tasks</h1>
+
+<div class="row">
+  <ul class="meals-list container">
+    {% for delivery in deliveries %}
+      <li class="meals">
+        <div class="meals-signup-household">
+          Meal for {{ delivery.request.num_adults }} adult{{ delivery.request.num_adults | pluralize }}
+
+          {% if delivery.request.num_children %}
+            and {{ delivery.request.num_children }} kid{{ delivery.request.num_children | pluralize }}
+            {% if delivery.request.children_ages %}
+              (aged {{ delivery.request.children_ages }})
+            {% endif %}
+          {% endif %}
+        </div>
+
+        <div class="meals-food-prefs row">
+          <div class="col">
+            <label>Food preferences</label>
+            {{ delivery.request.food_preferences }}
+
+            <label>Food allergies</label>
+            {{ delivery.request.food_allergies }}
+          </div>
+
+          <div class="col">
+            {% if delivery.request.vegan or delivery.request.vegetarian or delivery.request.dairy_free or delivery.request.gluten_free or delivery.request.halal or delivery.request.low_carb %}
+              <label>Other dietary information</label>
+              <ul>
+                {% if delivery.request.vegan %} <li>Vegan</li> {% endif %}
+                {% if delivery.request.vegetarian %} <li>Vegetarian</li> {% endif %}
+                {% if delivery.request.dairy_free %} <li>Dairy Free</li> {% endif %}
+                {% if delivery.request.gluten_free %} <li>Gluten Freen</li> {% endif %}
+                {% if delivery.request.halal %} <li>Halal</li> {% endif %}
+                {% if delivery.request.low_carb %} <li>Low-carb</li> {% endif %}
+              </ul>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="meal-signup-time">
+          <label>Pickup date</label>
+          {{ delivery.request.delivery_date }}
+
+          <label>Pickup timerange</label>
+          {{ delivery.pickup_start }} to {{ delivery.pickup_end }}
+        </div>
+
+        <div class="alert alert-info">
+          Status: {{ delivery.status }}
+        </div>
+
+      </li>
+    {% endfor %}
+  </ul>
+
+</div>
 
 {% endblock %}

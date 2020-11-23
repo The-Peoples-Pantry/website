@@ -6,6 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <link rel="shortcut icon" href="{% static 'favicon.ico' %}" />
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="theme-color" content="#000000" />
     <meta
@@ -43,6 +44,11 @@
           <li class="nav-item">
             <a class="nav-link" href="{% url 'volunteers:index' %}">
               View requests
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'volunteers:chef_signup' %}">
+              Sign up to cook
             </a>
           </li>
         </ul>

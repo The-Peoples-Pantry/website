@@ -2,6 +2,7 @@ import uuid
 from django.db import models
 from django.conf import settings
 from django.urls import reverse_lazy
+from django.contrib import admin
 
 from core.models import get_sentinel_user
 
@@ -203,7 +204,7 @@ class MealRequest(models.Model):
     delivery_date = models.DateField(blank=True, null=True)
 
     # System
-    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
+    uuid = models.UUIDField(default=uuid.uuid4, editable=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     anonymized_latitude = models.FloatField(default=43.651070)  # default: Toronto latitude
@@ -211,6 +212,10 @@ class MealRequest(models.Model):
 
     def get_absolute_url(self):
         return reverse_lazy('recipients:request_detail', args=[str(self.id)])
+
+
+class MealRequestAdmin(admin.ModelAdmin):
+    readonly_fields = ('uuid',)
 
 
 class Status(models.TextChoices):
@@ -248,7 +253,8 @@ class Delivery(models.Model):
     deliverer = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET(get_sentinel_user),
-        related_name="assigned_deliverer"
+        related_name="assigned_deliverer",
+        null=True
     )
     request = models.ForeignKey(MealRequest, on_delete = models.CASCADE)
     status = models.CharField(
@@ -257,10 +263,10 @@ class Delivery(models.Model):
         choices=Status.choices,
         default=Status.UNCONFIRMED
     )
-    pickup_start = models.DateTimeField(blank=True)
-    pickup_end = models.DateTimeField(blank=True)
-    dropoff_start = models.DateTimeField(blank=True)
-    dropoff_start = models.DateTimeField(blank=True)
+    pickup_start = models.TimeField(null=True)
+    pickup_end = models.TimeField(null=True)
+    dropoff_start = models.TimeField(null=True)
+    dropoff_start = models.TimeField(null=True)
 
     # System
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)

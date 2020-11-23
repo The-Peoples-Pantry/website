@@ -3,7 +3,7 @@ import factory
 import factory.fuzzy
 import factory.django
 import random
-from datetime import datetime, timedelta
+import datetime
 from django.core.management.base import BaseCommand
 from recipients.models import MealRequest, Cities, Days, TimePeriods
 from website.maps import geocode_anonymized
@@ -18,6 +18,12 @@ def fuzzy_choices(choices):
     k = random.randint(0, len(values))
     results = list(random.sample(values, k))
     return str(results)
+
+
+def fuzzy_date(start, end):
+    return (start + datetime.timedelta(
+        seconds=random.randint(0, int((end - start).total_seconds())),
+    )).date()
 
 
 class MealRequestFactory(factory.django.DjangoModelFactory):
@@ -69,8 +75,6 @@ class MealRequestFactory(factory.django.DjangoModelFactory):
     requester_email = factory.Faker('email')
     requester_phone_number = factory.Faker('phone_number')
 
-    delivery_date = factory.fuzzy.FuzzyDate(datetime.now() - timedelta(days=10), datetime.now() + timedelta(days=10))
-
     accept_terms = True
 
 class Command(BaseCommand):
@@ -84,18 +88,42 @@ class Command(BaseCommand):
             help='Number of MealRequests to generate'
         )
 
+        parser.add_argument(
+            '--generate-delivery-date',
+            type=bool,
+            default=False,
+            help='Generate an assigned delivery date for Meal Requests'
+        )
+
+        parser.add_argument(
+            '--generate-latlong',
+            type=bool,
+            default=False,
+            help='Generate anonymized lat long values'
+        )
+
     def handle(self, *args, **options):
         count = options['count']
+        generate_date = options['generate_delivery_date']
+        generate_latlong = options['generate_latlong']
+
         for i in range(count):
             obj = MealRequestFactory.create()
 
-            addr = ' '.join([
-                obj.address_1,
-                obj.address_2,
-                obj.city,
-                obj.postal_code,
-            ])
-            obj.anonymized_latitude, obj.anonymized_longitude = geocode_anonymized(addr)
+            if generate_date:
+                start = datetime.datetime.now()
+                end = start + datetime.timedelta(days=10)
+                obj.delivery_date = fuzzy_date(start, end)
+
+            if generate_latlong:
+                addr = ' '.join([
+                    obj.address_1,
+                    obj.address_2,
+                    obj.city,
+                    obj.postal_code,
+                ])
+                obj.anonymized_latitude, obj.anonymized_longitude = geocode_anonymized(addr)
+
             obj.save()
 
             assert obj.id is not None, "Something went wrong"
