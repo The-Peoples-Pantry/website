@@ -6,8 +6,13 @@ class DateInput(forms.DateInput):
 
 
 class TimeInput(forms.TimeInput):
-        input_type="time"
-        input_format='%H:%M'
+    input_type="time"
+    input_format='%H:%M'
+
+
+class AcceptTermsForm(forms.Form):
+    accept_terms = forms.BooleanField(label="I accept the terms", required=True)
+
 
 class ChefSignupForm(forms.ModelForm):
     start_time = forms.TimeField(
@@ -15,14 +20,14 @@ class ChefSignupForm(forms.ModelForm):
         widget=forms.TimeInput(
             format='%H:%M', attrs={'type': 'time'}
         )
-        )
+    )
     end_time = forms.TimeField(
         input_formats='%H:%M %p',
         widget=forms.TimeInput(
             format='%H:%M',
             attrs={'type': 'time'}
         )
-        )
+    )
 
 
     def __init__(self, *args, **kwargs):
@@ -53,3 +58,10 @@ class ChefSignupForm(forms.ModelForm):
             'delivery_date': DateInput(),
             'uuid': forms.HiddenInput()
         }
+
+
+class DeliverySignupForm(forms.ModelForm):
+    accept_terms = forms.BooleanField(required=True)
+    class Meta:
+        model = Delivery
+        fields = ['request']

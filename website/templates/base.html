@@ -64,14 +64,20 @@
           <ul class="navbar-nav">
             <li class="nav-item">
               <a class="nav-link" href="{% url 'login' %}">Login</a>
-              </li>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'signup' %}">Signup</a>
+            </li>
           </ul>
         {% endif %}
       </div>
     </nav>
     {% endblock %}
 
-    <div class="container">{% block content %}{% endblock %}</div>
+    <div class="container">
+      {% bootstrap_messages %}
+      {% block content %}{% endblock %}
+    </div>
     {% bootstrap_javascript jquery='slim' %}
   </body>
 </html>

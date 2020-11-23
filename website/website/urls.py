@@ -17,11 +17,14 @@ from django.contrib import admin
 from django.views.generic.base import RedirectView
 from django.urls import include, path
 
+from core.views import UserCreationView, UserProfileView
+
 urlpatterns = [
     path('', include('public.urls')),
+    path('signup', UserCreationView.as_view(), name='signup'),
     path('accounts/', include('django.contrib.auth.urls')),
     # login redirects to accounts/profile on successful login
-    path('accounts/profile/', RedirectView.as_view(pattern_name='volunteers:index'), name='profile'),
+    path('accounts/profile/', UserProfileView.as_view(), name='profile'),
     path('admin/', admin.site.urls),
     path('recipients/', include('recipients.urls')),
     path('volunteers/', include('volunteers.urls')),
