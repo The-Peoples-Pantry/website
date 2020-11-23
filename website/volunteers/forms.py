@@ -28,7 +28,9 @@ class ChefSignupForm(forms.ModelForm):
             attrs={'type': 'time'}
         )
     )
-
+    container_needed = forms.BooleanField(
+        widget=forms.CheckboxInput()
+    )
 
     def __init__(self, *args, **kwargs):
         super(ChefSignupForm, self).__init__(*args, **kwargs)

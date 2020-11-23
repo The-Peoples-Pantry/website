@@ -52,10 +52,13 @@
           {{ delivery.pickup_start }} to {{ delivery.pickup_end }}
         </div>
 
+        <p>
+          Containers <strong>will {{ delivery.container_delivery|yesno:",not ," }}</strong>be provided for this meal.
+        </p>
+
         <div class="alert alert-info">
           Status: {{ delivery.status }}
         </div>
-
       </li>
     {% endfor %}
   </ul>
