@@ -20,10 +20,6 @@ def delivery_success(request):
     return render(request, 'volunteers/delivery_success.html')
 
 
-def chef_success(request):
-    return render(request, 'volunteers/chef_success.html')
-
-
 class IndexView(PermissionRequiredMixin, LoginRequiredMixin, SingleTableMixin, FilterView):
     model = MealRequest
     table_class = MealRequestTable
