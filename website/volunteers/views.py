@@ -127,13 +127,53 @@ class ChefSignupView(LoginRequiredMixin, FormView):
 
 
 class ChefIndexView(LoginRequiredMixin, ListView):
+    """View for chefs to see the meals they've signed up to cook"""
     model = Delivery
     template_name = "volunteers/chef_list.html"
     context_object_name = "deliveries"
 
     def get_queryset(self):
         user = self.request.user
-        return Delivery.objects.filter(chef=User.objects.get(pk=user.id)).order_by('request__delivery_date')
+        return Delivery.objects.filter(
+            chef=User.objects.get(pk=user.id)
+        ).exclude(
+            status=Status.DELIVERED
+        ).order_by('request__delivery_date')
+
+
+
+class DeliveryIndexView(LoginRequiredMixin, ListView):
+    model = Delivery
+    template_name = "volunteers/delivery_list.html"
+
+
+class DeliverySignupView(LoginRequiredMixin, FormView):
+    model = Delivery
+    template_name = "volunteers/delivery_signup.html"
+    form_class = DeliverySignupForm
+    success_url = reverse_lazy('volunteers:delivery_signup')
+
+    def get_context_data(self, alerts={}, **kwargs):
+        context = super(DeliverySignupView, self).get_context_data(**kwargs)
+
+        deliveries = []
+        for delivery in Delivery.objects.filter(deliverer__isnull=True).order_by('request__delivery_date'):
+            deliveries.append({
+                'request': delivery.request,
+                'delivery': delivery,
+                'form': DeliverySignupForm(instance=delivery)
+            })
+
+        context['deliveries'] = deliveries
+
+
+        return context
+
+    # def form_valid(self, form):
+    #     form.save()
+    #     return super().form_valid(form)
+
+
 
 
 class DeliveryApplicationView(LoginRequiredMixin, FormView):
@@ -162,13 +202,6 @@ class DeliveryApplicationReceivedView(LoginRequiredMixin, TemplateView):
     template_name = "volunteers/delivery_application_received.html"
 
 
-class DeliverySignupView(LoginRequiredMixin, FormView):
-    model = Delivery
-    template_name = "volunteers/delivery_signup.html"
-    form_class = DeliverySignupForm
-    success_url = reverse_lazy('volunteers:delivery_success')
-
-
 class ChefApplicationView(LoginRequiredMixin, FormView):
     form_class = AcceptTermsForm
     template_name = "volunteers/chef_application.html"
@@ -193,19 +226,3 @@ class ChefApplicationView(LoginRequiredMixin, FormView):
 
 class ChefApplicationReceivedView(LoginRequiredMixin, TemplateView):
     template_name = "volunteers/chef_application_received.html"
-
-
-class DeliveryIndexView(LoginRequiredMixin, ListView):
-    model = Delivery
-    template_name = "volunteers/delivery_list.html"
-
-
-class DeliverySignupView(LoginRequiredMixin, FormView):
-    model = Delivery
-    template_name = "volunteers/delivery_signup.html"
-    form_class = DeliverySignupForm
-    success_url = reverse_lazy('volunteers:delivery_success')
-
-    def form_valid(self, form):
-        form.save()
-        return super().form_valid(form)
