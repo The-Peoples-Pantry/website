@@ -43,20 +43,10 @@ class ChefSignupForm(forms.ModelForm):
         fields = [
             'delivery_date',
             'uuid',
-            'num_adults',
-            'num_children',
-            'vegan',
-            'vegetarian',
-            'dairy_free',
-            'gluten_free',
-            'halal',
-            'low_carb',
-            'food_preferences',
-            'food_allergies',
             'start_time',
             'end_time'
         ]
-        widgets= {
+        widgets = {
             'delivery_date': DateInput(),
             'uuid': forms.HiddenInput()
         }

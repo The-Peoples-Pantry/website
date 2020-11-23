@@ -17,9 +17,6 @@
   </div>
 {% endif %}
 
-<p>
-
-</p>
 <div class="row">
   <div class="col-md-3 order-md-2">
     {% if filter %}
@@ -31,59 +28,61 @@
     {% endif %}
   </div>
   <div class="col-md-9 order-md-1">
-    <ul class="chef-pages--meals-list container">
-      {% for meal in meals %}
-        <li class="chef-pages--meals">
+    <ul class="volunteer-pages--meals-list container">
+      {% for chef_signup in meals %}
+        {% with form=chef_signup.form meal=chef_signup.meal %}
+        <li class="volunteer-pages--meals">
           <form action="" method="post" class="form">{% csrf_token %}
 
-          <div class="chef-pages--meals-signup-household">
-            Meal for {{ meal.num_adults.value }} adult{{ meal.num_adults.value | pluralize }}
+          <div class="volunteer-pages--meals-signup-household">
+            Meal for {{ meal.num_adults }} adult{{ meal.num_adults | pluralize }}
 
-            {% if meal.num_children.value %}
-              and {{ meal.num_children.value }} kid{{ meal.num_children.value | pluralize }}
-              {% if meal.children_ages.value %}
-                (aged {{ meal.children_ages.value }})
+            {% if meal.num_children %}
+              and {{ meal.num_children }} kid{{ meal.num_children | pluralize }}
+              {% if meal.children_ages %}
+                (aged {{ meal.children_ages }})
               {% endif %}
             {% endif %}
           </div>
 
-          <div class="chef-pages--meals-food-prefs row">
+          <div class="volunteer-pages--meals-food-prefs row">
             <div class="col">
               <label>Food preferences</label>
-              {{ meal.food_preferences.value }}
+              {{ meal.food_preferences }}
 
               <label>Food allergies</label>
-              {{ meal.food_allergies.value }}
+              {{ meal.food_allergies }}
             </div>
 
             <div class="col">
-              {% if meal.vegan.value or meal.vegetarian.value or meal.dairy_free.value or meal.gluten_free.value or meal.halal.value or meal.low_carb.value %}
+              {% if meal.vegan or meal.vegetarian or meal.dairy_free or meal.gluten_free or meal.halal or meal.low_carb %}
                 <label>Other dietary information</label>
                 <ul>
-                  {% if meal.vegan.value %} <li>Vegan</li> {% endif %}
-                  {% if meal.vegetarian.value %} <li>Vegetarian</li> {% endif %}
-                  {% if meal.dairy_free.value %} <li>Dairy Free</li> {% endif %}
-                  {% if meal.gluten_free.value %} <li>Gluten Freen</li> {% endif %}
-                  {% if meal.halal.value %} <li>Halal</li> {% endif %}
-                  {% if meal.low_carb.value %} <li>Low-carb</li> {% endif %}
+                  {% if meal.vegan %} <li>Vegan</li> {% endif %}
+                  {% if meal.vegetarian %} <li>Vegetarian</li> {% endif %}
+                  {% if meal.dairy_free %} <li>Dairy Free</li> {% endif %}
+                  {% if meal.gluten_free %} <li>Gluten Freen</li> {% endif %}
+                  {% if meal.halal %} <li>Halal</li> {% endif %}
+                  {% if meal.low_carb %} <li>Low-carb</li> {% endif %}
                 </ul>
               {% endif %}
             </div>
           </div>
 
-          <div class="chef-pages--meal-signup-time">
+          <div class="volunteer-pages--meal-signup-time">
             <label>Pickup date</label>
-            {{ meal.delivery_date }}
+            {{ form.delivery_date }}
 
             <label>Pickup timerange</label>
-            {{ meal.start_time }} to {{ meal.end_time }}
+            {{ form.start_time }} to {{ form.end_time }}
           </div>
 
-          {{ meal.uuid }}
-          <p>{{ meal.container_needed }} I need containers for this meal</p>
+          {{ form.uuid }}
+          <p>{{ form.container_needed }} I need containers for this meal</p>
           {% buttons submit="Submit"%}{% endbuttons %}
           </form>
         </li>
+        {% endwith %}
       {% endfor %}
     </ul>
   </div>

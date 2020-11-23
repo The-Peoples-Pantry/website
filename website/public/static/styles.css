@@ -6,25 +6,32 @@
   content: "\25BC";
 }
 
-.chef-pages--meals-list {
-	margin: 0;
-	padding: 0;
+
+
+
+/* -----------------------------------
+      CHEF SIGN-UP AND LIST PAGES
+------------------------------------ */
+
+.volunteer-pages--meals-list {
+  margin: 0;
+  padding: 0;
 }
 
-.chef-pages--meals-list .chef-pages--meals {
-	border: 1px solid #ccc;
-	padding: 1.5rem 1.5rem 0.5rem;
-	margin-bottom: 1.5rem;
-	border-radius: 1rem;
-	list-style: none;
+.volunteer-pages--meals-list .volunteer-pages--meals {
+  border: 1px solid #ccc;
+  padding: 1.5rem 1.5rem 0.5rem;
+  margin-bottom: 1.5rem;
+  border-radius: 1rem;
+  list-style: none;
 }
 
-.chef-pages--meals-list .chef-pages--meals label {
-	display: block;
-	font-weight: bold;
-	margin: 0.5rem 0 0;
+.volunteer-pages--meals-list .volunteer-pages--meals label {
+  display: block;
+  font-weight: bold;
+  margin: 0.5rem 0 0;
 }
 
-.chef-pages--meal-signup-time {
-	margin: 0 0 1rem;
+.volunteer-pages--meal-signup-time {
+  margin: 0 0 1rem;
 }
