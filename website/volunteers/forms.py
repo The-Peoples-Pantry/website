@@ -5,11 +5,51 @@ class DateInput(forms.DateInput):
     input_type = 'date'
 
 
+class TimeInput(forms.TimeInput):
+        input_type="time"
+        input_format='%H:%M'
+
 class ChefSignupForm(forms.ModelForm):
-    start_range = forms.CharField(max_length=20, required=False)
-    end_range = forms.CharField(max_length=20, required=False)
+    start_time = forms.TimeField(
+        input_formats='%H:%M %p',
+        widget=forms.TimeInput(
+            format='%H:%M', attrs={'type': 'time'}
+        )
+        )
+    end_time = forms.TimeField(
+        input_formats='%H:%M %p',
+        widget=forms.TimeInput(
+            format='%H:%M',
+            attrs={'type': 'time'}
+        )
+        )
+
+
+    def __init__(self, *args, **kwargs):
+        super(ChefSignupForm, self).__init__(*args, **kwargs)
+        self.fields['start_time'].initial = '09:00'
+        self.fields['end_time'].initial = '21:00'
+
 
     class Meta:
         model = MealRequest
-        fields = ['delivery_date', 'uuid', 'address_1', 'name']
-        widgets= {'delivery_date': DateInput(), 'uuid': forms.HiddenInput()}
+        fields = [
+            'delivery_date',
+            'uuid',
+            'num_adults',
+            'num_children',
+            'vegan',
+            'vegetarian',
+            'dairy_free',
+            'gluten_free',
+            'halal',
+            'low_carb',
+            'food_preferences',
+            'food_allergies',
+            'start_time',
+            'end_time'
+        ]
+        widgets= {
+            'delivery_date': DateInput(),
+            'uuid': forms.HiddenInput()
+        }

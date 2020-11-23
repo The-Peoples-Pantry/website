@@ -3,29 +3,89 @@
 {% load bootstrap4 %}
 
 {% block content %}
-<h1>Chef signup</h1>
+<h1 class="mb-3">Chef signup</h1>
 
+{% if alerts.success %}
+  <div class="alert alert-success mb-4">
+    Thanks for signing up to cook! <a href={% url 'volunteers:chef_list' %}>Click here</a> to see everything you've signed up for.
+  </div>
+{% endif %}
 
-{% for meal in meals %}
-<form action="" method="post" class="form">
-    {% csrf_token %}
+{% if alerts.no_date %}
+  <div class="alert alert-warning mb-4">
+    You didn't select a delivery date.
+  </div>
+{% endif %}
 
-    <!-- {{ formset.management_form }} -->
-    <!-- {{ formset }} -->
-    <ul>
+<p>
 
-        <li>
-          {{ meal.name.value }} @ {{ meal.address_1.value }} on date
-          {{ meal.delivery_date }}
+</p>
+<div class="row">
+  <div class="col-md-3 order-md-2">
+    {% if filter %}
+      <form action="" method="get" class="form">
+        <h4>Filters</h4>
+        {% bootstrap_form filter.form %}
+        {% bootstrap_button 'Filter' %}
+      </form>
+    {% endif %}
+  </div>
+  <div class="col-md-9 order-md-1">
+    <ul class="meals-list container">
+      {% for meal in meals %}
+        <li class="meals">
+          <form action="" method="post" class="form">{% csrf_token %}
+
+          <div class="meals-signup-household">
+            Meal for {{ meal.num_adults.value }} adult{{ meal.num_adults.value | pluralize }}
+
+            {% if meal.num_children.value %}
+              and {{ meal.num_children.value }} kid{{ meal.num_children.value | pluralize }}
+              {% if meal.children_ages.value %}
+                (aged {{ meal.children_ages.value }})
+              {% endif %}
+            {% endif %}
+          </div>
+
+          <div class="meals-food-prefs row">
+            <div class="col">
+              <label>Food preferences</label>
+              {{ meal.food_preferences.value }}
+
+              <label>Food allergies</label>
+              {{ meal.food_allergies.value }}
+            </div>
+
+            <div class="col">
+              {% if meal.vegan.value or meal.vegetarian.value or meal.dairy_free.value or meal.gluten_free.value or meal.halal.value or meal.low_carb.value %}
+                <label>Other dietary information</label>
+                <ul>
+                  {% if meal.vegan.value %} <li>Vegan</li> {% endif %}
+                  {% if meal.vegetarian.value %} <li>Vegetarian</li> {% endif %}
+                  {% if meal.dairy_free.value %} <li>Dairy Free</li> {% endif %}
+                  {% if meal.gluten_free.value %} <li>Gluten Freen</li> {% endif %}
+                  {% if meal.halal.value %} <li>Halal</li> {% endif %}
+                  {% if meal.low_carb.value %} <li>Low-carb</li> {% endif %}
+                </ul>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="meal-signup-time">
+            <label>Pickup date</label>
+            {{ meal.delivery_date }}
+
+            <label>Pickup timerange</label>
+            {{ meal.start_time }} to {{ meal.end_time }}
+          </div>
+
           {{ meal.uuid }}
-
           {% buttons submit="Submit"%}{% endbuttons %}
-
+          </form>
+        </li>
+      {% endfor %}
     </ul>
+  </div>
+</div>
 
-
-
-</form>
-{% endfor %}
-
-{% endblock %}
+{% endblock content %}
