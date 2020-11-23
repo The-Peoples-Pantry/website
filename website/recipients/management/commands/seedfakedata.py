@@ -111,8 +111,9 @@ class Command(BaseCommand):
             obj = MealRequestFactory.create()
 
             if generate_date:
-                obj.delivery_date = fuzzy_date(datetime.datetime.now(), end)
-                print(obj.delivery_date)
+                start = datetime.datetime.now()
+                end = start + datetime.timedelta(days=10)
+                obj.delivery_date = fuzzy_date(start, end)
 
             if generate_latlong:
                 addr = ' '.join([
