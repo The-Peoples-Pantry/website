@@ -39,7 +39,9 @@ class IndexView(PermissionRequiredMixin, LoginRequiredMixin, SingleTableMixin, F
         return settings.GOOGLE_MAPS_API_KEY
 
 
+
 class ChefSignupView(LoginRequiredMixin, FormView):
+    """View for chefs to sign up to cook meal requests"""
     model = MealRequest
     template_name = "volunteers/chef_signup.html"
     form_class = ChefSignupForm
@@ -50,7 +52,10 @@ class ChefSignupView(LoginRequiredMixin, FormView):
 
         meals = []
         for meal in MealRequest.objects.filter(delivery_date__isnull=True):
-            meals.append(ChefSignupForm(instance=meal))
+            meals.append({
+                'meal': meal,
+                'form': ChefSignupForm(instance=meal),
+            })
 
         context['meals'] = meals
         context['alerts'] = alerts
@@ -64,6 +69,7 @@ class ChefSignupView(LoginRequiredMixin, FormView):
 
         try:
             instance = Delivery.objects.get(request=meal_object)
+
         except Delivery.DoesNotExist as exception:
             meal_instance = Delivery.objects.create(
                 request=meal_object,
@@ -76,7 +82,9 @@ class ChefSignupView(LoginRequiredMixin, FormView):
             meal_instance.save()
 
             if data['container_needed']:
-                meal_instance = Delivery.objects.create(
+                """Create another delivery object for
+                just the containers"""
+                container_instance = Delivery.objects.create(
                     request=meal_object,
                     chef=user_object,
                     status=Status.CHEF_ASSIGNED,
@@ -84,17 +92,18 @@ class ChefSignupView(LoginRequiredMixin, FormView):
                     pickup_end=data['end_time'],
                     container_delivery=True
                 )
-                meal_instance.user = user_object
-                meal_instance.save()
+                container_instance.user = user_object
+                container_instance.save()
 
 
     def post(self, request):
         data = request.POST
-        alerts = {'success': False, 'no_date': False}
+        alerts = {'success': False, 'errors': None}
 
         try:
             if data['delivery_date']:
                 delivery_date = datetime.datetime.strptime(data['delivery_date'], '%Y-%m-%d')
+
                 if delivery_date.date() >= datetime.datetime.today().date():
                     instance = MealRequest.objects.get(uuid=data['uuid'])
                     instance.delivery_date = data['delivery_date']
