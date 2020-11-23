@@ -6,10 +6,10 @@
 <h1 class="mb-3">My cooking tasks</h1>
 
 <div class="row">
-  <ul class="meals-list container">
+  <ul class="chef-pages--meals-list container">
     {% for delivery in deliveries %}
-      <li class="meals">
-        <div class="meals-signup-household">
+      <li class="chef-pages--meals">
+        <div class="chef-pages--meals-signup-household">
           Meal for {{ delivery.request.num_adults }} adult{{ delivery.request.num_adults | pluralize }}
 
           {% if delivery.request.num_children %}
@@ -20,7 +20,7 @@
           {% endif %}
         </div>
 
-        <div class="meals-food-prefs row">
+        <div class="chef-pages--meals-food-prefs row">
           <div class="col">
             <label>Food preferences</label>
             {{ delivery.request.food_preferences }}
@@ -44,7 +44,7 @@
           </div>
         </div>
 
-        <div class="meal-signup-time">
+        <div class="chef-pages--meal-signup-time">
           <label>Pickup date</label>
           {{ delivery.request.delivery_date }}
 

@@ -6,7 +6,6 @@
   <head>
     <meta charset="utf-8" />
     <link rel="shortcut icon" href="{% static 'favicon.ico' %}" />
-    <link rel="stylesheet" href="{% static 'styles.css' %}">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="theme-color" content="#000000" />
     <meta
@@ -14,15 +13,7 @@
       content="A mutual aid project providing free hot meals and grocery care packages to anyone impacted by COVID-19 across Toronto"
     />
     {% bootstrap_css %}
-    <style type="text/css">
-      /* Style ascending/descending filters with arrows */
-      .asc::before {
-        content: "\25B2";
-      }
-      .desc::before {
-        content: "\25BC";
-      }
-    </style>
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
     <title>{% block title %}The People's Pantry{% endblock %}</title>
     {% block head %}{% endblock %}
   </head>

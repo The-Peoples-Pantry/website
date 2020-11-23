@@ -31,12 +31,12 @@
     {% endif %}
   </div>
   <div class="col-md-9 order-md-1">
-    <ul class="meals-list container">
+    <ul class="chef-pages--meals-list container">
       {% for meal in meals %}
-        <li class="meals">
+        <li class="chef-pages--meals">
           <form action="" method="post" class="form">{% csrf_token %}
 
-          <div class="meals-signup-household">
+          <div class="chef-pages--meals-signup-household">
             Meal for {{ meal.num_adults.value }} adult{{ meal.num_adults.value | pluralize }}
 
             {% if meal.num_children.value %}
@@ -47,7 +47,7 @@
             {% endif %}
           </div>
 
-          <div class="meals-food-prefs row">
+          <div class="chef-pages--meals-food-prefs row">
             <div class="col">
               <label>Food preferences</label>
               {{ meal.food_preferences.value }}
@@ -71,7 +71,7 @@
             </div>
           </div>
 
-          <div class="meal-signup-time">
+          <div class="chef-pages--meal-signup-time">
             <label>Pickup date</label>
             {{ meal.delivery_date }}
 
