@@ -2,7 +2,6 @@ import uuid
 from django.db import models
 from django.conf import settings
 from django.urls import reverse_lazy
-from django.contrib import admin
 
 from core.models import get_sentinel_user
 
@@ -219,10 +218,6 @@ class MealRequest(HelpRequest):
     )
 
 
-class MealRequestAdmin(admin.ModelAdmin):
-    readonly_fields = ('uuid',)
-
-
 class Status(models.TextChoices):
     UNCONFIRMED = 'Unconfirmed', 'Unconfirmed'
     CHEF_ASSIGNED = 'Chef Assigned', 'Chef Assigned'
@@ -245,9 +240,6 @@ class UpdateNote(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, editable=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
-
-class UpdateNoteAdmin(admin.ModelAdmin):
-    readonly_fields = ('uuid',)
 
 class Delivery(models.Model):
     class Meta:
@@ -280,6 +272,3 @@ class Delivery(models.Model):
     # System
     uuid = models.UUIDField(default=uuid.uuid4, editable=True)
     created_at = models.DateTimeField(auto_now_add=True)
-
-class DeliveryAdmin(admin.ModelAdmin):
-    readonly_fields = ('uuid',)
