@@ -5,6 +5,7 @@ from django.urls import reverse_lazy
 
 from core.models import get_sentinel_user
 
+
 class Cities(models.TextChoices):
     AJAX = 'Ajax', 'Ajax'
     AURORA = 'Aurora', 'Aurora'
@@ -57,6 +58,46 @@ class TimePeriods(models.TextChoices):
     PERIOD_16_18 = '4 - 6 PM', '4 - 6 PM'
     PERIOD_16_20 = '6 - 8 PM', '6 - 8 PM'
     PERIOD_20_22 = '8 - 10 PM', '8 - 10 PM'
+
+
+class Vegetables(models.TextChoices):
+    CARROTS = 'Carrots'
+    GARLIC = 'Garlic'
+    ONIONS = 'Onions'
+    POTATOES = 'Potatoes'
+    SPINACH = 'Spinach'
+
+
+class Fruits(models.TextChoices):
+    APPLES = 'Apples'
+    BANANAS = 'Bananas'
+    ORANGES = 'Oranges'
+
+
+class Protein(models.TextChoices):
+    BEEF = 'Beef'
+    CHICKEN = 'Chicken'
+    TOFU = 'Tofu'
+    EGGS = 'Eggs'
+
+
+class Grains(models.TextChoices):
+    BLACK_BEANS = 'Black Beans'
+    CHICKPEAS = 'Chickpeas'
+    LENTILS = 'Lentils'
+    RICE = 'Rice'
+    PASTA = 'Pasta'
+
+
+class Condiments(models.TextChoices):
+    FLOUR = 'Flour'
+    SUGAR = 'Sugar'
+    TOMATO_SAUCE = 'Tomato Sauce'
+
+
+class Dairy(models.TextChoices):
+    MILK = 'Milk'
+    ALMOND_MILK = 'Almond Milk'
 
 
 class HelpRequest(models.Model):
@@ -215,6 +256,55 @@ class MealRequest(HelpRequest):
         "Will accept vegetarian",
         help_text="Are you willing to accept a vegetarian meal even if you are not vegetarian?",
         default=True,
+    )
+
+
+class GroceryRequest(HelpRequest):
+    # Information about the request itself
+    num_adults = models.PositiveSmallIntegerField("Number of adults in the household")
+    num_children = models.PositiveSmallIntegerField("Number of children in the household")
+    children_ages = models.CharField(
+        "Ages of children",
+        help_text="When able, we will try to provide additional snacks for children. If this is something you would be interested in, please list the ages of any children in the household so we may try to provide appropriate snacks for their age group.",
+        max_length=settings.DEFAULT_LENGTH,
+        blank=True,
+    )
+    food_allergies = models.TextField(
+        "Food allergies",
+        help_text="Please list any allergies or dietary restrictions",
+        blank=True,
+    )
+    vegetables = models.CharField(
+        "Vegetables",
+        help_text="Select all that you want",
+        max_length=settings.DEFAULT_LENGTH,
+    )
+    fruits = models.CharField(
+        "Fruits",
+        help_text="Select all that you want",
+        max_length=settings.DEFAULT_LENGTH,
+    )
+    protein = models.CharField(
+        "Protein",
+        help_text="Select one of the following",
+        choices=Protein.choices,
+        max_length=settings.DEFAULT_LENGTH,
+    )
+    grains = models.CharField(
+        "Grains",
+        help_text="Select up to 3",
+        max_length=settings.DEFAULT_LENGTH,
+    )
+    condiments = models.CharField(
+        "Condiments",
+        help_text="Select all that you want",
+        max_length=settings.DEFAULT_LENGTH,
+    )
+    dairy = models.CharField(
+        "Dairy",
+        help_text="Select one of the following",
+        choices=Dairy.choices,
+        max_length=settings.DEFAULT_LENGTH,
     )
 
 
