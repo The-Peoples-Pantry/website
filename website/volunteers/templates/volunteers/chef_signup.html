@@ -36,12 +36,9 @@
 
           <div class="volunteer-pages--meals-signup-household">
             Meal for {{ meal.num_adults }} adult{{ meal.num_adults | pluralize }}
-
-            {% if meal.num_children %}
-              and {{ meal.num_children }} kid{{ meal.num_children | pluralize }}
-              {% if meal.children_ages %}
-                (aged {{ meal.children_ages }})
-              {% endif %}
+            and {{ meal.num_children }} kid{{ meal.num_children | pluralize }}
+            {% if meal.children_ages %}
+              (aged {{ meal.children_ages }})
             {% endif %}
           </div>
 

@@ -237,9 +237,12 @@ class UpdateNote(models.Model):
     note = models.CharField(max_length=settings.LONG_TEXT_LENGTH)
 
     # System
-    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
+    uuid = models.UUIDField(default=uuid.uuid4, editable=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+
+class UpdateNoteAdmin(admin.ModelAdmin):
+    readonly_fields = ('uuid',)
 
 class Delivery(models.Model):
     class Meta:
@@ -266,9 +269,12 @@ class Delivery(models.Model):
     pickup_start = models.TimeField(null=True)
     pickup_end = models.TimeField(null=True)
     dropoff_start = models.TimeField(null=True)
-    dropoff_start = models.TimeField(null=True)
+    dropoff_end = models.TimeField(null=True)
     container_delivery = models.BooleanField(default=False)
 
     # System
-    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
+    uuid = models.UUIDField(default=uuid.uuid4, editable=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+class DeliveryAdmin(admin.ModelAdmin):
+    readonly_fields = ('uuid',)

@@ -29,7 +29,8 @@ class ChefSignupForm(forms.ModelForm):
         )
     )
     container_needed = forms.BooleanField(
-        widget=forms.CheckboxInput()
+        widget=forms.CheckboxInput(),
+        required=False
     )
 
     def __init__(self, *args, **kwargs):
@@ -53,7 +54,31 @@ class ChefSignupForm(forms.ModelForm):
 
 
 class DeliverySignupForm(forms.ModelForm):
-    accept_terms = forms.BooleanField(required=True)
+    start_time = forms.TimeField(
+        input_formats='%H:%M %p',
+        widget=forms.TimeInput(
+            format='%H:%M', attrs={'type': 'time'}
+        )
+    )
+    end_time = forms.TimeField(
+        input_formats='%H:%M %p',
+        widget=forms.TimeInput(
+            format='%H:%M',
+            attrs={'type': 'time'}
+        )
+    )
+
+    def __init__(self, *args, **kwargs):
+        super(DeliverySignupForm, self).__init__(*args, **kwargs)
+        self.fields['start_time'].initial = '09:00'
+        self.fields['end_time'].initial = '21:00'
+
     class Meta:
         model = Delivery
-        fields = ['request']
+        fields = [
+            'request',
+            'uuid',
+            'pickup_start',
+            'pickup_end',
+        ]
+        widgets = {'uuid': forms.HiddenInput()}
