@@ -4,7 +4,11 @@
 {% block content %}
 <div class="row">
   <div class="col-lg-8 mr-auto ml-auto">
-    <h1>Meal delivery request</h1>
+
+    {# Define request_title block to set the heading of the page #}
+    <h1>{% block request_title %}{% endblock request_title %}</h1>
+
+    {% block introduction %}
     <p>
       The COVID-19 crisis has left many in our community struggling to access food as we are
       faced with mass unemployment and loss of income, excessive hoarding at grocery stores,
@@ -33,9 +37,12 @@
       With care,<br />
       The People's Pantry
     </p>
+    {% endblock introduction %}
+
     <form method="post" class="form">
       {% csrf_token %}
 
+      {% block recipient_section %}
       <div class="card mb-3">
         <div class="card-body">
           <h5 class="card-title">Recipient details</h5>
@@ -47,7 +54,9 @@
           {% bootstrap_field form.can_receive_texts %}
         </div>
       </div>
+      {% endblock recipient_section %}
 
+      {% block on_behalf_of_section %}
       <div class="card mb-3">
         <div class="card-body">
           <h5 class="card-title">Requesting for someone else?</h5>
@@ -63,8 +72,9 @@
           {% bootstrap_field form.requester_phone_number %}
         </div>
       </div>
+      {% endblock on_behalf_of_section %}
 
-
+      {% block delivery_section %}
       <div class="card mb-3">
         <div class="card-body">
           <h5 class="card-title">Delivery details</h5>
@@ -84,39 +94,37 @@
           </div>
         </div>
       </div>
+      {% endblock delivery_section %}
 
+      {% block details_section %}
       <div class="card mb-3">
         <div class="card-body">
-          <h5 class="card-title">Meal details</h5>
+          <h5 class="card-title">
+            {# Use details_title to define the card title for this section #}
+            {% block details_section_title %}{% endblock details_section_title %}
+          </h5>
+
+          {% comment %}
+          The next few fields are common to both meal and grocery requests
+          Then there are a series of fields that are specific to the request type
+          We include these first few fields in the base template
+          And then allow the section to be extended using blocks
+          {% endcomment %}
           <div class="row">
             <div class="col-sm">{% bootstrap_field form.num_adults %}</div>
             <div class="col-sm">{% bootstrap_field form.num_children %}</div>
           </div>
           {% bootstrap_field form.children_ages %}
-          <div class="form-group">
-            <label>Dietary restrictions</label>
-            <div class="row">
-              <div class="col-sm">
-                {% bootstrap_field form.dairy_free %}
-                {% bootstrap_field form.gluten_free %}
-                {% bootstrap_field form.halal %}
-              </div>
-              <div class="col-sm">
-                {% bootstrap_field form.low_carb %}
-                {% bootstrap_field form.vegan %}
-                {% bootstrap_field form.vegetarian%}
-              </div>
-            </div>
-          </div>
           {% bootstrap_field form.food_allergies %}
-          {% bootstrap_field form.food_preferences %}
-          <div class="row">
-            <div class="col-sm">{% bootstrap_field form.will_accept_vegan %}</div>
-            <div class="col-sm">{% bootstrap_field form.will_accept_vegetarian %}</div>
-          </div>
+
+          {# Use details_section_extras to define model-specific fields#}
+          {% block details_section_extras %}
+          {% endblock details_section_extras %}
         </div>
       </div>
+      {% endblock details_section %}
 
+      {% block community_section %}
       <div class="card mb-3">
         <div class="card-body">
           <h5 class="card-title">Community (optional)</h5>
@@ -132,14 +140,18 @@
           {% bootstrap_field form.single_parent %}
         </div>
       </div>
+      {% endblock community_section %}
 
+      {% block notes_section %}
       <div class="card mb-3">
         <div class="card-body">
           <h5 class="card-title">Additional information</h5>
           {% bootstrap_field form.notes %}
         </div>
       </div>
+      {% endblock notes_section %}
 
+      {% block terms_of_service_section %}
       <div class="card mb-3">
         <div class="card-body">
           <h5 class="card-title">Terms of service</h5>
@@ -147,6 +159,7 @@
           {% bootstrap_field form.accept_terms %}
         </div>
       </div>
+      {% endblock terms_of_service_section %}
 
       <div class="d-flex flex-row-reverse">
         <input type="submit" class="btn btn-primary btn-lg text-right" />
@@ -154,4 +167,4 @@
     </form>
   </div>
 </div>
-{% endblock %}
+{% endblock content %}

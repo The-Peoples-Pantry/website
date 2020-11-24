@@ -27,10 +27,12 @@
               Home
             </a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'recipients:new' %}">
-              Submit a request
-            </a>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Submit a request</a>
+            <div class="dropdown-menu">
+              <a class="dropdown-item" href="{% url 'recipients:new_meal_request' %}">Request meals</a>
+              <a class="dropdown-item" href="{% url 'recipients:new_grocery_request' %}">Request groceries</a>
+            </div>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="{% url 'volunteers:index' %}">

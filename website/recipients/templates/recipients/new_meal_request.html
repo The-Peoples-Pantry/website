@@ -1,0 +1,28 @@
+{% extends 'recipients/base_new_request.html' %}
+{% load bootstrap4 %}
+
+{% block request_title %}Meal delivery request{% endblock request_title %}
+{% block details_section_title %}Meal details{% endblock details_section_title %}
+
+{% block details_section_extras %}
+<div class="form-group">
+  <label>Dietary restrictions</label>
+  <div class="row">
+    <div class="col-sm">
+      {% bootstrap_field form.dairy_free %}
+      {% bootstrap_field form.gluten_free %}
+      {% bootstrap_field form.halal %}
+    </div>
+    <div class="col-sm">
+      {% bootstrap_field form.low_carb %}
+      {% bootstrap_field form.vegan %}
+      {% bootstrap_field form.vegetarian%}
+    </div>
+  </div>
+</div>
+{% bootstrap_field form.food_preferences %}
+<div class="row">
+  <div class="col-sm">{% bootstrap_field form.will_accept_vegan %}</div>
+  <div class="col-sm">{% bootstrap_field form.will_accept_vegetarian %}</div>
+</div>
+{% endblock details_section_extras %}

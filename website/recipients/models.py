@@ -1,10 +1,12 @@
 import uuid
 from django.db import models
+from django.db.models.signals import post_save
 from django.conf import settings
 from django.urls import reverse_lazy
-from django.contrib import admin
 
 from core.models import get_sentinel_user
+from website.maps import geocode_anonymized
+
 
 class Cities(models.TextChoices):
     AJAX = 'Ajax', 'Ajax'
@@ -60,7 +62,50 @@ class TimePeriods(models.TextChoices):
     PERIOD_20_22 = '8 - 10 PM', '8 - 10 PM'
 
 
-class MealRequest(models.Model):
+class Vegetables(models.TextChoices):
+    CARROTS = 'Carrots'
+    GARLIC = 'Garlic'
+    ONIONS = 'Onions'
+    POTATOES = 'Potatoes'
+    SPINACH = 'Spinach'
+
+
+class Fruits(models.TextChoices):
+    APPLES = 'Apples'
+    BANANAS = 'Bananas'
+    ORANGES = 'Oranges'
+
+
+class Protein(models.TextChoices):
+    BEEF = 'Beef'
+    CHICKEN = 'Chicken'
+    TOFU = 'Tofu'
+    EGGS = 'Eggs'
+
+
+class Grains(models.TextChoices):
+    BLACK_BEANS = 'Black Beans'
+    CHICKPEAS = 'Chickpeas'
+    LENTILS = 'Lentils'
+    RICE = 'Rice'
+    PASTA = 'Pasta'
+
+
+class Condiments(models.TextChoices):
+    FLOUR = 'Flour'
+    SUGAR = 'Sugar'
+    TOMATO_SAUCE = 'Tomato Sauce'
+
+
+class Dairy(models.TextChoices):
+    MILK = 'Milk'
+    ALMOND_MILK = 'Almond Milk'
+
+
+class HelpRequest(models.Model):
+    class Meta:
+        abstract = True
+
     # Information about the recipient
     name = models.CharField(
         "Full name",
@@ -103,15 +148,6 @@ class MealRequest(models.Model):
         blank=True,
     )
 
-    # Information about community status
-    bipoc = models.BooleanField("Black, Indigenous, and People of Colour (BIPOC)")
-    lgbtq = models.BooleanField("Lesbian, Gay, Bisexual, Trans, Queer (LGBTQ), gender non-conforming or non-binary")
-    has_disability = models.BooleanField("Living with disabilities")
-    immigrant_or_refugee = models.BooleanField("Newly arrived immigrant or refugee")
-    housing_issues = models.BooleanField("Precariously housed (no fixed address, living in a shelter, etc.)")
-    sex_worker = models.BooleanField("Sex worker")
-    single_parent = models.BooleanField("Single parent")
-
     # Information about the request itself
     num_adults = models.PositiveSmallIntegerField("Number of adults in the household")
     num_children = models.PositiveSmallIntegerField("Number of children in the household")
@@ -126,21 +162,15 @@ class MealRequest(models.Model):
         help_text="Please list any allergies or dietary restrictions",
         blank=True,
     )
-    food_preferences = models.TextField(
-        "Food preferences",
-        help_text="Please list any food preferences (eg. meat, pasta, veggies, etc.)",
-        blank=True,
-    )
-    will_accept_vegan = models.BooleanField(
-        "Will accept vegan",
-        help_text="Are you willing to accept a vegan meal even if you are not vegan?",
-        default=True,
-    )
-    will_accept_vegetarian = models.BooleanField(
-        "Will accept vegetarian",
-        help_text="Are you willing to accept a vegetarian meal even if you are not vegetarian?",
-        default=True,
-    )
+
+    # Information about community status
+    bipoc = models.BooleanField("Black, Indigenous, and People of Colour (BIPOC)")
+    lgbtq = models.BooleanField("Lesbian, Gay, Bisexual, Trans, Queer (LGBTQ), gender non-conforming or non-binary")
+    has_disability = models.BooleanField("Living with disabilities")
+    immigrant_or_refugee = models.BooleanField("Newly arrived immigrant or refugee")
+    housing_issues = models.BooleanField("Precariously housed (no fixed address, living in a shelter, etc.)")
+    sex_worker = models.BooleanField("Sex worker")
+    single_parent = models.BooleanField("Single parent")
 
     # Information about the delivery
     can_meet_for_delivery = models.BooleanField(
@@ -162,14 +192,6 @@ class MealRequest(models.Model):
         help_text="What times are you (or the person you're requesting for) available for receiving the delivery?",
         max_length=settings.DEFAULT_LENGTH,
     )
-
-    # Dietary restrictions
-    dairy_free = models.BooleanField("Dairy free")
-    gluten_free = models.BooleanField("Gluten free")
-    halal = models.BooleanField("Halal")
-    low_carb = models.BooleanField("Low Carbohydrate")
-    vegan = models.BooleanField("Vegan")
-    vegetarian = models.BooleanField("Vegetarian")
 
     # Information about the requester
     # Will be null if on_behalf_of is False, indicating request was by the recipient
@@ -210,12 +232,82 @@ class MealRequest(models.Model):
     anonymized_latitude = models.FloatField(default=43.651070)  # default: Toronto latitude
     anonymized_longitude = models.FloatField(default=-79.347015)  # default: Toronto longitude
 
+    @property
+    def address(self):
+        return ' '.join([
+            self.address_1,
+            self.address_2,
+            self.city,
+            self.postal_code,
+        ])
+
     def get_absolute_url(self):
         return reverse_lazy('recipients:request_detail', args=[str(self.id)])
 
+    def update_coordinates(self):
+        latitude, longitude = geocode_anonymized(self.address)
+        self.anonymized_latitude = latitude
+        self.anonymized_longitude = longitude
+        self.save()
 
-class MealRequestAdmin(admin.ModelAdmin):
-    readonly_fields = ('uuid',)
+
+class MealRequest(HelpRequest):
+    dairy_free = models.BooleanField("Dairy free")
+    gluten_free = models.BooleanField("Gluten free")
+    halal = models.BooleanField("Halal")
+    low_carb = models.BooleanField("Low Carbohydrate")
+    vegan = models.BooleanField("Vegan")
+    vegetarian = models.BooleanField("Vegetarian")
+    food_preferences = models.TextField(
+        "Food preferences",
+        help_text="Please list any food preferences (eg. meat, pasta, veggies, etc.)",
+        blank=True,
+    )
+    will_accept_vegan = models.BooleanField(
+        "Will accept vegan",
+        help_text="Are you willing to accept a vegan meal even if you are not vegan?",
+        default=True,
+    )
+    will_accept_vegetarian = models.BooleanField(
+        "Will accept vegetarian",
+        help_text="Are you willing to accept a vegetarian meal even if you are not vegetarian?",
+        default=True,
+    )
+
+
+class GroceryRequest(HelpRequest):
+    vegetables = models.CharField(
+        "Vegetables",
+        help_text="Select all that you want",
+        max_length=settings.DEFAULT_LENGTH,
+    )
+    fruits = models.CharField(
+        "Fruits",
+        help_text="Select all that you want",
+        max_length=settings.DEFAULT_LENGTH,
+    )
+    protein = models.CharField(
+        "Protein",
+        help_text="Select one of the following",
+        choices=Protein.choices,
+        max_length=settings.DEFAULT_LENGTH,
+    )
+    grains = models.CharField(
+        "Grains",
+        help_text="Select up to 3",
+        max_length=settings.DEFAULT_LENGTH,
+    )
+    condiments = models.CharField(
+        "Condiments",
+        help_text="Select all that you want",
+        max_length=settings.DEFAULT_LENGTH,
+    )
+    dairy = models.CharField(
+        "Dairy",
+        help_text="Select one of the following",
+        choices=Dairy.choices,
+        max_length=settings.DEFAULT_LENGTH,
+    )
 
 
 class Status(models.TextChoices):
@@ -240,9 +332,6 @@ class UpdateNote(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, editable=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
-
-class UpdateNoteAdmin(admin.ModelAdmin):
-    readonly_fields = ('uuid',)
 
 class Delivery(models.Model):
     class Meta:
@@ -276,5 +365,12 @@ class Delivery(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, editable=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
-class DeliveryAdmin(admin.ModelAdmin):
-    readonly_fields = ('uuid',)
+
+def save_help_request(sender, instance, created, **kwargs):
+    if created:
+        instance.update_coordinates()
+
+
+# When a HelpRequest is saved, update the coordinates
+post_save.connect(save_help_request, sender=MealRequest)
+post_save.connect(save_help_request, sender=GroceryRequest)

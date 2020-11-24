@@ -1,0 +1,14 @@
+{% extends 'recipients/base_new_request.html' %}
+{% load bootstrap4 %}
+
+{% block request_title %}Grocery delivery request{% endblock request_title %}
+{% block details_section_title %}Grocery details{% endblock details_section_title %}
+
+{% block details_section_extras %}
+{% bootstrap_field form.vegetables %}
+{% bootstrap_field form.fruits %}
+{% bootstrap_field form.protein %}
+{% bootstrap_field form.grains %}
+{% bootstrap_field form.condiments %}
+{% bootstrap_field form.dairy %}
+{% endblock details_section_extras %}
