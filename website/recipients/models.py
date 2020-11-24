@@ -60,7 +60,10 @@ class TimePeriods(models.TextChoices):
     PERIOD_20_22 = '8 - 10 PM', '8 - 10 PM'
 
 
-class MealRequest(models.Model):
+class HelpRequest(models.Model):
+    class Meta:
+        abstract = True
+
     # Information about the recipient
     name = models.CharField(
         "Full name",
@@ -112,36 +115,6 @@ class MealRequest(models.Model):
     sex_worker = models.BooleanField("Sex worker")
     single_parent = models.BooleanField("Single parent")
 
-    # Information about the request itself
-    num_adults = models.PositiveSmallIntegerField("Number of adults in the household")
-    num_children = models.PositiveSmallIntegerField("Number of children in the household")
-    children_ages = models.CharField(
-        "Ages of children",
-        help_text="When able, we will try to provide additional snacks for children. If this is something you would be interested in, please list the ages of any children in the household so we may try to provide appropriate snacks for their age group.",
-        max_length=settings.DEFAULT_LENGTH,
-        blank=True,
-    )
-    food_allergies = models.TextField(
-        "Food allergies",
-        help_text="Please list any allergies or dietary restrictions",
-        blank=True,
-    )
-    food_preferences = models.TextField(
-        "Food preferences",
-        help_text="Please list any food preferences (eg. meat, pasta, veggies, etc.)",
-        blank=True,
-    )
-    will_accept_vegan = models.BooleanField(
-        "Will accept vegan",
-        help_text="Are you willing to accept a vegan meal even if you are not vegan?",
-        default=True,
-    )
-    will_accept_vegetarian = models.BooleanField(
-        "Will accept vegetarian",
-        help_text="Are you willing to accept a vegetarian meal even if you are not vegetarian?",
-        default=True,
-    )
-
     # Information about the delivery
     can_meet_for_delivery = models.BooleanField(
         "Able to meet delivery driver",
@@ -162,14 +135,6 @@ class MealRequest(models.Model):
         help_text="What times are you (or the person you're requesting for) available for receiving the delivery?",
         max_length=settings.DEFAULT_LENGTH,
     )
-
-    # Dietary restrictions
-    dairy_free = models.BooleanField("Dairy free")
-    gluten_free = models.BooleanField("Gluten free")
-    halal = models.BooleanField("Halal")
-    low_carb = models.BooleanField("Low Carbohydrate")
-    vegan = models.BooleanField("Vegan")
-    vegetarian = models.BooleanField("Vegetarian")
 
     # Information about the requester
     # Will be null if on_behalf_of is False, indicating request was by the recipient
@@ -212,6 +177,46 @@ class MealRequest(models.Model):
 
     def get_absolute_url(self):
         return reverse_lazy('recipients:request_detail', args=[str(self.id)])
+
+
+class MealRequest(HelpRequest):
+    # Dietary restrictions
+    dairy_free = models.BooleanField("Dairy free")
+    gluten_free = models.BooleanField("Gluten free")
+    halal = models.BooleanField("Halal")
+    low_carb = models.BooleanField("Low Carbohydrate")
+    vegan = models.BooleanField("Vegan")
+    vegetarian = models.BooleanField("Vegetarian")
+
+    # Information about the request itself
+    num_adults = models.PositiveSmallIntegerField("Number of adults in the household")
+    num_children = models.PositiveSmallIntegerField("Number of children in the household")
+    children_ages = models.CharField(
+        "Ages of children",
+        help_text="When able, we will try to provide additional snacks for children. If this is something you would be interested in, please list the ages of any children in the household so we may try to provide appropriate snacks for their age group.",
+        max_length=settings.DEFAULT_LENGTH,
+        blank=True,
+    )
+    food_allergies = models.TextField(
+        "Food allergies",
+        help_text="Please list any allergies or dietary restrictions",
+        blank=True,
+    )
+    food_preferences = models.TextField(
+        "Food preferences",
+        help_text="Please list any food preferences (eg. meat, pasta, veggies, etc.)",
+        blank=True,
+    )
+    will_accept_vegan = models.BooleanField(
+        "Will accept vegan",
+        help_text="Are you willing to accept a vegan meal even if you are not vegan?",
+        default=True,
+    )
+    will_accept_vegetarian = models.BooleanField(
+        "Will accept vegetarian",
+        help_text="Are you willing to accept a vegetarian meal even if you are not vegetarian?",
+        default=True,
+    )
 
 
 class MealRequestAdmin(admin.ModelAdmin):
