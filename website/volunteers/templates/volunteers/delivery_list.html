@@ -4,55 +4,52 @@
 
 {% block content %}
 <h1>My deliveries</h1>
-{{ deliveries }}
 
-<div class="row">
-  <ul class="volunteer-pages--meals-list container">
-    {% for delivery in deliveries %}
-      <li class="volunteer-pages--meals row">
-        <div class="col">
-          <div class="volunteer-pages--meals-signup-household">
-            {% if delivery.container_delivery %}
-              Delivering containers for: <br />
+<ul class="volunteer-pages--meals-list">
+  {% for delivery in deliveries %}
+    <li class="volunteer-pages--meals row">
+      <div class="col">
+        <div class="volunteer-pages--meals-signup-household">
+          {% if delivery.container_delivery %}
+            Delivering containers for: <br />
+          {% endif %}
+            Meal for {{ delivery.request.num_adults }} adult{{ delivery.request.num_adults | pluralize }}
+            and {{ delivery.request.num_children }} kid{{ delivery.request.num_children | pluralize }}
+            {% if delivery.request.children_ages %}
+              (aged {{ delivery.request.children_ages }})
             {% endif %}
-              Meal for {{ delivery.request.num_adults }} adult{{ delivery.request.num_adults | pluralize }}
-              and {{ delivery.request.num_children }} kid{{ delivery.request.num_children | pluralize }}
-              {% if delivery.request.children_ages %}
-                (aged {{ delivery.request.children_ages }})
-              {% endif %}
-          </div>
-
-          <div class="volunteer-pages--meal-signup-time">
-            <label>Pickup date</label>
-            {{ delivery.request.delivery_date }}
-
-            <label>Pick up from</label>
-            {{ delivery.pickup_start }} to {{ delivery.pickup_end }} (contact {{ delivery.chef.name }} at {{ delivery.chef.phone_number }})
-
-            <label>Drop off from</label>
-            {{ delivery.dropoff_start }} to {{ delivery.dropoff_end }} (contact {{ delivery.request.name }} at {{ delivery.request.phone_number }})
-          </div>
-
-          <div class="alert alert-info">
-            Status: {{ delivery.status }}
-          </div>
         </div>
-        <div class="col">
-          <div>
-            {{ delivery.request.address_1 }} {{ delivery.request.address_2 }}
-            <br />{{ delivery.request.city }}, {{ delivery.request.postal_code }}
-          </div>
-          <iframe
-            width="400"
-            height="400"
-            frameborder="0" style="border:0"
-            src="https://www.google.com/maps/embed/v1/place?key={{ view.google_maps_embed_key }}
-              &q={{ delivery.request.address_1 }},{{ delivery.request.address_2 }},{{ delivery.request.city }}&zoom=14" allowfullscreen>
-          </iframe>
-        </div>
-      </li>
-    {% endfor %}
-  </ul>
 
-</div>
+        <div class="volunteer-pages--meal-signup-time">
+          <label>Pickup date</label>
+          {{ delivery.request.delivery_date }}
+
+          <label>Pick up from</label>
+          {{ delivery.pickup_start }} to {{ delivery.pickup_end }} (contact {{ delivery.chef.name }} at {{ delivery.chef.phone_number }})
+
+          <label>Drop off from</label>
+          {{ delivery.dropoff_start }} to {{ delivery.dropoff_end }} (contact {{ delivery.request.name }} at {{ delivery.request.phone_number }})
+        </div>
+
+        <div class="alert alert-info">
+          Status: {{ delivery.status }}
+        </div>
+      </div>
+      <div class="col">
+        <div>
+          {{ delivery.request.address_1 }} {{ delivery.request.address_2 }}
+          <br />{{ delivery.request.city }}, {{ delivery.request.postal_code }}
+        </div>
+        <iframe
+          width="400"
+          height="400"
+          frameborder="0" style="border:0"
+          src="https://www.google.com/maps/embed/v1/place?key={{ view.google_maps_embed_key }}
+            &q={{ delivery.request.address_1 }},{{ delivery.request.address_2 }},{{ delivery.request.city }}&zoom=14" allowfullscreen>
+        </iframe>
+      </div>
+    </li>
+  {% endfor %}
+</ul>
+
 {% endblock %}
