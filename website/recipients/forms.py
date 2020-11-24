@@ -60,6 +60,9 @@ class MealRequestForm(HelpRequestForm):
 
 
 class GroceryRequestForm(HelpRequestForm):
+    class Meta(HelpRequestForm.Meta):
+        model = GroceryRequest
+
     vegetables = forms.MultipleChoiceField(
         required=False,
         widget=forms.CheckboxSelectMultiple,
@@ -80,6 +83,3 @@ class GroceryRequestForm(HelpRequestForm):
         widget=forms.CheckboxSelectMultiple,
         choices=Condiments.choices,
     )
-
-    class Meta(HelpRequestForm.Meta):
-        model = GroceryRequest
