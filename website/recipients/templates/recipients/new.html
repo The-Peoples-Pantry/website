@@ -5,6 +5,34 @@
 <div class="row">
   <div class="col-lg-8 mr-auto ml-auto">
     <h1>Meal delivery request</h1>
+    <p>
+      The COVID-19 crisis has left many in our community struggling to access food as we are
+      faced with mass unemployment and loss of income, excessive hoarding at grocery stores,
+      reduced transportation options, and more. Particularly hard-hit communities include, but
+      are not limited to, QTBIPOC (Queer, Trans*, Black, Indigenous, and People of Colour),
+      single parents, sex workers, those living in precarious housing situations, those living
+      with underlying medical conditions, those with disabilities, newly-arrived immigrants,
+      and the elderly.
+    </p>
+    <p>
+      In response to the pandemic, The People's Pantry is a grassroots initiative providing
+      home-cooked meals and grocery bundles to individuals and families across the GTA who
+      have been disproportionately affected by the COVID-19 crisis.
+      We serve those who are struggling financially or are otherwise unable to provide
+      sufficient food for themselves and their family. Meals and groceries will be delivered
+      right to their door, 100% free of charge.
+    </p>
+    <p>
+      Please fill out this form to the best of your abilities and our team will be in touch.
+      If you have any additional questions, please feel free to contact us at
+      <a href="mailto:thepeoplespantrytoronto@gmail.com">thepeoplespantrytoronto@gmail.com</a>.
+      You can also join our Facebook group:
+      <a href="https://www.facebook.com/groups/675649626532144/" target="_blank" rel="noopener">https://www.facebook.com/groups/675649626532144/</a>
+    </p>
+    <p>
+      With care,<br />
+      The People's Pantry
+    </p>
     <form method="post" class="form">
       {% csrf_token %}
 
@@ -120,7 +148,9 @@
         </div>
       </div>
 
-      {% buttons submit="Submit"%}{% endbuttons %}
+      <div class="d-flex flex-row-reverse">
+        <input type="submit" class="btn btn-primary btn-lg text-right" />
+      </div>
     </form>
   </div>
 </div>
