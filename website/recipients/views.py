@@ -40,7 +40,7 @@ class HelpRequestView(FormView):
         return super().form_valid(form)
 
 
-class MealRequestView(FormView):
+class MealRequestView(HelpRequestView):
     template_name = 'recipients/new_meal_request.html'
     form_class = MealRequestForm
 
