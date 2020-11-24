@@ -21,7 +21,7 @@ def success(request):
 
 
 class MealRequestView(FormView):
-    template_name = 'recipients/new.html'
+    template_name = 'recipients/new_meal_request.html'
     form_class = MealRequestForm
     success_url = reverse_lazy('recipients:success')
 
