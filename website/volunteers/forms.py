@@ -29,7 +29,8 @@ class ChefSignupForm(forms.ModelForm):
         )
     )
     container_needed = forms.BooleanField(
-        widget=forms.CheckboxInput()
+        widget=forms.CheckboxInput(),
+        required=False
     )
 
     def __init__(self, *args, **kwargs):
@@ -79,6 +80,5 @@ class DeliverySignupForm(forms.ModelForm):
             'uuid',
             'pickup_start',
             'pickup_end',
-            'container_delivery'
         ]
-        widgets = {'uuid': forms.HiddenInput}
+        widgets = {'uuid': forms.HiddenInput()}

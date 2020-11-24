@@ -38,6 +38,11 @@ class Volunteer(models.Model):
         choices=Cities.choices,
         default=Cities.TORONTO,
     )
+    phone_number = models.CharField(
+        "Phone number",
+        help_text="Use the format 555-555-5555",
+        max_length=settings.PHONE_NUMBER_LENGTH,
+    )
     postal_code = models.CharField(
         "Postal code",
         max_length=settings.POSTAL_CODE_LENGTH,

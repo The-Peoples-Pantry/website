@@ -8,7 +8,7 @@
 
 {% if alerts.success %}
   <div class="alert alert-success mb-4">
-    Thanks for signing up to cook! <a href={% url 'volunteers:chef_list' %}>Click here</a> to see everything you've signed up for.
+    Thanks for signing up to deliver! <a href={% url 'volunteers:delivery_list' %}>Click here</a> to see everything you've signed up for.
   </div>
 {% endif %}
 
@@ -18,64 +18,44 @@
   </div>
 {% endif %}
 
-<div class="row">
-  <div class="col-md-3 order-md-2">
-    {% if filter %}
-      <form action="" method="get" class="form">
-        <h4>Filters</h4>
-        {% bootstrap_form filter.form %}
-        {% bootstrap_button 'Filter' %}
-      </form>
-    {% endif %}
-  </div>
-  <div class="col-md-9 order-md-1">
-    <ul class="volunteer-pages--meals-list container">
-      {% for delivery_signup in deliveries %}
-        {% with form=delivery_signup.form request=delivery_signup.request delivery=delivery_signup.delivery %}
+<ul class="volunteer-pages--meals-list d-flex flex-row flex-wrap">
+  {% for delivery_signup in deliveries %}
+    {% with form=delivery_signup.form request=delivery_signup.request delivery=delivery_signup.delivery %}
 
-        <li class="volunteer-pages--meals">
-          <div class="alert alert-info">
-            Pickup timeframe: {{ request.delivery_date }}, {{ delivery.pickup_start }} to {{ delivery.pickup_end }}
-          </div>
-          <div class="row">
-            <div class="col">
+    <li class="volunteer-pages--meals delivery-signup">
+      <div class="alert alert-info">
+        Pickup timeframe: {{ request.delivery_date }}, {{ delivery.pickup_start }} to {{ delivery.pickup_end }}
+      </div>
+        <form action="" method="post" class="form">{% csrf_token %}
+          <div class="volunteer-pages--meals-signup-household">
+            {% if delivery.container_delivery %}
+              Delivering containers for: <br />
+            {% endif %}
+              Meal for {{ request.num_adults }} adult{{ request.num_adults | pluralize }}
+              and {{ request.num_children }} kid{{ request.num_children | pluralize }}
 
-
-
-
-
-              <form action="" method="post" class="form">{% csrf_token %}
-
-              <div class="volunteer-pages--meals-signup-household">
-                Meal for {{ request.num_adults }} adult{{ request.num_adults | pluralize }}
-
-                {% if request.num_children %}
-                  and {{ request.num_children }} kid{{ request.num_children | pluralize }}
-                {% endif %}
-              </div>
-
-              <div class="volunteer-pages--meal-signup-time">
-                <label>Pickup timerange</label>
-                {{ form.start_time }} to {{ form.end_time }}
-              </div>
-
-              {{ form.uuid }}
-              {% buttons submit="Submit"%}{% endbuttons %}
-              </form>
-            </div>
-            <div class="col">
-              {{ request.anonymized_latitude }},
-              {{ request.anonymized_longitude }}
-              INSERT MAP EMBED
-            </div>
+            <label>Approximate pick-up location</label>
+            <iframe
+              width="350"
+              height="200"
+              frameborder="0" style="border:0"
+              src="https://www.google.com/maps/embed/v1/place?key={{ view.google_maps_embed_key }}
+                &q={{ request.anonymized_latitude }},{{ request.anonymized_longitude }}&zoom=14" allowfullscreen>
+            </iframe>
           </div>
 
+          <div class="volunteer-pages--meal-signup-time">
+            <label>Drop-off timerange</label>
+            {{ form.start_time }} to {{ form.end_time }}
+          </div>
 
-        </li>
-        {% endwith %}
-      {% endfor %}
-    </ul>
-  </div>
-</div>
+          {{ form.uuid }}
+          {% buttons submit="Submit"%}{% endbuttons %}
+        </form>
+    </li>
+    {% endwith %}
+  {% endfor %}
+</ul>
+
 
 {% endblock %}

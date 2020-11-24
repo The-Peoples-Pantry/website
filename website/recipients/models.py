@@ -269,7 +269,7 @@ class Delivery(models.Model):
     pickup_start = models.TimeField(null=True)
     pickup_end = models.TimeField(null=True)
     dropoff_start = models.TimeField(null=True)
-    dropoff_start = models.TimeField(null=True)
+    dropoff_end = models.TimeField(null=True)
     container_delivery = models.BooleanField(default=False)
 
     # System

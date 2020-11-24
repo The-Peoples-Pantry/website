@@ -21,7 +21,15 @@ def delivery_success(request):
     return render(request, 'volunteers/delivery_success.html')
 
 
-class IndexView(PermissionRequiredMixin, LoginRequiredMixin, SingleTableMixin, FilterView):
+class MapView():
+    def google_maps_api_key(self):
+        return settings.GOOGLE_MAPS_API_KEY
+
+    def google_maps_embed_key(self):
+        return settings.GOOGLE_MAPS_EMBED_KEY
+
+
+class IndexView(PermissionRequiredMixin, LoginRequiredMixin, SingleTableMixin, FilterView, MapView):
     model = MealRequest
     table_class = MealRequestTable
     filterset_class = MealRequestFilter
@@ -34,10 +42,6 @@ class IndexView(PermissionRequiredMixin, LoginRequiredMixin, SingleTableMixin, F
             instance.id: [instance.anonymized_latitude, instance.anonymized_longitude, instance.id]
             for instance in instances
         }
-
-    def google_maps_api_key(self):
-        return settings.GOOGLE_MAPS_API_KEY
-
 
 
 class ChefSignupView(LoginRequiredMixin, FormView):
@@ -59,7 +63,6 @@ class ChefSignupView(LoginRequiredMixin, FormView):
 
         context['meals'] = meals
         context['alerts'] = alerts
-
         return context
 
 
@@ -71,16 +74,6 @@ class ChefSignupView(LoginRequiredMixin, FormView):
             instance = Delivery.objects.get(request=meal_object)
 
         except Delivery.DoesNotExist as exception:
-            meal_instance = Delivery.objects.create(
-                request=meal_object,
-                chef=user_object,
-                status=Status.CHEF_ASSIGNED,
-                pickup_start=data['start_time'],
-                pickup_end=data['end_time']
-            )
-            meal_instance.user = user_object
-            meal_instance.save()
-
             if data['container_needed']:
                 """Create another delivery object for
                 just the containers"""
@@ -94,6 +87,16 @@ class ChefSignupView(LoginRequiredMixin, FormView):
                 )
                 container_instance.user = user_object
                 container_instance.save()
+
+            meal_instance = Delivery.objects.create(
+                request=meal_object,
+                chef=user_object,
+                status=Status.CHEF_ASSIGNED,
+                pickup_start=data['start_time'],
+                pickup_end=data['end_time']
+            )
+            meal_instance.user = user_object
+            meal_instance.save()
 
 
     def post(self, request):
@@ -121,7 +124,7 @@ class ChefSignupView(LoginRequiredMixin, FormView):
                 alerts['error'] = "You didn't select a delivery date."
 
         except Exception as e:
-            print("Exception raised while saving a sign-up request: %s" % e)
+            print("Exception raised while saving a chef sign-up: %s" % e)
 
         return render(request, self.template_name, self.get_context_data(alerts))
 
@@ -142,12 +145,21 @@ class ChefIndexView(LoginRequiredMixin, ListView):
 
 
 
-class DeliveryIndexView(LoginRequiredMixin, ListView):
+class DeliveryIndexView(LoginRequiredMixin, ListView, MapView):
     model = Delivery
     template_name = "volunteers/delivery_list.html"
+    context_object_name = "deliveries"
+
+    def get_queryset(self):
+        user = self.request.user
+        return Delivery.objects.filter(
+            chef=User.objects.get(pk=user.id)
+        ).exclude(
+            status=Status.DELIVERED
+        ).order_by('request__delivery_date')
 
 
-class DeliverySignupView(LoginRequiredMixin, FormView):
+class DeliverySignupView(LoginRequiredMixin, FormView, MapView):
     model = Delivery
     template_name = "volunteers/delivery_signup.html"
     form_class = DeliverySignupForm
@@ -155,9 +167,18 @@ class DeliverySignupView(LoginRequiredMixin, FormView):
 
     def get_context_data(self, alerts={}, **kwargs):
         context = super(DeliverySignupView, self).get_context_data(**kwargs)
-
+        today = datetime.datetime.now().date()
         deliveries = []
-        for delivery in Delivery.objects.filter(deliverer__isnull=True).order_by('request__delivery_date'):
+        for delivery in Delivery.objects.filter(
+            deliverer__isnull=True,
+            request__delivery_date__range=[today,today + datetime.timedelta(days=7)]
+        ).order_by('request__delivery_date'):
+            delivery_date = delivery.request.delivery_date
+
+            # If this is a container delivery, it needs to happen two days before the actual meal
+            if delivery.container_delivery:
+                delivery.request.delivery_date = delivery_date - datetime.timedelta(days=2)
+
             deliveries.append({
                 'request': delivery.request,
                 'delivery': delivery,
@@ -165,15 +186,26 @@ class DeliverySignupView(LoginRequiredMixin, FormView):
             })
 
         context['deliveries'] = deliveries
-
-
+        context['alerts'] = alerts
         return context
 
-    # def form_valid(self, form):
-    #     form.save()
-    #     return super().form_valid(form)
+    def post(self, request):
+        data = request.POST
+        alerts = {'success': False, 'errors': None}
 
+        try:
+            instance = Delivery.objects.get(uuid=data['uuid'])
+            instance.dropoff_start = data['start_time']
+            instance.dropoff_end = data['end_time']
+            instance.deliverer = User.objects.get(pk=request.user.id)
+            instance.status = Status.SCHEDULED
+            instance.save()
+            alerts['success'] = True
 
+        except Exception as e:
+            print("Exception raised while saving a delivery sign-up: %s" % e)
+
+        return render(request, self.template_name, self.get_context_data(alerts))
 
 
 class DeliveryApplicationView(LoginRequiredMixin, FormView):

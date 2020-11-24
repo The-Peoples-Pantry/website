@@ -10,7 +10,7 @@
 
 
 /* -----------------------------------
-      CHEF SIGN-UP AND LIST PAGES
+      SIGN-UP AND LIST PAGES
 ------------------------------------ */
 
 .volunteer-pages--meals-list {
@@ -34,4 +34,9 @@
 
 .volunteer-pages--meal-signup-time {
   margin: 0 0 1rem;
+}
+
+.delivery-signup {
+  width: 48%;
+  margin: 0.5rem 1%;
 }

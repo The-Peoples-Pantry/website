@@ -11,12 +11,9 @@
       <li class="volunteer-pages--meals">
         <div class="volunteer-pages--meals-signup-household">
           Meal for {{ delivery.request.num_adults }} adult{{ delivery.request.num_adults | pluralize }}
-
-          {% if delivery.request.num_children %}
-            and {{ delivery.request.num_children }} kid{{ delivery.request.num_children | pluralize }}
-            {% if delivery.request.children_ages %}
-              (aged {{ delivery.request.children_ages }})
-            {% endif %}
+          and {{ delivery.request.num_children }} kid{{ delivery.request.num_children | pluralize }}
+          {% if delivery.request.children_ages %}
+            (aged {{ delivery.request.children_ages }})
           {% endif %}
         </div>
 
