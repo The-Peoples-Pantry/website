@@ -1,6 +1,6 @@
 from textwrap import dedent
 from django import forms
-from .models import MealRequest, Days, TimePeriods
+from .models import MealRequest, GroceryRequest, Days, TimePeriods, Vegetables, Fruits, Grains, Condiments
 
 
 class TelephoneInput(forms.TextInput):
@@ -15,7 +15,7 @@ class TelephoneInput(forms.TextInput):
         })
 
 
-class MealRequestForm(forms.ModelForm):
+class HelpRequestForm(forms.ModelForm):
     # Field overrides
     available_days = forms.MultipleChoiceField(
         required=False,
@@ -42,7 +42,6 @@ class MealRequestForm(forms.ModelForm):
     """)
 
     class Meta:
-        model = MealRequest
         exclude = ['uuid', 'created_at', 'updated_at', 'anonymized_latitude', 'anonymized_longitude']
 
         widgets = {
@@ -53,3 +52,34 @@ class MealRequestForm(forms.ModelForm):
             'delivery_details': forms.Textarea(attrs={'rows': 3}),
             'notes': forms.Textarea(attrs={'rows': 3}),
         }
+
+
+class MealRequestForm(HelpRequestForm):
+    class Meta(HelpRequestForm.Meta):
+        model = MealRequest
+
+
+class GroceryRequestForm(HelpRequestForm):
+    vegetables = forms.MultipleChoiceField(
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+        choices=Vegetables.choices,
+    )
+    fruits = forms.MultipleChoiceField(
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+        choices=Fruits.choices,
+    )
+    grains = forms.MultipleChoiceField(
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+        choices=Grains.choices,
+    )
+    condiments = forms.MultipleChoiceField(
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+        choices=Condiments.choices,
+    )
+
+    class Meta(HelpRequestForm.Meta):
+        model = GroceryRequest

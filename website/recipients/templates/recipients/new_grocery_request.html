@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+
+{% block content %}
+<div class="row">
+  <div class="col-lg-8 mr-auto ml-auto">
+    <h1>Grocery delivery request</h1>
+    <p>
+      The COVID-19 crisis has left many in our community struggling to access food as we are
+      faced with mass unemployment and loss of income, excessive hoarding at grocery stores,
+      reduced transportation options, and more. Particularly hard-hit communities include, but
+      are not limited to, QTBIPOC (Queer, Trans*, Black, Indigenous, and People of Colour),
+      single parents, sex workers, those living in precarious housing situations, those living
+      with underlying medical conditions, those with disabilities, newly-arrived immigrants,
+      and the elderly.
+    </p>
+    <p>
+      In response to the pandemic, The People's Pantry is a grassroots initiative providing
+      home-cooked meals and grocery bundles to individuals and families across the GTA who
+      have been disproportionately affected by the COVID-19 crisis.
+      We serve those who are struggling financially or are otherwise unable to provide
+      sufficient food for themselves and their family. Meals and groceries will be delivered
+      right to their door, 100% free of charge.
+    </p>
+    <p>
+      Please fill out this form to the best of your abilities and our team will be in touch.
+      If you have any additional questions, please feel free to contact us at
+      <a href="mailto:thepeoplespantrytoronto@gmail.com">thepeoplespantrytoronto@gmail.com</a>.
+      You can also join our Facebook group:
+      <a href="https://www.facebook.com/groups/675649626532144/" target="_blank" rel="noopener">https://www.facebook.com/groups/675649626532144/</a>
+    </p>
+    <p>
+      With care,<br />
+      The People's Pantry
+    </p>
+    <form method="post" class="form">
+      {% csrf_token %}
+
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">Recipient details</h5>
+          <div class="row">
+            <div class="col-sm">{% bootstrap_field form.name %}</div>
+            <div class="col-sm">{% bootstrap_field form.email %}</div>
+          </div>
+          {% bootstrap_field form.phone_number %}
+          {% bootstrap_field form.can_receive_texts %}
+        </div>
+      </div>
+
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">Requesting for someone else?</h5>
+          <p class="card-text text-muted">
+            If you're filling this request out on someone else's behalf, please complete this section.
+          </p>
+          {% bootstrap_field form.on_behalf_of %}
+          {% bootstrap_field form.recipient_notified %}
+          <div class="row">
+            <div class="col-sm">{% bootstrap_field form.requester_name %}</div>
+            <div class="col-sm">{% bootstrap_field form.requester_email %}</div>
+          </div>
+          {% bootstrap_field form.requester_phone_number %}
+        </div>
+      </div>
+
+
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">Delivery details</h5>
+          <div class="row">
+            <div class="col-sm-8">{% bootstrap_field form.address_1 %}</div>
+            <div class="col-sm-4">{% bootstrap_field form.address_2 %}</div>
+          </div>
+          <div class="row">
+            <div class="col-sm-8">{% bootstrap_field form.city %}</div>
+            <div class="col-sm-4">{% bootstrap_field form.postal_code %}</div>
+          </div>
+          {% bootstrap_field form.delivery_details %}
+          {% bootstrap_field form.can_meet_for_delivery %}
+          <div class="row">
+            <div class="col-sm">{% bootstrap_field form.available_days %}</div>
+            <div class="col-sm">{% bootstrap_field form.available_time_periods %}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">Meal details</h5>
+          <div class="row">
+            <div class="col-sm">{% bootstrap_field form.num_adults %}</div>
+            <div class="col-sm">{% bootstrap_field form.num_children %}</div>
+          </div>
+          {% bootstrap_field form.children_ages %}
+          {% bootstrap_field form.food_allergies %}
+          {% bootstrap_field form.vegetables %}
+          {% bootstrap_field form.fruits %}
+          {% bootstrap_field form.protein %}
+          {% bootstrap_field form.grains %}
+          {% bootstrap_field form.condiments %}
+          {% bootstrap_field form.dairy %}
+        </div>
+      </div>
+
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">Community (optional)</h5>
+          <p class="card-text text-muted">
+            Do you or the person you are requesting support for belong to any of the follow communities? Check ALL that apply.
+          </p>
+          {% bootstrap_field form.bipoc %}
+          {% bootstrap_field form.lgbtq %}
+          {% bootstrap_field form.has_disability %}
+          {% bootstrap_field form.immigrant_or_refugee %}
+          {% bootstrap_field form.housing_issues %}
+          {% bootstrap_field form.sex_worker %}
+          {% bootstrap_field form.single_parent %}
+        </div>
+      </div>
+
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">Additional information</h5>
+          {% bootstrap_field form.notes %}
+        </div>
+      </div>
+
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">Terms of service</h5>
+          <textarea class="form-control mb-3" readonly rows="10">{{ form.terms_of_service_text }}</textarea>
+          {% bootstrap_field form.accept_terms %}
+        </div>
+      </div>
+
+      <div class="d-flex flex-row-reverse">
+        <input type="submit" class="btn btn-primary btn-lg text-right" />
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
