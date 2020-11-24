@@ -146,6 +146,21 @@ class HelpRequest(models.Model):
         blank=True,
     )
 
+    # Information about the request itself
+    num_adults = models.PositiveSmallIntegerField("Number of adults in the household")
+    num_children = models.PositiveSmallIntegerField("Number of children in the household")
+    children_ages = models.CharField(
+        "Ages of children",
+        help_text="When able, we will try to provide additional snacks for children. If this is something you would be interested in, please list the ages of any children in the household so we may try to provide appropriate snacks for their age group.",
+        max_length=settings.DEFAULT_LENGTH,
+        blank=True,
+    )
+    food_allergies = models.TextField(
+        "Food allergies",
+        help_text="Please list any allergies or dietary restrictions",
+        blank=True,
+    )
+
     # Information about community status
     bipoc = models.BooleanField("Black, Indigenous, and People of Colour (BIPOC)")
     lgbtq = models.BooleanField("Lesbian, Gay, Bisexual, Trans, Queer (LGBTQ), gender non-conforming or non-binary")
@@ -220,28 +235,12 @@ class HelpRequest(models.Model):
 
 
 class MealRequest(HelpRequest):
-    # Dietary restrictions
     dairy_free = models.BooleanField("Dairy free")
     gluten_free = models.BooleanField("Gluten free")
     halal = models.BooleanField("Halal")
     low_carb = models.BooleanField("Low Carbohydrate")
     vegan = models.BooleanField("Vegan")
     vegetarian = models.BooleanField("Vegetarian")
-
-    # Information about the request itself
-    num_adults = models.PositiveSmallIntegerField("Number of adults in the household")
-    num_children = models.PositiveSmallIntegerField("Number of children in the household")
-    children_ages = models.CharField(
-        "Ages of children",
-        help_text="When able, we will try to provide additional snacks for children. If this is something you would be interested in, please list the ages of any children in the household so we may try to provide appropriate snacks for their age group.",
-        max_length=settings.DEFAULT_LENGTH,
-        blank=True,
-    )
-    food_allergies = models.TextField(
-        "Food allergies",
-        help_text="Please list any allergies or dietary restrictions",
-        blank=True,
-    )
     food_preferences = models.TextField(
         "Food preferences",
         help_text="Please list any food preferences (eg. meat, pasta, veggies, etc.)",
@@ -260,20 +259,6 @@ class MealRequest(HelpRequest):
 
 
 class GroceryRequest(HelpRequest):
-    # Information about the request itself
-    num_adults = models.PositiveSmallIntegerField("Number of adults in the household")
-    num_children = models.PositiveSmallIntegerField("Number of children in the household")
-    children_ages = models.CharField(
-        "Ages of children",
-        help_text="When able, we will try to provide additional snacks for children. If this is something you would be interested in, please list the ages of any children in the household so we may try to provide appropriate snacks for their age group.",
-        max_length=settings.DEFAULT_LENGTH,
-        blank=True,
-    )
-    food_allergies = models.TextField(
-        "Food allergies",
-        help_text="Please list any allergies or dietary restrictions",
-        blank=True,
-    )
     vegetables = models.CharField(
         "Vegetables",
         help_text="Select all that you want",
