@@ -1,9 +1,11 @@
 import uuid
 from django.db import models
+from django.db.models.signals import post_save
 from django.conf import settings
 from django.urls import reverse_lazy
 
 from core.models import get_sentinel_user
+from website.maps import geocode_anonymized
 
 
 class Cities(models.TextChoices):
@@ -230,8 +232,23 @@ class HelpRequest(models.Model):
     anonymized_latitude = models.FloatField(default=43.651070)  # default: Toronto latitude
     anonymized_longitude = models.FloatField(default=-79.347015)  # default: Toronto longitude
 
+    @property
+    def address(self):
+        return ' '.join([
+            self.address_1,
+            self.address_2,
+            self.city,
+            self.postal_code,
+        ])
+
     def get_absolute_url(self):
         return reverse_lazy('recipients:request_detail', args=[str(self.id)])
+
+    def update_coordinates(self):
+        latitude, longitude = geocode_anonymized(self.address)
+        self.anonymized_latitude = latitude
+        self.anonymized_longitude = longitude
+        self.save()
 
 
 class MealRequest(HelpRequest):
@@ -347,3 +364,13 @@ class Delivery(models.Model):
     # System
     uuid = models.UUIDField(default=uuid.uuid4, editable=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+
+def save_help_request(sender, instance, created, **kwargs):
+    if created:
+        instance.update_coordinates()
+
+
+# When a HelpRequest is saved, update the coordinates
+post_save.connect(save_help_request, sender=MealRequest)
+post_save.connect(save_help_request, sender=GroceryRequest)
