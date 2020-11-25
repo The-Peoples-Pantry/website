@@ -1,6 +1,6 @@
 import datetime
 from django.conf import settings
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic.edit import FormView
@@ -24,12 +24,21 @@ class MapView():
         return settings.GOOGLE_MAPS_EMBED_KEY
 
 
-class ChefSignupView(LoginRequiredMixin, FormView):
+class GroupView(UserPassesTestMixin):
+    def test_func(self):
+        return self.request.user.groups.filter(name=self.permission_group).exists()
+
+    def handle_no_permission(self):
+        return redirect('/accounts/profile')
+
+
+class ChefSignupView(LoginRequiredMixin, GroupView, FormView):
     """View for chefs to sign up to cook meal requests"""
     model = MealRequest
     template_name = "volunteers/chef_signup.html"
     form_class = ChefSignupForm
     success_url = reverse_lazy('volunteers:chef_signup')
+    permission_group = 'Chefs'
 
     def get_context_data(self, alerts={}, **kwargs):
         context = super(ChefSignupView, self).get_context_data(**kwargs)
@@ -109,11 +118,12 @@ class ChefSignupView(LoginRequiredMixin, FormView):
         return render(request, self.template_name, self.get_context_data(alerts))
 
 
-class ChefIndexView(LoginRequiredMixin, ListView):
+class ChefIndexView(LoginRequiredMixin, GroupView, ListView):
     """View for chefs to see the meals they've signed up to cook"""
     model = Delivery
     template_name = "volunteers/chef_list.html"
     context_object_name = "deliveries"
+    permission_group = 'Chefs'
 
     def get_queryset(self):
         user = self.request.user
@@ -125,10 +135,11 @@ class ChefIndexView(LoginRequiredMixin, ListView):
 
 
 
-class DeliveryIndexView(LoginRequiredMixin, ListView, MapView):
+class DeliveryIndexView(LoginRequiredMixin, GroupView, ListView, MapView):
     model = Delivery
     template_name = "volunteers/delivery_list.html"
     context_object_name = "deliveries"
+    permission_group = 'Deliverers'
 
     def get_queryset(self):
         user = self.request.user
@@ -139,11 +150,12 @@ class DeliveryIndexView(LoginRequiredMixin, ListView, MapView):
         ).order_by('request__delivery_date')
 
 
-class DeliverySignupView(LoginRequiredMixin, FormView, MapView):
+class DeliverySignupView(LoginRequiredMixin, GroupView, FormView, MapView):
     model = Delivery
     template_name = "volunteers/delivery_signup.html"
     form_class = DeliverySignupForm
     success_url = reverse_lazy('volunteers:delivery_signup')
+    permission_group = 'Deliverers'
 
     def get_context_data(self, alerts={}, **kwargs):
         context = super(DeliverySignupView, self).get_context_data(**kwargs)

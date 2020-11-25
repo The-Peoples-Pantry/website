@@ -34,16 +34,15 @@
               <a class="dropdown-item" href="{% url 'recipients:new_grocery_request' %}">Request groceries</a>
             </div>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'volunteers:chef_signup' %}">
-              Sign up to cook
-            </a>
+          {% if request.user.is_authenticated %}
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Current requests</a>
+            <div class="dropdown-menu">
+              <a class="dropdown-item" href="{% url 'volunteers:chef_signup' %}">Sign up to cook</a>
+              <a class="dropdown-item" href="{% url 'volunteers:delivery_signup' %}">Sign up to deliver</a>
+            </div>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'volunteers:delivery_signup' %}">
-              Sign up to deliver
-            </a>
-          </li>
+          {% endif %}
         </ul>
         {% if request.user.is_authenticated %}
           <span class="navbar-text">Logged in as: {{ request.user.username }}</span>
