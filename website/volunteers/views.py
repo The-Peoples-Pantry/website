@@ -1,18 +1,13 @@
 import datetime
 from django.conf import settings
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic.edit import FormView
 from django.views.generic import ListView, TemplateView
-from django_filters.views import FilterView
-from django_tables2 import SingleTableMixin
-
 from django.contrib.auth.models import User
-from recipients.models import MealRequest, Delivery, Status
 
-from .tables import MealRequestTable
-from .filters import MealRequestFilter
+from recipients.models import MealRequest, Delivery, Status
 from .forms import DeliverySignupForm, ChefSignupForm, AcceptTermsForm
 from .models import VolunteerApplication, VolunteerRoles
 
@@ -27,21 +22,6 @@ class MapView():
 
     def google_maps_embed_key(self):
         return settings.GOOGLE_MAPS_EMBED_KEY
-
-
-class IndexView(PermissionRequiredMixin, LoginRequiredMixin, SingleTableMixin, FilterView, MapView):
-    model = MealRequest
-    table_class = MealRequestTable
-    filterset_class = MealRequestFilter
-    template_name = "volunteers/index.html"
-    permission_required = 'recipients.view_mealrequest'
-
-    def anonymized_coordinates(self):
-        instances = self.filterset.qs
-        return {
-            instance.id: [instance.anonymized_latitude, instance.anonymized_longitude, instance.id]
-            for instance in instances
-        }
 
 
 class ChefSignupView(LoginRequiredMixin, FormView):
