@@ -1,6 +1,6 @@
 from textwrap import dedent
 from django import forms
-from .models import MealRequest, GroceryRequest, Days, TimePeriods, Vegetables, Fruits, Grains, Condiments
+from .models import MealRequest, GroceryRequest, Vegetables, Fruits, Grains, Condiments
 
 
 class TelephoneInput(forms.TextInput):
