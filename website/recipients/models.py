@@ -177,6 +177,10 @@ class HelpRequest(models.Model):
         help_text="Please provide us with any details we may need to know for the delivery",
         blank=True,
     )
+    availability = models.TextField(
+        "Availability",
+        help_text="Please list the days and times that you're available to receive a delivery",
+    )
     available_days = models.CharField(
         "Available days",
         help_text="What days are you (or the person you're requesting for) available for receiving the delivery?",
