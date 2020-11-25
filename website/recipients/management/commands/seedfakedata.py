@@ -6,7 +6,6 @@ import random
 import datetime
 from django.core.management.base import BaseCommand
 from recipients.models import MealRequest, Cities
-from website.maps import geocode_anonymized
 
 factory.Faker.add_provider(faker.providers.phone_number)
 factory.Faker.add_provider(faker.providers.address)
@@ -76,6 +75,7 @@ class MealRequestFactory(factory.django.DjangoModelFactory):
 
     accept_terms = True
 
+
 class Command(BaseCommand):
     help = 'Seed fake MealRequests into the database'
 
@@ -94,17 +94,9 @@ class Command(BaseCommand):
             help='Generate an assigned delivery date for Meal Requests'
         )
 
-        parser.add_argument(
-            '--generate-latlong',
-            type=bool,
-            default=False,
-            help='Generate anonymized lat long values'
-        )
-
     def handle(self, *args, **options):
         count = options['count']
         generate_date = options['generate_delivery_date']
-        generate_latlong = options['generate_latlong']
 
         for i in range(count):
             obj = MealRequestFactory.create()
@@ -113,15 +105,6 @@ class Command(BaseCommand):
                 start = datetime.datetime.now()
                 end = start + datetime.timedelta(days=10)
                 obj.delivery_date = fuzzy_date(start, end)
-
-            if generate_latlong:
-                addr = ' '.join([
-                    obj.address_1,
-                    obj.address_2,
-                    obj.city,
-                    obj.postal_code,
-                ])
-                obj.anonymized_latitude, obj.anonymized_longitude = geocode_anonymized(addr)
 
             obj.save()
 
