@@ -16,17 +16,7 @@ class TelephoneInput(forms.TextInput):
 
 
 class HelpRequestForm(forms.ModelForm):
-    # Field overrides
-    available_days = forms.MultipleChoiceField(
-        required=False,
-        widget=forms.CheckboxSelectMultiple,
-        choices=Days.choices,
-    )
-    available_time_periods = forms.MultipleChoiceField(
-        required=False,
-        widget=forms.CheckboxSelectMultiple,
-        choices=TimePeriods.choices,
-    )
+    # Force the terms to be accepted in order to submit the form
     accept_terms = forms.BooleanField(required=True)
 
     terms_of_service_text = dedent("""
@@ -50,6 +40,7 @@ class HelpRequestForm(forms.ModelForm):
             'food_allergies': forms.Textarea(attrs={'rows': 3}),
             'food_preferences': forms.Textarea(attrs={'rows': 3}),
             'delivery_details': forms.Textarea(attrs={'rows': 3}),
+            'availability': forms.Textarea(attrs={'rows': 3}),
             'notes': forms.Textarea(attrs={'rows': 3}),
         }
 

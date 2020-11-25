@@ -93,12 +93,9 @@
               by filling out <a target="_blank" rel="noopener" href="https://docs.google.com/forms/d/e/1FAIpQLSfO8Z0fHQCH5stBMfw-ONbSh8mbBL124jiC6I8NUSpN0VrUrQ/viewform">this request form</a>.
             </small>
           </div>
-          {% bootstrap_field form.delivery_details %}
           {% bootstrap_field form.can_meet_for_delivery %}
-          <div class="row">
-            <div class="col-sm">{% bootstrap_field form.available_days %}</div>
-            <div class="col-sm">{% bootstrap_field form.available_time_periods %}</div>
-          </div>
+          {% bootstrap_field form.delivery_details %}
+          {% bootstrap_field form.availability %}
         </div>
       </div>
       {% endblock delivery_section %}

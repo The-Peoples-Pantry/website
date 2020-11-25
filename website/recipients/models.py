@@ -181,16 +181,6 @@ class HelpRequest(models.Model):
         "Availability",
         help_text="Please list the days and times that you're available to receive a delivery",
     )
-    available_days = models.CharField(
-        "Available days",
-        help_text="What days are you (or the person you're requesting for) available for receiving the delivery?",
-        max_length=settings.DEFAULT_LENGTH,
-    )
-    available_time_periods = models.CharField(
-        "Available time periods",
-        help_text="What times are you (or the person you're requesting for) available for receiving the delivery?",
-        max_length=settings.DEFAULT_LENGTH,
-    )
 
     # Information about the requester
     # Will be null if on_behalf_of is False, indicating request was by the recipient

@@ -59,8 +59,7 @@ class MealRequestFactory(factory.django.DjangoModelFactory):
 
     can_meet_for_delivery = factory.Faker('boolean')
     delivery_details = factory.Faker('sentence')
-    available_days = factory.LazyFunction(lambda: fuzzy_choices(Days))
-    available_time_periods = factory.LazyFunction(lambda: fuzzy_choices(TimePeriods))
+    availability = factory.Faker('sentence')
 
     dairy_free = factory.Faker('boolean')
     gluten_free = factory.Faker('boolean')
