@@ -39,24 +39,6 @@ class Cities(models.TextChoices):
     YORK = 'York', 'York'
 
 
-class Days(models.TextChoices):
-    MONDAY = 'MONDAY'
-    TUESDAY = 'TUESDAY'
-    WEDNESDAY = 'WEDNESDAY'
-    THURSDAY = 'THURSDAY'
-    FRIDAY = 'FRIDAY'
-    SATURDAY = 'SATURDAY'
-    SUNDAY = 'SUNDAY'
-
-
-class TimePeriods(models.TextChoices):
-    PERIOD_12_14 = '12 - 2 PM', '12 - 2 PM'
-    PERIOD_14_16 = '2 - 4 PM', '2 - 4 PM'
-    PERIOD_16_18 = '4 - 6 PM', '4 - 6 PM'
-    PERIOD_16_20 = '6 - 8 PM', '6 - 8 PM'
-    PERIOD_20_22 = '8 - 10 PM', '8 - 10 PM'
-
-
 class Vegetables(models.TextChoices):
     CARROTS = 'Carrots'
     GARLIC = 'Garlic'
@@ -177,15 +159,9 @@ class HelpRequest(models.Model):
         help_text="Please provide us with any details we may need to know for the delivery",
         blank=True,
     )
-    available_days = models.CharField(
-        "Available days",
-        help_text="What days are you (or the person you're requesting for) available for receiving the delivery?",
-        max_length=settings.DEFAULT_LENGTH,
-    )
-    available_time_periods = models.CharField(
-        "Available time periods",
-        help_text="What times are you (or the person you're requesting for) available for receiving the delivery?",
-        max_length=settings.DEFAULT_LENGTH,
+    availability = models.TextField(
+        "Availability",
+        help_text="Please list the days and times that you're available to receive a delivery",
     )
 
     # Information about the requester
