@@ -20,7 +20,7 @@ class HelpRequestView(FormView):
     success_url = reverse_lazy('recipients:success')
 
     def form_valid(self, form):
-        instance = form.save(commit=False)
+        instance = form.save()
         instance.send_confirmation_email()
         return super().form_valid(form)
 

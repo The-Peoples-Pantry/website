@@ -3,50 +3,39 @@ from random import uniform, choice
 
 from website.settings import MAPQUEST_API_KEY
 
-DEGREE_RANGE_LOWER = 0.0004
-DEGREE_RANGE_HIGHER = 0.0008
+
+class GeocoderException(Exception):
+    pass
 
 
-def mapquest_api_url(resource):
-    # NOTE: open.mapquestapi.com relies on OSM data and does NOT support includeNearestIntersection for reverse coding
-    return "http://mapquestapi.com/geocoding/v1" + resource
+class Geocoder:
+    API_BASE_URL = "http://mapquestapi.com/geocoding/v1"
+    DEGREE_RANGE_LOWER = 0.0004
+    DEGREE_RANGE_HIGHER = 0.0008
 
+    def __init__(self, api_key=MAPQUEST_API_KEY):
+        self.api_key = api_key
 
-def geocode(address, api_key=MAPQUEST_API_KEY):
-    response = requests.get(
-        mapquest_api_url("/address"),
-        params={
-            "key": api_key,
-            "location": address
-        }
-    )
+    def geocode_anonymized(self, address):
+        """Given an address, return an anonymized latitude & longitude"""
+        latitude, longitude = self.geocode(address)
+        latitude += self.generate_noise()
+        longitude += self.generate_noise()
+        return latitude, longitude
 
-    if response.status_code != 200:
-        return None
-    else:
-        lat_lng = response.json()["results"][0]["locations"][0]["latLng"]
-        return lat_lng["lat"], lat_lng["lng"]
+    def geocode(self, address):
+        """Given an address, return the latitude & longitude"""
+        try:
+            response = requests.get(
+                f"{self.API_BASE_URL}/address",
+                params={"key": self.api_key, "location": address}
+            )
+            response.raise_for_status()
+            lat_lng = response.json()["results"][0]["locations"][0]["latLng"]
+            return lat_lng["lat"], lat_lng["lng"]
+        except Exception as e:
+            raise GeocoderException from e
 
-
-def reverse_geocode(coords, api_key=MAPQUEST_API_KEY, include_nearest_intersection=False):
-    return requests.get(
-        mapquest_api_url("/reverse"),
-        params={
-            "key": api_key,
-            "location": f"{coords[0]},{coords[1]}",
-            "includeNearestIntersection": "true" if include_nearest_intersection else "false"
-        }
-    )
-
-
-def geocode_anonymized(address, api_key=MAPQUEST_API_KEY):
-    lat, long = geocode(address, api_key)
-    lat += uniform(DEGREE_RANGE_LOWER, DEGREE_RANGE_HIGHER) * choice([-1, 1])
-    long += uniform(DEGREE_RANGE_LOWER, DEGREE_RANGE_HIGHER) * choice([-1, 1])
-
-    return lat, long
-
-
-def nearest_intersection(address, api_key=MAPQUEST_API_KEY):
-    return reverse_geocode(geocode(address), api_key=api_key, include_nearest_intersection=True) \
-        .json()["results"][0]["locations"][0]["nearestIntersection"]
+    def generate_noise(self):
+        """Generate a random value in range, and randomly positive or negative"""
+        return uniform(self.DEGREE_RANGE_LOWER, self.DEGREE_RANGE_HIGHER) * choice([-1, 1])
