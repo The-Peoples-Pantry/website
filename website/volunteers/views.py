@@ -26,7 +26,9 @@ class MapView():
 
 class GroupView(UserPassesTestMixin):
     def test_func(self):
-        return self.request.user.groups.filter(name=self.permission_group).exists()
+
+        return (self.request.user.groups.filter(name=self.permission_group).exists()
+            or self.request.user.is_staff)
 
     def handle_no_permission(self):
         return redirect('/accounts/profile')
