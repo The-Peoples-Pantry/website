@@ -279,6 +279,20 @@ class GroceryRequest(HelpRequest):
         choices=Dairy.choices,
         max_length=settings.DEFAULT_LENGTH,
     )
+    baked_goods = models.BooleanField(
+        "Baked goods",
+        help_text="Sometimes we have baked goods to offer in our bundles, would you want baked goods?"
+    )
+    kid_snacks = models.BooleanField(
+        "Kid snacks",
+        help_text="Sometimes we have kid snacks to offer in our bundles, would you want kids' snacks?"
+    )
+    hygiene_products = models.CharField(
+        "Hygiene products",
+        help_text="Sometimes we are able to include personal hygiene products in our bundles, what personal hygiene products would you want? For example: sanitary pads, shampoo, etc.",
+        max_length=settings.LONG_TEXT_LENGTH,
+        blank=True,
+    )
 
 
 class Status(models.TextChoices):
