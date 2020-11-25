@@ -222,6 +222,10 @@ class HelpRequest(models.Model):
     def anonymous_address_link(self):
         return f"https://www.google.com/maps/place/{self.anonymized_latitude},{self.anonymized_longitude}"
 
+    @property
+    def anonymous_map_embed(self):
+        return f"https://www.google.com/maps/embed/v1/place?key={ settings.GOOGLE_MAPS_EMBED_KEY }&q={self.anonymized_latitude},{self.anonymized_longitude}"
+
     def get_absolute_url(self):
         return reverse_lazy('recipients:request_detail', args=[str(self.id)])
 

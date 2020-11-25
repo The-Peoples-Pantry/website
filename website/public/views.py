@@ -6,14 +6,6 @@ def index(request):
     return render(request, "public/index.html")
 
 
-class MapView():
-    def google_maps_api_key(self):
-        return settings.GOOGLE_MAPS_API_KEY
-
-    def google_maps_embed_key(self):
-        return settings.GOOGLE_MAPS_EMBED_KEY
-
-
 class GroupView(UserPassesTestMixin):
     def test_func(self):
 
