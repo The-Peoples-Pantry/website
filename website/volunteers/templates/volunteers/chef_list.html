@@ -3,62 +3,67 @@
 
 {% block content %}
 <h1 class="mb-3">My cooking tasks</h1>
+<p>Here are all the upcoming meal requests that you've signed up for! If you need to make a change to one of these, please get in touch with one of our volunteer coordinators.</p>
 
-<div class="row">
-  <ul class="volunteer-pages--meals-list container">
-    {% for delivery in deliveries %}
-      <li class="volunteer-pages--meals">
-        <div class="volunteer-pages--meals-signup-household">
-          Meal for {{ delivery.request.num_adults }} adult{{ delivery.request.num_adults | pluralize }}
-          and {{ delivery.request.num_children }} kid{{ delivery.request.num_children | pluralize }}
-          {% if delivery.request.children_ages %}
-            (aged {{ delivery.request.children_ages }})
-          {% endif %}
-        </div>
-
-        <div class="volunteer-pages--meals-food-prefs row">
-          <div class="col">
-            <label>Food preferences</label>
-            {{ delivery.request.food_preferences }}
-
-            <label>Food allergies</label>
-            {{ delivery.request.food_allergies }}
-          </div>
-
-          <div class="col">
-            {% if delivery.request.vegan or delivery.request.vegetarian or delivery.request.dairy_free or delivery.request.gluten_free or delivery.request.halal or delivery.request.low_carb %}
-              <label>Other dietary information</label>
-              <ul>
-                {% if delivery.request.vegan %} <li>Vegan</li> {% endif %}
-                {% if delivery.request.vegetarian %} <li>Vegetarian</li> {% endif %}
-                {% if delivery.request.dairy_free %} <li>Dairy Free</li> {% endif %}
-                {% if delivery.request.gluten_free %} <li>Gluten Freen</li> {% endif %}
-                {% if delivery.request.halal %} <li>Halal</li> {% endif %}
-                {% if delivery.request.low_carb %} <li>Low-carb</li> {% endif %}
-              </ul>
+{% if deliveries %}
+  <div class="row">
+    <ul class="volunteer-pages--meals-list container">
+      {% for delivery in deliveries %}
+        <li class="volunteer-pages--meals">
+          <div class="volunteer-pages--meals-signup-household">
+            Meal for {{ delivery.request.num_adults }} adult{{ delivery.request.num_adults | pluralize }}
+            and {{ delivery.request.num_children }} kid{{ delivery.request.num_children | pluralize }}
+            {% if delivery.request.children_ages %}
+              (aged {{ delivery.request.children_ages }})
             {% endif %}
           </div>
-        </div>
 
-        <div class="volunteer-pages--meal-signup-time">
-          <label>Pickup date</label>
-          {{ delivery.request.delivery_date }}
+          <div class="volunteer-pages--meals-food-prefs row">
+            <div class="col">
+              <label>Food preferences</label>
+              {{ delivery.request.food_preferences }}
 
-          <label>Pickup timerange</label>
-          {{ delivery.pickup_start }} to {{ delivery.pickup_end }}
-        </div>
+              <label>Food allergies</label>
+              {{ delivery.request.food_allergies }}
+            </div>
 
-        <p>
-          Containers <strong>will {{ delivery.container_delivery|yesno:",not ," }}</strong>be provided for this meal.
-        </p>
+            <div class="col">
+              {% if delivery.request.vegan or delivery.request.vegetarian or delivery.request.dairy_free or delivery.request.gluten_free or delivery.request.halal or delivery.request.low_carb %}
+                <label>Other dietary information</label>
+                <ul>
+                  {% if delivery.request.vegan %} <li>Vegan</li> {% endif %}
+                  {% if delivery.request.vegetarian %} <li>Vegetarian</li> {% endif %}
+                  {% if delivery.request.dairy_free %} <li>Dairy Free</li> {% endif %}
+                  {% if delivery.request.gluten_free %} <li>Gluten Freen</li> {% endif %}
+                  {% if delivery.request.halal %} <li>Halal</li> {% endif %}
+                  {% if delivery.request.low_carb %} <li>Low-carb</li> {% endif %}
+                </ul>
+              {% endif %}
+            </div>
+          </div>
 
-        <div class="alert alert-info">
-          Status: {{ delivery.status }}
-        </div>
-      </li>
-    {% endfor %}
-  </ul>
+          <div class="volunteer-pages--meal-signup-time">
+            <label>Pickup date</label>
+            {{ delivery.request.delivery_date }}
 
-</div>
+            <label>Pickup timerange</label>
+            {{ delivery.pickup_start }} to {{ delivery.pickup_end }}
+          </div>
+
+          <p>
+            Containers <strong>will {{ delivery.container_delivery|yesno:",not ," }}</strong>be provided for this meal.
+          </p>
+
+          <div class="alert alert-info">
+            Status: {{ delivery.status }}
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+{% else %}
+  <div class="alert alert-info">You haven't signed up to cook any meals! <a href={% url 'volunteers:chef_signup' %}>Click here</a> to see the list of meal requests that current need a cook.</div>
+{% endif %}
+
 
 {% endblock %}
