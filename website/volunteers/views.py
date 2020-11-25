@@ -1,6 +1,6 @@
 import datetime
 from django.conf import settings
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic.edit import FormView
@@ -8,28 +8,13 @@ from django.views.generic import ListView, TemplateView
 from django.contrib.auth.models import User
 
 from recipients.models import MealRequest, Delivery, Status
+from public.views import GroupView, MapView
 from .forms import DeliverySignupForm, ChefSignupForm, AcceptTermsForm
 from .models import VolunteerApplication, VolunteerRoles
 
 
 def delivery_success(request):
     return render(request, 'volunteers/delivery_success.html')
-
-
-class MapView():
-    def google_maps_api_key(self):
-        return settings.GOOGLE_MAPS_API_KEY
-
-    def google_maps_embed_key(self):
-        return settings.GOOGLE_MAPS_EMBED_KEY
-
-
-class GroupView(UserPassesTestMixin):
-    def test_func(self):
-        return self.request.user.groups.filter(name=self.permission_group).exists()
-
-    def handle_no_permission(self):
-        return redirect('/accounts/profile')
 
 
 class ChefSignupView(LoginRequiredMixin, GroupView, FormView):
