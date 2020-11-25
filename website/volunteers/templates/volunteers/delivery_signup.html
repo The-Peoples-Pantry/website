@@ -17,44 +17,47 @@
   </div>
 {% endif %}
 
-<ul class="volunteer-pages--meals-list d-flex flex-row flex-wrap">
-  {% for delivery_signup in deliveries %}
-    {% with form=delivery_signup.form request=delivery_signup.request delivery=delivery_signup.delivery %}
+{% if deliveries %}
+  <ul class="volunteer-pages--meals-list d-flex flex-row flex-wrap">
+    {% for delivery_signup in deliveries %}
+      {% with form=delivery_signup.form request=delivery_signup.request delivery=delivery_signup.delivery %}
 
-    <li class="volunteer-pages--meals delivery-signup">
-      <div class="alert alert-info">
-        Pickup timeframe: {{ request.delivery_date }}, {{ delivery.pickup_start }} to {{ delivery.pickup_end }}
-      </div>
-        <form action="" method="post" class="form">{% csrf_token %}
-          <div class="volunteer-pages--meals-signup-household">
-            {% if delivery.container_delivery %}
-              Delivering containers for: <br />
-            {% endif %}
-              Meal for {{ request.num_adults }} adult{{ request.num_adults | pluralize }}
-              and {{ request.num_children }} kid{{ request.num_children | pluralize }}
+      <li class="volunteer-pages--meals delivery-signup">
+        <div class="alert alert-info">
+          Pickup timeframe: {{ request.delivery_date }}, {{ delivery.pickup_start }} to {{ delivery.pickup_end }}
+        </div>
+          <form action="" method="post" class="form">{% csrf_token %}
+            <div class="volunteer-pages--meals-signup-household">
+              {% if delivery.container_delivery %}
+                Delivering containers for: <br />
+              {% endif %}
+                Meal for {{ request.num_adults }} adult{{ request.num_adults | pluralize }}
+                and {{ request.num_children }} kid{{ request.num_children | pluralize }}
 
-            <label>Approximate pick-up location</label>
-            <iframe
-              width="350"
-              height="200"
-              frameborder="0" style="border:0"
-              src="https://www.google.com/maps/embed/v1/place?key={{ view.google_maps_embed_key }}
-                &q={{ request.anonymized_latitude }},{{ request.anonymized_longitude }}&zoom=14" allowfullscreen>
-            </iframe>
-          </div>
+              <label>Approximate pick-up location</label>
+              <iframe
+                width="350"
+                height="200"
+                frameborder="0" style="border:0"
+                src="https://www.google.com/maps/embed/v1/place?key={{ view.google_maps_embed_key }}
+                  &q={{ request.anonymized_latitude }},{{ request.anonymized_longitude }}&zoom=14" allowfullscreen>
+              </iframe>
+            </div>
 
-          <div class="volunteer-pages--meal-signup-time">
-            <label>Drop-off timerange</label>
-            {{ form.start_time }} to {{ form.end_time }}
-          </div>
+            <div class="volunteer-pages--meal-signup-time">
+              <label>Drop-off timerange</label>
+              {{ form.start_time }} to {{ form.end_time }}
+            </div>
 
-          {{ form.uuid }}
-          {% buttons submit="Submit"%}{% endbuttons %}
-        </form>
-    </li>
-    {% endwith %}
-  {% endfor %}
-</ul>
-
+            {{ form.uuid }}
+            {% buttons submit="Submit"%}{% endbuttons %}
+          </form>
+      </li>
+      {% endwith %}
+    {% endfor %}
+  </ul>
+{% else %}
+  <div class="alert alert-info">There are no open delivery requests at this time.</div>
+{% endif %}
 
 {% endblock %}
