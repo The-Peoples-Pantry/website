@@ -210,12 +210,7 @@ class HelpRequest(models.Model):
 
     @property
     def address(self):
-        return ' '.join([
-            self.address_1,
-            self.address_2,
-            self.city,
-            self.postal_code,
-        ])
+        return f"{self.address1} {self.address2} {self.city} {self.postal_code}"
 
     def get_absolute_url(self):
         return reverse_lazy('recipients:request_detail', args=[str(self.id)])
