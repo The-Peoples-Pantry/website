@@ -212,6 +212,10 @@ class HelpRequest(models.Model):
     def address(self):
         return f"{self.address1} {self.address2} {self.city} {self.postal_code}"
 
+    @property
+    def anonymous_address_link(self):
+        return f"https://www.google.ca/maps/place/{self.anonymized_latitude},{self.anonymized_longitude}"
+
     def get_absolute_url(self):
         return reverse_lazy('recipients:request_detail', args=[str(self.id)])
 
