@@ -2,7 +2,6 @@ from textwrap import dedent
 import uuid
 from django.core.mail import send_mail
 from django.db import models
-from django.db.models.signals import post_save
 from django.conf import settings
 from django.urls import reverse_lazy
 
@@ -230,10 +229,15 @@ class HelpRequest(models.Model):
         )
 
     def update_coordinates(self):
+        """Updates, but does not commit, anonymized coordinates on the instance"""
         latitude, longitude = geocode_anonymized(self.address)
         self.anonymized_latitude = latitude
         self.anonymized_longitude = longitude
-        self.save()
+
+    def save(self, *args, **kwargs):
+        # Whenever the model is updated, make sure coordinates are updated too
+        self.update_coordinates()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         delivery_date = self.delivery_date.strftime("%m/%d/%Y") if self.delivery_date else "Unscheduled"
@@ -381,13 +385,3 @@ class Delivery(models.Model):
         return "[%s] Delivering %s to %s for %s" % (
             self.status.capitalize(), self.request._meta.verbose_name, self.request.city, self.request.name,
         )
-
-
-def save_help_request(sender, instance, created, **kwargs):
-    if created:
-        instance.update_coordinates()
-
-
-# When a HelpRequest is saved, update the coordinates
-post_save.connect(save_help_request, sender=MealRequest)
-post_save.connect(save_help_request, sender=GroceryRequest)
