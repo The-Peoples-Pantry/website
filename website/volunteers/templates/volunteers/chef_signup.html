@@ -16,20 +16,21 @@
   </div>
 {% endif %}
 
-<p>Here are all the upcoming meal requests that need a chef! Please sign up by selecting a pickup date and time frame. You can also  <a href={% url 'volunteers:chef_list' %}>see all the meals you've already signed up for here</a>.</p>
+<div class="row">
+  <div class="col-md-3 order-md-2">
+    {% if filter %}
+      <form action="" method="get" class="form">
+        <h4>Filters</h4>
+        {% bootstrap_form filter.form %}
+        {% bootstrap_button 'Filter' %}
+        <a class="btn btn-primary ml-2" href={% url 'volunteers:chef_signup' %}>Reset</a>
+      </form>
+    {% endif %}
+  </div>
+  <div class="col-md-9 order-md-1">
 
-{% if meals %}
-  <div class="row">
-    <div class="col-md-3 order-md-2">
-      {% if filter %}
-        <form action="" method="get" class="form">
-          <h4>Filters</h4>
-          {% bootstrap_form filter.form %}
-          {% bootstrap_button 'Filter' %}
-        </form>
-      {% endif %}
-    </div>
-    <div class="col-md-9 order-md-1">
+    <p>Here are all the upcoming meal requests that need a chef! Please sign up by selecting a pickup date and time frame. You can also  <a href={% url 'volunteers:chef_list' %}>see all the meals you've already signed up for here</a>.</p>
+    {% if meals %}
       <ul class="volunteer-pages--meals-list container">
         {% for chef_signup in meals %}
           {% with form=chef_signup.form meal=chef_signup.meal %}
@@ -41,7 +42,7 @@
               and {{ meal.num_children }} kid{{ meal.num_children | pluralize }}
               {% if meal.children_ages %}
                 (aged {{ meal.children_ages }})
-              {% endif %}
+              {% endif %} in {{ meal.city }}
             </div>
 
             <div class="volunteer-pages--meals-food-prefs row">
@@ -51,9 +52,6 @@
 
                 <label>Food allergies</label>
                 {{ meal.food_allergies }}
-              </div>
-
-              <div class="col">
                 {% if meal.vegan or meal.vegetarian or meal.dairy_free or meal.gluten_free or meal.halal or meal.low_carb %}
                   <label>Other dietary information</label>
                   <ul>
@@ -65,28 +63,38 @@
                     {% if meal.low_carb %} <li>Low-carb</li> {% endif %}
                   </ul>
                 {% endif %}
+
+                <div class="volunteer-pages--meal-signup-time">
+                  <label>Pickup date</label>
+                  {{ form.delivery_date }}
+
+                  <label>Pickup timerange</label>
+                  {{ form.start_time }} to {{ form.end_time }}
+                </div>
+
+                {{ form.uuid }}
+                <p>{{ form.container_needed }} I need containers for this meal</p>
+                {% buttons submit="Submit"%}{% endbuttons %}
+              </div>
+              <div class="col">
+                <label>Approximate delivery location</label>
+                <iframe
+                  width="350"
+                  height="400"
+                  frameborder="0" style="border:0"
+                  src="{{ meal.anonymous_map_embed }}&zoom=12" allowfullscreen>
+                </iframe>
               </div>
             </div>
-
-            <div class="volunteer-pages--meal-signup-time">
-              <label>Pickup date</label>
-              {{ form.delivery_date }}
-
-              <label>Pickup timerange</label>
-              {{ form.start_time }} to {{ form.end_time }}
-            </div>
-
-            {{ form.uuid }}
-            <p>{{ form.container_needed }} I need containers for this meal</p>
-            {% buttons submit="Submit"%}{% endbuttons %}
             </form>
           </li>
           {% endwith %}
         {% endfor %}
       </ul>
-    </div>
+
+    {% else %}
+      <div class="alert alert-info">There are no open meal requests at this time.</div>
+    {% endif %}
   </div>
-{% else %}
-  <div class="alert alert-info">There are no open meal requests at this time.</div>
-{% endif %}
+</div>
 {% endblock content %}

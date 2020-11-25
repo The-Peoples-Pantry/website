@@ -5,30 +5,31 @@ from django.urls import reverse_lazy
 from django.views.generic.edit import FormView
 from django.views.generic import ListView, TemplateView
 from django.contrib.auth.models import User
+from django_filters.views import FilterView
 
 from recipients.models import MealRequest, Delivery, Status
-from public.views import GroupView, MapView
+from public.views import GroupView
 from .forms import DeliverySignupForm, ChefSignupForm, AcceptTermsForm
 from .models import VolunteerApplication, VolunteerRoles
-
+from .filters import ChefSignupFilter, DeliverySignupFilter
 
 def delivery_success(request):
     return render(request, 'volunteers/delivery_success.html')
 
 
-class ChefSignupView(LoginRequiredMixin, GroupView, FormView):
+class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
     """View for chefs to sign up to cook meal requests"""
     model = MealRequest
     template_name = "volunteers/chef_signup.html"
     form_class = ChefSignupForm
     success_url = reverse_lazy('volunteers:chef_signup')
     permission_group = 'Chefs'
+    filterset_class = ChefSignupFilter
 
     def get_context_data(self, alerts={}, **kwargs):
         context = super(ChefSignupView, self).get_context_data(**kwargs)
-
         meals = []
-        for meal in MealRequest.objects.filter(delivery_date__isnull=True):
+        for meal in context['mealrequest_list'].filter(delivery_date__isnull=True):
             meals.append({
                 'meal': meal,
                 'form': ChefSignupForm(instance=meal),
@@ -37,7 +38,6 @@ class ChefSignupView(LoginRequiredMixin, GroupView, FormView):
         context['meals'] = meals
         context['alerts'] = alerts
         return context
-
 
     def create_delivery(self, data, user):
         user_object = User.objects.get(pk=user.id)
@@ -119,7 +119,7 @@ class ChefIndexView(LoginRequiredMixin, GroupView, ListView):
 
 
 
-class DeliveryIndexView(LoginRequiredMixin, GroupView, ListView, MapView):
+class DeliveryIndexView(LoginRequiredMixin, GroupView, ListView):
     model = Delivery
     template_name = "volunteers/delivery_list.html"
     context_object_name = "deliveries"
@@ -134,18 +134,20 @@ class DeliveryIndexView(LoginRequiredMixin, GroupView, ListView, MapView):
         ).order_by('request__delivery_date')
 
 
-class DeliverySignupView(LoginRequiredMixin, GroupView, FormView, MapView):
+class DeliverySignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
     model = Delivery
     template_name = "volunteers/delivery_signup.html"
     form_class = DeliverySignupForm
     success_url = reverse_lazy('volunteers:delivery_signup')
     permission_group = 'Deliverers'
+    filterset_class = DeliverySignupFilter
 
     def get_context_data(self, alerts={}, **kwargs):
         context = super(DeliverySignupView, self).get_context_data(**kwargs)
+
         today = datetime.datetime.now().date()
         deliveries = []
-        for delivery in Delivery.objects.filter(
+        for delivery in context['delivery_list'].filter(
             deliverer__isnull=True,
             request__delivery_date__range=[today,today + datetime.timedelta(days=7)]
         ).order_by('request__delivery_date'):
