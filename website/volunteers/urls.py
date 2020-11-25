@@ -3,7 +3,6 @@ from . import views
 
 app_name = 'volunteers'
 urlpatterns = [
-    path('', views.IndexView.as_view(), name='index'),
     path('chef-application', views.ChefApplicationView.as_view(), name='chef_application'),
     path('chef-application-received', views.ChefApplicationReceivedView.as_view(), name='chef_application_received'),
     path('chef-signup', views.ChefSignupView.as_view(), name='chef_signup'),
