@@ -1,4 +1,6 @@
+from textwrap import dedent
 import uuid
+from django.core.mail import send_mail
 from django.db import models
 from django.db.models.signals import post_save
 from django.conf import settings
@@ -214,6 +216,18 @@ class HelpRequest(models.Model):
 
     def get_absolute_url(self):
         return reverse_lazy('recipients:request_detail', args=[str(self.id)])
+
+    def send_confirmation_email(self):
+        send_mail(
+            "Confirming your The People's Pantry request",
+            dedent(f"""
+                Hi {self.name},
+                Just confirming that we received your request for The People's Pantry.
+                Your request ID is {self.uuid}
+            """),
+            None,  # From email (by setting None, it will use DEFAULT_FROM_EMAIL)
+            [self.email]
+        )
 
     def update_coordinates(self):
         latitude, longitude = geocode_anonymized(self.address)

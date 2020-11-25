@@ -1,5 +1,3 @@
-from textwrap import dedent
-from django.core.mail import send_mail
 from django.views.generic.edit import FormView
 from django.views.generic import DetailView
 from django.shortcuts import render
@@ -21,21 +19,9 @@ def success(request):
 class HelpRequestView(FormView):
     success_url = reverse_lazy('recipients:success')
 
-    def send_confirmation_email(self, instance):
-        send_mail(
-            "Confirming your The People's Pantry request",
-            dedent(f"""
-                Hi {instance.name},
-                Just confirming that we received your request for The People's Pantry.
-                Your request ID is {instance.uuid}
-            """),
-            None,  # From email (by setting None, it will use DEFAULT_FROM_EMAIL)
-            [instance.email]
-        )
-
     def form_valid(self, form):
         instance = form.save(commit=False)
-        self.send_confirmation_email(instance)
+        instance.send_confirmation_email()
         return super().form_valid(form)
 
 
