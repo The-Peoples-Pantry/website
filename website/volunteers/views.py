@@ -28,15 +28,17 @@ class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
 
     def get_context_data(self, alerts={}, **kwargs):
         context = super(ChefSignupView, self).get_context_data(**kwargs)
-        meals = []
-        for meal in context['mealrequest_list'].filter(delivery_date__isnull=True):
-            meals.append({
+        meals = [
+            {
                 'meal': meal,
                 'form': ChefSignupForm(instance=meal),
-            })
-
-        context['meals'] = meals
-        context['alerts'] = alerts
+            }
+            for meal in MealRequest.objects.filter(delivery_date__isnull=True)
+        ]
+        context.update({
+            'meals': meals,
+            'alerts': alerts,
+        })
         return context
 
     def create_delivery(self, data, user):
