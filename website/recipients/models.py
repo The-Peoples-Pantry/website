@@ -1,5 +1,6 @@
 import logging
 from textwrap import dedent
+import urllib.parse
 import uuid
 from django.core.mail import send_mail
 from django.db import models
@@ -210,11 +211,16 @@ class HelpRequest(models.Model):
 
     @property
     def address(self):
-        return f"{self.address1} {self.address2} {self.city} {self.postal_code}"
+        return f"{self.address_1} {self.address_2} {self.city} {self.postal_code}"
+
+    @property
+    def address_link(self):
+        address = urllib.parse.quote(self.address)
+        return f"https://www.google.com/maps/place/{address}"
 
     @property
     def anonymous_address_link(self):
-        return f"https://www.google.ca/maps/place/{self.anonymized_latitude},{self.anonymized_longitude}"
+        return f"https://www.google.com/maps/place/{self.anonymized_latitude},{self.anonymized_longitude}"
 
     def get_absolute_url(self):
         return reverse_lazy('recipients:request_detail', args=[str(self.id)])
