@@ -1,3 +1,4 @@
+import logging
 from textwrap import dedent
 import uuid
 from django.core.mail import send_mail
@@ -6,7 +7,10 @@ from django.conf import settings
 from django.urls import reverse_lazy
 
 from core.models import get_sentinel_user
-from website.maps import geocode_anonymized
+from website.maps import Geocoder, GeocoderException
+
+
+logger = logging.getLogger(__name__)
 
 
 class Cities(models.TextChoices):
@@ -230,9 +234,12 @@ class HelpRequest(models.Model):
 
     def update_coordinates(self):
         """Updates, but does not commit, anonymized coordinates on the instance"""
-        latitude, longitude = geocode_anonymized(self.address)
-        self.anonymized_latitude = latitude
-        self.anonymized_longitude = longitude
+        try:
+            latitude, longitude = Geocoder().geocode_anonymized(self.address)
+            self.anonymized_latitude = latitude
+            self.anonymized_longitude = longitude
+        except GeocoderException:
+            logger.exception("Error when updating coordinates for %d", self.uuid)
 
     def save(self, *args, **kwargs):
         # Whenever the model is updated, make sure coordinates are updated too
