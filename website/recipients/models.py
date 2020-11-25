@@ -221,8 +221,17 @@ class HelpRequest(models.Model):
         self.anonymized_longitude = longitude
         self.save()
 
+    def __str__(self):
+        delivery_date = self.delivery_date.strftime("%m/%d/%Y") if self.delivery_date else "Unscheduled"
+        return "[%s] %s request for %s in %s for %d adult(s) and %d kid(s)" % (
+            delivery_date, self._meta.verbose_name, self.name, self.city, self.num_adults, self.num_children,
+        )
+
 
 class MealRequest(HelpRequest):
+    class Meta:
+        verbose_name = "Meal"
+
     dairy_free = models.BooleanField("Dairy free")
     gluten_free = models.BooleanField("Gluten free")
     halal = models.BooleanField("Halal")
@@ -247,6 +256,9 @@ class MealRequest(HelpRequest):
 
 
 class GroceryRequest(HelpRequest):
+    class Meta:
+        verbose_name = "Groceries"
+
     vegetables = models.CharField(
         "Vegetables",
         help_text="Select all that you want",
@@ -335,6 +347,12 @@ class Delivery(models.Model):
     # System
     uuid = models.UUIDField(default=uuid.uuid4, editable=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        # delivery_date = self.delivery_date.strftime("%m/%d/%Y") if self.delivery_date else "Unscheduled"
+        return "[%s] Delivering %s to %s for %s" % (
+            self.status.capitalize(), self.request._meta.verbose_name, self.request.city, self.request.name,
+        )
 
 
 def save_help_request(sender, instance, created, **kwargs):

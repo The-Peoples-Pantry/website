@@ -6,6 +6,16 @@ from django.conf import settings
 from recipients.models import Cities
 
 
+def get_group_string(group_set):
+    groups = []
+    if len(group_set) == 0:
+        return ""
+
+    for group in group_set:
+        groups.append(group.name)
+    return "(" + ", ".join(groups) + ")"
+
+
 # These choice values must match up with the name of the Groups
 class VolunteerRoles(models.TextChoices):
     CHEFS = 'Chefs'
@@ -49,6 +59,9 @@ class Volunteer(models.Model):
         blank=True
     )
     training_complete = models.BooleanField("Training Complete", default=False)
+
+    def __str__(self):
+        return "%s %s" % (self.user, get_group_string(self.user.groups.all()))
 
 
 class VolunteerApplication(models.Model):
