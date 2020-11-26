@@ -1,4 +1,4 @@
-{% extends "registration/base.html" %}
+{% extends "base.html" %}
 {% load bootstrap4 %}
 
 {% block content %}
@@ -12,7 +12,8 @@
   </div>
 {% endif %}
 
-<form method="post" action="{% url 'login' %}">
+<h1>Log in</h1>
+<form method="post" action="{% url 'login' %}" class="mb-4">
   {% csrf_token %}
   <input type="hidden" name="next" value="{{ next }}">
   {% bootstrap_form form %}

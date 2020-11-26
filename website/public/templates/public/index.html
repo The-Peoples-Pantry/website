@@ -1,5 +1,73 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-<h1>The People's Pantry</h1>
+
+<div class="col">
+	<div class="row">
+		<div class="container-fluid home--splash home--full-width"></div>
+		<div class="text-center container-fluid pt-4">
+			<a href="{% url 'recipients:index' %}" class="btn btn-success m-2 py-2 px-4">
+				<span class="h3">Request free meals or groceries</span>
+			</a>
+			<div class="mt-2">
+				<a href="https://www.gofundme.com/f/the-people039s-pantry-covid19-emergency-meal-fund" class="btn btn-info m-2" target="_blank" rel="noopener noreferrer">
+					<span class="h4">Donate</span>
+				</a>
+				<a href="{% url 'signup' %}" class="btn btn-info m-2">
+					<span class="h4">Volunteer</span>
+				</a>
+			</div>
+		</div>
+
+		<h1>The People's Pantry</h1>
+		<p>
+		  The COVID-19 crisis has left many in our community struggling to access food as we are
+		  faced with mass unemployment and loss of income, excessive hoarding at grocery stores,
+		  reduced transportation options, and more. Particularly hard-hit communities include, but
+		  are not limited to, QTBIPOC (Queer, Trans*, Black, Indigenous, and People of Colour),
+		  single parents, sex workers, those living in precarious housing situations, those living
+		  with underlying medical conditions, those with disabilities, newly-arrived immigrants,
+		  and the elderly.
+		</p>
+		<p>
+		  In response to the pandemic, The People's Pantry is a grassroots initiative providing
+		  home-cooked meals and grocery bundles to individuals and families across the GTA who
+		  have been disproportionately affected by the COVID-19 crisis.
+		  We serve those who are struggling financially or are otherwise unable to provide
+		  sufficient food for themselves and their family. Meals and groceries will be delivered
+		  right to their door, 100% free of charge.
+		</p>
+
+		<div class="text-center container-fluid">
+			<a href="{% url 'signup' %}" class="btn btn-info m-2">
+				Volunteer in Toronto
+			</a><br />
+			<a href="https://docs.google.com/forms/d/e/1FAIpQLSdmQsU0ctjkuaLLm4_2RiPpTh_kA9OfZXu1d2gG5zmgCva2zg/viewform" class="btn btn-info m-2" target="_blank" rel="noopener nofollow">
+				Volunteer in Halton/Hamilton/Guelph/Kitchener
+			</a>
+		</div>
+
+		<div class="home--social home--full-width mt-4">
+			<div class="container">
+				<h4>Find us on social media</h4>
+				<div class="text-center container-fluid">
+					<a class="home--social-links" href="https://www.facebook.com/groups/675649626532144/">
+						<img alt="Facebook" class="home--social-icons" src="{% static 'icons/facebook.svg' %}"  />
+					</a>
+					<a class="home--social-links" href="https://www.instagram.com/peoplespantryto/" target="_blank" rel="noopener nofollow">
+						<img alt="Instagram" class="home--social-icons" src="{% static 'icons/instagram.svg' %}" />
+					</a>
+					<a class="home--social-links" href="https://twitter.com/peoplespantryTO" target="_blank" rel="noopener nofollow">
+						<img alt="Twitter" class="home--social-icons" src="{% static 'icons/twitter.svg' %}" />
+					</a>
+					<a class="home--social-links" href="https://www.tiktok.com/@thepeoplespantry" target="_blank" rel="noopener nofollow">
+						<img alt="TikTok" class="home--social-icons" src="{% static 'icons/tiktok.svg' %}" />
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
 {% endblock %}

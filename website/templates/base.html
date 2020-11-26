@@ -20,10 +20,16 @@
   <body>
     {% block navigation %}{% include "nav.html" %}{% endblock %}
 
-    <div class="container">
+    <div class="container body">
       {% bootstrap_messages %}
       {% block content %}{% endblock %}
     </div>
+    <footer class="bg-dark">
+      <div class="container text-center pt-3 pb-2">
+        <a class="text-light" href="mailto:thepeoplespantrytoronto@gmail.com">Contact us</a>
+      </div>
+    </footer>
     {% bootstrap_javascript jquery='slim' %}
   </body>
+
 </html>

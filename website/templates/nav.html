@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-3">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark py-3">
   <div class="container">
     <ul class="navbar-nav mr-auto">
       <li class="nav-item">
@@ -12,10 +12,13 @@
         </a>
         <div class="dropdown-menu">
           <a class="dropdown-item" href="{% url 'recipients:new_meal_request' %}">
-            Request meals
+            Request meals (Toronto)
           </a>
           <a class="dropdown-item" href="{% url 'recipients:new_grocery_request' %}">
-            Request groceries
+            Request groceries (Toronto)
+          </a>
+          <a class="dropdown-item" href="https://forms.gle/uJyEwwX8NbUZb4nX6" target="_blank" rel="noopener noreferrer">
+            Requests for Halton, Hamilton, Guelph/Kitchener
           </a>
         </div>
       </li>
@@ -59,5 +62,6 @@
       </li>
     </ul>
     {% endif %}
+    <a class="btn btn-info ml-3" href="https://www.gofundme.com/f/the-people039s-pantry-covid19-emergency-meal-fund" target="_blank" rel="noopener noreferrer">Donate</a>
   </div>
 </nav>
