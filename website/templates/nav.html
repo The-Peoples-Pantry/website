@@ -34,6 +34,9 @@
           <a class="dropdown-item" href="{% url 'volunteers:delivery_signup' %}">
             Sign up to deliver
           </a>
+          <a class="dropdown-item" target="_blank" rel="noopener noreferrer" href="https://forms.gle/i7BscqiGwyvRL5Fr7">
+            Volunteer in Halton, Hamilton, Guelph/Kitchener
+          </a>
         </div>
       </li>
       <li class="nav-item dropdown">
@@ -46,8 +49,14 @@
       {% endif %}
     </ul>
     {% if request.user.is_authenticated %}
-    <span class="navbar-text">Logged in as: {{ request.user.username }}</span>
     <ul class="navbar-nav">
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Logged in as: {{ request.user.username }}</a>
+        <div class="dropdown-menu">
+          <a class="dropdown-item" href="{% url 'profile' %}">My profile</a>
+          {% if request.user.is_staff %}<a class="dropdown-item" href="/admin">Admin</a>{% endif %}
+        </div>
+      </li>
       <li class="nav-item">
         <a class="nav-link" href="{% url 'logout' %}">Logout</a>
       </li>
