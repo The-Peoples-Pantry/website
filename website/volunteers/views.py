@@ -29,13 +29,10 @@ class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
 
     def get_context_data(self, **kwargs):
         context = super(ChefSignupView, self).get_context_data(**kwargs)
-        context["meals"] = [
-            {
-                'meal': meal,
-                'form': ChefSignupForm(initial={'uuid': meal.uuid}),
-            }
+        context["meal_request_form_pairs"] = [
+            (meal_request, ChefSignupForm(initial={'uuid': meal_request.uuid}))
             # self.object_list is a MealRequest queryset pre-filtered by ChefSignupFilter
-            for meal in self.object_list
+            for meal_request in self.object_list
         ]
         return context
 
