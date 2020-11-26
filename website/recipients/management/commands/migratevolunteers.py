@@ -70,4 +70,4 @@ class Command(BaseCommand):
         with open(csv_path) as csv_input:
             reader = csv.DictReader(csv_input)
             for entry in reader:
-                volunteer = csv_to_django(entry)
+                csv_to_django(entry)
