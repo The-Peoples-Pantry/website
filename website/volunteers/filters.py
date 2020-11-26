@@ -35,7 +35,6 @@ class ChefSignupFilter(FilterSet):
         }
 
 
-
 class DeliverySignupFilter(FilterSet):
     request__delivery_date = DateFilter(
         widget=DateInput()
