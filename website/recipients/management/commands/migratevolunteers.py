@@ -21,7 +21,9 @@ def csv_to_django(entry: dict):
     required_fields = ['Full name:', 'Email address:', 'Phone number:']
     for field in required_fields:
         if field not in entry or not entry[field]:
-            logging.warning(f'Required entry `{field}` is missing, skipping entry: {str(list(entry.values()))}')
+            logging.warning(
+                f'Required entry `{field}` is missing or empty, skipping entry: {str(list(entry.values()))}'
+            )
             return
 
     try:
@@ -43,6 +45,22 @@ def csv_to_django(entry: dict):
         # NOTE: Full address is included in address_1; parsing would probably require geocoding query.
         #       Likely better to stick with defaults in `address_2` and `postal_code` for now.
         volunteer.phone_number = entry['Phone number:']
+
+        # Role
+        # TODO: uncomment this once Volunteer has a role
+        # role_selection = entry['Would you like to...? Check all that apply.'].lower()
+        # if role_selection:
+        #     if 'cook' in role_selection:
+        #         volunteer.role = 'Chefs'
+        #     elif 'deliver' in role_selection:
+        #         volunteer.role = 'Deliverers'
+        #     elif 'administrative' in role_selection:
+        #         volunteer.role = 'Organizers'
+        #     else:
+        #         logging.warning(
+        #             f'Unknown role selection {role_selection} for entry: {friendly_entry(entry, required_fields)}'
+        #         )
+
         volunteer.save()
 
     except KeyError as e:
