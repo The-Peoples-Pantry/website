@@ -18,77 +18,80 @@
   <div class="col-md-9 order-md-1">
 
     <p>Here are all the upcoming meal requests that need a chef! Please sign up by selecting a pickup date and time frame. You can also  <a href={% url 'volunteers:chef_list' %}>see all the meals you've already signed up for here</a>.</p>
-    {% if meals %}
-      <ul class="volunteer-pages--meals-list container">
-        {% for chef_signup in meals %}
-          {% with form=chef_signup.form meal=chef_signup.meal %}
-          <li class="volunteer-pages--meals">
-            <form action="" method="post" class="form">
-            {% csrf_token %}
+    {% for meal_request in meals %}
+      {% with form=meal_request.form meal=meal_request.meal %}
 
-            <div class="volunteer-pages--meals-signup-household">
-              Meal for {{ meal.num_adults }} adult{{ meal.num_adults | pluralize }}
-              and {{ meal.num_children }} kid{{ meal.num_children | pluralize }}
-              {% if meal.children_ages %}(aged {{ meal.children_ages }}){% endif %}
-              in {{ meal.city }}
-            </div>
+      {# Each request gets represented as a card #}
+      <div class="card mb-4">
 
-            <div class="volunteer-pages--meals-food-prefs row">
-              <div class="col">
-                <label>Food preferences</label>
-                {{ meal.food_preferences }}
+        {# Card header section contains the meal request title #}
+        <div class="card-header font-weight-bold">
+          Meal for {{ meal.num_adults }} adult{{ meal.num_adults | pluralize }}
+          and {{ meal.num_children }} kid{{ meal.num_children | pluralize }}
+          {% if meal.children_ages %}(aged {{ meal.children_ages }}){% endif %}
+          in {{ meal.city }}
+        </div>
 
-                <label>Food allergies</label>
-                {{ meal.food_allergies }}
-                {% if meal.vegan or meal.vegetarian or meal.dairy_free or meal.gluten_free or meal.halal or meal.low_carb %}
-                  <label>Other dietary information</label>
-                  <ul>
-                    {% if meal.vegan %} <li>Vegan</li> {% endif %}
-                    {% if meal.vegetarian %} <li>Vegetarian</li> {% endif %}
-                    {% if meal.dairy_free %} <li>Dairy Free</li> {% endif %}
-                    {% if meal.gluten_free %} <li>Gluten Freen</li> {% endif %}
-                    {% if meal.halal %} <li>Halal</li> {% endif %}
-                    {% if meal.low_carb %} <li>Low-carb</li> {% endif %}
-                  </ul>
-                {% endif %}
+        {# Card body section contains the form and map #}
+        <div class="card-body">
+          <div class="row">
+            <div class="col">
+              <h6>Food preferences</h6>
+              <p>{{ meal.food_preferences }}</p>
 
-                <div class="volunteer-pages--meal-signup-time">
-                  {% bootstrap_field form.delivery_date %}
+              <h6>Food allergies</h6>
+              <p>{{ meal.food_allergies }}</p>
 
-                  <label>Pickup timerange</label>
-                  <div class="row">
-                    <div class="col-sm">
-                      {% bootstrap_field form.start_time %}
-                    </div>
-                    <div class="col-sm">
-                      {% bootstrap_field form.end_time %}
-                    </div>
+              {% if meal.vegan or meal.vegetarian or meal.dairy_free or meal.gluten_free or meal.halal or meal.low_carb %}
+                <h6>Other dietary information</h6>
+                <ul>
+                  {% if meal.vegan %} <li>Vegan</li> {% endif %}
+                  {% if meal.vegetarian %} <li>Vegetarian</li> {% endif %}
+                  {% if meal.dairy_free %} <li>Dairy Free</li> {% endif %}
+                  {% if meal.gluten_free %} <li>Gluten Freen</li> {% endif %}
+                  {% if meal.halal %} <li>Halal</li> {% endif %}
+                  {% if meal.low_carb %} <li>Low-carb</li> {% endif %}
+                </ul>
+              {% endif %}
+
+              <form action="" method="post" class="form">
+                {% csrf_token %}
+
+                <h6>Pickup date</h6>
+                {% bootstrap_field form.delivery_date show_label=False %}
+
+                <h6>Pickup timerange</h6>
+                <div class="row">
+                  <div class="col-sm">
+                    {% bootstrap_field form.start_time %}
+                  </div>
+                  <div class="col-sm">
+                    {% bootstrap_field form.end_time %}
                   </div>
                 </div>
 
-                {{ form.uuid.as_hidden }}
                 <p>{{ form.container_needed }} I need containers for this meal</p>
-                {% buttons submit="Submit"%}{% endbuttons %}
-              </div>
-              <div class="col">
-                <label>Approximate delivery location</label>
-                <iframe
-                  width="350"
-                  height="400"
-                  frameborder="0" style="border:0"
-                  src="{{ meal.anonymous_map_embed }}&zoom=12" allowfullscreen>
-                </iframe>
-              </div>
-            </div>
-            </form>
-          </li>
-          {% endwith %}
-        {% endfor %}
-      </ul>
 
-    {% else %}
+                {{ form.uuid.as_hidden }}
+                {% buttons submit="Submit"%}{% endbuttons %}
+              </form>
+            </div>
+            <div class="col">
+              <h6>Approximate delivery location</h6>
+              <iframe
+                width="350"
+                height="400"
+                frameborder="0" style="border:0"
+                src="{{ meal.anonymous_map_embed }}&zoom=12" allowfullscreen>
+              </iframe>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endwith %}
+    {% empty %}
       <div class="alert alert-info">There are no open meal requests at this time.</div>
-    {% endif %}
+    {% endfor %}
   </div>
 </div>
 {% endblock content %}
