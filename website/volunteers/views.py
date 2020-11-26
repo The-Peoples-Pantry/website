@@ -112,7 +112,6 @@ class ChefIndexView(LoginRequiredMixin, GroupView, ListView):
         ).order_by('request__delivery_date')
 
 
-
 class DeliveryIndexView(LoginRequiredMixin, GroupView, ListView):
     model = Delivery
     template_name = "volunteers/delivery_list.html"
