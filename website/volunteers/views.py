@@ -119,7 +119,7 @@ class DeliveryIndexView(LoginRequiredMixin, GroupView, ListView):
 
     def get_queryset(self):
         return Delivery.objects.filter(
-            chef=self.request.user
+            deliverer=self.request.user
         ).exclude(
             status=Status.DELIVERED
         ).order_by('request__delivery_date')
