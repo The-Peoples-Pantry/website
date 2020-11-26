@@ -23,9 +23,14 @@ class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
     """View for chefs to sign up to cook meal requests"""
     template_name = "volunteers/chef_signup.html"
     form_class = ChefSignupForm
-    success_url = reverse_lazy('volunteers:chef_signup')
     permission_group = 'Chefs'
     filterset_class = ChefSignupFilter
+    queryset = MealRequest.objects.filter(delivery_date__isnull=True)
+
+    @property
+    def success_url(self):
+        """Redirect to the same page with same query params to keep the filters"""
+        return self.request.get_full_path()
 
     def get_context_data(self, **kwargs):
         context = super(ChefSignupView, self).get_context_data(**kwargs)
@@ -37,20 +42,35 @@ class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
         return context
 
     def form_invalid(self, form):
-        messages.error(self.request, 'Invalid selection')
-        return super().form_invalid(form)
+        messages.error(
+            self.request,
+            'Sorry, we were unable to register you for that request, someone else may have already claimed it.'
+        )
+        return redirect(self.success_url)
 
     def form_valid(self, form):
+        # First fetch the associated meal request
+        # It's possible that someone else has signed up for it, so handle that
         meal_request = self.get_meal_request(form)
+        if meal_request is None:
+            return self.form_invalid(form)
+
+        # If the meal request is still available setup the delivery
         self.update_meal_request(form, meal_request)
         self.create_delivery(form, meal_request)
+
+        # If the form requested containers, setup another delivery for those
         if form.cleaned_data['container_needed']:
             self.create_container_delivery(form, meal_request)
+
         messages.success(self.request, 'Successfully signed up!')
         return super().form_valid(form)
 
     def get_meal_request(self, form):
-        return MealRequest.objects.get(uuid=form.cleaned_data['uuid'])
+        try:
+            return self.queryset.get(uuid=form.cleaned_data['uuid'])
+        except MealRequest.DoesNotExist:
+            return None
 
     def update_meal_request(self, form, meal_request):
         meal_request.delivery_date = form.cleaned_data['delivery_date']

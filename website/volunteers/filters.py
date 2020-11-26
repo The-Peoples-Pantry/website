@@ -34,12 +34,6 @@ class ChefSignupFilter(FilterSet):
             'vegetarian': ['exact'],
         }
 
-    # Apply default filters to the queryset
-    @property
-    def qs(self):
-        return super().qs.filter(delivery_date__isnull=True)
-
-
 
 class DeliverySignupFilter(FilterSet):
     request__delivery_date = DateFilter(
