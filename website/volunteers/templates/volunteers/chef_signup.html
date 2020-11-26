@@ -23,14 +23,14 @@
         {% for chef_signup in meals %}
           {% with form=chef_signup.form meal=chef_signup.meal %}
           <li class="volunteer-pages--meals">
-            <form action="" method="post" class="form">{% csrf_token %}
+            <form action="" method="post" class="form">
+            {% csrf_token %}
 
             <div class="volunteer-pages--meals-signup-household">
               Meal for {{ meal.num_adults }} adult{{ meal.num_adults | pluralize }}
               and {{ meal.num_children }} kid{{ meal.num_children | pluralize }}
-              {% if meal.children_ages %}
-                (aged {{ meal.children_ages }})
-              {% endif %} in {{ meal.city }}
+              {% if meal.children_ages %}(aged {{ meal.children_ages }}){% endif %}
+              in {{ meal.city }}
             </div>
 
             <div class="volunteer-pages--meals-food-prefs row">
@@ -53,11 +53,17 @@
                 {% endif %}
 
                 <div class="volunteer-pages--meal-signup-time">
-                  <label>Pickup date</label>
-                  {{ form.delivery_date }}
+                  {% bootstrap_field form.delivery_date %}
 
                   <label>Pickup timerange</label>
-                  {{ form.start_time }} to {{ form.end_time }}
+                  <div class="row">
+                    <div class="col-sm">
+                      {% bootstrap_field form.start_time %}
+                    </div>
+                    <div class="col-sm">
+                      {% bootstrap_field form.end_time %}
+                    </div>
+                  </div>
                 </div>
 
                 {{ form.uuid.as_hidden }}
