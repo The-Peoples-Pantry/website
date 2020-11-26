@@ -166,7 +166,7 @@ class DeliverySignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
             instance = Delivery.objects.get(uuid=data['uuid'])
             instance.dropoff_start = data['start_time']
             instance.dropoff_end = data['end_time']
-            instance.deliverer = User.objects.get(pk=request.user.id)
+            instance.deliverer = request.user
             instance.status = Status.SCHEDULED
             instance.save()
             alerts['success'] = True
