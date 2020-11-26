@@ -4,18 +4,6 @@
 {% block content %}
 <h1 class="mb-3">Chef signup</h1>
 
-{% if alerts.success %}
-  <div class="alert alert-success mb-4">
-    Thanks for signing up to cook! <a href={% url 'volunteers:chef_list' %}>Click here</a> to see everything you've signed up for.
-  </div>
-{% endif %}
-
-{% if alerts.error %}
-  <div class="alert alert-warning mb-4">
-    {{ alerts.error }}
-  </div>
-{% endif %}
-
 <div class="row">
   <div class="col-md-3 order-md-2">
     {% if filter %}
@@ -72,7 +60,7 @@
                   {{ form.start_time }} to {{ form.end_time }}
                 </div>
 
-                {{ form.uuid }}
+                {{ form.uuid.as_hidden }}
                 <p>{{ form.container_needed }} I need containers for this meal</p>
                 {% buttons submit="Submit"%}{% endbuttons %}
               </div>

@@ -1,4 +1,5 @@
 import datetime
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
@@ -13,95 +14,69 @@ from .forms import DeliverySignupForm, ChefSignupForm, AcceptTermsForm
 from .models import VolunteerApplication, VolunteerRoles
 from .filters import ChefSignupFilter, DeliverySignupFilter
 
+
 def delivery_success(request):
     return render(request, 'volunteers/delivery_success.html')
 
 
 class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
     """View for chefs to sign up to cook meal requests"""
-    model = MealRequest
     template_name = "volunteers/chef_signup.html"
     form_class = ChefSignupForm
     success_url = reverse_lazy('volunteers:chef_signup')
     permission_group = 'Chefs'
     filterset_class = ChefSignupFilter
 
-    def get_context_data(self, alerts={}, **kwargs):
+    def get_context_data(self, **kwargs):
         context = super(ChefSignupView, self).get_context_data(**kwargs)
-        meals = [
+        context["meals"] = [
             {
                 'meal': meal,
-                'form': ChefSignupForm(instance=meal),
+                'form': ChefSignupForm(initial={'uuid': meal.uuid}),
             }
-            for meal in MealRequest.objects.filter(delivery_date__isnull=True)
+            # self.object_list is a MealRequest queryset pre-filtered by ChefSignupFilter
+            for meal in self.object_list
         ]
-        context.update({
-            'meals': meals,
-            'alerts': alerts,
-        })
         return context
 
-    def create_delivery(self, data, user):
-        user_object = User.objects.get(pk=user.id)
-        meal_object = MealRequest.objects.get(uuid=data['uuid'])
+    def form_invalid(self, form):
+        messages.error(self.request, 'Invalid selection')
+        return super().form_invalid(form)
 
-        try:
-            instance = Delivery.objects.get(request=meal_object)
+    def form_valid(self, form):
+        meal_request = self.get_meal_request(form)
+        self.update_meal_request(form, meal_request)
+        self.create_delivery(form, meal_request)
+        if form.cleaned_data['container_needed']:
+            self.create_container_delivery(form, meal_request)
+        messages.success(self.request, 'Successfully signed up!')
+        return super().form_valid(form)
 
-        except Delivery.DoesNotExist as exception:
-            if data['container_needed']:
-                """Create another delivery object for
-                just the containers"""
-                container_instance = Delivery.objects.create(
-                    request=meal_object,
-                    chef=user_object,
-                    status=Status.CHEF_ASSIGNED,
-                    pickup_start=data['start_time'],
-                    pickup_end=data['end_time'],
-                    container_delivery=True
-                )
-                container_instance.user = user_object
-                container_instance.save()
+    def get_meal_request(self, form):
+        return MealRequest.objects.get(uuid=form.cleaned_data['uuid'])
 
-            meal_instance = Delivery.objects.create(
-                request=meal_object,
-                chef=user_object,
-                status=Status.CHEF_ASSIGNED,
-                pickup_start=data['start_time'],
-                pickup_end=data['end_time']
-            )
-            meal_instance.user = user_object
-            meal_instance.save()
+    def update_meal_request(self, form, meal_request):
+        meal_request.delivery_date = form.cleaned_data['delivery_date']
+        meal_request.save()
 
+    def create_delivery(self, form, meal_request):
+        Delivery.objects.create(
+            request=meal_request,
+            chef=self.request.user,
+            status=Status.CHEF_ASSIGNED,
+            pickup_start=form.cleaned_data['start_time'],
+            pickup_end=form.cleaned_data['end_time']
+        )
 
-    def post(self, request):
-        data = request.POST
-        alerts = {'success': False, 'errors': None}
-
-        try:
-            if data['delivery_date']:
-                delivery_date = datetime.datetime.strptime(data['delivery_date'], '%Y-%m-%d')
-
-                if delivery_date.date() >= datetime.datetime.today().date():
-                    instance = MealRequest.objects.get(uuid=data['uuid'])
-                    instance.delivery_date = data['delivery_date']
-                    self.create_delivery(data, request.user)
-                    instance.save()
-                    alerts['success'] = True
-
-                else:
-                    alerts['error'] = "You tried to sign up to cook on "\
-                        "%s, which is in the past. "\
-                        "Please sign up for a date in the future."\
-                        % data['delivery_date']
-
-            else:
-                alerts['error'] = "You didn't select a delivery date."
-
-        except Exception as e:
-            print("Exception raised while saving a chef sign-up: %s" % e)
-
-        return render(request, self.template_name, self.get_context_data(alerts))
+    def create_container_delivery(self, form, meal_request):
+        Delivery.objects.create(
+            request=meal_request,
+            chef=self.request.user,
+            status=Status.CHEF_ASSIGNED,
+            pickup_start=form.cleaned_data['start_time'],
+            pickup_end=form.cleaned_data['end_time'],
+            container_delivery=True
+        )
 
 
 class ChefIndexView(LoginRequiredMixin, GroupView, ListView):
