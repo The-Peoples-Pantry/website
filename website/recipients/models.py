@@ -257,15 +257,12 @@ class HelpRequest(models.Model):
 
     def __str__(self):
         delivery_date = self.delivery_date.strftime("%m/%d/%Y") if self.delivery_date else "Unscheduled"
-        return "[%s] %s request for %s in %s for %d adult(s) and %d kid(s)" % (
-            delivery_date, self._meta.verbose_name, self.name, self.city, self.num_adults, self.num_children,
+        return "[%s] %s for %s in %s for %d adult(s) and %d kid(s)" % (
+            delivery_date, self._meta.verbose_name.capitalize(), self.name, self.city, self.num_adults, self.num_children,
         )
 
 
 class MealRequest(HelpRequest):
-    class Meta:
-        verbose_name = "Meal"
-
     dairy_free = models.BooleanField("Dairy free")
     gluten_free = models.BooleanField("Gluten free")
     halal = models.BooleanField("Halal")
@@ -290,9 +287,6 @@ class MealRequest(HelpRequest):
 
 
 class GroceryRequest(HelpRequest):
-    class Meta:
-        verbose_name = "Groceries"
-
     vegetables = models.CharField(
         "Vegetables",
         help_text="Select all that you want",
@@ -399,5 +393,5 @@ class Delivery(models.Model):
     def __str__(self):
         # delivery_date = self.delivery_date.strftime("%m/%d/%Y") if self.delivery_date else "Unscheduled"
         return "[%s] Delivering %s to %s for %s" % (
-            self.status.capitalize(), self.request._meta.verbose_name, self.request.city, self.request.name,
+            self.status.capitalize(), self.request._meta.verbose_name.capitalize(), self.request.city, self.request.name,
         )
