@@ -189,3 +189,35 @@ GOOGLE_MAPS_EMBED_KEY = "AIzaSyB8X4idnj8vEMpU_H0jF53SGr8pRnT2jaQ"
 # Textline API
 # https://textline.docs.apiary.io/
 TEXTLINE_API_KEY = getenv("TEXTLINE_API_KEY")
+
+
+# Group Permissions
+# List of permissions that each group has
+# Group permissions are reset to this list on every deploy
+
+GROUP_PERMISSIONS = {
+    'Chefs': [
+        'add_delivery',
+        'view_delivery',
+        'view_mealrequest',
+    ],
+    'Deliverers': [
+        'add_delivery',
+        'view_delivery',
+        'view_mealrequest',
+    ],
+    'Organizers': [
+        'add_delivery',
+        'change_delivery',
+        'delete_delivery',
+        'view_delivery',
+        'add_mealrequest',
+        'change_mealrequest',
+        'delete_mealrequest',
+        'view_mealrequest',
+        'add_updatenote',
+        'change_updatenote',
+        'delete_updatenote',
+        'view_updatenote',
+    ]
+}
