@@ -3,33 +3,32 @@
 
 {% block content %}
 <h1 class="mb-3">My cooking tasks</h1>
-<p>Here are all the upcoming meal requests that you've signed up for! If you need to make a change to one of these, please get in touch with one of our volunteer coordinators.</p>
 
-{% if deliveries %}
-  <div class="row">
-    <ul class="volunteer-pages--meals-list container">
-      {% for delivery in deliveries %}
-        <li class="volunteer-pages--meals">
-          <div class="volunteer-pages--meals-signup-household">
-            Meal for {{ delivery.request.num_adults }} adult{{ delivery.request.num_adults | pluralize }}
-            and {{ delivery.request.num_children }} kid{{ delivery.request.num_children | pluralize }}
-            {% if delivery.request.children_ages %}
-              (aged {{ delivery.request.children_ages }})
-            {% endif %}
-          </div>
+<div class="row w-75">
+  <div class="col">
+    <p>Here are all the upcoming meal requests that you've signed up for! If you need to make a change to one of these, please get in touch with one of our volunteer coordinators.</p>
 
-          <div class="volunteer-pages--meals-food-prefs row">
+    {% for delivery in deliveries %}
+      <div class="card mb-4">
+        <div class="card-header font-weight-bold">
+          Meal for {{ delivery.request.num_adults }} adult{{ delivery.request.num_adults | pluralize }}
+                and {{ delivery.request.num_children }} kid{{ delivery.request.num_children | pluralize }}
+                {% if delivery.request.children_ages %}
+                  (aged {{ delivery.request.children_ages }})
+                {% endif %}
+        </div>
+        <div class="card-body">
+          <div class="row">
             <div class="col">
-              <label>Food preferences</label>
-              {{ delivery.request.food_preferences }}
+              <h6>Food preferences</h6>
+              <p>{{ delivery.request.food_preferences }}</p>
 
-              <label>Food allergies</label>
-              {{ delivery.request.food_allergies }}
+              <h6>Food allergies</h6>
+              <p>{{ delivery.request.food_allergies }}</p>
             </div>
-
             <div class="col">
               {% if delivery.request.vegan or delivery.request.vegetarian or delivery.request.dairy_free or delivery.request.gluten_free or delivery.request.halal or delivery.request.low_carb %}
-                <label>Other dietary information</label>
+                <h6>Other dietary information</h6>
                 <ul>
                   {% if delivery.request.vegan %} <li>Vegan</li> {% endif %}
                   {% if delivery.request.vegetarian %} <li>Vegetarian</li> {% endif %}
@@ -41,29 +40,23 @@
               {% endif %}
             </div>
           </div>
+          <div class="row">
+            <div class="col">
+              <p class="font-weight-strong">This meal will be picked up on {{ delivery.request.delivery_date }} beetween {{ delivery.pickup_start }} to {{ delivery.pickup_end }} {% if delivery.deliverer %} by {{ delivery.deliverer.name }} ({{ delivery.deliverer.phone_number }}) {% endif %}</p>
+              <p>
+                Containers <strong>will {{ delivery.container_provided|yesno:",not ," }}</strong>be provided for this meal.
+              </p>
 
-          <div class="volunteer-pages--meal-signup-time">
-            <label>Pickup date</label>
-            {{ delivery.request.delivery_date }}
-
-            <label>Pickup timerange</label>
-            {{ delivery.pickup_start }} to {{ delivery.pickup_end }}
+            </div>
           </div>
+        </div>
+      </div>
 
-          <p>
-            Containers <strong>will {{ delivery.container_delivery|yesno:",not ," }}</strong>be provided for this meal.
-          </p>
-
-          <div class="alert alert-info">
-            Status: {{ delivery.status }}
-          </div>
-        </li>
-      {% endfor %}
-    </ul>
+    {% empty %}
+      <div class="alert alert-info">You haven't signed up to cook any meals! <a href={% url 'volunteers:chef_signup' %}>Click here</a> to see the list of meal requests that current need a cook.</div>
+    {% endfor %}
   </div>
-{% else %}
-  <div class="alert alert-info">You haven't signed up to cook any meals! <a href={% url 'volunteers:chef_signup' %}>Click here</a> to see the list of meal requests that current need a cook.</div>
-{% endif %}
+</div>
 
 
 {% endblock %}

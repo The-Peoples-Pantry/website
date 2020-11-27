@@ -1,3 +1,4 @@
+import datetime
 import logging
 from textwrap import dedent
 import urllib.parse
@@ -85,7 +86,43 @@ class Dairy(models.TextChoices):
     ALMOND_MILK = 'Almond Milk'
 
 
-class HelpRequest(models.Model):
+class AddressModel(models.Model):
+    class Meta:
+        abstract = True
+
+    @property
+    def address(self):
+        return f"{self.address_1} {self.address_2} {self.city} {self.postal_code}"
+
+    @property
+    def address_link(self):
+        address = urllib.parse.quote(self.address)
+        return f"https://www.google.com/maps/place/{address}"
+
+    @property
+    def anonymous_address_link(self):
+        return f"https://www.google.com/maps/place/{self.anonymized_latitude},{self.anonymized_longitude}"
+
+    @property
+    def anonymous_map_embed(self):
+        return f"https://www.google.com/maps/embed/v1/place?key={ settings.GOOGLE_MAPS_EMBED_KEY }&q={self.anonymized_latitude},{self.anonymized_longitude}"
+
+    def update_coordinates(self):
+        """Updates, but does not commit, anonymized coordinates on the instance"""
+        try:
+            latitude, longitude = Geocoder().geocode_anonymized(self.address)
+            self.anonymized_latitude = latitude
+            self.anonymized_longitude = longitude
+        except GeocoderException:
+            logger.exception("Error when updating coordinates for %d", self.uuid)
+
+    def save(self, *args, **kwargs):
+        # Whenever the model is updated, make sure coordinates are updated too
+        self.update_coordinates()
+        super().save(*args, **kwargs)
+
+
+class HelpRequest(AddressModel):
     class Meta:
         abstract = True
 
@@ -209,23 +246,6 @@ class HelpRequest(models.Model):
     anonymized_latitude = models.FloatField(default=43.651070)  # default: Toronto latitude
     anonymized_longitude = models.FloatField(default=-79.347015)  # default: Toronto longitude
 
-    @property
-    def address(self):
-        return f"{self.address_1} {self.address_2} {self.city} {self.postal_code}"
-
-    @property
-    def address_link(self):
-        address = urllib.parse.quote(self.address)
-        return f"https://www.google.com/maps/place/{address}"
-
-    @property
-    def anonymous_address_link(self):
-        return f"https://www.google.com/maps/place/{self.anonymized_latitude},{self.anonymized_longitude}"
-
-    @property
-    def anonymous_map_embed(self):
-        return f"https://www.google.com/maps/embed/v1/place?key={ settings.GOOGLE_MAPS_EMBED_KEY }&q={self.anonymized_latitude},{self.anonymized_longitude}"
-
     def get_absolute_url(self):
         return reverse_lazy('recipients:request_detail', args=[str(self.id)])
 
@@ -241,25 +261,12 @@ class HelpRequest(models.Model):
             [self.email]
         )
 
-    def update_coordinates(self):
-        """Updates, but does not commit, anonymized coordinates on the instance"""
-        try:
-            latitude, longitude = Geocoder().geocode_anonymized(self.address)
-            self.anonymized_latitude = latitude
-            self.anonymized_longitude = longitude
-        except GeocoderException:
-            logger.exception("Error when updating coordinates for %d", self.uuid)
-
-    def save(self, *args, **kwargs):
-        # Whenever the model is updated, make sure coordinates are updated too
-        self.update_coordinates()
-        super().save(*args, **kwargs)
-
     def __str__(self):
         delivery_date = self.delivery_date.strftime("%m/%d/%Y") if self.delivery_date else "Unscheduled"
         return "[%s] %s for %s in %s for %d adult(s) and %d kid(s)" % (
             delivery_date, self._meta.verbose_name.capitalize(), self.name, self.city, self.num_adults, self.num_children,
         )
+
 
 
 class MealRequest(HelpRequest):
@@ -338,9 +345,9 @@ class GroceryRequest(HelpRequest):
 class Status(models.TextChoices):
     UNCONFIRMED = 'Unconfirmed', 'Unconfirmed'
     CHEF_ASSIGNED = 'Chef Assigned', 'Chef Assigned'
-    SCHEDULED = 'Scheduled for Delivery', 'Scheduled for Delivery'
-    CONFIRMED = 'Delivery Confirmed', 'Delivery Confirmed'
-    RESCHEDULED = 'Rescheduled', 'Rescheduled'
+    DATE_CONFIRMED = 'Delivery Date Confirmed', 'Delivery Date Confirmed'
+    DRIVER_ASSIGNED = 'Driver Assigned', 'Driver Assigned'
+    RESCHEDULED = 'Recipient Rescheduled', 'Recipient Rescheduled'
     DELIVERED = 'Delivered', 'Delivered'
 
 
@@ -389,6 +396,17 @@ class Delivery(models.Model):
     # System
     uuid = models.UUIDField(default=uuid.uuid4, editable=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    @property
+    def delivery_date(self):
+        if self.container_delivery:
+            return self.request.delivery_date - datetime.timedelta(days=2)
+
+        return self.request.delivery_date
+
+    @property
+    def container_provided(self):
+        return Delivery.objects.filter(request=self.request, container_delivery=True).exists()
 
     def __str__(self):
         # delivery_date = self.delivery_date.strftime("%m/%d/%Y") if self.delivery_date else "Unscheduled"

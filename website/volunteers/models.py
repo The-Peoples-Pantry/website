@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 from django.conf import settings
-from recipients.models import Cities
+from recipients.models import Cities, AddressModel
 
 
 # These choice values must match up with the name of the Groups
@@ -13,7 +13,7 @@ class VolunteerRoles(models.TextChoices):
     ORGANIZERS = 'Organizers'
 
 
-class Volunteer(models.Model):
+class Volunteer(AddressModel):
     user = models.OneToOneField(
         User,
         on_delete=models.CASCADE,
