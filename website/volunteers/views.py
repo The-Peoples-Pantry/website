@@ -96,33 +96,33 @@ class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
         )
 
 
-class ChefIndexView(LoginRequiredMixin, GroupView, ListView):
-    """View for chefs to see the meals they've signed up to cook"""
+class TaskIndexView(LoginRequiredMixin, GroupView, ListView):
     model = Delivery
-    template_name = "volunteers/chef_list.html"
     context_object_name = "deliveries"
+    queryset = Delivery.objects.exclude(
+        status=Status.DELIVERED
+    ).order_by('request__delivery_date')
+
+
+class ChefIndexView(TaskIndexView):
+    """View for chefs to see the meals they've signed up to cook"""
+    template_name = "volunteers/chef_list.html"
     permission_group = 'Chefs'
 
     def get_queryset(self):
-        return Delivery.objects.filter(
+        return self.queryset.filter(
             chef=self.request.user
-        ).exclude(
-            status=Status.DELIVERED
-        ).order_by('request__delivery_date')
+        )
 
-
-class DeliveryIndexView(LoginRequiredMixin, GroupView, ListView):
-    model = Delivery
+class DeliveryIndexView(TaskIndexView):
+    """View for deliverers to see the requests they've signed up to deliver"""
     template_name = "volunteers/delivery_list.html"
-    context_object_name = "deliveries"
     permission_group = 'Deliverers'
 
     def get_queryset(self):
-        return Delivery.objects.filter(
+        return self.queryset.filter(
             deliverer=self.request.user
-        ).exclude(
-            status=Status.DELIVERED
-        ).order_by('request__delivery_date')
+        )
 
 
 class DeliverySignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
