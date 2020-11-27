@@ -3,7 +3,13 @@
 {% load bootstrap4 %}
 
 {% block content %}
-<h1>Profile</h1>
+<span class="d-inline-flex align-items-baseline">
+  <h1>Profile</h1>
+  {% if 'Chefs' in groups %}<span class="badge badge-pill badge-primary ml-2">Chef</span>{% endif %}
+  {% if 'Deliverers' in groups %}<span class="badge badge-pill badge-primary ml-2">Deliverer</span>{% endif %}
+  {% if 'Organizers' in groups %}<span class="badge badge-pill badge-primary ml-2">Organizer</span>{% endif %}
+</span>
+
 <form action="" method="post" class="form">
   {% csrf_token %}
   {% bootstrap_form form %}
@@ -11,6 +17,7 @@
 </form>
 
 <div class="card-deck mt-5">
+  {% if 'Chefs' not in groups %}
   <div class="card">
     <img class="card-img-top" src="{% static 'chef.svg'%}" alt="Card image cap" height="200">
     <div class="card-body">
@@ -18,9 +25,16 @@
       <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.r.</p>
     </div>
     <div class="card-footer">
-      <a class="btn btn-primary" role="button" href="{% url 'volunteers:chef_application' %}">Apply now</a>
+      {% if 'Chefs' in pending_groups %}
+        <button type="button" class="btn btn-primary" disabled>Your application is pending</button>
+      {% else %}
+        <a class="btn btn-primary" role="button" href="{% url 'volunteers:chef_application' %}">Apply now</a>
+      {% endif %}
     </div>
   </div>
+  {% endif %}
+
+  {% if 'Deliverers' not in groups %}
   <div class="card">
     <img class="card-img-top" src="{% static 'deliverer.svg'%}" alt="Card image cap" height="200">
     <div class="card-body">
@@ -28,9 +42,16 @@
       <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.t.</p>
     </div>
     <div class="card-footer">
-      <a class="btn btn-primary" role="button" href="{% url 'volunteers:delivery_application' %}">Apply now</a>
+      {% if 'Deliverers' in pending_groups %}
+        <button type="button" class="btn btn-primary" disabled>Your application is pending</button>
+      {% else %}
+        <a class="btn btn-primary" role="button" href="{% url 'volunteers:delivery_application' %}">Apply now</a>
+      {% endif %}
     </div>
   </div>
+  {% endif %}
+
+  {% if 'Organizers' not in groups %}
   <div class="card">
     <img class="card-img-top" src="{% static 'organizer.svg'%}" alt="Card image cap" height="200">
     <div class="card-body">
@@ -41,5 +62,6 @@
       <button type="button" class="btn btn-primary" disabled>Coming soon...</button>
     </div>
   </div>
+  {% endif %}
 </div>
 {% endblock %}

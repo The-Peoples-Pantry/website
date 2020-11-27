@@ -30,6 +30,20 @@ class UserProfileView(LoginRequiredMixin, UpdateView):
     def get_object(self, queryset=None):
         return self.request.user
 
+    def get_group_names(self, user):
+        return list(user.groups.all().values_list('name', flat=True))
+
+    def get_pending_group_names(self, user):
+        return list(user.volunteer_applications.filter(
+            approved=False,
+        ).values_list('role', flat=True))
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["groups"] = self.get_group_names(self.request.user)
+        context["pending_groups"] = self.get_pending_group_names(self.request.user)
+        return context
+
     def form_valid(self, form):
         messages.success(self.request, 'Profile details updated')
         return super().form_valid(form)
