@@ -9,6 +9,7 @@ class MealRequestAdmin(admin.ModelAdmin):
         'name',
         'email',
         'phone_number',
+        'city',
         'created_at',
         'delivery_date',
     )
