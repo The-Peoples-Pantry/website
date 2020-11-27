@@ -60,6 +60,7 @@ class VolunteerApplication(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
+        related_name='volunteer_applications'
     )
     role = models.CharField(
         max_length=50,
