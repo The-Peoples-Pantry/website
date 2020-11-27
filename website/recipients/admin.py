@@ -59,7 +59,6 @@ class MealRequestAdmin(admin.ModelAdmin):
         'created_at',
         'delivery_date',
         'status',
-        'landline',
     )
     list_filter = (
         'delivery_date',
@@ -75,7 +74,6 @@ class MealRequestAdmin(admin.ModelAdmin):
         'confirm',
         'copy'
     )
-
 
     def landline(self, obj):
         return 'No' if obj.can_receive_texts else 'Yes'
