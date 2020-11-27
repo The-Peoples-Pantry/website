@@ -134,7 +134,7 @@ class DeliverySignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
     filterset_class = DeliverySignupFilter
     queryset = Delivery.objects.filter(
         deliverer__isnull=True,
-        status=Status.CHEF_ASSIGNED
+        status=Status.DATE_CONFIRMED
     ).order_by(
         'request__delivery_date'
     )
