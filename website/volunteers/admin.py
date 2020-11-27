@@ -6,6 +6,13 @@ from django.utils.translation import ngettext
 from .models import Volunteer, VolunteerApplication
 
 
+class VolunteerAdmin(admin.ModelAdmin):
+    list_display = ('user', 'groups', 'city', 'training_complete')
+
+    def groups(self, obj):
+        return ", ".join(obj.user.groups.all().values_list('name', flat=True))
+
+
 class VolunteerApplicationAdmin(admin.ModelAdmin):
     list_display = ('id', 'user', 'role', 'approved')
     list_filter = ('approved', 'role')
@@ -41,5 +48,5 @@ class VolunteerApplicationAdmin(admin.ModelAdmin):
     approve.short_description = "Mark selected applications as approved"
 
 
-admin.site.register(Volunteer)
+admin.site.register(Volunteer, VolunteerAdmin)
 admin.site.register(VolunteerApplication, VolunteerApplicationAdmin)
