@@ -3,6 +3,16 @@ from django.contrib import admin
 from .models import MealRequest, GroceryRequest, UpdateNote, Delivery
 
 
+class DeliveryInline(admin.TabularInline):
+    model = Delivery
+    extra = 0
+
+
+class UpdateNoteInline(admin.StackedInline):
+    model = UpdateNote
+    extra = 0
+
+
 class MealRequestAdmin(admin.ModelAdmin):
     list_display = (
         'id',
@@ -16,6 +26,10 @@ class MealRequestAdmin(admin.ModelAdmin):
     list_filter = (
         'delivery_date',
         'created_at',
+    )
+    inlines = (
+        DeliveryInline,
+        UpdateNoteInline,
     )
 
 
