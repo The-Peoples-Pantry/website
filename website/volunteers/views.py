@@ -144,11 +144,10 @@ class DeliverySignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
         """Redirect to the same page with same query params to keep the filters"""
         return self.request.get_full_path()
 
-
     def get_context_data(self, alerts={}, **kwargs):
         context = super(DeliverySignupView, self).get_context_data(**kwargs)
         context["delivery_form_pairs"] = [
-            (delivery, DeliverySignupForm(initial={'uuid': delivery.uuid}))
+            (delivery, DeliverySignupForm(initial={'id': delivery.id}))
             for delivery in self.object_list
         ]
         return context
@@ -175,7 +174,7 @@ class DeliverySignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
 
     def get_delivery_request(self, form):
         try:
-            return self.queryset.get(uuid=form.cleaned_data['uuid'])
+            return self.queryset.get(id=form.cleaned_data['id'])
         except Delivery.DoesNotExist:
             return None
 

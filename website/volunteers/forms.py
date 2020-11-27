@@ -44,14 +44,14 @@ class ChefSignupForm(forms.Form):
 
 
 class DeliverySignupForm(forms.ModelForm):
+    id = forms.IntegerField()
     dropoff_start = TimeField(initial='09:00')
     dropoff_end = TimeField(initial='21:00')
-    uuid = forms.UUIDField
 
     class Meta:
         model = Delivery
         fields = [
-            'uuid',
+            'id',
             'dropoff_start',
             'dropoff_end',
         ]
