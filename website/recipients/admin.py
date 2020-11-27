@@ -1,3 +1,4 @@
+import uuid
 from django.contrib import admin, messages
 from .models import MealRequest, GroceryRequest, UpdateNote, Delivery, Status
 from django.utils.translation import ngettext
@@ -10,9 +11,12 @@ class StatusFilter(admin.SimpleListFilter):
         return Status.choices
 
     def queryset(self, request, queryset):
-        if self.value() is not None:
+        if self.value() and self.value() != 'Unconfirmed':
             matching_uuids = [delivery.request.uuid for delivery in Delivery.objects.filter(status=self.value())]
             queryset = queryset.filter(uuid__in=matching_uuids)
+        elif self.value() == 'Unconfirmed':
+            matching_uuids = [delivery.request.uuid for delivery in Delivery.objects.all()]
+            queryset = queryset.exclude(uuid__in=matching_uuids)
 
         return queryset
 
@@ -69,6 +73,7 @@ class MealRequestAdmin(admin.ModelAdmin):
     )
     actions = (
         'confirm',
+        'copy'
     )
 
 
@@ -99,6 +104,22 @@ class MealRequestAdmin(admin.ModelAdmin):
             )
     confirm.short_description = "Mark deliveries as confirmed with recipient"
 
+
+    def copy(self, request, queryset):
+        ids = []
+        for meal_request in queryset:
+            meal_request.pk = None
+            meal_request.uuid = uuid.uuid4()
+            meal_request.delivery_date = None
+            meal_request.save()
+            ids.append(meal_request.id)
+
+        self.message_user(request, ngettext(
+            "%d copied meal request has been created with ID %s",
+            "%d copied meal requests have been created with IDs %s",
+            len(ids),
+        ) % (len(ids), (", ").join(str(id) for id in ids)), messages.SUCCESS)
+    copy.short_description = "Create a copy of selected meal request"
 
 
 class GroceryRequestAdmin(admin.ModelAdmin):
