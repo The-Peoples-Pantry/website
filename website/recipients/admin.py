@@ -40,6 +40,12 @@ class GroceryRequestAdmin(admin.ModelAdmin):
         'email',
         'phone_number',
         'city',
+        'vegetables',
+        'fruits',
+        'protein',
+        'grains',
+        'condiments',
+        'dairy',
         'created_at',
         'delivery_date',
     )
