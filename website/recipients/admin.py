@@ -1,6 +1,6 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 from .models import MealRequest, GroceryRequest, UpdateNote, Delivery, Status
-
+from django.utils.translation import ngettext
 
 class StatusFilter(admin.SimpleListFilter):
     title = 'Status'
