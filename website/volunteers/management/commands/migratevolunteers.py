@@ -26,9 +26,9 @@ def csv_to_django(entry: dict):
             )
             return
 
-    # chefs = Group.objects.get(name='Chefs')
-    # deliverers = Group.objects.get(name='Deliverers')
-    # organizers = Group.objects.get(name='Organizers')
+    chefs = Group.objects.get(name='Chefs')
+    deliverers = Group.objects.get(name='Deliverers')
+    organizers = Group.objects.get(name='Organizers')
 
     try:
         full_name = entry['Full name:'].split(' ')
@@ -51,18 +51,18 @@ def csv_to_django(entry: dict):
         volunteer.phone_number = entry['Phone number:']
 
         # Role
-        # role_selection = entry['Would you like to...? Check all that apply.'].lower()
-        # if role_selection:
-        #     if 'cook' in role_selection:
-        #         chefs.user_set.add(user)
-        #     elif 'deliver' in role_selection:
-        #         deliverers.user_set.add(user)
-        #     elif 'administrative' in role_selection:
-        #         organizers.user_set.add(user)
-        #     else:
-        #         logging.warning(
-        #             f'Unknown role selection {role_selection} for entry: {friendly_entry(entry, required_fields)}'
-        #         )
+        role_selection = entry['Would you like to...? Check all that apply.'].lower()
+        if role_selection:
+            if 'cook/bake' in role_selection:
+                chefs.user_set.add(user)
+            elif 'deliver' in role_selection:
+                deliverers.user_set.add(user)
+            elif 'administrative' in role_selection:
+                organizers.user_set.add(user)
+            else:
+                logging.warning(
+                    f'Unknown role selection {role_selection} for entry: {friendly_entry(entry, required_fields)}'
+                )
 
         volunteer.save()
 
