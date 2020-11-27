@@ -1,9 +1,25 @@
 from django.contrib import admin
 
-from .models import MealRequest, UpdateNote, Delivery
+from .models import MealRequest, GroceryRequest, UpdateNote, Delivery
 
 
 class MealRequestAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'name',
+        'email',
+        'phone_number',
+        'city',
+        'created_at',
+        'delivery_date',
+    )
+    list_filter = (
+        'delivery_date',
+        'created_at',
+    )
+
+
+class GroceryRequestAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'name',
@@ -50,6 +66,7 @@ class DeliveryAdmin(admin.ModelAdmin):
     )
 
 
+admin.site.register(GroceryRequest, GroceryRequestAdmin)
 admin.site.register(MealRequest, MealRequestAdmin)
 admin.site.register(UpdateNote, UpdateNoteAdmin)
 admin.site.register(Delivery, DeliveryAdmin)
