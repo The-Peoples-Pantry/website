@@ -111,7 +111,8 @@ class ChefIndexView(TaskIndexView):
 
     def get_queryset(self):
         return self.queryset.filter(
-            chef=self.request.user
+            chef=self.request.user,
+            container_delivery=False
         )
 
 class DeliveryIndexView(TaskIndexView):
@@ -126,55 +127,65 @@ class DeliveryIndexView(TaskIndexView):
 
 
 class DeliverySignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
-    model = Delivery
+    """View for chefs to sign up to cook meal requests"""
     template_name = "volunteers/delivery_signup.html"
     form_class = DeliverySignupForm
-    success_url = reverse_lazy('volunteers:delivery_signup')
     permission_group = 'Deliverers'
     filterset_class = DeliverySignupFilter
+    queryset = Delivery.objects.filter(
+        deliverer__isnull=True,
+        status=Status.CHEF_ASSIGNED
+    ).order_by(
+        'request__delivery_date'
+    )
+
+    @property
+    def success_url(self):
+        """Redirect to the same page with same query params to keep the filters"""
+        return self.request.get_full_path()
+
 
     def get_context_data(self, alerts={}, **kwargs):
         context = super(DeliverySignupView, self).get_context_data(**kwargs)
-
-        today = datetime.datetime.now().date()
-        deliveries = []
-        for delivery in context['delivery_list'].filter(
-            deliverer__isnull=True,
-            request__delivery_date__range=[today,today + datetime.timedelta(days=7)]
-        ).order_by('request__delivery_date'):
-            delivery_date = delivery.request.delivery_date
-
-            # If this is a container delivery, it needs to happen two days before the actual meal
-            if delivery.container_delivery:
-                delivery.request.delivery_date = delivery_date - datetime.timedelta(days=2)
-
-            deliveries.append({
-                'request': delivery.request,
-                'delivery': delivery,
-                'form': DeliverySignupForm(instance=delivery)
-            })
-
-        context['deliveries'] = deliveries
-        context['alerts'] = alerts
+        context["delivery_form_pairs"] = [
+            (delivery, DeliverySignupForm(initial={'uuid': delivery.uuid}))
+            for delivery in self.object_list
+        ]
         return context
 
-    def post(self, request):
-        data = request.POST
-        alerts = {'success': False, 'errors': None}
+    def form_invalid(self, form):
+        messages.error(
+            self.request,
+            'Sorry, we were unable to sign you for that delivery, someone else may have already claimed it.'
+        )
+        return redirect(self.success_url)
 
+    def form_valid(self, form):
+        # First fetch the associated delivery
+        delivery = self.get_delivery_request(form)
+
+        # It's possible that someone else has signed up for it, so handle that
+        if delivery is None:
+            return self.form_invalid(form)
+
+        self.update_delivery(form, delivery)
+
+        messages.success(self.request, 'Successfully signed up!')
+        return super().form_valid(form)
+
+    def get_delivery_request(self, form):
         try:
-            instance = Delivery.objects.get(uuid=data['uuid'])
-            instance.dropoff_start = data['start_time']
-            instance.dropoff_end = data['end_time']
-            instance.deliverer = request.user
-            instance.status = Status.SCHEDULED
-            instance.save()
-            alerts['success'] = True
+            return self.queryset.get(uuid=form.cleaned_data['uuid'])
+        except Delivery.DoesNotExist:
+            return None
 
-        except Exception as e:
-            print("Exception raised while saving a delivery sign-up: %s" % e)
+    def update_delivery(self, form, delivery):
+        delivery.dropoff_start = form.cleaned_data['dropoff_start']
+        delivery.dropoff_end = form.cleaned_data['dropoff_end']
+        delivery.deliverer = self.request.user
+        delivery.status = Status.DRIVER_ASSIGNED
+        delivery.save()
 
-        return render(request, self.template_name, self.get_context_data(alerts))
 
 
 class DeliveryApplicationView(LoginRequiredMixin, FormView):

@@ -44,31 +44,14 @@ class ChefSignupForm(forms.Form):
 
 
 class DeliverySignupForm(forms.ModelForm):
-    start_time = forms.TimeField(
-        input_formats='%H:%M %p',
-        widget=forms.TimeInput(
-            format='%H:%M', attrs={'type': 'time'}
-        )
-    )
-    end_time = forms.TimeField(
-        input_formats='%H:%M %p',
-        widget=forms.TimeInput(
-            format='%H:%M',
-            attrs={'type': 'time'}
-        )
-    )
-
-    def __init__(self, *args, **kwargs):
-        super(DeliverySignupForm, self).__init__(*args, **kwargs)
-        self.fields['start_time'].initial = '09:00'
-        self.fields['end_time'].initial = '21:00'
+    dropoff_start = TimeField(initial='09:00')
+    dropoff_end = TimeField(initial='21:00')
+    uuid = forms.UUIDField
 
     class Meta:
         model = Delivery
         fields = [
-            'request',
             'uuid',
-            'pickup_start',
-            'pickup_end',
+            'dropoff_start',
+            'dropoff_end',
         ]
-        widgets = {'uuid': forms.HiddenInput()}
