@@ -1,11 +1,12 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-3">
-  <div class="container">
+
+  <a class="navbar-brand" href="{% url 'public:index' %}">The People's Pantry</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
-      <li class="nav-item">
-        <a class="nav-link" href="{% url 'public:index' %}">
-          Home
-        </a>
-      </li>
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
           Submit a request
@@ -61,11 +62,8 @@
         <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Logged in as: {{ request.user.username }}</a>
         <div class="dropdown-menu">
           <a class="dropdown-item" href="{% url 'profile' %}">My profile</a>
-          {% if request.user.is_staff %}<a class="dropdown-item" href="/admin">Admin</a>{% endif %}
+          <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
         </div>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="{% url 'logout' %}">Logout</a>
       </li>
     </ul>
     {% else %}
