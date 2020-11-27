@@ -35,7 +35,7 @@ class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
     def get_context_data(self, **kwargs):
         context = super(ChefSignupView, self).get_context_data(**kwargs)
         context["meal_request_form_pairs"] = [
-            (meal_request, ChefSignupForm(initial={'uuid': meal_request.uuid}))
+            (meal_request, ChefSignupForm(initial={'id': meal_request.id}))
             # self.object_list is a MealRequest queryset pre-filtered by ChefSignupFilter
             for meal_request in self.object_list
         ]
@@ -68,7 +68,7 @@ class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
 
     def get_meal_request(self, form):
         try:
-            return self.queryset.get(uuid=form.cleaned_data['uuid'])
+            return self.queryset.get(id=form.cleaned_data['id'])
         except MealRequest.DoesNotExist:
             return None
 

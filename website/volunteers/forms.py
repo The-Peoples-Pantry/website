@@ -36,7 +36,7 @@ class AcceptTermsForm(forms.Form):
 
 
 class ChefSignupForm(forms.Form):
-    uuid = forms.UUIDField()
+    id = forms.IntegerField()
     delivery_date = forms.DateField(widget=FutureDateInput)
     start_time = TimeField(initial='09:00')
     end_time = TimeField(initial='21:00')
