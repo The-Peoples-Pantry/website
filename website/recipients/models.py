@@ -272,7 +272,6 @@ class HelpRequest(AddressModel):
         )
 
 
-
 class MealRequest(HelpRequest):
     dairy_free = models.BooleanField("Dairy free")
     gluten_free = models.BooleanField("Gluten free")
@@ -382,19 +381,20 @@ class Delivery(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.SET(get_sentinel_user),
         related_name="assigned_deliverer",
-        null=True
+        null=True,
+        blank=True,
     )
-    request = models.ForeignKey(MealRequest, on_delete = models.CASCADE)
+    request = models.ForeignKey(MealRequest, on_delete=models.CASCADE)
     status = models.CharField(
         "Status",
         max_length=settings.DEFAULT_LENGTH,
         choices=Status.choices,
         default=Status.UNCONFIRMED
     )
-    pickup_start = models.TimeField(null=True)
-    pickup_end = models.TimeField(null=True)
-    dropoff_start = models.TimeField(null=True)
-    dropoff_end = models.TimeField(null=True)
+    pickup_start = models.TimeField(null=True, blank=True)
+    pickup_end = models.TimeField(null=True, blank=True)
+    dropoff_start = models.TimeField(null=True, blank=True)
+    dropoff_end = models.TimeField(null=True, blank=True)
     container_delivery = models.BooleanField(default=False)
 
     # System
