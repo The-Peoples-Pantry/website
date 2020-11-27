@@ -36,7 +36,7 @@ class AcceptTermsForm(forms.Form):
 
 
 class ChefSignupForm(forms.Form):
-    uuid = forms.UUIDField()
+    id = forms.IntegerField()
     delivery_date = forms.DateField(widget=FutureDateInput)
     start_time = TimeField(initial='09:00')
     end_time = TimeField(initial='21:00')
@@ -44,14 +44,14 @@ class ChefSignupForm(forms.Form):
 
 
 class DeliverySignupForm(forms.ModelForm):
+    id = forms.IntegerField()
     dropoff_start = TimeField(initial='09:00')
     dropoff_end = TimeField(initial='21:00')
-    uuid = forms.UUIDField
 
     class Meta:
         model = Delivery
         fields = [
-            'uuid',
+            'id',
             'dropoff_start',
             'dropoff_end',
         ]

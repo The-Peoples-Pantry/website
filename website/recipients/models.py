@@ -240,7 +240,7 @@ class HelpRequest(AddressModel):
     delivery_date = models.DateField(blank=True, null=True)
 
     # System
-    uuid = models.UUIDField(default=uuid.uuid4, editable=True)
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     anonymized_latitude = models.FloatField(default=43.651070)  # default: Toronto latitude
@@ -365,7 +365,7 @@ class UpdateNote(models.Model):
     note = models.CharField(max_length=settings.LONG_TEXT_LENGTH)
 
     # System
-    uuid = models.UUIDField(default=uuid.uuid4, editable=True)
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
 
@@ -398,7 +398,7 @@ class Delivery(models.Model):
     container_delivery = models.BooleanField(default=False)
 
     # System
-    uuid = models.UUIDField(default=uuid.uuid4, editable=True)
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     @property
