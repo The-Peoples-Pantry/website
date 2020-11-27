@@ -246,6 +246,10 @@ class HelpRequest(AddressModel):
     anonymized_latitude = models.FloatField(default=43.651070)  # default: Toronto latitude
     anonymized_longitude = models.FloatField(default=-79.347015)  # default: Toronto longitude
 
+    @property
+    def status(self):
+        return Delivery.objects.get(request=self, container_delivery=False).status
+
     def get_absolute_url(self):
         return reverse_lazy('recipients:request_detail', args=[str(self.id)])
 
