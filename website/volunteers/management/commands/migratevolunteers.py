@@ -1,6 +1,6 @@
 import csv
 from django.core.management.base import BaseCommand
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.db.utils import IntegrityError
 from volunteers.models import Volunteer
 import logging
@@ -26,6 +26,10 @@ def csv_to_django(entry: dict):
             )
             return
 
+    # chefs = Group.objects.get(name='Chefs')
+    # deliverers = Group.objects.get(name='Deliverers')
+    # organizers = Group.objects.get(name='Organizers')
+
     try:
         full_name = entry['Full name:'].split(' ')
         first_name = full_name[0]
@@ -47,15 +51,14 @@ def csv_to_django(entry: dict):
         volunteer.phone_number = entry['Phone number:']
 
         # Role
-        # TODO: uncomment this once Volunteer has a role
         # role_selection = entry['Would you like to...? Check all that apply.'].lower()
         # if role_selection:
         #     if 'cook' in role_selection:
-        #         volunteer.role = 'Chefs'
+        #         chefs.user_set.add(user)
         #     elif 'deliver' in role_selection:
-        #         volunteer.role = 'Deliverers'
+        #         deliverers.user_set.add(user)
         #     elif 'administrative' in role_selection:
-        #         volunteer.role = 'Organizers'
+        #         organizers.user_set.add(user)
         #     else:
         #         logging.warning(
         #             f'Unknown role selection {role_selection} for entry: {friendly_entry(entry, required_fields)}'
