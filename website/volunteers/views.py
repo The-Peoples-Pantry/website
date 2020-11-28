@@ -91,9 +91,7 @@ class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
 class TaskIndexView(LoginRequiredMixin, GroupView, ListView):
     model = Delivery
     context_object_name = "deliveries"
-    queryset = Delivery.objects.exclude(
-        status=Status.DELIVERED
-    ).order_by('date')
+    queryset = Delivery.objects.exclude(status=Status.DELIVERED).order_by('date')
 
 
 class ChefIndexView(TaskIndexView):
@@ -111,9 +109,7 @@ class DeliveryIndexView(TaskIndexView):
     permission_group = 'Deliverers'
 
     def get_queryset(self):
-        return self.queryset.filter(
-            deliverer=self.request.user
-        )
+        return self.queryset.filter(deliverer=self.request.user)
 
 
 class DeliverySignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
