@@ -2,7 +2,7 @@ import collections
 import uuid
 from django.contrib import admin, messages
 from django.utils.html import format_html, format_html_join
-from .models import MealRequest, GroceryRequest, UpdateNote, Delivery, Status, SendNotificationException
+from .models import MealRequest, GroceryRequest, UpdateNote, Delivery, Status, SendNotificationException, ContainerDelivery
 from django.utils.translation import ngettext
 
 
@@ -153,6 +153,17 @@ class UpdateNoteAdmin(admin.ModelAdmin):
     )
 
 
+class ContainerDeliveryAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'chef',
+        'deliverer',
+        'date',
+        'dropoff_start',
+        'dropoff_end',
+    )
+
+
 class DeliveryAdmin(admin.ModelAdmin):
     list_display = (
         'id',
@@ -212,6 +223,7 @@ class DeliveryAdmin(admin.ModelAdmin):
     notify_recipients.short_description = "Send text message notifications to delivery recipients"
 
 
+admin.site.register(ContainerDelivery, ContainerDeliveryAdmin)
 admin.site.register(GroceryRequest, GroceryRequestAdmin)
 admin.site.register(MealRequest, MealRequestAdmin)
 admin.site.register(UpdateNote, UpdateNoteAdmin)
