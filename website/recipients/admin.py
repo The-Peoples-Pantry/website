@@ -168,11 +168,9 @@ class DeliveryAdmin(admin.ModelAdmin):
         'pickup_end',
         'dropoff_start',
         'dropoff_end',
-        'container_delivery',
     )
     list_filter = (
         'status',
-        'container_delivery',
     )
     actions = (
         'notify_recipients',
