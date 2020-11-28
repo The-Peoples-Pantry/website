@@ -171,6 +171,7 @@ class DeliveryAdmin(admin.ModelAdmin):
         'status',
         'chef',
         'deliverer',
+        'date',
         'pickup_start',
         'pickup_end',
         'dropoff_start',
