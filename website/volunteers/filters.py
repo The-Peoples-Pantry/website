@@ -42,16 +42,14 @@ class ChefSignupFilter(FilterSet):
 
 
 class DeliverySignupFilter(FilterSet):
-    request__delivery_date = DateFilter(
-        widget=DateInput()
-    )
+    date = DateFilter(widget=DateInput())
 
     def __init__(self, *args, **kwargs):
         super(DeliverySignupFilter, self).__init__(*args, **kwargs)
         self.filters['request__city'].label = "City"
         self.filters['request__num_adults__lt'].label = "Number of adults in the household is less than"
         self.filters['request__num_children__lt'].label = "Number of children in the household is less than"
-        self.filters['request__delivery_date'].label = "Delivery date"
+        self.filters['date'].label = "Delivery date"
 
     class Meta:
         form = HiddenValidationForm
@@ -60,5 +58,5 @@ class DeliverySignupFilter(FilterSet):
             'request__city': ['exact'],
             'request__num_adults': ['lt'],
             'request__num_children': ['lt'],
-            'request__delivery_date': ['exact'],
+            'date': ['exact'],
         }

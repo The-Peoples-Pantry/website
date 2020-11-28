@@ -22,7 +22,7 @@
       <div class="card mb-4">
         {# Card header section contains the meal request title #}
         <div class="card-header font-weight-bold">
-          Pickup timeframe: {{ delivery.delivery_date }}, {{ delivery.pickup_start }} to {{ delivery.pickup_end }}
+          Pickup timeframe: {{ delivery.date }}, {{ delivery.pickup_start }} to {{ delivery.pickup_end }}
         </div>
         <div class="card-body">
           <div class="row mb-3">
@@ -57,7 +57,7 @@
               <form action="" method="post" class="form">
                 {% csrf_token %}
 
-                <h6>Dropoff timerange on {{ delivery.delivery_date }}</h6>
+                <h6>Dropoff timerange on {{ delivery.date }}</h6>
                 <div class="row">
                   <div class="col-sm">
                     {% bootstrap_field form.dropoff_start %}

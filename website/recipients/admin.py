@@ -60,11 +60,11 @@ class MealRequestAdmin(admin.ModelAdmin):
         'landline',
         'city',
         'created_at',
-        'delivery_date',
+        # 'delivery_date',
         'status',
     )
     list_filter = (
-        'delivery_date',
+        # 'delivery_date',
         StatusFilter,
         LandlineFilter,
         'created_at',
@@ -111,7 +111,6 @@ class MealRequestAdmin(admin.ModelAdmin):
         for meal_request in queryset:
             meal_request.pk = None
             meal_request.uuid = uuid.uuid4()
-            meal_request.delivery_date = None
             meal_request.save()
             ids.append(meal_request.id)
 
@@ -137,10 +136,10 @@ class GroceryRequestAdmin(admin.ModelAdmin):
         'condiments',
         'dairy',
         'created_at',
-        'delivery_date',
+        # 'delivery_date',
     )
     list_filter = (
-        'delivery_date',
+        # 'delivery_date',
         'created_at',
     )
 

@@ -87,16 +87,8 @@ class Command(BaseCommand):
             help='Number of MealRequests to generate'
         )
 
-        parser.add_argument(
-            '--generate-delivery-date',
-            type=bool,
-            default=False,
-            help='Generate an assigned delivery date for Meal Requests'
-        )
-
     def handle(self, *args, **options):
         count = options['count']
-        generate_date = options['generate_delivery_date']
 
         for i in range(count):
             obj = MealRequestFactory.create()
@@ -104,7 +96,6 @@ class Command(BaseCommand):
             if generate_date:
                 start = datetime.datetime.now()
                 end = start + datetime.timedelta(days=10)
-                obj.delivery_date = fuzzy_date(start, end)
 
             obj.save()
 

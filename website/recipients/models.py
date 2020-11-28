@@ -272,9 +272,12 @@ class HelpRequest(AddressModel):
         )
 
     def __str__(self):
-        delivery_date = self.delivery_date.strftime("%m/%d/%Y") if self.delivery_date else "Unscheduled"
+        try:
+            date = self.delivery.date.strftime("%m/%d/%Y")
+        except Delivery.DoesNotExist:
+            date = "Unscheduled"
         return "[%s] %s for %s in %s for %d adult(s) and %d kid(s)" % (
-            delivery_date, self._meta.verbose_name.capitalize(), self.name, self.city, self.num_adults, self.num_children,
+            date, self._meta.verbose_name.capitalize(), self.name, self.city, self.num_adults, self.num_children,
         )
 
 
@@ -438,9 +441,6 @@ class Delivery(models.Model):
         if not self.request.can_receive_texts:
             raise SendNotificationException("Recipient cannot receive text messages at their phone number")
 
-        if not self.request.delivery_date:
-            raise SendNotificationException("Request does not have a delivery date assigned")
-
         if not (self.dropoff_start and self.dropoff_end):
             raise SendNotificationException("Delivery does not have a dropoff time range scheduled")
 
@@ -449,7 +449,7 @@ class Delivery(models.Model):
         message = dedent(f"""
             Hi {self.request.name},
             This is a message from The People's Pantry.
-            Your delivery is scheduled for {self.request.delivery_date:%A %B %d} between {self.dropoff_start:%I:%M %p} and {self.dropoff_end:%I:%M %p}.
+            Your delivery is scheduled for {self.date:%A %B %d} between {self.dropoff_start:%I:%M %p} and {self.dropoff_end:%I:%M %p}.
             Since we depend on volunteers for our deliveries, sometimes we are not able to do all deliveries scheduled for the day. If that’s the case with your delivery, we will inform you by 6 PM on the day of the delivery and your delivery will be rescheduled for the following day.
             Please confirm you got this message and let us know if you can take the delivery.
             Thank you!
@@ -458,7 +458,6 @@ class Delivery(models.Model):
         logger.info("Sent recipient notification text for Meal Request %d to %s", self.request.id, self.request.phone_number)
 
     def __str__(self):
-        # delivery_date = self.delivery_date.strftime("%m/%d/%Y") if self.delivery_date else "Unscheduled"
         return "[%s] Delivering %s to %s for %s" % (
             self.status.capitalize(), self.request._meta.verbose_name.capitalize(), self.request.city, self.request.name,
         )

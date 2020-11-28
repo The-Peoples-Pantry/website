@@ -25,7 +25,7 @@ class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
     form_class = ChefSignupForm
     permission_group = 'Chefs'
     filterset_class = ChefSignupFilter
-    queryset = MealRequest.objects.filter(delivery_date__isnull=True)
+    queryset = MealRequest.objects.filter(delivery__isnull=True)
 
     @property
     def success_url(self):
@@ -56,7 +56,6 @@ class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
             return self.form_invalid(form)
 
         # If the meal request is still available setup the delivery
-        self.update_meal_request(form, meal_request)
         self.create_delivery(form, meal_request)
 
         # If the form requested containers, setup a container delivery as well
@@ -72,15 +71,12 @@ class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
         except MealRequest.DoesNotExist:
             return None
 
-    def update_meal_request(self, form, meal_request):
-        meal_request.delivery_date = form.cleaned_data['delivery_date']
-        meal_request.save()
-
     def create_delivery(self, form, meal_request):
         Delivery.objects.create(
             request=meal_request,
             chef=self.request.user,
             status=Status.CHEF_ASSIGNED,
+            date=form.cleaned_data['delivery_date'],
             pickup_start=form.cleaned_data['start_time'],
             pickup_end=form.cleaned_data['end_time']
         )
@@ -97,7 +93,7 @@ class TaskIndexView(LoginRequiredMixin, GroupView, ListView):
     context_object_name = "deliveries"
     queryset = Delivery.objects.exclude(
         status=Status.DELIVERED
-    ).order_by('request__delivery_date')
+    ).order_by('date')
 
 
 class ChefIndexView(TaskIndexView):
@@ -130,7 +126,7 @@ class DeliverySignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
         deliverer__isnull=True,
         status=Status.DATE_CONFIRMED
     ).order_by(
-        'request__delivery_date'
+        'date'
     )
 
     @property
