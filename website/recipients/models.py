@@ -1,4 +1,3 @@
-import datetime
 import logging
 from textwrap import dedent
 import urllib.parse
@@ -242,19 +241,12 @@ class HelpRequest(AddressModel):
     # Legal
     accept_terms = models.BooleanField("Accept terms")
 
-    # Admin
-    delivery_date = models.DateField(blank=True, null=True)
-
     # System
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     anonymized_latitude = models.FloatField(default=43.651070)  # default: Toronto latitude
     anonymized_longitude = models.FloatField(default=-79.347015)  # default: Toronto longitude
-
-    @property
-    def status(self):
-        return Delivery.objects.get(request=self, container_delivery=False).status
 
     def get_absolute_url(self):
         return reverse_lazy('recipients:request_detail', args=[str(self.id)])
@@ -272,9 +264,12 @@ class HelpRequest(AddressModel):
         )
 
     def __str__(self):
-        delivery_date = self.delivery_date.strftime("%m/%d/%Y") if self.delivery_date else "Unscheduled"
+        try:
+            date = self.delivery.date.strftime("%m/%d/%Y")
+        except MealDelivery.DoesNotExist:
+            date = "Unscheduled"
         return "[%s] %s for %s in %s for %d adult(s) and %d kid(s)" % (
-            delivery_date, self._meta.verbose_name.capitalize(), self.name, self.city, self.num_adults, self.num_children,
+            date, self._meta.verbose_name.capitalize(), self.name, self.city, self.num_adults, self.num_children,
         )
 
 
@@ -374,60 +369,73 @@ class UpdateNote(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
 
-class Delivery(models.Model):
+class ContainerDelivery(models.Model):
+    """Represents a delivery of containers to a chef"""
     class Meta:
-        verbose_name_plural = 'deliveries'
+        verbose_name_plural = 'container deliveries'
 
     chef = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        on_delete=models.SET(get_sentinel_user),
-        related_name="assigned_chef"
+        on_delete=models.CASCADE,
+        related_name="received_container_deliveries",
     )
     deliverer = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET(get_sentinel_user),
-        related_name="assigned_deliverer",
+        related_name="delivered_container_deliveries",
         null=True,
         blank=True,
     )
-    request = models.ForeignKey(MealRequest, on_delete=models.CASCADE)
+    date = models.DateField()
+    dropoff_start = models.TimeField(null=True, blank=True)
+    dropoff_end = models.TimeField(null=True, blank=True)
+
+    # System
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+class MealDelivery(models.Model):
+    class Meta:
+        verbose_name_plural = 'meal deliveries'
+
+    request = models.OneToOneField(
+        MealRequest,
+        on_delete=models.CASCADE,
+        related_name='delivery',
+    )
+    chef = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET(get_sentinel_user),
+        related_name="cooked_meal_deliveries",
+    )
+    deliverer = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET(get_sentinel_user),
+        related_name="delivered_meal_deliveries",
+        null=True,
+        blank=True,
+    )
     status = models.CharField(
         "Status",
         max_length=settings.DEFAULT_LENGTH,
         choices=Status.choices,
         default=Status.UNCONFIRMED
     )
+    date = models.DateField()
     pickup_start = models.TimeField(null=True, blank=True)
     pickup_end = models.TimeField(null=True, blank=True)
     dropoff_start = models.TimeField(null=True, blank=True)
     dropoff_end = models.TimeField(null=True, blank=True)
-    container_delivery = models.BooleanField(default=False)
 
     # System
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
-    @property
-    def delivery_date(self):
-        if self.container_delivery:
-            return self.request.delivery_date - datetime.timedelta(days=2)
-
-        return self.request.delivery_date
-
-    @property
-    def container_provided(self):
-        return Delivery.objects.filter(request=self.request, container_delivery=True).exists()
-
     def send_recipient_notification(self):
         # Perform validation first that we _can_ send this notification
-        if self.container_delivery:
-            raise SendNotificationException("Recipient notifications should not be sent for container deliveries")
-
         if not self.request.can_receive_texts:
             raise SendNotificationException("Recipient cannot receive text messages at their phone number")
-
-        if not self.request.delivery_date:
-            raise SendNotificationException("Request does not have a delivery date assigned")
 
         if not (self.dropoff_start and self.dropoff_end):
             raise SendNotificationException("Delivery does not have a dropoff time range scheduled")
@@ -437,7 +445,7 @@ class Delivery(models.Model):
         message = dedent(f"""
             Hi {self.request.name},
             This is a message from The People's Pantry.
-            Your delivery is scheduled for {self.request.delivery_date:%A %B %d} between {self.dropoff_start:%I:%M %p} and {self.dropoff_end:%I:%M %p}.
+            Your delivery is scheduled for {self.date:%A %B %d} between {self.dropoff_start:%I:%M %p} and {self.dropoff_end:%I:%M %p}.
             Since we depend on volunteers for our deliveries, sometimes we are not able to do all deliveries scheduled for the day. If that’s the case with your delivery, we will inform you by 6 PM on the day of the delivery and your delivery will be rescheduled for the following day.
             Please confirm you got this message and let us know if you can take the delivery.
             Thank you!
@@ -446,7 +454,6 @@ class Delivery(models.Model):
         logger.info("Sent recipient notification text for Meal Request %d to %s", self.request.id, self.request.phone_number)
 
     def __str__(self):
-        # delivery_date = self.delivery_date.strftime("%m/%d/%Y") if self.delivery_date else "Unscheduled"
         return "[%s] Delivering %s to %s for %s" % (
             self.status.capitalize(), self.request._meta.verbose_name.capitalize(), self.request.city, self.request.name,
         )

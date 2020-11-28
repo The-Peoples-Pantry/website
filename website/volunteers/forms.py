@@ -1,6 +1,6 @@
 import datetime
 from django import forms
-from recipients.models import Delivery
+from recipients.models import MealDelivery
 
 
 def future_date(**kwargs):
@@ -43,13 +43,13 @@ class ChefSignupForm(forms.Form):
     container_needed = forms.BooleanField(required=False)
 
 
-class DeliverySignupForm(forms.ModelForm):
+class MealDeliverySignupForm(forms.ModelForm):
     id = forms.IntegerField()
     dropoff_start = TimeField(initial='09:00')
     dropoff_end = TimeField(initial='21:00')
 
     class Meta:
-        model = Delivery
+        model = MealDelivery
         fields = [
             'id',
             'dropoff_start',

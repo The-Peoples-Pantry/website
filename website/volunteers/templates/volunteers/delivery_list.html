@@ -11,10 +11,9 @@
   {% for delivery in deliveries %}
     <div class="card mb-4">
       <div class="card-header font-weight-bold">
-        {{ delivery.delivery_date }}: Delivering {% if delivery.container_delivery %}containers for meal
-          {% else %}meal
-          {% endif %} for {{ delivery.request.num_adults }} adult{{ delivery.request.num_adults | pluralize }}
-                    and {{ delivery.request.num_children }} kid{{ delivery.request.num_children | pluralize }}
+        {{ delivery.date }}: Delivering meal for
+        {{ delivery.request.num_adults }} adult{{ delivery.request.num_adults | pluralize }}
+        and {{ delivery.request.num_children }} kid{{ delivery.request.num_children | pluralize }}
       </div>
       <div class="card-body">
         <div class="row">

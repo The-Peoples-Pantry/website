@@ -2,7 +2,7 @@ import collections
 import uuid
 from django.contrib import admin, messages
 from django.utils.html import format_html, format_html_join
-from .models import MealRequest, GroceryRequest, UpdateNote, Delivery, Status, SendNotificationException
+from .models import MealRequest, GroceryRequest, UpdateNote, MealDelivery, Status, SendNotificationException, ContainerDelivery
 from django.utils.translation import ngettext
 
 
@@ -14,13 +14,8 @@ class StatusFilter(admin.SimpleListFilter):
         return Status.choices
 
     def queryset(self, request, queryset):
-        if self.value() and self.value() != 'Unconfirmed':
-            matching_uuids = [delivery.request.uuid for delivery in Delivery.objects.filter(status=self.value())]
-            queryset = queryset.filter(uuid__in=matching_uuids)
-        elif self.value() == 'Unconfirmed':
-            matching_uuids = [delivery.request.uuid for delivery in Delivery.objects.all()]
-            queryset = queryset.exclude(uuid__in=matching_uuids)
-
+        if self.value():
+            queryset = queryset.filter(delivery__status=self.value())
         return queryset
 
 
@@ -40,10 +35,8 @@ class LandlineFilter(admin.SimpleListFilter):
         return queryset
 
 
-
-class DeliveryInline(admin.TabularInline):
-    model = Delivery
-    extra = 0
+class MealDeliveryInline(admin.TabularInline):
+    model = MealDelivery
 
 
 class UpdateNoteInline(admin.StackedInline):
@@ -64,13 +57,12 @@ class MealRequestAdmin(admin.ModelAdmin):
         'status',
     )
     list_filter = (
-        'delivery_date',
         StatusFilter,
         LandlineFilter,
         'created_at',
     )
     inlines = (
-        DeliveryInline,
+        MealDeliveryInline,
         UpdateNoteInline,
     )
     actions = (
@@ -78,18 +70,26 @@ class MealRequestAdmin(admin.ModelAdmin):
         'copy'
     )
 
+    def delivery_date(self, obj):
+        return obj.delivery.date
+    delivery_date.admin_order_field = 'delivery__date'
+
+    def status(self, obj):
+        return obj.delivery.status
+    status.admin_order_field = 'delivery__status'
+
     def landline(self, obj):
         return 'No' if obj.can_receive_texts else 'Yes'
     landline.short_description = "Landline"
 
     def confirm(self, request, queryset):
-        confirmed_uuids = [delivery.request.uuid for delivery in Delivery.objects.filter(status=Status.DATE_CONFIRMED)]
+        confirmed_uuids = [delivery.request.uuid for delivery in MealDelivery.objects.filter(status=Status.DATE_CONFIRMED)]
         queryset = queryset.exclude(uuid__in=confirmed_uuids)
         updated = 0
 
         # Updated all deliveries associated with given request
         for meal_request in queryset:
-            updated += Delivery.objects.filter(request=meal_request).update(status=Status.DATE_CONFIRMED)
+            updated += MealDelivery.objects.filter(request=meal_request).update(status=Status.DATE_CONFIRMED)
 
         if updated:
             self.message_user(request, ngettext(
@@ -105,13 +105,11 @@ class MealRequestAdmin(admin.ModelAdmin):
             )
     confirm.short_description = "Mark deliveries as confirmed with recipient"
 
-
     def copy(self, request, queryset):
         ids = []
         for meal_request in queryset:
             meal_request.pk = None
             meal_request.uuid = uuid.uuid4()
-            meal_request.delivery_date = None
             meal_request.save()
             ids.append(meal_request.id)
 
@@ -137,10 +135,8 @@ class GroceryRequestAdmin(admin.ModelAdmin):
         'condiments',
         'dairy',
         'created_at',
-        'delivery_date',
     )
     list_filter = (
-        'delivery_date',
         'created_at',
     )
 
@@ -157,22 +153,32 @@ class UpdateNoteAdmin(admin.ModelAdmin):
     )
 
 
-class DeliveryAdmin(admin.ModelAdmin):
+class ContainerDeliveryAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'chef',
+        'deliverer',
+        'date',
+        'dropoff_start',
+        'dropoff_end',
+    )
+
+
+class MealDeliveryAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'request',
         'status',
         'chef',
         'deliverer',
+        'date',
         'pickup_start',
         'pickup_end',
         'dropoff_start',
         'dropoff_end',
-        'container_delivery',
     )
     list_filter = (
         'status',
-        'container_delivery',
     )
     actions = (
         'notify_recipients',
@@ -218,7 +224,8 @@ class DeliveryAdmin(admin.ModelAdmin):
     notify_recipients.short_description = "Send text message notifications to delivery recipients"
 
 
+admin.site.register(ContainerDelivery, ContainerDeliveryAdmin)
 admin.site.register(GroceryRequest, GroceryRequestAdmin)
 admin.site.register(MealRequest, MealRequestAdmin)
 admin.site.register(UpdateNote, UpdateNoteAdmin)
-admin.site.register(Delivery, DeliveryAdmin)
+admin.site.register(MealDelivery, MealDeliveryAdmin)
