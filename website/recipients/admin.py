@@ -40,10 +40,8 @@ class LandlineFilter(admin.SimpleListFilter):
         return queryset
 
 
-
 class DeliveryInline(admin.TabularInline):
     model = Delivery
-    extra = 0
 
 
 class UpdateNoteInline(admin.StackedInline):
