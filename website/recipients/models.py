@@ -16,6 +16,11 @@ from website.maps import Geocoder, GeocoderException
 logger = logging.getLogger(__name__)
 
 
+class SendNotificationException(Exception):
+    def __init__(self, message: str):
+        self.message = message
+
+
 class Cities(models.TextChoices):
     AJAX = 'Ajax', 'Ajax'
     AURORA = 'Aurora', 'Aurora'
@@ -414,13 +419,18 @@ class Delivery(models.Model):
         return Delivery.objects.filter(request=self.request, container_delivery=True).exists()
 
     def send_recipient_notification(self):
+        # Perform validation first that we _can_ send this notification
         if self.container_delivery:
-            logger.error("Attempted to send recipient notification text for Meal Request %d for a container delivery, skipping", self.request.id)
-            return
+            raise SendNotificationException("Recipient notifications should not be sent for container deliveries")
 
         if not self.request.can_receive_texts:
-            logger.error("Attempted to send recipient notification text for Meal Request %d for a phone number that cannot receive texts, skipping", self.request.id)
-            return
+            raise SendNotificationException("Recipient cannot receive text messages at their phone number")
+
+        if not self.request.delivery_date:
+            raise SendNotificationException("Request does not have a delivery date assigned")
+
+        if not (self.dropoff_start and self.dropoff_end):
+            raise SendNotificationException("Delivery does not have a dropoff time range scheduled")
 
         # Date is in the format "Weekday Month Year" eg. Sunday November 29
         # Time is in the format "Hour:Minute AM/PM" eg. 09:30 PM
