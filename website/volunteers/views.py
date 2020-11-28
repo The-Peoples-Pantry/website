@@ -1,11 +1,9 @@
-import datetime
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic.edit import FormView
 from django.views.generic import ListView, TemplateView
-from django.contrib.auth.models import User
 from django_filters.views import FilterView
 
 from recipients.models import MealRequest, Delivery, ContainerDelivery, Status
