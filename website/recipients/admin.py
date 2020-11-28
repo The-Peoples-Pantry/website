@@ -60,11 +60,10 @@ class MealRequestAdmin(admin.ModelAdmin):
         'landline',
         'city',
         'created_at',
-        # 'delivery_date',
+        'delivery_date',
         'status',
     )
     list_filter = (
-        # 'delivery_date',
         StatusFilter,
         LandlineFilter,
         'created_at',
@@ -77,6 +76,14 @@ class MealRequestAdmin(admin.ModelAdmin):
         'confirm',
         'copy'
     )
+
+    def delivery_date(self, obj):
+        return obj.delivery.date
+    delivery_date.admin_order_field = 'delivery__date'
+
+    def status(self, obj):
+        return obj.delivery.status
+    status.admin_order_field = 'delivery__status'
 
     def landline(self, obj):
         return 'No' if obj.can_receive_texts else 'Yes'
@@ -136,10 +143,8 @@ class GroceryRequestAdmin(admin.ModelAdmin):
         'condiments',
         'dairy',
         'created_at',
-        # 'delivery_date',
     )
     list_filter = (
-        # 'delivery_date',
         'created_at',
     )
 
