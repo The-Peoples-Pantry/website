@@ -27,10 +27,9 @@
         <div class="card-body">
           <div class="row mb-3">
             <div class="col h6">
-            {% if delivery.container_delivery %}Containers for meal
-              {% else %}Meal
-              {% endif %} for {{ delivery.request.num_adults }} adult{{ delivery.request.num_adults | pluralize }}
-                        and {{ delivery.request.num_children }} kid{{ delivery.request.num_children | pluralize }}
+              Meal
+              for {{ delivery.request.num_adults }} adult{{ delivery.request.num_adults | pluralize }}
+              and {{ delivery.request.num_children }} kid{{ delivery.request.num_children | pluralize }}
             </div>
           </div>
           <div class="row mb-4">

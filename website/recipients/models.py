@@ -254,7 +254,7 @@ class HelpRequest(AddressModel):
 
     @property
     def status(self):
-        return Delivery.objects.get(request=self, container_delivery=False).status
+        return self.delivery.status
 
     def get_absolute_url(self):
         return reverse_lazy('recipients:request_detail', args=[str(self.id)])
@@ -433,22 +433,8 @@ class Delivery(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
-    @property
-    def delivery_date(self):
-        if self.container_delivery:
-            return self.request.delivery_date - datetime.timedelta(days=2)
-
-        return self.request.delivery_date
-
-    @property
-    def container_provided(self):
-        return Delivery.objects.filter(request=self.request, container_delivery=True).exists()
-
     def send_recipient_notification(self):
         # Perform validation first that we _can_ send this notification
-        if self.container_delivery:
-            raise SendNotificationException("Recipient notifications should not be sent for container deliveries")
-
         if not self.request.can_receive_texts:
             raise SendNotificationException("Recipient cannot receive text messages at their phone number")
 

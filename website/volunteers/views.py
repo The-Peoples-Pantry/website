@@ -8,7 +8,7 @@ from django.views.generic import ListView, TemplateView
 from django.contrib.auth.models import User
 from django_filters.views import FilterView
 
-from recipients.models import MealRequest, Delivery, Status
+from recipients.models import MealRequest, Delivery, ContainerDelivery, Status
 from public.views import GroupView
 from .forms import DeliverySignupForm, ChefSignupForm, AcceptTermsForm
 from .models import VolunteerApplication, VolunteerRoles
@@ -59,7 +59,7 @@ class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
         self.update_meal_request(form, meal_request)
         self.create_delivery(form, meal_request)
 
-        # If the form requested containers, setup another delivery for those
+        # If the form requested containers, setup a container delivery as well
         if form.cleaned_data['container_needed']:
             self.create_container_delivery(form, meal_request)
 
@@ -86,13 +86,9 @@ class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
         )
 
     def create_container_delivery(self, form, meal_request):
-        Delivery.objects.create(
-            request=meal_request,
+        ContainerDelivery.objects.create(
             chef=self.request.user,
-            status=Status.CHEF_ASSIGNED,
-            pickup_start=form.cleaned_data['start_time'],
-            pickup_end=form.cleaned_data['end_time'],
-            container_delivery=True
+            date=form.cleaned_data['delivery_date'],
         )
 
 
@@ -110,10 +106,8 @@ class ChefIndexView(TaskIndexView):
     permission_group = 'Chefs'
 
     def get_queryset(self):
-        return self.queryset.filter(
-            chef=self.request.user,
-            container_delivery=False
-        )
+        return self.queryset.filter(chef=self.request.user)
+
 
 class DeliveryIndexView(TaskIndexView):
     """View for deliverers to see the requests they've signed up to deliver"""
