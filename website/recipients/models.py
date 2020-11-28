@@ -423,6 +423,7 @@ class Delivery(models.Model):
         choices=Status.choices,
         default=Status.UNCONFIRMED
     )
+    date = models.DateField()
     pickup_start = models.TimeField(null=True, blank=True)
     pickup_end = models.TimeField(null=True, blank=True)
     dropoff_start = models.TimeField(null=True, blank=True)
