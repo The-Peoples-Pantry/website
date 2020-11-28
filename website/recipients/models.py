@@ -407,12 +407,12 @@ class MealDelivery(models.Model):
     chef = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET(get_sentinel_user),
-        related_name="assigned_chef"
+        related_name="cooked_meal_deliveries",
     )
     deliverer = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET(get_sentinel_user),
-        related_name="assigned_deliverer",
+        related_name="delivered_meal_deliveries",
         null=True,
         blank=True,
     )
