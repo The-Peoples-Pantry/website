@@ -378,6 +378,7 @@ class Delivery(models.Model):
     class Meta:
         verbose_name_plural = 'deliveries'
 
+    request = models.OneToOneField(MealRequest, on_delete=models.CASCADE)
     chef = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET(get_sentinel_user),
@@ -390,7 +391,6 @@ class Delivery(models.Model):
         null=True,
         blank=True,
     )
-    request = models.ForeignKey(MealRequest, on_delete=models.CASCADE)
     status = models.CharField(
         "Status",
         max_length=settings.DEFAULT_LENGTH,
