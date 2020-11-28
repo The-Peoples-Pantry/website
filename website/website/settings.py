@@ -215,9 +215,5 @@ GROUP_PERMISSIONS = {
         'change_mealrequest',
         'delete_mealrequest',
         'view_mealrequest',
-        'add_updatenote',
-        'change_updatenote',
-        'delete_updatenote',
-        'view_updatenote',
     ]
 }

@@ -2,7 +2,7 @@ import collections
 import uuid
 from django.contrib import admin, messages
 from django.utils.html import format_html, format_html_join
-from .models import MealRequest, GroceryRequest, UpdateNote, MealDelivery, Status, SendNotificationException, ContainerDelivery
+from .models import MealRequest, GroceryRequest, MealDelivery, Status, SendNotificationException, ContainerDelivery
 from django.utils.translation import ngettext
 
 
@@ -39,11 +39,6 @@ class MealDeliveryInline(admin.TabularInline):
     model = MealDelivery
 
 
-class UpdateNoteInline(admin.StackedInline):
-    model = UpdateNote
-    extra = 0
-
-
 class MealRequestAdmin(admin.ModelAdmin):
     list_display = (
         'id',
@@ -63,7 +58,6 @@ class MealRequestAdmin(admin.ModelAdmin):
     )
     inlines = (
         MealDeliveryInline,
-        UpdateNoteInline,
     )
     actions = (
         'confirm',
@@ -141,16 +135,16 @@ class GroceryRequestAdmin(admin.ModelAdmin):
     )
 
 
-class UpdateNoteAdmin(admin.ModelAdmin):
-    list_display = (
-        'id',
-        'note',
-        'request_id',
-        'created_at',
-    )
-    list_filter = (
-        'created_at',
-    )
+# class UpdateNoteAdmin(admin.ModelAdmin):
+#     list_display = (
+#         'id',
+#         'note',
+#         'request_id',
+#         'created_at',
+#     )
+#     list_filter = (
+#         'created_at',
+#     )
 
 
 class ContainerDeliveryAdmin(admin.ModelAdmin):
@@ -251,5 +245,4 @@ class MealDeliveryAdmin(admin.ModelAdmin):
 admin.site.register(ContainerDelivery, ContainerDeliveryAdmin)
 admin.site.register(GroceryRequest, GroceryRequestAdmin)
 admin.site.register(MealRequest, MealRequestAdmin)
-admin.site.register(UpdateNote, UpdateNoteAdmin)
 admin.site.register(MealDelivery, MealDeliveryAdmin)
