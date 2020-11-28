@@ -382,11 +382,12 @@ class ContainerDelivery(models.Model):
     chef = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
+        related_name="received_container_deliveries",
     )
     deliverer = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET(get_sentinel_user),
-        related_name="container_deliveries",
+        related_name="delivered_container_deliveries",
         null=True,
         blank=True,
     )
