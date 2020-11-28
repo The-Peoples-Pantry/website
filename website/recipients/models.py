@@ -8,6 +8,7 @@ from django.db import models
 from django.conf import settings
 from django.urls import reverse_lazy
 
+from website.text_messaging import send_text
 from core.models import get_sentinel_user
 from website.maps import Geocoder, GeocoderException
 
@@ -411,6 +412,20 @@ class Delivery(models.Model):
     @property
     def container_provided(self):
         return Delivery.objects.filter(request=self.request, container_delivery=True).exists()
+
+    def send_recipient_notification(self):
+        # Date is in the format "Weekday Month Year" eg. Sunday November 29
+        # Time is in the format "Hour:Minute AM/PM" eg. 09:30 PM
+        message = dedent(f"""
+            Hi {self.request.name},
+            This is a message from The People's Pantry.
+            Your delivery is scheduled for {self.request.delivery_date:%A %B %d} between {self.dropoff_start:%I:%M %p} and {self.dropoff_end:%I:%M %p}.
+            Since we depend on volunteers for our deliveries, sometimes we are not able to do all deliveries scheduled for the day. If that’s the case with your delivery, we will inform you by 6 PM on the day of the delivery and your delivery will be rescheduled for the following day.
+            Please confirm you got this message and let us know if you can take the delivery.
+            Thank you!
+        """)
+        send_text(self.request.phone_number, message)
+        logger.info("Sent recipient notification text for Meal Request %d to %s", self.request.id, self.request.phone_number)
 
     def __str__(self):
         # delivery_date = self.delivery_date.strftime("%m/%d/%Y") if self.delivery_date else "Unscheduled"
