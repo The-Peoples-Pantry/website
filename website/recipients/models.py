@@ -242,9 +242,6 @@ class HelpRequest(AddressModel):
     # Legal
     accept_terms = models.BooleanField("Accept terms")
 
-    # Admin
-    delivery_date = models.DateField(blank=True, null=True)
-
     # System
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
