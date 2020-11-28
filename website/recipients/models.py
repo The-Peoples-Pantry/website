@@ -356,20 +356,6 @@ class Status(models.TextChoices):
     DELIVERED = 'Delivered', 'Delivered'
 
 
-class UpdateNote(models.Model):
-    author = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.SET(get_sentinel_user),
-        blank=True
-    )
-    request_id = models.ForeignKey(MealRequest, on_delete=models.CASCADE)
-    note = models.CharField(max_length=settings.LONG_TEXT_LENGTH)
-
-    # System
-    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-
 class ContainerDelivery(models.Model):
     """Represents a delivery of containers to a chef"""
     class Meta:
