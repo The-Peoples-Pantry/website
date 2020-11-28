@@ -395,11 +395,15 @@ class ContainerDelivery(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
 
-class Delivery(models.Model):
+class MealDelivery(models.Model):
     class Meta:
-        verbose_name_plural = 'deliveries'
+        verbose_name_plural = 'meal deliveries'
 
-    request = models.OneToOneField(MealRequest, on_delete=models.CASCADE)
+    request = models.OneToOneField(
+        MealRequest,
+        on_delete=models.CASCADE,
+        related_name='delivery',
+    )
     chef = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET(get_sentinel_user),
@@ -453,6 +457,3 @@ class Delivery(models.Model):
         return "[%s] Delivering %s to %s for %s" % (
             self.status.capitalize(), self.request._meta.verbose_name.capitalize(), self.request.city, self.request.name,
         )
-
-
-MealDelivery = Delivery
