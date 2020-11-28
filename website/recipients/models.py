@@ -418,6 +418,10 @@ class Delivery(models.Model):
             logger.error("Attempted to send recipient notification text for Meal Request %d for a container delivery, skipping", self.request.id)
             return
 
+        if not self.request.can_receive_texts:
+            logger.error("Attempted to send recipient notification text for Meal Request %d for a phone number that cannot receive texts, skipping", self.request.id)
+            return
+
         # Date is in the format "Weekday Month Year" eg. Sunday November 29
         # Time is in the format "Hour:Minute AM/PM" eg. 09:30 PM
         message = dedent(f"""
