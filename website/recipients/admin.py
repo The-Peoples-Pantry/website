@@ -14,13 +14,8 @@ class StatusFilter(admin.SimpleListFilter):
         return Status.choices
 
     def queryset(self, request, queryset):
-        if self.value() and self.value() != 'Unconfirmed':
-            matching_uuids = [delivery.request.uuid for delivery in Delivery.objects.filter(status=self.value())]
-            queryset = queryset.filter(uuid__in=matching_uuids)
-        elif self.value() == 'Unconfirmed':
-            matching_uuids = [delivery.request.uuid for delivery in Delivery.objects.all()]
-            queryset = queryset.exclude(uuid__in=matching_uuids)
-
+        if self.value():
+            queryset = queryset.filter(delivery__status=self.value())
         return queryset
 
 
