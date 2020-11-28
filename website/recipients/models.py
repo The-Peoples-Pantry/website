@@ -266,7 +266,7 @@ class HelpRequest(AddressModel):
     def __str__(self):
         try:
             date = self.delivery.date.strftime("%m/%d/%Y")
-        except Delivery.DoesNotExist:
+        except MealDelivery.DoesNotExist:
             date = "Unscheduled"
         return "[%s] %s for %s in %s for %d adult(s) and %d kid(s)" % (
             date, self._meta.verbose_name.capitalize(), self.name, self.city, self.num_adults, self.num_children,
@@ -453,3 +453,6 @@ class Delivery(models.Model):
         return "[%s] Delivering %s to %s for %s" % (
             self.status.capitalize(), self.request._meta.verbose_name.capitalize(), self.request.city, self.request.name,
         )
+
+
+MealDelivery = Delivery

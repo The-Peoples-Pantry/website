@@ -6,11 +6,11 @@ from django.views.generic.edit import FormView
 from django.views.generic import ListView, TemplateView
 from django_filters.views import FilterView
 
-from recipients.models import MealRequest, Delivery, ContainerDelivery, Status
+from recipients.models import MealRequest, MealDelivery, ContainerDelivery, Status
 from public.views import GroupView
-from .forms import DeliverySignupForm, ChefSignupForm, AcceptTermsForm
+from .forms import MealDeliverySignupForm, ChefSignupForm, AcceptTermsForm
 from .models import VolunteerApplication, VolunteerRoles
-from .filters import ChefSignupFilter, DeliverySignupFilter
+from .filters import ChefSignupFilter, MealDeliverySignupFilter
 
 
 def delivery_success(request):
@@ -70,7 +70,7 @@ class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
             return None
 
     def create_delivery(self, form, meal_request):
-        Delivery.objects.create(
+        MealDelivery.objects.create(
             request=meal_request,
             chef=self.request.user,
             status=Status.CHEF_ASSIGNED,
@@ -87,9 +87,9 @@ class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
 
 
 class TaskIndexView(LoginRequiredMixin, GroupView, ListView):
-    model = Delivery
+    model = MealDelivery
     context_object_name = "deliveries"
-    queryset = Delivery.objects.exclude(status=Status.DELIVERED).order_by('date')
+    queryset = MealDelivery.objects.exclude(status=Status.DELIVERED).order_by('date')
 
 
 class ChefIndexView(TaskIndexView):
@@ -101,8 +101,8 @@ class ChefIndexView(TaskIndexView):
         return self.queryset.filter(chef=self.request.user)
 
 
-class DeliveryIndexView(TaskIndexView):
-    """View for deliverers to see the requests they've signed up to deliver"""
+class MealDeliveryIndexView(TaskIndexView):
+    """View for deliverers to see the meal requests they've signed up to deliver"""
     template_name = "volunteers/delivery_list.html"
     permission_group = 'Deliverers'
 
@@ -110,13 +110,13 @@ class DeliveryIndexView(TaskIndexView):
         return self.queryset.filter(deliverer=self.request.user)
 
 
-class DeliverySignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
-    """View for chefs to sign up to cook meal requests"""
+class MealDeliverySignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
+    """View for deliverers to sign up to deliver meal requests"""
     template_name = "volunteers/delivery_signup.html"
-    form_class = DeliverySignupForm
+    form_class = MealDeliverySignupForm
     permission_group = 'Deliverers'
-    filterset_class = DeliverySignupFilter
-    queryset = Delivery.objects.filter(deliverer__isnull=True,).order_by('date')
+    filterset_class = MealDeliverySignupFilter
+    queryset = MealDelivery.objects.filter(deliverer__isnull=True,).order_by('date')
 
     @property
     def success_url(self):
@@ -124,9 +124,9 @@ class DeliverySignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
         return self.request.get_full_path()
 
     def get_context_data(self, alerts={}, **kwargs):
-        context = super(DeliverySignupView, self).get_context_data(**kwargs)
+        context = super(MealDeliverySignupView, self).get_context_data(**kwargs)
         context["delivery_form_pairs"] = [
-            (delivery, DeliverySignupForm(initial={'id': delivery.id}))
+            (delivery, MealDeliverySignupForm(initial={'id': delivery.id}))
             for delivery in self.object_list
         ]
         return context
@@ -154,7 +154,7 @@ class DeliverySignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
     def get_delivery_request(self, form):
         try:
             return self.queryset.get(id=form.cleaned_data['id'])
-        except Delivery.DoesNotExist:
+        except MealDelivery.DoesNotExist:
             return None
 
     def update_delivery(self, form, delivery):

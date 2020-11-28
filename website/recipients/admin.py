@@ -2,7 +2,7 @@ import collections
 import uuid
 from django.contrib import admin, messages
 from django.utils.html import format_html, format_html_join
-from .models import MealRequest, GroceryRequest, UpdateNote, Delivery, Status, SendNotificationException, ContainerDelivery
+from .models import MealRequest, GroceryRequest, UpdateNote, MealDelivery, Status, SendNotificationException, ContainerDelivery
 from django.utils.translation import ngettext
 
 
@@ -35,8 +35,8 @@ class LandlineFilter(admin.SimpleListFilter):
         return queryset
 
 
-class DeliveryInline(admin.TabularInline):
-    model = Delivery
+class MealDeliveryInline(admin.TabularInline):
+    model = MealDelivery
 
 
 class UpdateNoteInline(admin.StackedInline):
@@ -62,7 +62,7 @@ class MealRequestAdmin(admin.ModelAdmin):
         'created_at',
     )
     inlines = (
-        DeliveryInline,
+        MealDeliveryInline,
         UpdateNoteInline,
     )
     actions = (
@@ -83,13 +83,13 @@ class MealRequestAdmin(admin.ModelAdmin):
     landline.short_description = "Landline"
 
     def confirm(self, request, queryset):
-        confirmed_uuids = [delivery.request.uuid for delivery in Delivery.objects.filter(status=Status.DATE_CONFIRMED)]
+        confirmed_uuids = [delivery.request.uuid for delivery in MealDelivery.objects.filter(status=Status.DATE_CONFIRMED)]
         queryset = queryset.exclude(uuid__in=confirmed_uuids)
         updated = 0
 
         # Updated all deliveries associated with given request
         for meal_request in queryset:
-            updated += Delivery.objects.filter(request=meal_request).update(status=Status.DATE_CONFIRMED)
+            updated += MealDelivery.objects.filter(request=meal_request).update(status=Status.DATE_CONFIRMED)
 
         if updated:
             self.message_user(request, ngettext(
@@ -164,7 +164,7 @@ class ContainerDeliveryAdmin(admin.ModelAdmin):
     )
 
 
-class DeliveryAdmin(admin.ModelAdmin):
+class MealDeliveryAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'request',
@@ -228,4 +228,4 @@ admin.site.register(ContainerDelivery, ContainerDeliveryAdmin)
 admin.site.register(GroceryRequest, GroceryRequestAdmin)
 admin.site.register(MealRequest, MealRequestAdmin)
 admin.site.register(UpdateNote, UpdateNoteAdmin)
-admin.site.register(Delivery, DeliveryAdmin)
+admin.site.register(MealDelivery, MealDeliveryAdmin)

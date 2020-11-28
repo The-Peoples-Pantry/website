@@ -1,6 +1,6 @@
 from django import forms
 from django_filters import FilterSet, DateFilter
-from recipients.models import MealRequest, Delivery
+from recipients.models import MealRequest, MealDelivery
 
 
 class DateInput(forms.DateInput):
@@ -41,11 +41,11 @@ class ChefSignupFilter(FilterSet):
         }
 
 
-class DeliverySignupFilter(FilterSet):
+class MealDeliverySignupFilter(FilterSet):
     date = DateFilter(widget=DateInput())
 
     def __init__(self, *args, **kwargs):
-        super(DeliverySignupFilter, self).__init__(*args, **kwargs)
+        super(MealDeliverySignupFilter, self).__init__(*args, **kwargs)
         self.filters['request__city'].label = "City"
         self.filters['request__num_adults__lt'].label = "Number of adults in the household is less than"
         self.filters['request__num_children__lt'].label = "Number of children in the household is less than"
@@ -53,7 +53,7 @@ class DeliverySignupFilter(FilterSet):
 
     class Meta:
         form = HiddenValidationForm
-        model = Delivery
+        model = MealDelivery
         fields = {
             'request__city': ['exact'],
             'request__num_adults': ['lt'],
