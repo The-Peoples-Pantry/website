@@ -1,6 +1,10 @@
+import logging
 import requests
 
 from website.settings import TEXTLINE_API_KEY
+
+
+logger = logging.getLogger(__name__)
 
 
 class TextMessagingAPIException(Exception):
@@ -32,3 +36,12 @@ class TextMessagingAPI:
             return response.json()
         except Exception as e:
             raise TextMessagingAPIException from e
+
+
+def send_text(phone_number: str, message: str, fail_silently=True):
+    """Text the message to the phone number"""
+    try:
+        api = TextMessagingAPI()
+        api.send_text(phone_number, message)
+    except TextMessagingAPIException:
+        logger.exception("Failed to send text message to %s", phone_number)
