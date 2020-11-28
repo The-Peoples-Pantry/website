@@ -118,12 +118,7 @@ class DeliverySignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
     form_class = DeliverySignupForm
     permission_group = 'Deliverers'
     filterset_class = DeliverySignupFilter
-    queryset = Delivery.objects.filter(
-        deliverer__isnull=True,
-        status=Status.DATE_CONFIRMED
-    ).order_by(
-        'date'
-    )
+    queryset = Delivery.objects.filter(deliverer__isnull=True,).order_by('date')
 
     @property
     def success_url(self):
@@ -170,7 +165,6 @@ class DeliverySignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
         delivery.deliverer = self.request.user
         delivery.status = Status.DRIVER_ASSIGNED
         delivery.save()
-
 
 
 class DeliveryApplicationView(LoginRequiredMixin, FormView):
