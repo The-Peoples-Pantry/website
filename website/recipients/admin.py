@@ -1,7 +1,10 @@
+import collections
 import uuid
 from django.contrib import admin, messages
-from .models import MealRequest, GroceryRequest, UpdateNote, Delivery, Status
+from django.utils.html import format_html, format_html_join
+from .models import MealRequest, GroceryRequest, UpdateNote, Delivery, Status, SendNotificationException
 from django.utils.translation import ngettext
+
 
 class StatusFilter(admin.SimpleListFilter):
     title = 'Status'
@@ -171,6 +174,48 @@ class DeliveryAdmin(admin.ModelAdmin):
         'status',
         'container_delivery',
     )
+    actions = (
+        'notify_recipients',
+    )
+
+    def notify_recipients(self, request, queryset):
+        successes, errors = [], []
+
+        # Try to notify all recipients, capture any error messages that are received
+        for delivery in queryset:
+            try:
+                delivery.send_recipient_notification()
+                successes.append(delivery)
+            except SendNotificationException as e:
+                errors.append(e.message)
+
+        sent = len(successes)
+        unsent = len(errors)
+        total = sent + unsent
+
+        prefix_message = ngettext(
+            "%d delivery was selected",
+            "%d deliveries were selected",
+            total,
+        ) % total
+        success_message = ngettext(
+            "%d text message was sent to recipient",
+            "%d text messages were sent to recipients",
+            sent,
+        ) % sent
+        # An unordered list of grouped errors, along with the count of how many times the error happened
+        error_messages = format_html_join(
+            "\n", "<p><strong>{} message(s) not sent because: {}</strong></p>",
+            ((count, error_message) for (error_message, count) in collections.Counter(errors).items()),
+        )
+
+        if sent and unsent:
+            self.message_user(request, format_html("<p>{}</p><p>{}</p>{}", prefix_message, success_message, error_messages), messages.WARNING)
+        elif sent:
+            self.message_user(request, format_html("<p>{}</p><p>{}</p>", prefix_message, success_message), messages.SUCCESS)
+        elif unsent:
+            self.message_user(request, format_html("<p>{}</p>{}", prefix_message, error_messages), messages.ERROR)
+    notify_recipients.short_description = "Send text message notifications to delivery recipients"
 
 
 admin.site.register(GroceryRequest, GroceryRequestAdmin)
