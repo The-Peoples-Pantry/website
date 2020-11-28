@@ -374,6 +374,31 @@ class UpdateNote(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
 
+class ContainerDelivery(models.Model):
+    """Represents a delivery of containers to a chef"""
+    class Meta:
+        verbose_name_plural = 'container deliveries'
+
+    chef = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+    )
+    deliverer = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET(get_sentinel_user),
+        related_name="container_deliveries",
+        null=True,
+        blank=True,
+    )
+    date = models.DateField()
+    dropoff_start = models.TimeField(null=True, blank=True)
+    dropoff_end = models.TimeField(null=True, blank=True)
+
+    # System
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
 class Delivery(models.Model):
     class Meta:
         verbose_name_plural = 'deliveries'
