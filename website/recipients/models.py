@@ -444,3 +444,33 @@ class MealDelivery(models.Model):
         return "[%s] Delivering %s to %s for %s" % (
             self.status.capitalize(), self.request._meta.verbose_name.capitalize(), self.request.city, self.request.name,
         )
+
+
+class CommentModel(models.Model):
+    class Meta:
+        abstract = True
+
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET(get_sentinel_user),
+        null=True,
+        blank=True,
+    )
+    comment = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+class MealRequestComment(CommentModel):
+    subject = models.ForeignKey(MealRequest, related_name="comments", on_delete=models.CASCADE)
+
+
+class GroceryRequestComment(CommentModel):
+    subject = models.ForeignKey(GroceryRequest, related_name="comments", on_delete=models.CASCADE)
+
+
+class MealDeliveryComment(CommentModel):
+    subject = models.ForeignKey(MealDelivery, related_name="comments", on_delete=models.CASCADE)
+
+
+class ContainerDeliveryComment(CommentModel):
+    subject = models.ForeignKey(ContainerDelivery, related_name="comments", on_delete=models.CASCADE)
