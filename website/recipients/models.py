@@ -414,6 +414,10 @@ class Delivery(models.Model):
         return Delivery.objects.filter(request=self.request, container_delivery=True).exists()
 
     def send_recipient_notification(self):
+        if self.container_delivery:
+            logger.error("Attempted to send recipient notification text for Meal Request %d for a container delivery, skipping", self.request.id)
+            return
+
         # Date is in the format "Weekday Month Year" eg. Sunday November 29
         # Time is in the format "Hour:Minute AM/PM" eg. 09:30 PM
         message = dedent(f"""
