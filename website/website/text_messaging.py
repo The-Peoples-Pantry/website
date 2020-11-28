@@ -19,6 +19,9 @@ class TextMessagingAPI:
 
     def send_text(self, phone_number, message):
         """Send a message to the phone number"""
+        if self.api_key is None:
+            raise TextMessagingAPIException("Textline API key is not set")
+
         try:
             response = requests.post(
                 f"{self.API_BASE_URL}/conversations.json",
