@@ -1,4 +1,3 @@
-import datetime
 import logging
 from textwrap import dedent
 import urllib.parse

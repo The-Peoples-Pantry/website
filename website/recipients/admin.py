@@ -105,7 +105,6 @@ class MealRequestAdmin(admin.ModelAdmin):
             )
     confirm.short_description = "Mark deliveries as confirmed with recipient"
 
-
     def copy(self, request, queryset):
         ids = []
         for meal_request in queryset:
