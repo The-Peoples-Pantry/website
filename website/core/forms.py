@@ -1,8 +1,10 @@
+from ast import literal_eval
 from django import forms
 from django.contrib.auth import password_validation
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 
+from volunteers.models import Volunteer, Pronouns
 
 class UserCreationForm(forms.ModelForm):
     """
@@ -81,3 +83,24 @@ class UserCreationForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+
+
+
+
+class VolunteerProfileForm(forms.ModelForm):
+    pronouns = forms.MultipleChoiceField(
+        label="What are your pronouns? Select all that apply.",
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+        choices=Pronouns.choices,
+    )
+
+    def __init__(self, *args, **kwargs):
+        super(VolunteerProfileForm, self).__init__(*args, **kwargs)
+        if self.instance.pronouns:
+            self.initial['pronouns'] = literal_eval(self.instance.pronouns)
+
+
+    class Meta:
+        model = Volunteer
+        fields = ['name', 'phone_number', 'address_1', 'address_2', 'pronouns', 'postal_code', 'city']

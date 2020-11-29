@@ -1,10 +1,48 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.dispatch import receiver
+from django.db import models
 from django.db.models.signals import post_save
 from django.conf import settings
-from recipients.models import Cities, AddressModel
+from recipients.models import Cities, ContactModel
 
+class Pronouns(models.TextChoices):
+    SHE = 'She/Her', 'She/Her'
+    HE = 'He/Him', 'He/Him'
+    THEY = 'They/Them', 'They/Them'
+    ZE = 'Ze/Zir', 'Ze/Zir'
+
+class CookingTypes(models.TextChoices):
+    COOKING = 'Cooking', 'Cooking'
+    BAKING = 'Baking', 'Baking'
+
+
+class FoodTypes(models.TextChoices):
+    MEAT = 'Meat', 'Meat'
+    VEGAN = 'Vegan', 'Vegan'
+    VEGETARIAN = 'Vegetarian', 'Vegetarian'
+    DAIRY_FREE = 'Dairy-free', 'Dairy-free'
+    GLUTEN_FREE = 'Gluten-free', 'Gluten-free'
+    LOW_CARB = 'Low carb', 'Low carb'
+    HALAL = 'Halal', 'Halal'
+
+
+class TransportationTypes(models.TextChoices):
+    SUV = 'SUV or Truck', 'SUV or Truck'
+    MED_CAR = 'Medium-sized car', 'Medium-sized car'
+    SM_CAR = 'Small car', 'Small car'
+    BIKE_SUMMER = 'Bike - Spring to Fall deliveries only', 'Bike - Spring to Fall deliveries only'
+    BIKE_ALL = 'Bike - Can deliver in snow', 'Bike - Can deliver in snow'
+
+
+class DaysOfWeek(models.TextChoices):
+    MONDAY = 'Monday'
+    TUESDAY = 'Tuesday'
+    WEDNESDAY = 'Wednesday'
+    THURSDAY = 'Thursday'
+    FRIDAY = 'Friday'
+    SATURDAY = 'Saturday'
+    SUNDAY = 'Sunday'
 
 # These choice values must match up with the name of the Groups
 class VolunteerRoles(models.TextChoices):
@@ -13,39 +51,81 @@ class VolunteerRoles(models.TextChoices):
     ORGANIZERS = 'Organizers'
 
 
-class Volunteer(AddressModel):
+
+class Volunteer(ContactModel):
     user = models.OneToOneField(
         User,
         on_delete=models.CASCADE,
         primary_key=True,
         related_name="volunteer"
     )
-    address_1 = models.CharField(
-        "Address line 1",
-        help_text="Street name and number",
-        max_length=settings.ADDRESS_LENGTH,
+    pronouns = models.CharField(
+        "Pronouns",
+        help_text="Select all that apply",
+        max_length=settings.DEFAULT_LENGTH,
+        null=True,
         blank=True
     )
-    address_2 = models.CharField(
-        "Address line 2",
-        help_text="Apartment, Unit, or Suite number",
-        max_length=settings.ADDRESS_LENGTH,
-        blank=True,
+    days_available = models.CharField(
+        "Days available",
+        help_text="What days of the week are you available to volunteer?",
+        max_length=settings.DEFAULT_LENGTH,
+        null=True
     )
-    city = models.CharField(
-        "City",
-        max_length=settings.CITY_LENGTH,
-        choices=Cities.choices,
-        default=Cities.TORONTO,
+    total_hours_available = models.CharField(
+        "Total commitment",
+        help_text="How many hours a week are your willing to volunteer?",
+        max_length=settings.DEFAULT_LENGTH,
+        null=True
     )
-    phone_number = models.CharField(
-        "Phone number",
-        help_text="Use the format 555-555-5555",
-        max_length=settings.PHONE_NUMBER_LENGTH,
+    recurring_time_available = models.CharField(
+        "Recurring availability",
+        help_text="Are there any times when you're consistently available? E.g. Mondays from 1-6pm, etc.",
+        max_length=settings.DEFAULT_LENGTH,
+        null=True
     )
-    postal_code = models.CharField(
-        "Postal code",
-        max_length=settings.POSTAL_CODE_LENGTH,
+    have_ppe = models.BooleanField(
+        "PPE",
+        help_text="Do you have access to personal protective equipment such as masks, gloves, etc?",
+        default=False
+    )
+
+    ## Fields for cooks only
+    cooking_prefs = models.CharField(
+        "Cooking type",
+        help_text="What do you prefer to cook/bake? Check all that apply.",
+        max_length=settings.DEFAULT_LENGTH,
+        null=True,
+        blank=True
+    )
+    food_types = models.CharField(
+        "Food types",
+        help_text="What kind of meals/baked goods are you able to prepare? Check all that apply.",
+        max_length=settings.DEFAULT_LENGTH,
+        null=True,
+        blank=True
+    )
+    have_cleaning_supplies = models.BooleanField(
+        "Cleaning supplies",
+        help_text="Do you have cleaning supplies (soap, disinfectant, etc.) to clean your hands and kitchen?",
+        null=True,
+        blank=True
+    )
+    baking_volume = models.CharField(
+        "Baking volume",
+        help_text="For BAKERS: how many 'units' of baked goods can you bake each time? E.g. 48 cookies, 24 cinnamon buns, etc",
+        max_length=settings.DEFAULT_LENGTH,
+        null=True,
+        blank=True
+    )
+
+
+    ## Fields for delivery people only
+    transportation_options = models.CharField(
+        "Transportation options",
+        help_text="What means of transportation do you have access to for deliveries? Check all that apply.",
+        max_length=settings.DEFAULT_LENGTH,
+        null=True,
         blank=True
     )
     training_complete = models.BooleanField("Training Complete", default=False)
