@@ -2,14 +2,14 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
-from django.views.generic.edit import FormView
+from django.views.generic.edit import FormView, UpdateView
 from django.views.generic import ListView, TemplateView
 from django_filters.views import FilterView
 
 from recipients.models import MealRequest, MealDelivery, ContainerDelivery, Status
 from public.views import GroupView
-from .forms import MealDeliverySignupForm, ChefSignupForm, AcceptTermsForm
-from .models import VolunteerApplication, VolunteerRoles
+from .forms import MealDeliverySignupForm, ChefSignupForm, ChefApplyForm, DeliveryApplyForm
+from .models import VolunteerApplication, VolunteerRoles, Volunteer
 from .filters import ChefSignupFilter, MealDeliverySignupFilter
 
 
@@ -165,10 +165,15 @@ class MealDeliverySignupView(LoginRequiredMixin, GroupView, FormView, FilterView
         delivery.save()
 
 
-class DeliveryApplicationView(LoginRequiredMixin, FormView):
-    form_class = AcceptTermsForm
+class DeliveryApplicationView(LoginRequiredMixin, FormView, UpdateView):
+    form_class = DeliveryApplyForm
     template_name = "volunteers/delivery_application.html"
     success_url = reverse_lazy('volunteers:delivery_application_received')
+
+    def get_object(self):
+        return Volunteer.objects.get(
+            user=self.request.user
+        )
 
     def get(self, request, *args, **kwargs):
         has_applied = VolunteerApplication.objects.filter(
@@ -191,10 +196,15 @@ class DeliveryApplicationReceivedView(LoginRequiredMixin, TemplateView):
     template_name = "volunteers/delivery_application_received.html"
 
 
-class ChefApplicationView(LoginRequiredMixin, FormView):
-    form_class = AcceptTermsForm
+class ChefApplicationView(LoginRequiredMixin, FormView, UpdateView):
+    form_class = ChefApplyForm
     template_name = "volunteers/chef_application.html"
     success_url = reverse_lazy('volunteers:chef_application_received')
+
+    def get_object(self):
+        return Volunteer.objects.get(
+            user=self.request.user
+        )
 
     def get(self, request, *args, **kwargs):
         has_applied = VolunteerApplication.objects.filter(

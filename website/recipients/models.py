@@ -91,9 +91,41 @@ class Dairy(models.TextChoices):
     ALMOND_MILK = 'Almond Milk'
 
 
-class AddressModel(models.Model):
+class ContactModel(models.Model):
     class Meta:
         abstract = True
+
+    name = models.CharField(
+        "Full name",
+        max_length=settings.NAME_LENGTH
+    )
+    phone_number = models.CharField(
+        "Phone number",
+        help_text="Use the format 555-555-5555",
+        max_length=settings.PHONE_NUMBER_LENGTH,
+    )
+    email = models.EmailField("Email address")
+    address_1 = models.CharField(
+        "Address line 1",
+        help_text="Street name and number",
+        max_length=settings.ADDRESS_LENGTH
+    )
+    address_2 = models.CharField(
+        "Address line 2",
+        help_text="Apartment, Unit, or Suite number",
+        max_length=settings.ADDRESS_LENGTH,
+        blank=True,
+    )
+    city = models.CharField(
+        "City",
+        max_length=settings.CITY_LENGTH,
+        choices=Cities.choices,
+        default=Cities.TORONTO,
+    )
+    postal_code = models.CharField(
+        "Postal code",
+        max_length=settings.POSTAL_CODE_LENGTH
+    )
 
     @property
     def address(self):
@@ -127,45 +159,14 @@ class AddressModel(models.Model):
         super().save(*args, **kwargs)
 
 
-class HelpRequest(AddressModel):
+class HelpRequest(ContactModel):
     class Meta:
         abstract = True
 
     # Information about the recipient
-    name = models.CharField(
-        "Full name",
-        max_length=settings.NAME_LENGTH
-    )
-    email = models.EmailField("Email address")
-    phone_number = models.CharField(
-        "Phone number",
-        help_text="Use the format 555-555-5555",
-        max_length=settings.PHONE_NUMBER_LENGTH,
-    )
     can_receive_texts = models.BooleanField(
         "Can receive texts",
         help_text="Can the phone number provided receive text messages?",
-    )
-    address_1 = models.CharField(
-        "Address line 1",
-        help_text="Street name and number",
-        max_length=settings.ADDRESS_LENGTH
-    )
-    address_2 = models.CharField(
-        "Address line 2",
-        help_text="Apartment, Unit, or Suite number",
-        max_length=settings.ADDRESS_LENGTH,
-        blank=True,
-    )
-    city = models.CharField(
-        "City",
-        max_length=settings.CITY_LENGTH,
-        choices=Cities.choices,
-        default=Cities.TORONTO,
-    )
-    postal_code = models.CharField(
-        "Postal code",
-        max_length=settings.POSTAL_CODE_LENGTH
     )
     notes = models.TextField(
         "Additional information",

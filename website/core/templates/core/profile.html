@@ -4,7 +4,7 @@
 
 {% block content %}
 <span class="d-inline-flex align-items-baseline">
-  <h1>Profile</h1>
+  <h1>Volunteer Profile</h1>
   {% if 'Chefs' in groups %}<span class="badge badge-pill badge-primary ml-2">Chef</span>{% endif %}
   {% if 'Deliverers' in groups %}<span class="badge badge-pill badge-primary ml-2">Deliverer</span>{% endif %}
   {% if 'Organizers' in groups %}<span class="badge badge-pill badge-primary ml-2">Organizer</span>{% endif %}
@@ -12,17 +12,34 @@
 
 <form action="" method="post" class="form">
   {% csrf_token %}
-  {% bootstrap_form form %}
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">Contact details</h5>
+          <div class="row">
+            <div class="col-sm">{% bootstrap_field form.name %}</div>
+            <div class="col-sm">{% bootstrap_field form.phone_number %}</div>
+          </div>
+          <div class="row">
+            <div class="col-sm">{% bootstrap_field form.address_1 %}</div>
+            <div class="col-sm">{% bootstrap_field form.address_2 %}</div>
+          </div>
+          <div class="row">
+            <div class="col-sm">{% bootstrap_field form.city %}</div>
+            <div class="col-sm">{% bootstrap_field form.postal_code %}</div>
+          </div>
+          {% bootstrap_field form.pronouns %}
+        </div>
+      </div>
+
   {% bootstrap_button 'Update' %}
 </form>
 
 <div class="card-deck mt-5">
   {% if 'Chefs' not in groups %}
-  <div class="card">
+  <div class="card text-center">
     <img class="card-img-top" src="{% static 'chef.svg'%}" alt="Card image cap" height="200">
     <div class="card-body">
       <h5 class="card-title">Volunteer to be a chef</h5>
-      <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.r.</p>
     </div>
     <div class="card-footer">
       {% if 'Chefs' in pending_groups %}
@@ -35,11 +52,10 @@
   {% endif %}
 
   {% if 'Deliverers' not in groups %}
-  <div class="card">
+  <div class="card text-center">
     <img class="card-img-top" src="{% static 'deliverer.svg'%}" alt="Card image cap" height="200">
     <div class="card-body">
       <h5 class="card-title">Volunteer to be a deliverer</h5>
-      <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.t.</p>
     </div>
     <div class="card-footer">
       {% if 'Deliverers' in pending_groups %}
@@ -52,11 +68,10 @@
   {% endif %}
 
   {% if 'Organizers' not in groups %}
-  <div class="card">
+  <div class="card  text-center">
     <img class="card-img-top" src="{% static 'organizer.svg'%}" alt="Card image cap" height="200">
     <div class="card-body">
       <h5 class="card-title">Volunteer to be an organizer</h5>
-      <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.t.</p>
     </div>
     <div class="card-footer">
       <button type="button" class="btn btn-primary" disabled>Coming soon...</button>

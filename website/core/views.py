@@ -4,8 +4,10 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.urls import reverse_lazy
 from django.views.generic.edit import FormView, UpdateView
+from django import forms
 
-from .forms import UserCreationForm
+from .forms import UserCreationForm, VolunteerProfileForm
+from volunteers.models import Volunteer
 
 
 class UserCreationView(FormView):
@@ -22,13 +24,13 @@ class UserCreationView(FormView):
 
 
 class UserProfileView(LoginRequiredMixin, UpdateView):
-    model = User
-    fields = ['first_name', 'last_name']
+    model = Volunteer
+    form_class = VolunteerProfileForm
     template_name = 'core/profile.html'
     success_url = reverse_lazy('profile')
 
-    def get_object(self, queryset=None):
-        return self.request.user
+    def get_object(self):
+        return Volunteer.objects.get(user=self.request.user)
 
     def get_group_names(self, user):
         return list(user.groups.all().values_list('name', flat=True))
@@ -44,6 +46,8 @@ class UserProfileView(LoginRequiredMixin, UpdateView):
         context["pending_groups"] = self.get_pending_group_names(self.request.user)
         return context
 
+
     def form_valid(self, form):
+        form.save()
         messages.success(self.request, 'Profile details updated')
         return super().form_valid(form)
