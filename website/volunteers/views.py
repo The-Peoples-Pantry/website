@@ -197,7 +197,6 @@ class DeliveryApplicationReceivedView(LoginRequiredMixin, TemplateView):
 
 
 class ChefApplicationView(LoginRequiredMixin, FormView, UpdateView):
-    model = Volunteer
     form_class = ChefApplyForm
     template_name = "volunteers/chef_application.html"
     success_url = reverse_lazy('volunteers:chef_application_received')
