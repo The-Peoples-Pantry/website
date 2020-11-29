@@ -6,7 +6,7 @@
 
 <div class="row w-75">
   <div class="col">
-    <p>Here are all the deliveries you've signed up to complete. If you need to make a change to one of these, please get in touch with one of our volunteer coordinators.</p>
+    <p>Here are all the deliveries you've signed up to complete. If you need to make a change to any of these deliveries, please send us an email using the 'Request a change' button and tell us what you need to modify.</p>
 
   {% for delivery in deliveries %}
     <div class="card mb-4">
@@ -34,6 +34,7 @@
             </ul>
           </div>
         </div>
+        <a href="mailto:thepeoplespantrytoronto@gmail.com?subject=Deliverer Change Request for Delivery ID {{ delivery.id }}" class="btn btn-primary">Request a change</a>
       </div>
     </div>
 

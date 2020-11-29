@@ -6,7 +6,7 @@
 
 <div class="row w-75">
   <div class="col">
-    <p>Here are all the upcoming meal requests that you've signed up for! If you need to make a change to one of these, please get in touch with one of our volunteer coordinators.</p>
+    <p>Here are all the upcoming meal requests that you've signed up to cook. If you need to make a change to any of these deliveries, please send us an email using the 'Request a change' button and tell us what you need to modify.</p>
 
     {% for delivery in deliveries %}
       <div class="card mb-4">
@@ -45,6 +45,7 @@
               <p class="font-weight-strong">This meal will be picked up on {{ delivery.date }} beetween {{ delivery.pickup_start }} to {{ delivery.pickup_end }} {% if delivery.deliverer %} by {{ delivery.deliverer.name }} ({{ delivery.deliverer.phone_number }}) {% endif %}</p>
             </div>
           </div>
+          <a href="mailto:thepeoplespantrytoronto@gmail.com?subject=Chef Change Request for Delivery ID {{ delivery.id }}" class="btn btn-primary">Request a change</a>
         </div>
       </div>
 
