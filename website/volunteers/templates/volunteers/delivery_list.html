@@ -14,6 +14,10 @@
         {{ delivery.date }}: Delivering meal for
         {{ delivery.request.num_adults }} adult{{ delivery.request.num_adults | pluralize }}
         and {{ delivery.request.num_children }} kid{{ delivery.request.num_children | pluralize }}
+        <form action="" method="post" class="form float-right">
+          {% csrf_token %}
+          <input type="hidden" name="delivery_id" value="{{ delivery.uuid }}" />
+          {% bootstrap_button 'Mark as delivered' button_class='btn-warning' %}</form>
       </div>
       <div class="card-body">
         <div class="row">
