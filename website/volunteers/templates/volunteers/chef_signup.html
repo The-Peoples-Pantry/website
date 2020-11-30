@@ -61,14 +61,27 @@
                 <h6>Pickup timerange</h6>
                 <div class="row">
                   <div class="col-sm">
-                    {% bootstrap_field form.start_time %}
+                    {% bootstrap_field form.pickup_start %}
                   </div>
                   <div class="col-sm">
-                    {% bootstrap_field form.end_time %}
+                    {% bootstrap_field form.pickup_end %}
                   </div>
                 </div>
 
-                <p>{{ form.container_needed }} I need containers for this meal</p>
+                {% if can_deliver %}
+                  <p>{{ form.can_deliver }} I can also deliver this meal myself</p>
+                  <div class="dropoff-timerange d-none">
+                    <h6>Drop-off timerange</h6>
+                    <div class="row">
+                      <div class="col-sm">
+                        {% bootstrap_field form.dropoff_start %}
+                      </div>
+                      <div class="col-sm">
+                        {% bootstrap_field form.dropoff_end %}
+                      </div>
+                    </div>
+                  </div>
+                {% endif %}
 
                 {{ form.id.as_hidden }}
                 {% buttons submit="Submit"%}{% endbuttons %}
@@ -92,3 +105,14 @@
   </div>
 </div>
 {% endblock content %}
+
+{% block custom_jquery %}
+  <script>
+    $(document).ready(() => {
+      $("#id_can_deliver").change((e) => {
+        if (e.target.checked) $(".dropoff-timerange").removeClass("d-none")
+        else $(".dropoff-timerange").addClass("d-none")
+      });
+    });
+  </script>
+{% endblock %}
