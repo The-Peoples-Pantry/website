@@ -10,8 +10,8 @@ class GeocoderException(Exception):
 
 class Geocoder:
     API_BASE_URL = "http://mapquestapi.com/geocoding/v1"
-    DEGREE_RANGE_LOWER = 0.0004
-    DEGREE_RANGE_HIGHER = 0.0008
+    DEGREE_RANGE_LOWER = 0.001
+    DEGREE_RANGE_HIGHER = 0.004
 
     def __init__(self, api_key=MAPQUEST_API_KEY):
         self.api_key = api_key
@@ -21,7 +21,7 @@ class Geocoder:
         latitude, longitude = self.geocode(address)
         latitude += self.generate_noise()
         longitude += self.generate_noise()
-        return latitude, longitude
+        return round(latitude, 3), round(longitude, 3)
 
     def geocode(self, address):
         """Given an address, return the latitude & longitude"""

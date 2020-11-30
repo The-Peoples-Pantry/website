@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load bootstrap4 %}
+{% load get_volunteer %}
 
 {% block content %}
 <h1 class="mb-3">Sign up to deliver meals and groceries (Toronto)</h1>
@@ -39,7 +40,7 @@
                 width="350"
                 height="200"
                 frameborder="0" style="border:0"
-                src="{{ delivery.chef.anonymous_map_embed }}&zoom=14" allowfullscreen>
+                src="{{ delivery.chef|get_volunteer:'anonymous_map_embed' }}&zoom=14" allowfullscreen>
               </iframe>
             </div>
             <div class="col">
