@@ -5,7 +5,7 @@ from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .forms import MealRequestForm, GroceryRequestForm
-from .models import MealRequest
+from .models import MealRequest, GroceryRequest
 
 
 def index(request):
@@ -33,6 +33,12 @@ class MealRequestView(HelpRequestView):
 class GroceryRequestView(HelpRequestView):
     template_name = 'recipients/new_grocery_request.html'
     form_class = GroceryRequestForm
+
+    def get(self, request):
+        if len(GroceryRequest.objects.all()) >= 140:
+            return render(request, 'recipients/grocery_paused.html')
+        return super().get(request)
+
 
 
 class MealRequestDetail(LoginRequiredMixin, DetailView):
