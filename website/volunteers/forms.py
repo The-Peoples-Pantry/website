@@ -145,9 +145,12 @@ class DeliveryApplyForm(VolunteerApplicationForm):
 class ChefSignupForm(forms.Form):
     id = forms.IntegerField()
     delivery_date = forms.DateField(widget=DeliveryDateInput)
-    start_time = TimeField(initial='09:00')
-    end_time = TimeField(initial='21:00')
+    pickup_start = TimeField(initial='09:00')
+    pickup_end = TimeField(initial='21:00')
+    dropoff_start = TimeField(initial='09:00')
+    dropoff_end = TimeField(initial='21:00')
     container_needed = forms.BooleanField(required=False)
+    can_deliver = forms.BooleanField(required=False)
 
 
 class MealDeliverySignupForm(forms.ModelForm):

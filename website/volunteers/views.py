@@ -30,6 +30,9 @@ class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
         """Redirect to the same page with same query params to keep the filters"""
         return self.request.get_full_path()
 
+    def can_deliver(self, user):
+        return 'Deliverers' in user.groups.all().values_list('name', flat=True)
+
     def get_context_data(self, **kwargs):
         context = super(ChefSignupView, self).get_context_data(**kwargs)
         context["meal_request_form_pairs"] = [
@@ -37,6 +40,7 @@ class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
             # self.object_list is a MealRequest queryset pre-filtered by ChefSignupFilter
             for meal_request in self.object_list
         ]
+        context["can_deliver"] = self.can_deliver(self.request.user)
         return context
 
     def form_invalid(self, form):
@@ -70,13 +74,18 @@ class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
             return None
 
     def create_delivery(self, form, meal_request):
+        deliverer = self.request.user if form.cleaned_data['can_deliver'] else None
+
         MealDelivery.objects.create(
             request=meal_request,
+            deliverer=deliverer,
             chef=self.request.user,
             status=Status.CHEF_ASSIGNED,
             date=form.cleaned_data['delivery_date'],
-            pickup_start=form.cleaned_data['start_time'],
-            pickup_end=form.cleaned_data['end_time']
+            pickup_start=form.cleaned_data['pickup_start'],
+            pickup_end=form.cleaned_data['pickup_end'],
+            dropoff_start=form.cleaned_data['dropoff_start'],
+            dropoff_end=form.cleaned_data['dropoff_end'],
         )
 
     def create_container_delivery(self, form, meal_request):
