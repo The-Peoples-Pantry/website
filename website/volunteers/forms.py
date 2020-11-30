@@ -34,6 +34,22 @@ class TimeField(forms.TimeField):
             **kwargs,
         )
 
+def next_day(date):
+    return date + datetime.timedelta(1)
+
+def next_weekend(**kwargs):
+    # always leave two days of buffer time
+    buffer_date = datetime.date.today() + datetime.timedelta(2)
+    next_friday = buffer_date + datetime.timedelta((4 - buffer_date.weekday()) % 7)
+    next_sat = next_day(next_friday)
+    next_sun = next_day(next_sat)
+    return [(next_friday, next_friday), (next_sat, next_sat), (next_sun, next_sun)]
+
+class DeliveryDateInput(forms.Select):
+    def __init__(self):
+        super().__init__(
+            choices=next_weekend()
+        )
 
 class VolunteerApplicationForm(forms.ModelForm):
     have_ppe = forms.BooleanField(
@@ -128,7 +144,7 @@ class DeliveryApplyForm(VolunteerApplicationForm):
 
 class ChefSignupForm(forms.Form):
     id = forms.IntegerField()
-    delivery_date = forms.DateField(widget=FutureDateInput)
+    delivery_date = forms.DateField(widget=DeliveryDateInput)
     start_time = TimeField(initial='09:00')
     end_time = TimeField(initial='21:00')
     container_needed = forms.BooleanField(required=False)
