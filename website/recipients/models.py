@@ -126,6 +126,8 @@ class ContactModel(models.Model):
         "Postal code",
         max_length=settings.POSTAL_CODE_LENGTH
     )
+    anonymized_latitude = models.FloatField(default=43.651070)  # default: Toronto latitude
+    anonymized_longitude = models.FloatField(default=-79.347015)  # default: Toronto longitude
 
     @property
     def address(self):
@@ -246,8 +248,6 @@ class HelpRequest(ContactModel):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    anonymized_latitude = models.FloatField(default=43.651070)  # default: Toronto latitude
-    anonymized_longitude = models.FloatField(default=-79.347015)  # default: Toronto longitude
 
     def get_absolute_url(self):
         return reverse_lazy('recipients:request_detail', args=[str(self.id)])
