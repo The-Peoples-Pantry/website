@@ -182,6 +182,7 @@ class MealDeliveryAdmin(admin.ModelAdmin):
     )
     actions = (
         'notify_recipients',
+        'mark_as_delivered'
     )
 
     def notify_recipients(self, request, queryset):
@@ -222,6 +223,29 @@ class MealDeliveryAdmin(admin.ModelAdmin):
         elif unsent:
             self.message_user(request, format_html("<p>{}</p>{}", prefix_message, error_messages), messages.ERROR)
     notify_recipients.short_description = "Send text message notifications to delivery recipients"
+
+    def mark_as_delivered(self, request, queryset):
+        queryset = queryset.exclude(status=Status.DELIVERED)
+
+        # Updated all deliveries associated with given request
+        for delivery in queryset:
+            delivery.status = Status.DELIVERED
+            delivery.save()
+
+        if queryset:
+            self.message_user(request, ngettext(
+                "%d delivery has been marked as delivered",
+                "%d deliveries have been marked as delivered",
+                len(queryset),
+            ) % len(queryset), messages.SUCCESS)
+        else:
+            self.message_user(
+                request,
+                "No updates were made",
+                messages.WARNING
+            )
+    mark_as_delivered.short_description = "Mark deliveries as delivered"
+
 
 
 admin.site.register(ContainerDelivery, ContainerDeliveryAdmin)
