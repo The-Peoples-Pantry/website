@@ -1,7 +1,7 @@
 import collections
 import uuid
 from django.contrib import admin, messages
-from django.contrib.auth.models import User
+from django import forms
 from django.utils.html import format_html, format_html_join
 from .models import (
     MealRequest,
@@ -51,15 +51,29 @@ class MealDeliveryInline(admin.TabularInline):
     model = MealDelivery
 
 
+# Assign the current user as author when saving comments from a model admin
+class CommentInlineFormSet(forms.models.BaseInlineFormSet):
+    def save_new(self, form, commit=True):
+        obj = super(CommentInlineFormSet, self).save_new(form, commit=False)
+        obj.author = self.request.user
+        if commit:
+            obj.save()
+        return obj
+
+
 # Abstract for all comment inlines
 class CommentInline(admin.TabularInline):
     extra = 0
+    formset = CommentInlineFormSet
+    readonly_fields = (
+        'author',
+    )
 
-    # Assign the comment to the User that's making it
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == 'author':
-            kwargs["queryset"] = User.objects.filter(id=request.user.id)
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+    # Add request to the formset so that we can access the logged-in user
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super(CommentInline, self).get_formset(request, obj, **kwargs)
+        formset.request = request
+        return formset
 
 
 class MealRequestCommentInline(CommentInline):
