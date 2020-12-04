@@ -438,6 +438,7 @@ class MealDelivery(models.Model):
             Thank you!
         """)
         send_text(self.request.phone_number, message)
+        self.comments.create(comment=f"Sent a text to recipient: {message}")
         logger.info("Sent recipient notification text for Meal Request %d to %s", self.request.id, self.request.phone_number)
 
     def __str__(self):
