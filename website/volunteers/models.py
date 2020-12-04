@@ -1,16 +1,18 @@
+from django.core.mail import send_mail
 from django.db import models
 from django.contrib.auth.models import User
 from django.dispatch import receiver
-from django.db import models
 from django.db.models.signals import post_save
 from django.conf import settings
-from recipients.models import Cities, ContactModel
+from recipients.models import ContactModel
+
 
 class Pronouns(models.TextChoices):
     SHE = 'She/Her', 'She/Her'
     HE = 'He/Him', 'He/Him'
     THEY = 'They/Them', 'They/Them'
     ZE = 'Ze/Zir', 'Ze/Zir'
+
 
 class CookingTypes(models.TextChoices):
     COOKING = 'Cooking', 'Cooking'
@@ -44,12 +46,12 @@ class DaysOfWeek(models.TextChoices):
     SATURDAY = 'Saturday'
     SUNDAY = 'Sunday'
 
+
 # These choice values must match up with the name of the Groups
 class VolunteerRoles(models.TextChoices):
     CHEFS = 'Chefs'
     DELIVERERS = 'Deliverers'
     ORGANIZERS = 'Organizers'
-
 
 
 class Volunteer(ContactModel):
@@ -90,7 +92,7 @@ class Volunteer(ContactModel):
         default=False
     )
 
-    ## Fields for cooks only
+    # Fields for cooks only
     cooking_prefs = models.CharField(
         "Cooking type",
         help_text="What do you prefer to cook/bake? Check all that apply.",
@@ -119,8 +121,7 @@ class Volunteer(ContactModel):
         blank=True
     )
 
-
-    ## Fields for delivery people only
+    # Fields for delivery people only
     transportation_options = models.CharField(
         "Transportation options",
         help_text="What means of transportation do you have access to for deliveries? Check all that apply.",
