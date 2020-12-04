@@ -204,6 +204,8 @@ class MealDeliveryAdmin(admin.ModelAdmin):
     )
     actions = (
         'notify_recipients_delivery',
+        'notify_chefs_reminder',
+        'notify_deliverers_reminder',
         'mark_as_delivered'
     )
     inlines = (
@@ -211,43 +213,16 @@ class MealDeliveryAdmin(admin.ModelAdmin):
     )
 
     def notify_recipients_delivery(self, request, queryset):
-        successes, errors = [], []
-
-        # Try to notify all recipients, capture any error messages that are received
-        for delivery in queryset:
-            try:
-                delivery.send_recipient_delivery_notification()
-                successes.append(delivery)
-            except SendNotificationException as e:
-                errors.append(e.message)
-
-        sent = len(successes)
-        unsent = len(errors)
-        total = sent + unsent
-
-        prefix_message = ngettext(
-            "%d delivery was selected",
-            "%d deliveries were selected",
-            total,
-        ) % total
-        success_message = ngettext(
-            "%d text message was sent to recipient",
-            "%d text messages were sent to recipients",
-            sent,
-        ) % sent
-        # An unordered list of grouped errors, along with the count of how many times the error happened
-        error_messages = format_html_join(
-            "\n", "<p><strong>{} message(s) not sent because: {}</strong></p>",
-            ((count, error_message) for (error_message, count) in collections.Counter(errors).items()),
-        )
-
-        if sent and unsent:
-            self.message_user(request, format_html("<p>{}</p><p>{}</p>{}", prefix_message, success_message, error_messages), messages.WARNING)
-        elif sent:
-            self.message_user(request, format_html("<p>{}</p><p>{}</p>", prefix_message, success_message), messages.SUCCESS)
-        elif unsent:
-            self.message_user(request, format_html("<p>{}</p>{}", prefix_message, error_messages), messages.ERROR)
+        self.__send_notifications(request, queryset, 'send_recipient_delivery_notification')
     notify_recipients_delivery.short_description = "Send text message notification to recipients about delivery window"
+
+    def notify_chefs_reminder(self, request, queryset):
+        self.__send_notifications(request, queryset, 'send_chef_reminder_notification')
+    notify_chefs_reminder.short_description = "Send text message notification to chefs reminding them about the request"
+
+    def notify_deliverers_reminder(self, request, queryset):
+        self.__send_notifications(request, queryset, 'send_deliverer_reminder_notification')
+    notify_deliverers_reminder.short_description = "Send text message notification to deliverers reminding them about the request"
 
     def mark_as_delivered(self, request, queryset):
         queryset = queryset.exclude(status=Status.DELIVERED)
@@ -270,6 +245,57 @@ class MealDeliveryAdmin(admin.ModelAdmin):
                 messages.WARNING
             )
     mark_as_delivered.short_description = "Mark deliveries as delivered"
+
+    def __send_notifications(self, request, queryset, method_name):
+        """
+        Helper utility for invoking notification sending methods
+
+        This is more complex than usual because we need to account for situations where we send a subset of notifications.
+        Some notifications might succeed while others fail.
+        If they all succeed, we simply emit the success message with a "Success" status
+        If they partially fail, we emit info on both the successes and an error breakdown, with a "Warning" status
+        If they all fail, we emit the error breakdown with a "Error" status
+
+        method_name is the name of the method to invoke on each delivery instance.
+        """
+        successes, errors = [], []
+
+        # Try to notify all recipients, capture any error messages that are received
+        for delivery in queryset:
+            try:
+                send_notification_method = getattr(delivery, method_name)
+                send_notification_method()
+                successes.append(delivery)
+            except SendNotificationException as e:
+                errors.append(e.message)
+
+        sent = len(successes)
+        unsent = len(errors)
+        total = sent + unsent
+
+        prefix_message = ngettext(
+            "%d delivery was selected",
+            "%d deliveries were selected",
+            total,
+        ) % total
+        success_message = ngettext(
+            "%d text message was sent",
+            "%d text messages were sent",
+            sent,
+        ) % sent
+
+        # An unordered list of grouped errors, along with the count of how many times the error happened
+        error_messages = format_html_join(
+            "\n", "<p><strong>{} message(s) not sent because: {}</strong></p>",
+            ((count, error_message) for (error_message, count) in collections.Counter(errors).items()),
+        )
+
+        if sent and unsent:
+            self.message_user(request, format_html("<p>{}</p><p>{}</p>{}", prefix_message, success_message, error_messages), messages.WARNING)
+        elif sent:
+            self.message_user(request, format_html("<p>{}</p><p>{}</p>", prefix_message, success_message), messages.SUCCESS)
+        elif unsent:
+            self.message_user(request, format_html("<p>{}</p>{}", prefix_message, error_messages), messages.ERROR)
 
 
 admin.site.register(GroceryRequest, GroceryRequestAdmin)

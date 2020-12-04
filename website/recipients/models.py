@@ -412,6 +412,38 @@ class MealDelivery(models.Model):
         self.comments.create(comment=f"Sent a text to recipient: {message}")
         logger.info("Sent recipient delivery notification text for Meal Request %d to %s", self.request.id, self.request.phone_number)
 
+    def send_chef_reminder_notification(self):
+        """Send a reminder notification to the chef"""
+        if not self.chef:
+            raise SendNotificationException("No chef assigned to this delivery")
+
+        message = dedent(f"""
+            Hi {self.chef.volunteer.name},
+            This is a message from The People's Pantry.
+            Just reminding you of the upcoming meal you're preparing for {self.date:%A %B %d}.
+            Please confirm you got this message and let us know if you need any assistance.
+            Thank you!
+        """)
+        send_text(self.chef.volunteer.phone_number, message)
+        self.comments.create(comment=f"Sent a text to the chef: {message}")
+        logger.info("Sent chef reminder notification text for Meal Request %d to %s", self.request.id, self.chef.volunteer.phone_number)
+
+    def send_deliverer_reminder_notification(self):
+        """Send a reminder notification to the deliverer"""
+        if not self.deliverer:
+            raise SendNotificationException("No deliverer assigned to this delivery")
+
+        message = dedent(f"""
+            Hi {self.deliverer.volunteer.name},
+            This is a message from The People's Pantry.
+            Just reminding you of the upcoming meal you're delivering for {self.date:%A %B %d}.
+            Please confirm you got this message and let us know if you need any assistance.
+            Thank you!
+        """)
+        send_text(self.deliverer.volunteer.phone_number, message)
+        self.comments.create(comment=f"Sent a text to the deliverer: {message}")
+        logger.info("Sent deliverer reminder notification text for Meal Request %d to %s", self.request.id, self.deliverer.volunteer.phone_number)
+
     def __str__(self):
         return "[%s] Delivering %s to %s for %s" % (
             self.status.capitalize(), self.request._meta.verbose_name.capitalize(), self.request.city, self.request.name,
