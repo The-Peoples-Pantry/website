@@ -135,18 +135,6 @@ class GroceryRequestAdmin(admin.ModelAdmin):
     )
 
 
-# class UpdateNoteAdmin(admin.ModelAdmin):
-#     list_display = (
-#         'id',
-#         'note',
-#         'request_id',
-#         'created_at',
-#     )
-#     list_filter = (
-#         'created_at',
-#     )
-
-
 class ContainerDeliveryAdmin(admin.ModelAdmin):
     list_display = (
         'id',
