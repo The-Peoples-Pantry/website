@@ -459,6 +459,10 @@ class CommentModel(models.Model):
     comment = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        author = self.author or "System"
+        return f"[{self.created_at:%Y-%m-%d %I:%M %p}] {author}: {self.comment}"
+
 
 class MealRequestComment(CommentModel):
     subject = models.ForeignKey(MealRequest, related_name="comments", on_delete=models.CASCADE)
