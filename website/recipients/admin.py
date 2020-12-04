@@ -203,20 +203,20 @@ class MealDeliveryAdmin(admin.ModelAdmin):
         'status',
     )
     actions = (
-        'notify_recipients',
+        'notify_recipients_delivery',
         'mark_as_delivered'
     )
     inlines = (
         MealDeliveryCommentInline,
     )
 
-    def notify_recipients(self, request, queryset):
+    def notify_recipients_delivery(self, request, queryset):
         successes, errors = [], []
 
         # Try to notify all recipients, capture any error messages that are received
         for delivery in queryset:
             try:
-                delivery.send_recipient_notification()
+                delivery.send_recipient_delivery_notification()
                 successes.append(delivery)
             except SendNotificationException as e:
                 errors.append(e.message)
@@ -247,7 +247,7 @@ class MealDeliveryAdmin(admin.ModelAdmin):
             self.message_user(request, format_html("<p>{}</p><p>{}</p>", prefix_message, success_message), messages.SUCCESS)
         elif unsent:
             self.message_user(request, format_html("<p>{}</p>{}", prefix_message, error_messages), messages.ERROR)
-    notify_recipients.short_description = "Send text message notifications to delivery recipients"
+    notify_recipients_delivery.short_description = "Send text message notification to recipients about delivery window"
 
     def mark_as_delivered(self, request, queryset):
         queryset = queryset.exclude(status=Status.DELIVERED)

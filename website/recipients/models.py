@@ -371,7 +371,7 @@ class MealDelivery(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
-    def send_recipient_notification(self):
+    def send_recipient_delivery_notification(self):
         # Perform validation first that we _can_ send this notification
         if not self.request.can_receive_texts:
             raise SendNotificationException("Recipient cannot receive text messages at their phone number")
