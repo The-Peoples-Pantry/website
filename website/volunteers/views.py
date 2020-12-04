@@ -6,7 +6,7 @@ from django.views.generic.edit import FormView, UpdateView
 from django.views.generic import ListView, TemplateView
 from django_filters.views import FilterView
 
-from recipients.models import MealRequest, MealDelivery, ContainerDelivery, Status
+from recipients.models import MealRequest, MealDelivery, Status
 from public.views import GroupView
 from .forms import MealDeliverySignupForm, ChefSignupForm, ChefApplyForm, DeliveryApplyForm
 from .models import VolunteerApplication, VolunteerRoles, Volunteer
@@ -60,10 +60,6 @@ class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
         # If the meal request is still available setup the delivery
         self.create_delivery(form, meal_request)
 
-        # If the form requested containers, setup a container delivery as well
-        if form.cleaned_data['container_needed']:
-            self.create_container_delivery(form, meal_request)
-
         messages.success(self.request, 'Successfully signed up!')
         return super().form_valid(form)
 
@@ -86,12 +82,6 @@ class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
             pickup_end=form.cleaned_data['pickup_end'],
             dropoff_start=form.cleaned_data['dropoff_start'],
             dropoff_end=form.cleaned_data['dropoff_end'],
-        )
-
-    def create_container_delivery(self, form, meal_request):
-        ContainerDelivery.objects.create(
-            chef=self.request.user,
-            date=form.cleaned_data['delivery_date'],
         )
 
 

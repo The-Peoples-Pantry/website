@@ -12,8 +12,6 @@ from .models import (
     MealDeliveryComment,
     Status,
     SendNotificationException,
-    ContainerDelivery,
-    ContainerDeliveryComment,
 )
 from django.utils.translation import ngettext
 
@@ -86,10 +84,6 @@ class GroceryRequestCommentInline(CommentInline):
 
 class MealDeliveryCommentInline(CommentInline):
     model = MealDeliveryComment
-
-
-class ContainerDeliveryCommentInline(CommentInline):
-    model = ContainerDeliveryComment
 
 
 class MealRequestAdmin(admin.ModelAdmin):
@@ -192,20 +186,6 @@ class GroceryRequestAdmin(admin.ModelAdmin):
     )
 
 
-class ContainerDeliveryAdmin(admin.ModelAdmin):
-    list_display = (
-        'id',
-        'chef',
-        'deliverer',
-        'date',
-        'dropoff_start',
-        'dropoff_end',
-    )
-    inlines = (
-        ContainerDeliveryCommentInline,
-    )
-
-
 class MealDeliveryAdmin(admin.ModelAdmin):
     list_display = (
         'id',
@@ -292,7 +272,6 @@ class MealDeliveryAdmin(admin.ModelAdmin):
     mark_as_delivered.short_description = "Mark deliveries as delivered"
 
 
-admin.site.register(ContainerDelivery, ContainerDeliveryAdmin)
 admin.site.register(GroceryRequest, GroceryRequestAdmin)
 admin.site.register(MealRequest, MealRequestAdmin)
 admin.site.register(MealDelivery, MealDeliveryAdmin)

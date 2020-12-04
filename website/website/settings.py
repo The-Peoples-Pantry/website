@@ -215,17 +215,11 @@ GROUP_PERMISSIONS = {
         'change_mealdelivery',
         'delete_mealdelivery',
         'view_mealdelivery',
-        'add_containerdelivery',
-        'change_containerdelivery',
-        'delete_containerdelivery',
-        'view_containerdelivery',
         'add_mealrequestcomment',
         'view_mealrequestcomment',
         'add_groceryrequestcomment',
         'view_groceryrequestcomment',
         'add_mealdeliverycomment',
         'view_mealdeliverycomment',
-        'add_containerdeliverycomment',
-        'view_containerdeliverycomment',
     ]
 }
