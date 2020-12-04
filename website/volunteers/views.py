@@ -1,3 +1,4 @@
+import logging
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
@@ -6,11 +7,14 @@ from django.views.generic.edit import FormView, UpdateView
 from django.views.generic import ListView, TemplateView
 from django_filters.views import FilterView
 
-from recipients.models import MealRequest, MealDelivery, Status
+from recipients.models import MealRequest, MealDelivery, Status, SendNotificationException
 from public.views import GroupView
 from .forms import MealDeliverySignupForm, ChefSignupForm, ChefApplyForm, DeliveryApplyForm
 from .models import VolunteerApplication, VolunteerRoles, Volunteer
 from .filters import ChefSignupFilter, MealDeliverySignupFilter
+
+
+logger = logging.getLogger(__name__)
 
 
 def delivery_success(request):
@@ -71,8 +75,7 @@ class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
 
     def create_delivery(self, form, meal_request):
         deliverer = self.request.user if form.cleaned_data['can_deliver'] else None
-
-        MealDelivery.objects.create(
+        delivery = MealDelivery.objects.create(
             request=meal_request,
             deliverer=deliverer,
             chef=self.request.user,
@@ -83,6 +86,11 @@ class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
             dropoff_start=form.cleaned_data['dropoff_start'],
             dropoff_end=form.cleaned_data['dropoff_end'],
         )
+
+        try:
+            delivery.send_recipient_meal_notification()
+        except SendNotificationException:
+            logger.warn("Skipped sending meal notification for Meal Request %d to %s", meal_request.id, meal_request.phone_number)
 
 
 class TaskIndexView(LoginRequiredMixin, GroupView, ListView):

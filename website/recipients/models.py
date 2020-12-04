@@ -371,7 +371,26 @@ class MealDelivery(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def send_recipient_meal_notification(self):
+        """Send the first notification to a recipient, lets them know that a chef has signed up to cook for them"""
+        if not self.request.can_receive_texts:
+            raise SendNotificationException("Recipient cannot receive text messages at their phone number")
+
+        # Date is in the format "Weekday Month Year" eg. Sunday November 29
+        message = dedent(f"""
+            Hi {self.request.name},
+            This is a message from The People's Pantry.
+            A chef has been arranged to prepare a meal for you for {self.date:%A %B %d}
+            Since we depend on volunteers for our deliveries, sometimes we are not able to do all deliveries scheduled for the day. If that’s the case with your delivery, we will inform you by 6 PM on the day of the delivery and your delivery will be rescheduled for the following day.
+            Please confirm you got this message and let us know if you can take the delivery.
+            Thank you!
+        """)
+        send_text(self.request.phone_number, message)
+        self.comments.create(comment=f"Sent a text to recipient: {message}")
+        logger.info("Sent recipient meal notification text for Meal Request %d to %s", self.request.id, self.request.phone_number)
+
     def send_recipient_delivery_notification(self):
+        """Send a follow-up notification to a recipient, lets them know that a delivery driver will drop if off within a certain time window"""
         # Perform validation first that we _can_ send this notification
         if not self.request.can_receive_texts:
             raise SendNotificationException("Recipient cannot receive text messages at their phone number")
@@ -391,7 +410,7 @@ class MealDelivery(models.Model):
         """)
         send_text(self.request.phone_number, message)
         self.comments.create(comment=f"Sent a text to recipient: {message}")
-        logger.info("Sent recipient notification text for Meal Request %d to %s", self.request.id, self.request.phone_number)
+        logger.info("Sent recipient delivery notification text for Meal Request %d to %s", self.request.id, self.request.phone_number)
 
     def __str__(self):
         return "[%s] Delivering %s to %s for %s" % (
