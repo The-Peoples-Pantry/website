@@ -1,8 +1,20 @@
 import collections
 import uuid
 from django.contrib import admin, messages
+from django import forms
 from django.utils.html import format_html, format_html_join
-from .models import MealRequest, GroceryRequest, UpdateNote, MealDelivery, Status, SendNotificationException, ContainerDelivery
+from .models import (
+    MealRequest,
+    MealRequestComment,
+    GroceryRequest,
+    GroceryRequestComment,
+    MealDelivery,
+    MealDeliveryComment,
+    Status,
+    SendNotificationException,
+    ContainerDelivery,
+    ContainerDeliveryComment,
+)
 from django.utils.translation import ngettext
 
 
@@ -39,9 +51,45 @@ class MealDeliveryInline(admin.TabularInline):
     model = MealDelivery
 
 
-class UpdateNoteInline(admin.StackedInline):
-    model = UpdateNote
+# Assign the current user as author when saving comments from a model admin
+class CommentInlineFormSet(forms.models.BaseInlineFormSet):
+    def save_new(self, form, commit=True):
+        obj = super(CommentInlineFormSet, self).save_new(form, commit=False)
+        obj.author = self.request.user
+        if commit:
+            obj.save()
+        return obj
+
+
+# Abstract for all comment inlines
+class CommentInline(admin.TabularInline):
     extra = 0
+    formset = CommentInlineFormSet
+    readonly_fields = (
+        'author',
+    )
+
+    # Add request to the formset so that we can access the logged-in user
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super(CommentInline, self).get_formset(request, obj, **kwargs)
+        formset.request = request
+        return formset
+
+
+class MealRequestCommentInline(CommentInline):
+    model = MealRequestComment
+
+
+class GroceryRequestCommentInline(CommentInline):
+    model = GroceryRequestComment
+
+
+class MealDeliveryCommentInline(CommentInline):
+    model = MealDeliveryComment
+
+
+class ContainerDeliveryCommentInline(CommentInline):
+    model = ContainerDeliveryComment
 
 
 class MealRequestAdmin(admin.ModelAdmin):
@@ -63,7 +111,7 @@ class MealRequestAdmin(admin.ModelAdmin):
     )
     inlines = (
         MealDeliveryInline,
-        UpdateNoteInline,
+        MealRequestCommentInline,
     )
     actions = (
         'confirm',
@@ -139,17 +187,8 @@ class GroceryRequestAdmin(admin.ModelAdmin):
     list_filter = (
         'created_at',
     )
-
-
-class UpdateNoteAdmin(admin.ModelAdmin):
-    list_display = (
-        'id',
-        'note',
-        'request_id',
-        'created_at',
-    )
-    list_filter = (
-        'created_at',
+    inlines = (
+        GroceryRequestCommentInline,
     )
 
 
@@ -161,6 +200,9 @@ class ContainerDeliveryAdmin(admin.ModelAdmin):
         'date',
         'dropoff_start',
         'dropoff_end',
+    )
+    inlines = (
+        ContainerDeliveryCommentInline,
     )
 
 
@@ -183,6 +225,9 @@ class MealDeliveryAdmin(admin.ModelAdmin):
     actions = (
         'notify_recipients',
         'mark_as_delivered'
+    )
+    inlines = (
+        MealDeliveryCommentInline,
     )
 
     def notify_recipients(self, request, queryset):
@@ -247,9 +292,7 @@ class MealDeliveryAdmin(admin.ModelAdmin):
     mark_as_delivered.short_description = "Mark deliveries as delivered"
 
 
-
 admin.site.register(ContainerDelivery, ContainerDeliveryAdmin)
 admin.site.register(GroceryRequest, GroceryRequestAdmin)
 admin.site.register(MealRequest, MealRequestAdmin)
-admin.site.register(UpdateNote, UpdateNoteAdmin)
 admin.site.register(MealDelivery, MealDeliveryAdmin)

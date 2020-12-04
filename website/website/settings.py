@@ -215,9 +215,13 @@ GROUP_PERMISSIONS = {
         'change_mealrequest',
         'delete_mealrequest',
         'view_mealrequest',
-        'add_updatenote',
-        'change_updatenote',
-        'delete_updatenote',
-        'view_updatenote',
+        'add_mealrequestcomment',
+        'view_mealrequestcomment',
+        'add_groceryrequestcomment',
+        'view_groceryrequestcomment',
+        'add_mealdeliverycomment',
+        'view_mealdeliverycomment',
+        'add_containerdeliverycomment',
+        'view_containerdeliverycomment',
     ]
 }

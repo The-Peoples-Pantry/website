@@ -266,7 +266,7 @@ class HelpRequest(ContactModel):
 
     def __str__(self):
         try:
-            date = self.delivery.date.strftime("%m/%d/%Y")
+            date = self.delivery.date.strftime("%Y/%m/%d")
         except MealDelivery.DoesNotExist:
             date = "Unscheduled"
         return "[%s] %s for %s in %s for %d adult(s) and %d kid(s)" % (
@@ -354,20 +354,6 @@ class Status(models.TextChoices):
     DRIVER_ASSIGNED = 'Driver Assigned', 'Driver Assigned'
     RESCHEDULED = 'Recipient Rescheduled', 'Recipient Rescheduled'
     DELIVERED = 'Delivered', 'Delivered'
-
-
-class UpdateNote(models.Model):
-    author = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.SET(get_sentinel_user),
-        blank=True
-    )
-    request_id = models.ForeignKey(MealRequest, on_delete=models.CASCADE)
-    note = models.CharField(max_length=settings.LONG_TEXT_LENGTH)
-
-    # System
-    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
-    created_at = models.DateTimeField(auto_now_add=True)
 
 
 class ContainerDelivery(models.Model):
@@ -458,3 +444,37 @@ class MealDelivery(models.Model):
         return "[%s] Delivering %s to %s for %s" % (
             self.status.capitalize(), self.request._meta.verbose_name.capitalize(), self.request.city, self.request.name,
         )
+
+
+class CommentModel(models.Model):
+    class Meta:
+        abstract = True
+
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET(get_sentinel_user),
+        null=True,
+        blank=True,
+    )
+    comment = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        author = self.author or "System"
+        return f"[{self.created_at:%Y-%m-%d %I:%M %p}] {author}: {self.comment}"
+
+
+class MealRequestComment(CommentModel):
+    subject = models.ForeignKey(MealRequest, related_name="comments", on_delete=models.CASCADE)
+
+
+class GroceryRequestComment(CommentModel):
+    subject = models.ForeignKey(GroceryRequest, related_name="comments", on_delete=models.CASCADE)
+
+
+class MealDeliveryComment(CommentModel):
+    subject = models.ForeignKey(MealDelivery, related_name="comments", on_delete=models.CASCADE)
+
+
+class ContainerDeliveryComment(CommentModel):
+    subject = models.ForeignKey(ContainerDelivery, related_name="comments", on_delete=models.CASCADE)
