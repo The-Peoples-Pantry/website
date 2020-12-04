@@ -1,6 +1,7 @@
 import collections
 import uuid
 from django.contrib import admin, messages
+from django.contrib.auth.models import User
 from django.utils.html import format_html, format_html_join
 from .models import (
     MealRequest,
@@ -53,6 +54,12 @@ class MealDeliveryInline(admin.TabularInline):
 # Abstract for all comment inlines
 class CommentInline(admin.TabularInline):
     extra = 0
+
+    # Assign the comment to the User that's making it
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == 'author':
+            kwargs["queryset"] = User.objects.filter(id=request.user.id)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
 class MealRequestCommentInline(CommentInline):
