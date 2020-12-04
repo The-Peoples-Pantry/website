@@ -22,34 +22,11 @@ class SendNotificationException(Exception):
 
 
 class Cities(models.TextChoices):
-    AJAX = 'Ajax', 'Ajax'
-    AURORA = 'Aurora', 'Aurora'
-    BRAMPTON = 'Brampton', 'Brampton'
-    BROCK = 'Brock', 'Brock'
-    CALEDON = 'Caledon', 'Caledon'
-    CLARINGTON = 'Clarington', 'Clarington'
-    EAST_GWILIMBURY = 'East Gwilimbury', 'East Gwilimbury'
     EAST_YORK = 'East York', 'East York'
     ETOBICOKE = 'Etobicoke', 'Etobicoke'
-    GEORGINA = 'Georgina', 'Georgina'
-    KING = 'King', 'King'
-    MAPLE = 'Maple', 'Maple'
-    MARKHAM = 'Markham', 'Markham'
-    MISSISSAUGA = 'Mississauga', 'Mississauga'
-    NEWMARKET = 'Newmarket', 'Newmarket'
     NORTH_YORK = 'North York', 'North York'
-    OSHAWA = 'Oshawa', 'Oshawa'
-    PICKERING = 'Pickering', 'Pickering'
-    RICHMOND_HILL = 'Richmond Hill', 'Richmond Hill'
     SCARBOROUGH = 'Scarborough', 'Scarborough'
-    SCUGOG = 'Scugog', 'Scugog'
-    STOUFFVILLE = 'Stouffville', 'Stouffville'
-    THORNHILL = 'Thornhill', 'Thornhill'
-    TORONTO = 'Toronto', 'Toronto (downtown, east/west ends)'
-    UXBRIDGE = 'Uxbridge', 'Uxbridge'
-    VAUGHAN = 'Vaughan', 'Vaughan'
-    WHITBY = 'Whitby', 'Whitby'
-    YORK = 'York', 'York'
+    TORONTO = 'Toronto', 'Toronto'
 
 
 class Vegetables(models.TextChoices):
