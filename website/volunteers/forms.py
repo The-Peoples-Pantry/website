@@ -149,7 +149,6 @@ class ChefSignupForm(forms.Form):
     pickup_end = TimeField(initial='21:00')
     dropoff_start = TimeField(initial='09:00', required=False)
     dropoff_end = TimeField(initial='21:00', required=False)
-    container_needed = forms.BooleanField(required=False)
     can_deliver = forms.BooleanField(required=False)
 
 
