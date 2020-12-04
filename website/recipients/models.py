@@ -6,6 +6,7 @@ from django.core.mail import send_mail
 from django.db import models
 from django.conf import settings
 from django.urls import reverse_lazy
+from django.utils import timezone
 
 from website.text_messaging import send_text
 from core.models import get_sentinel_user
@@ -438,6 +439,7 @@ class MealDelivery(models.Model):
             Thank you!
         """)
         send_text(self.request.phone_number, message)
+        self.comments.create(comment=f"Sent a text to recipient: {message}")
         logger.info("Sent recipient notification text for Meal Request %d to %s", self.request.id, self.request.phone_number)
 
     def __str__(self):
@@ -459,9 +461,20 @@ class CommentModel(models.Model):
     comment = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
+    @property
+    def display_comment(self):
+        """Render a truncated version of the comment"""
+        max_length = 50
+        if self.comment is None:
+            return self.comment
+        if len(self.comment) < max_length:
+            return self.comment
+        return f"{self.comment[:max_length]}..."
+
     def __str__(self):
         author = self.author or "System"
-        return f"[{self.created_at:%Y-%m-%d %I:%M %p}] {author}: {self.comment}"
+        created_at = self.created_at.astimezone(timezone.get_current_timezone())
+        return f"[{created_at:%Y-%m-%d %I:%M:%S %p}] {author}: {self.display_comment}"
 
 
 class MealRequestComment(CommentModel):
