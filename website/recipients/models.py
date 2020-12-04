@@ -357,32 +357,6 @@ class Status(models.TextChoices):
     DELIVERED = 'Delivered', 'Delivered'
 
 
-class ContainerDelivery(models.Model):
-    """Represents a delivery of containers to a chef"""
-    class Meta:
-        verbose_name_plural = 'container deliveries'
-
-    chef = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name="received_container_deliveries",
-    )
-    deliverer = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.SET(get_sentinel_user),
-        related_name="delivered_container_deliveries",
-        null=True,
-        blank=True,
-    )
-    date = models.DateField()
-    dropoff_start = models.TimeField(null=True, blank=True)
-    dropoff_end = models.TimeField(null=True, blank=True)
-
-    # System
-    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-
 class MealDelivery(models.Model):
     class Meta:
         verbose_name_plural = 'meal deliveries'
@@ -487,7 +461,3 @@ class GroceryRequestComment(CommentModel):
 
 class MealDeliveryComment(CommentModel):
     subject = models.ForeignKey(MealDelivery, related_name="comments", on_delete=models.CASCADE)
-
-
-class ContainerDeliveryComment(CommentModel):
-    subject = models.ForeignKey(ContainerDelivery, related_name="comments", on_delete=models.CASCADE)
