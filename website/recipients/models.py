@@ -266,7 +266,7 @@ class HelpRequest(ContactModel):
 
     def __str__(self):
         try:
-            date = self.delivery.date.strftime("%m/%d/%Y")
+            date = self.delivery.date.strftime("%Y/%m/%d")
         except MealDelivery.DoesNotExist:
             date = "Unscheduled"
         return "[%s] %s for %s in %s for %d adult(s) and %d kid(s)" % (
