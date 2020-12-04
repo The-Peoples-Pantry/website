@@ -2,7 +2,18 @@ import collections
 import uuid
 from django.contrib import admin, messages
 from django.utils.html import format_html, format_html_join
-from .models import MealRequest, GroceryRequest, MealDelivery, Status, SendNotificationException, ContainerDelivery
+from .models import (
+    MealRequest,
+    MealRequestComment,
+    GroceryRequest,
+    GroceryRequestComment,
+    MealDelivery,
+    MealDeliveryComment,
+    Status,
+    SendNotificationException,
+    ContainerDelivery,
+    ContainerDeliveryComment,
+)
 from django.utils.translation import ngettext
 
 
@@ -39,6 +50,27 @@ class MealDeliveryInline(admin.TabularInline):
     model = MealDelivery
 
 
+# Abstract for all comment inlines
+class CommentInline(admin.TabularInline):
+    extra = 0
+
+
+class MealRequestCommentInline(CommentInline):
+    model = MealRequestComment
+
+
+class GroceryRequestCommentInline(CommentInline):
+    model = GroceryRequestComment
+
+
+class MealDeliveryCommentInline(CommentInline):
+    model = MealDeliveryComment
+
+
+class ContainerDeliveryCommentInline(CommentInline):
+    model = ContainerDeliveryComment
+
+
 class MealRequestAdmin(admin.ModelAdmin):
     list_display = (
         'id',
@@ -58,6 +90,7 @@ class MealRequestAdmin(admin.ModelAdmin):
     )
     inlines = (
         MealDeliveryInline,
+        MealRequestCommentInline,
     )
     actions = (
         'confirm',
@@ -133,6 +166,9 @@ class GroceryRequestAdmin(admin.ModelAdmin):
     list_filter = (
         'created_at',
     )
+    inlines = (
+        GroceryRequestCommentInline,
+    )
 
 
 class ContainerDeliveryAdmin(admin.ModelAdmin):
@@ -143,6 +179,9 @@ class ContainerDeliveryAdmin(admin.ModelAdmin):
         'date',
         'dropoff_start',
         'dropoff_end',
+    )
+    inlines = (
+        ContainerDeliveryCommentInline,
     )
 
 
@@ -165,6 +204,9 @@ class MealDeliveryAdmin(admin.ModelAdmin):
     actions = (
         'notify_recipients',
         'mark_as_delivered'
+    )
+    inlines = (
+        MealDeliveryCommentInline,
     )
 
     def notify_recipients(self, request, queryset):
@@ -227,7 +269,6 @@ class MealDeliveryAdmin(admin.ModelAdmin):
                 messages.WARNING
             )
     mark_as_delivered.short_description = "Mark deliveries as delivered"
-
 
 
 admin.site.register(ContainerDelivery, ContainerDeliveryAdmin)
