@@ -10,7 +10,7 @@ class VolunteerAdmin(admin.ModelAdmin):
     list_display = ('user', 'groups', 'city', 'training_complete')
 
     def groups(self, obj):
-        return ", ".join(obj.user.groups.all().values_list('name', flat=True))
+        return list(obj.user.groups.all().values_list('name', flat=True))
 
 
 class VolunteerApplicationAdmin(admin.ModelAdmin):
