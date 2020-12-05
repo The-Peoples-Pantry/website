@@ -1,3 +1,4 @@
+from textwrap import dedent
 from django.views.generic.edit import FormView
 from django.views.generic import DetailView
 from django.shortcuts import render
@@ -7,7 +8,7 @@ from django.contrib import messages
 from django.conf import settings
 
 from .forms import MealRequestForm, GroceryRequestForm
-from .models import HelpRequest, MealRequest, GroceryRequest, MealDelivery, Status
+from .models import MealRequest, GroceryRequest, MealDelivery, Status
 
 
 def index(request):
@@ -44,17 +45,17 @@ class MealRequestView(HelpRequestView):
                 request__in=matching_requests
             )
 
-            if (not all_deliveries
-                or all_deliveries.exclude(status=Status.DELIVERED)):
+            if (not all_deliveries or all_deliveries.exclude(status=Status.DELIVERED)):
                 return True
 
         return False
 
     def form_valid(self, form):
         if self.get_duplicate(form):
-            messages.warning(self.request,
-                'We\'re sorry, it looks like we currently have an unfulfilled request on file for you already. ' +
-                'Please give us some time to fulfill that request first before submitting another.')
+            messages.warning(self.request, dedent("""
+                We're sorry, it looks like we currently have an unfulfilled request on file for you already.
+                Please give us some time to fulfill that request first before submitting another.
+            """))
             return super().form_invalid(form)
         return super().form_valid(form)
 
@@ -67,7 +68,6 @@ class GroceryRequestView(HelpRequestView):
         if GroceryRequest.objects.count() >= settings.PAUSE_GROCERIES:
             return render(request, 'recipients/grocery_paused.html')
         return super().get(request)
-
 
 
 class MealRequestDetail(LoginRequiredMixin, DetailView):

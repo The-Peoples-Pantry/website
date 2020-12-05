@@ -1,10 +1,8 @@
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.models import User
 from django.urls import reverse_lazy
 from django.views.generic.edit import FormView, UpdateView
-from django import forms
 
 from .forms import UserCreationForm, VolunteerProfileForm
 from volunteers.models import Volunteer
@@ -45,7 +43,6 @@ class UserProfileView(LoginRequiredMixin, UpdateView):
         context["groups"] = self.get_group_names(self.request.user)
         context["pending_groups"] = self.get_pending_group_names(self.request.user)
         return context
-
 
     def form_valid(self, form):
         form.save()
