@@ -1,6 +1,6 @@
 from textwrap import dedent
 from django import forms
-from .models import MealRequest, GroceryRequest, Vegetables, Fruits, Grains, Condiments
+from .models import MealRequest, GroceryRequest, Vegetables, Fruits, Grains, Condiments, Protein, Dairy
 
 
 class TelephoneInput(forms.TextInput):
@@ -73,4 +73,12 @@ class GroceryRequestForm(HelpRequestForm):
         required=False,
         widget=forms.CheckboxSelectMultiple,
         choices=Condiments.choices,
+    )
+    protein = forms.ChoiceField(
+        required=False,
+        choices=Protein.choices,
+    )
+    dairy = forms.ChoiceField(
+        required=False,
+        choices=Dairy.choices,
     )

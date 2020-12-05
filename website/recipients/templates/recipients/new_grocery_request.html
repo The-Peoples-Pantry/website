@@ -22,6 +22,9 @@
 {% endblock pre_details_section %}
 
 {% block details_section_extras %}
+{% comment %}
+When we first kick off the grocery launch, recipients will not be able to request specific groceries
+We intend to add this feature back in after the holidays
 {% bootstrap_field form.vegetables %}
 {% bootstrap_field form.fruits %}
 {% bootstrap_field form.protein %}
@@ -31,4 +34,5 @@
 {% bootstrap_field form.baked_goods %}
 {% bootstrap_field form.kid_snacks %}
 {% bootstrap_field form.hygiene_products %}
+{% endcomment %}
 {% endblock details_section_extras %}
