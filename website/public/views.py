@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.mixins import UserPassesTestMixin
 
+from core.models import has_group
+
 
 def index(request):
     return render(request, "public/index.html")
@@ -8,8 +10,7 @@ def index(request):
 
 class GroupView(UserPassesTestMixin):
     def test_func(self):
-        has_group = self.request.user.groups.filter(name=self.permission_group).exists()
-        return has_group or self.request.user.is_staff
+        return has_group(self.request.user, self.permission_group) or self.request.user.is_staff
 
     def handle_no_permission(self):
         return redirect('/accounts/profile')

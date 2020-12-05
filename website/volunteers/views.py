@@ -7,6 +7,7 @@ from django.views.generic.edit import FormView, UpdateView
 from django.views.generic import ListView, TemplateView
 from django_filters.views import FilterView
 
+from core.models import has_group
 from recipients.models import MealRequest, MealDelivery, Status, SendNotificationException
 from public.views import GroupView
 from .forms import MealDeliverySignupForm, ChefSignupForm, ChefApplyForm, DeliveryApplyForm
@@ -35,7 +36,7 @@ class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
         return self.request.get_full_path()
 
     def can_deliver(self, user):
-        return user.groups.filter(name='Deliverers').exists()
+        return has_group(user, 'Deliverers')
 
     def get_context_data(self, **kwargs):
         context = super(ChefSignupView, self).get_context_data(**kwargs)
