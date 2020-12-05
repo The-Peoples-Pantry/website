@@ -249,7 +249,7 @@ class HelpRequest(ContactModel):
     def __str__(self):
         try:
             date = self.delivery.date.strftime("%Y/%m/%d")
-        except MealDelivery.DoesNotExist:
+        except (MealDelivery.DoesNotExist, AttributeError):
             date = "Unscheduled"
         return "[%s] %s for %s in %s for %d adult(s) and %d kid(s)" % (
             date, self._meta.verbose_name.capitalize(), self.name, self.city, self.num_adults, self.num_children,
