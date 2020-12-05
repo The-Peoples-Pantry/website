@@ -138,7 +138,16 @@ STATIC_ROOT = BASE_DIR / 'static'
 # Email
 # https://docs.djangoproject.com/en/3.1/topics/email/
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_HOST = getenv('MAILGUN_SMTP_SERVER')
+EMAIL_PORT = getenv('MAILGUN_SMTP_PORT')
+EMAIL_HOST_USER = getenv('MAILGUN_SMTP_LOGIN')
+EMAIL_HOST_PASSWORD = getenv('EMAIL_HOST_PASSWORD')
+EMAIL_USE_TLS = True
+EMAIL_TIMEOUT = 30
+if EMAIL_HOST:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Authentication
 # https://docs.djangoproject.com/en/3.1/topics/auth/default/
