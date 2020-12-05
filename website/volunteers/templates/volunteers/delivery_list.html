@@ -1,6 +1,5 @@
 {% extends 'base.html' %}
 {% load bootstrap4 %}
-{% load get_volunteer %}
 
 {% block content %}
 <h1>My deliveries</h1>
@@ -23,8 +22,8 @@
 
             <ul>
               <li>Pick up from {{ delivery.pickup_start }} to {{ delivery.pickup_end }}</li>
-              <li>Contact {{ delivery.chef|get_volunteer:"name" }} at {{ delivery.chef|get_volunteer:"phone_number" }}</li>
-              <li>Address: <a href="{{ delivery.chef.address_link }}" target="_blank" rel="noopener nofollow">{{ delivery.chef|get_volunteer:"address" }}</a></li>
+              <li>Contact {{ delivery.chef.volunteer.name }} at {{ delivery.chef.volunteer.phone_number }}</li>
+              <li>Address: <a href="{{ delivery.chef.address_link }}" target="_blank" rel="noopener nofollow">{{ delivery.chef.volunteer.address }}</a></li>
             </ul>
           </div>
           <div class="col">
