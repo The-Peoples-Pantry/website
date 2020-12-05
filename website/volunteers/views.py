@@ -123,6 +123,13 @@ class MealDeliveryIndexView(TaskIndexView):
     def get_queryset(self):
         return self.queryset.filter(deliverer=self.request.user)
 
+    def post(self, request):
+        if request.POST['delivery_id']:
+            instance = MealDelivery.objects.get(uuid=request.POST['delivery_id'])
+            instance.status = Status.DELIVERED
+            instance.save()
+        return redirect(self.request.get_full_path())
+
 
 class MealDeliverySignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
     """View for deliverers to sign up to deliver meal requests"""
