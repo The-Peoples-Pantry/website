@@ -232,3 +232,8 @@ class ChefApplicationView(LoginRequiredMixin, FormView, UpdateView):
 
 class ChefApplicationReceivedView(LoginRequiredMixin, TemplateView):
     template_name = "volunteers/chef_application_received.html"
+
+
+
+class VolunteerResourcesView(LoginRequiredMixin, TemplateView):
+    template_name = "volunteers/volunteer_centre.html"
