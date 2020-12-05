@@ -281,6 +281,7 @@ class MealRequest(HelpRequest):
 
     @classmethod
     def requests_paused(cls):
+        """Are requests currently paused?"""
         active_requests = cls.objects.exclude(delivery__status=Status.DELIVERED).count()
         return active_requests >= settings.PAUSE_MEALS
 
