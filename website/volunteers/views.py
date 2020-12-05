@@ -1,5 +1,4 @@
 import logging
-from datetime import datetime, timedelta, timezone
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
@@ -239,7 +238,6 @@ class ChefApplicationView(LoginRequiredMixin, FormView, UpdateView):
 
 class ChefApplicationReceivedView(LoginRequiredMixin, TemplateView):
     template_name = "volunteers/chef_application_received.html"
-
 
 
 class VolunteerResourcesView(LoginRequiredMixin, TemplateView):

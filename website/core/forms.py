@@ -6,6 +6,7 @@ from django.core.exceptions import ValidationError
 
 from volunteers.models import Volunteer, Pronouns
 
+
 class UserCreationForm(forms.ModelForm):
     """
     A modified version of the official UserCreationForm, that requests and email
@@ -85,8 +86,6 @@ class UserCreationForm(forms.ModelForm):
         return user
 
 
-
-
 class VolunteerProfileForm(forms.ModelForm):
     pronouns = forms.MultipleChoiceField(
         label="What are your pronouns? Select all that apply.",
@@ -99,7 +98,6 @@ class VolunteerProfileForm(forms.ModelForm):
         super(VolunteerProfileForm, self).__init__(*args, **kwargs)
         if self.instance.pronouns:
             self.initial['pronouns'] = literal_eval(self.instance.pronouns)
-
 
     class Meta:
         model = Volunteer
