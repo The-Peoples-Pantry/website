@@ -188,7 +188,7 @@ LONG_TEXT_LENGTH = 1024
 
 # Settings for pausing requests
 PAUSE_GROCERIES = 140
-PAUSE_MEALS = 20
+PAUSE_MEALS = 30
 
 # Maps API keys
 MAPQUEST_API_KEY = "xvB2VYxUF6mByw32kqOszrCXfgC7CuUa"  # Eric's dev account - 15k requests/month
