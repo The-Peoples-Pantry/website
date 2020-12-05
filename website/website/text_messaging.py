@@ -1,7 +1,7 @@
 import logging
 import requests
 
-from website.settings import TEXTLINE_API_KEY
+from website.settings import TEXTLINE_ACCESS_TOKEN
 
 
 logger = logging.getLogger(__name__)
@@ -14,13 +14,13 @@ class TextMessagingAPIException(Exception):
 class TextMessagingAPI:
     API_BASE_URL = "https://application.textline.com/api"
 
-    def __init__(self, api_key=TEXTLINE_API_KEY):
-        self.api_key = api_key
+    def __init__(self, access_token=TEXTLINE_ACCESS_TOKEN):
+        self.access_token = access_token
 
     def send_text(self, phone_number, message):
         """Send a message to the phone number"""
-        if self.api_key is None:
-            raise TextMessagingAPIException("Textline API key is not set")
+        if self.access_token is None:
+            raise TextMessagingAPIException("Textline access token is not set")
 
         try:
             response = requests.post(
@@ -32,7 +32,7 @@ class TextMessagingAPI:
                     },
                 },
                 headers={
-                    "X-TGP-ACCESS-TOKEN": self.api_key,
+                    "X-TGP-ACCESS-TOKEN": self.access_token,
                 },
             )
             response.raise_for_status()
