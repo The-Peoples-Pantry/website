@@ -145,10 +145,6 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 LOGOUT_REDIRECT_URL = '/'
 
-# django-tables2
-# https://django-tables2.readthedocs.io/en/latest/index.html
-
-DJANGO_TABLES2_TEMPLATE = "django_tables2/bootstrap4.html"
 
 # sentry-sdk
 # https://docs.sentry.io/platforms/python/guides/django/
