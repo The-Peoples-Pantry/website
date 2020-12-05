@@ -33,7 +33,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '823_^#-f(2u@za-3%f0j5!-jy=e4i0yjt_&2v*&o80j0d^17en'
+SECRET_KEY = getenv('SECRET_KEY', '823_^#-f(2u@za-3%f0j5!-jy=e4i0yjt_&2v*&o80j0d^17en')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = getenv_bool("DEBUG", False)
@@ -138,7 +138,17 @@ STATIC_ROOT = BASE_DIR / 'static'
 # Email
 # https://docs.djangoproject.com/en/3.1/topics/email/
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+DEFAULT_FROM_EMAIL = 'noreply@thepeoplespantryto.com'
+EMAIL_HOST = getenv('MAILGUN_SMTP_SERVER')
+EMAIL_PORT = getenv('MAILGUN_SMTP_PORT')
+EMAIL_HOST_USER = getenv('MAILGUN_SMTP_LOGIN')
+EMAIL_HOST_PASSWORD = getenv('EMAIL_HOST_PASSWORD')
+EMAIL_USE_TLS = True
+EMAIL_TIMEOUT = 30
+if EMAIL_HOST:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Authentication
 # https://docs.djangoproject.com/en/3.1/topics/auth/default/

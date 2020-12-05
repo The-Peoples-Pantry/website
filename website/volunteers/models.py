@@ -1,3 +1,5 @@
+from textwrap import dedent
+from django.core.mail import send_mail
 from django.db import models
 from django.contrib.auth.models import User
 from django.dispatch import receiver
@@ -153,6 +155,17 @@ class VolunteerApplication(models.Model):
     @classmethod
     def has_applied(cls, user, role: str):
         return cls.objects.filter(user=user, role=role).exists()
+
+    def send_confirmation_email(self):
+        send_mail(
+            "Confirming your The People's Pantry volunteer application",
+            dedent(f"""
+                Just confirming that we received your request to join the {self.role} volunteer team for The People's Pantry.
+                We will be in touch with further training materials
+            """),
+            None,  # From email (by setting None, it will use DEFAULT_FROM_EMAIL)
+            [self.user.email]
+        )
 
 
 # When user is created or saved, also save volunteer

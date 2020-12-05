@@ -193,7 +193,8 @@ class DeliveryApplicationView(LoginRequiredMixin, FormView, UpdateView):
         return super().get(request, *args, **kwargs)
 
     def form_valid(self, form):
-        VolunteerApplication.objects.create(user=self.request.user, role=VolunteerRoles.DELIVERERS)
+        application = VolunteerApplication.objects.create(user=self.request.user, role=VolunteerRoles.DELIVERERS)
+        application.send_confirmation_email()
         return super().form_valid(form)
 
 
@@ -215,7 +216,8 @@ class ChefApplicationView(LoginRequiredMixin, FormView, UpdateView):
         return super().get(request, *args, **kwargs)
 
     def form_valid(self, form):
-        VolunteerApplication.objects.create(user=self.request.user, role=VolunteerRoles.CHEFS)
+        application = VolunteerApplication.objects.create(user=self.request.user, role=VolunteerRoles.CHEFS)
+        application.send_confirmation_email()
         return super().form_valid(form)
 
 
