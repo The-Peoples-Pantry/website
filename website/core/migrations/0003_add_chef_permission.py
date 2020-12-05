@@ -2,6 +2,7 @@
 from django.db import migrations
 from django.core.management.sql import emit_post_migrate_signal
 
+
 def assign_group_permission(apps, schema_editor):
     Group = apps.get_model('auth', 'Group')
     Permission = apps.get_model('auth', 'Permission')

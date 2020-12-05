@@ -152,6 +152,10 @@ class VolunteerApplication(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    @classmethod
+    def has_applied(cls, user, role: str):
+        return cls.objects.filter(user=user, role=role).exists()
+
     def send_confirmation_email(self):
         send_mail(
             "Confirming your The People's Pantry volunteer application",

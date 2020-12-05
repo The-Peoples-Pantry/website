@@ -2,10 +2,9 @@ from ast import literal_eval
 from textwrap import dedent
 import datetime
 from django import forms
-from recipients.models import MealDelivery, Cities
-from django.db import models
-from django.conf import settings
-from .models import Volunteer, Pronouns, CookingTypes, FoodTypes, TransportationTypes, DaysOfWeek
+from recipients.models import MealDelivery
+from .models import Volunteer, CookingTypes, FoodTypes, TransportationTypes, DaysOfWeek
+
 
 def future_date(**kwargs):
     now = datetime.datetime.now().date()
@@ -34,8 +33,10 @@ class TimeField(forms.TimeField):
             **kwargs,
         )
 
+
 def next_day(date):
     return date + datetime.timedelta(1)
+
 
 def next_weekend(**kwargs):
     # always leave two days of buffer time
@@ -45,11 +46,13 @@ def next_weekend(**kwargs):
     next_sun = next_day(next_sat)
     return [(next_friday, next_friday), (next_sat, next_sat), (next_sun, next_sun)]
 
+
 class DeliveryDateInput(forms.Select):
     def __init__(self):
         super().__init__(
             choices=next_weekend()
         )
+
 
 class VolunteerApplicationForm(forms.ModelForm):
     have_ppe = forms.BooleanField(
@@ -60,7 +63,7 @@ class VolunteerApplicationForm(forms.ModelForm):
     days_available = forms.MultipleChoiceField(
         label="What days of the week are you available to volunteer?",
         required=True,
-        widget = forms.CheckboxSelectMultiple,
+        widget=forms.CheckboxSelectMultiple,
         choices=DaysOfWeek.choices,
     )
 

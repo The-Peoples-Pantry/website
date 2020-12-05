@@ -92,12 +92,5 @@ class Command(BaseCommand):
 
         for i in range(count):
             obj = MealRequestFactory.create()
-
-            if generate_date:
-                start = datetime.datetime.now()
-                end = start + datetime.timedelta(days=10)
-
-            obj.save()
-
             assert obj.id is not None, "Something went wrong"
         self.stdout.write(self.style.SUCCESS(f'Created {count} MealRequest items'))

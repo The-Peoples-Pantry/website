@@ -7,6 +7,7 @@ from django.views.generic.edit import FormView, UpdateView
 from django.views.generic import ListView, TemplateView
 from django_filters.views import FilterView
 
+from core.models import has_group
 from recipients.models import MealRequest, MealDelivery, Status, SendNotificationException
 from public.views import GroupView
 from .forms import MealDeliverySignupForm, ChefSignupForm, ChefApplyForm, DeliveryApplyForm
@@ -27,7 +28,7 @@ class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
     form_class = ChefSignupForm
     permission_group = 'Chefs'
     filterset_class = ChefSignupFilter
-    queryset = MealRequest.objects.filter(delivery__isnull=True)
+    queryset = MealRequest.objects.filter(delivery__isnull=True).order_by('created_at')
 
     @property
     def success_url(self):
@@ -35,15 +36,21 @@ class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
         return self.request.get_full_path()
 
     def can_deliver(self, user):
-        return 'Deliverers' in user.groups.all().values_list('name', flat=True)
+        return has_group(user, 'Deliverers')
 
     def get_context_data(self, **kwargs):
         context = super(ChefSignupView, self).get_context_data(**kwargs)
-        context["meal_request_form_pairs"] = [
-            (meal_request, ChefSignupForm(initial={'id': meal_request.id}))
+
+        context["meal_request_form_sets"] = [
+            (
+                meal_request,
+                ChefSignupForm(initial={'id': meal_request.id}),
+            )
+
             # self.object_list is a MealRequest queryset pre-filtered by ChefSignupFilter
             for meal_request in self.object_list
         ]
+
         context["can_deliver"] = self.can_deliver(self.request.user)
         return context
 
@@ -178,24 +185,15 @@ class DeliveryApplicationView(LoginRequiredMixin, FormView, UpdateView):
     success_url = reverse_lazy('volunteers:delivery_application_received')
 
     def get_object(self):
-        return Volunteer.objects.get(
-            user=self.request.user
-        )
+        return Volunteer.objects.get(user=self.request.user)
 
     def get(self, request, *args, **kwargs):
-        has_applied = VolunteerApplication.objects.filter(
-            user=self.request.user,
-            role=VolunteerRoles.DELIVERERS,
-        ).exists()
-        if has_applied:
+        if VolunteerApplication.has_applied(self.request.user, VolunteerRoles.DELIVERERS):
             return redirect(self.success_url)
         return super().get(request, *args, **kwargs)
 
     def form_valid(self, form):
-        application = VolunteerApplication.objects.create(
-            user=self.request.user,
-            role=VolunteerRoles.DELIVERERS,
-        )
+        application = VolunteerApplication.objects.create(user=self.request.user, role=VolunteerRoles.DELIVERERS)
         application.send_confirmation_email()
         return super().form_valid(form)
 
@@ -210,27 +208,22 @@ class ChefApplicationView(LoginRequiredMixin, FormView, UpdateView):
     success_url = reverse_lazy('volunteers:chef_application_received')
 
     def get_object(self):
-        return Volunteer.objects.get(
-            user=self.request.user
-        )
+        return Volunteer.objects.get(user=self.request.user)
 
     def get(self, request, *args, **kwargs):
-        has_applied = VolunteerApplication.objects.filter(
-            user=self.request.user,
-            role=VolunteerRoles.CHEFS,
-        ).exists()
-        if has_applied:
+        if VolunteerApplication.has_applied(self.request.user, VolunteerRoles.CHEFS):
             return redirect(self.success_url)
         return super().get(request, *args, **kwargs)
 
     def form_valid(self, form):
-        application = VolunteerApplication.objects.create(
-            user=self.request.user,
-            role=VolunteerRoles.CHEFS,
-        )
+        application = VolunteerApplication.objects.create(user=self.request.user, role=VolunteerRoles.CHEFS)
         application.send_confirmation_email()
         return super().form_valid(form)
 
 
 class ChefApplicationReceivedView(LoginRequiredMixin, TemplateView):
     template_name = "volunteers/chef_application_received.html"
+
+
+class VolunteerResourcesView(LoginRequiredMixin, TemplateView):
+    template_name = "volunteers/volunteer_centre.html"

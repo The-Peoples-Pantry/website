@@ -227,6 +227,10 @@ class HelpRequest(ContactModel):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    @property
+    def stale(self):
+        return (timezone.now() - self.created_at).days >= 7
+
     def get_absolute_url(self):
         return reverse_lazy('recipients:request_detail', args=[str(self.id)])
 
@@ -274,6 +278,17 @@ class MealRequest(HelpRequest):
         help_text="Are you willing to accept a vegetarian meal even if you are not vegetarian?",
         default=True,
     )
+
+    @classmethod
+    def requests_paused(cls):
+        """Are requests currently paused?"""
+        active_requests = cls.objects.exclude(delivery__status=Status.DELIVERED).count()
+        return active_requests >= settings.PAUSE_MEALS
+
+    @classmethod
+    def has_open_request(cls, email: str):
+        """Does the user with the given email already have open requests?"""
+        return cls.objects.filter(email=email).exclude(delivery__status=Status.DELIVERED).exists()
 
 
 class GroceryRequest(HelpRequest):
@@ -323,6 +338,13 @@ class GroceryRequest(HelpRequest):
         max_length=settings.LONG_TEXT_LENGTH,
         blank=True,
     )
+
+    @classmethod
+    def requests_paused(cls):
+        """Are requests currently paused?"""
+        # TODO: Update this to exclude completed grocery deliveries once we have GroceryDelivery
+        active_requests = cls.objects.count()
+        return active_requests >= settings.PAUSE_GROCERIES
 
 
 class Status(models.TextChoices):

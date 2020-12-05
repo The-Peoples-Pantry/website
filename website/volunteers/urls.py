@@ -11,4 +11,5 @@ urlpatterns = [
     path('delivery-application-received', views.DeliveryApplicationReceivedView.as_view(), name='delivery_application_received'),
     path('delivery-signup', views.MealDeliverySignupView.as_view(), name='delivery_signup'),
     path('delivery-list', views.MealDeliveryIndexView.as_view(), name='delivery_list'),
+    path('volunteer-centre', views.VolunteerResourcesView.as_view(), name='volunteer_centre'),
 ]

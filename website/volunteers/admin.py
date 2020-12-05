@@ -3,6 +3,7 @@ from django.contrib.auth.models import Group
 from django.db import transaction
 from django.utils.translation import ngettext
 
+from core.models import group_names
 from .models import Volunteer, VolunteerApplication
 
 
@@ -10,7 +11,7 @@ class VolunteerAdmin(admin.ModelAdmin):
     list_display = ('user', 'groups', 'city', 'training_complete')
 
     def groups(self, obj):
-        return ", ".join(obj.user.groups.all().values_list('name', flat=True))
+        return group_names(obj.user)
 
 
 class VolunteerApplicationAdmin(admin.ModelAdmin):
