@@ -176,6 +176,10 @@ POSTAL_CODE_LENGTH = 7  # Optional space
 DAY_LENGTH = 9  # Longest is "Wednesday"
 LONG_TEXT_LENGTH = 1024
 
+# Settings for pausing requests
+PAUSE_GROCERIES = 140
+PAUSE_MEALS = 20
+
 # Maps API keys
 MAPQUEST_API_KEY = "xvB2VYxUF6mByw32kqOszrCXfgC7CuUa"  # Eric's dev account - 15k requests/month
 GOOGLE_MAPS_API_KEY = "AIzaSyCO1r4-P2e5ASqVp1Wgw6jAnFBaOEyGo-s"  # Eric's dev account - hard limit at free tier

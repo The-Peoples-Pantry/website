@@ -4,6 +4,7 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
+from django.conf import settings
 
 from .forms import MealRequestForm, GroceryRequestForm
 from .models import HelpRequest, MealRequest, GroceryRequest, MealDelivery, Status
@@ -33,7 +34,7 @@ class MealRequestView(HelpRequestView):
 
     def get(self, request):
         if (len(MealRequest.objects.all()) -
-            len(MealDelivery.objects.exclude(status=Status.DELIVERED))) >= 20:
+            len(MealDelivery.objects.exclude(status=Status.DELIVERED))) >= settings.PAUSE_MEALS:
             return render(request, 'recipients/meal_paused.html')
         return super().get(request)
 
@@ -66,7 +67,7 @@ class GroceryRequestView(HelpRequestView):
     form_class = GroceryRequestForm
 
     def get(self, request):
-        if len(GroceryRequest.objects.all()) >= 140:
+        if len(GroceryRequest.objects.all()) >= settings.PAUSE_GROCERIES:
             return render(request, 'recipients/grocery_paused.html')
         return super().get(request)
 
