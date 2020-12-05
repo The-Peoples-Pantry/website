@@ -339,6 +339,13 @@ class GroceryRequest(HelpRequest):
         blank=True,
     )
 
+    @classmethod
+    def requests_paused(cls):
+        """Are requests currently paused?"""
+        # TODO: Update this to exclude completed grocery deliveries once we have GroceryDelivery
+        active_requests = cls.objects.count()
+        return active_requests >= settings.PAUSE_GROCERIES
+
 
 class Status(models.TextChoices):
     UNCONFIRMED = 'Unconfirmed', 'Unconfirmed'

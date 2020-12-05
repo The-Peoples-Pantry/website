@@ -56,7 +56,7 @@ class GroceryRequestView(HelpRequestView):
     form_class = GroceryRequestForm
 
     def get(self, request):
-        if GroceryRequest.objects.count() >= settings.PAUSE_GROCERIES:
+        if GroceryRequest.requests_paused():
             return render(request, 'recipients/grocery_paused.html')
         return super().get(request)
 
