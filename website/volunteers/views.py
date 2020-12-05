@@ -41,16 +41,15 @@ class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
     def get_context_data(self, **kwargs):
         context = super(ChefSignupView, self).get_context_data(**kwargs)
 
-        context["meal_request_form_sets"] = sorted([
+        context["meal_request_form_sets"] = [
             (
                 meal_request,
                 ChefSignupForm(initial={'id': meal_request.id}),
-                meal_request.created_at <= (datetime.now(timezone.utc) - timedelta(days=7))
             )
 
             # self.object_list is a MealRequest queryset pre-filtered by ChefSignupFilter
             for meal_request in self.object_list
-        ], key=lambda tup: tup[2], reverse=True)
+        ]
 
         context["can_deliver"] = self.can_deliver(self.request.user)
         return context
