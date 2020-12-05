@@ -181,7 +181,7 @@ class HelpRequest(ContactModel):
     # Information about the delivery
     can_meet_for_delivery = models.BooleanField(
         "Able to meet delivery driver",
-        help_text="We care about safety. Thus, we try to avoid delivery volunteers going into buildings or houses. Would you / the person requiring support be able to meet the delivery person in the lobby or door of the residence?",
+        help_text="We care about safety. Thus, we try to avoid delivery volunteers going into buildings or houses. Would you / the person requiring support be able to meet the delivery person in the lobby or door of the residence, while wearing protective equipment such as masks?",
     )
     delivery_details = models.TextField(
         "Delivery details",
