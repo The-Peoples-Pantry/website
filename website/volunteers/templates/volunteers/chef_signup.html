@@ -18,7 +18,7 @@
   <div class="col-md-9 order-md-1">
 
     <p>Here are all the upcoming meal requests that need a chef! Please sign up by selecting a pickup date and time frame. You can also  <a href={% url 'volunteers:chef_list' %}>see all the meals you've already signed up for here</a>.</p>
-    {% for meal, form, pinned in meal_request_form_sets %}
+    {% for meal, form in meal_request_form_sets %}
       {# Each request gets represented as a card #}
       <div class="card mb-4">
 
@@ -32,7 +32,7 @@
 
         {# Card body section contains the form and map #}
         <div class="card-body">
-          {% if pinned %}
+          {% if meal.stale %}
             <div class="alert alert-warning">This request was submitted more than a week ago, please prioritize this if possible.</div>
           {% endif %}
           <div class="row">
