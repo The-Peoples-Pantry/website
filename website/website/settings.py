@@ -138,6 +138,7 @@ STATIC_ROOT = BASE_DIR / 'static'
 # Email
 # https://docs.djangoproject.com/en/3.1/topics/email/
 
+DEFAULT_FROM_EMAIL = 'noreply@thepeoplespantryto.com'
 EMAIL_HOST = getenv('MAILGUN_SMTP_SERVER')
 EMAIL_PORT = getenv('MAILGUN_SMTP_PORT')
 EMAIL_HOST_USER = getenv('MAILGUN_SMTP_LOGIN')
