@@ -31,13 +31,10 @@ class MealRequestView(HelpRequestView):
     template_name = 'recipients/new_meal_request.html'
     form_class = MealRequestForm
 
-
     def get(self, request):
-        if (len(MealRequest.objects.all()) -
-            len(MealDelivery.objects.exclude(status=Status.DELIVERED))) >= settings.PAUSE_MEALS:
+        if MealDelivery.objects.exclude(status=Status.DELIVERED).count() >= settings.PAUSE_MEALS:
             return render(request, 'recipients/meal_paused.html')
         return super().get(request)
-
 
     def get_duplicate(self, form):
         email = form.cleaned_data['email']
@@ -67,7 +64,7 @@ class GroceryRequestView(HelpRequestView):
     form_class = GroceryRequestForm
 
     def get(self, request):
-        if len(GroceryRequest.objects.all()) >= settings.PAUSE_GROCERIES:
+        if GroceryRequest.objects.count() >= settings.PAUSE_GROCERIES:
             return render(request, 'recipients/grocery_paused.html')
         return super().get(request)
 
