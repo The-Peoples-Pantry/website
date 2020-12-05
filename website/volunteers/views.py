@@ -185,24 +185,15 @@ class DeliveryApplicationView(LoginRequiredMixin, FormView, UpdateView):
     success_url = reverse_lazy('volunteers:delivery_application_received')
 
     def get_object(self):
-        return Volunteer.objects.get(
-            user=self.request.user
-        )
+        return Volunteer.objects.get(user=self.request.user)
 
     def get(self, request, *args, **kwargs):
-        has_applied = VolunteerApplication.objects.filter(
-            user=self.request.user,
-            role=VolunteerRoles.DELIVERERS,
-        ).exists()
-        if has_applied:
+        if VolunteerApplication.has_applied(self.request.user, VolunteerRoles.DELIVERERS):
             return redirect(self.success_url)
         return super().get(request, *args, **kwargs)
 
     def form_valid(self, form):
-        VolunteerApplication.objects.create(
-            user=self.request.user,
-            role=VolunteerRoles.DELIVERERS,
-        )
+        VolunteerApplication.objects.create(user=self.request.user, role=VolunteerRoles.DELIVERERS)
         return super().form_valid(form)
 
 
@@ -216,24 +207,15 @@ class ChefApplicationView(LoginRequiredMixin, FormView, UpdateView):
     success_url = reverse_lazy('volunteers:chef_application_received')
 
     def get_object(self):
-        return Volunteer.objects.get(
-            user=self.request.user
-        )
+        return Volunteer.objects.get(user=self.request.user)
 
     def get(self, request, *args, **kwargs):
-        has_applied = VolunteerApplication.objects.filter(
-            user=self.request.user,
-            role=VolunteerRoles.CHEFS,
-        ).exists()
-        if has_applied:
+        if VolunteerApplication.has_applied(self.request.user, VolunteerRoles.CHEFS):
             return redirect(self.success_url)
         return super().get(request, *args, **kwargs)
 
     def form_valid(self, form):
-        VolunteerApplication.objects.create(
-            user=self.request.user,
-            role=VolunteerRoles.CHEFS,
-        )
+        VolunteerApplication.objects.create(user=self.request.user, role=VolunteerRoles.CHEFS)
         return super().form_valid(form)
 
 

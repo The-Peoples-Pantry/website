@@ -150,6 +150,10 @@ class VolunteerApplication(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    @classmethod
+    def has_applied(cls, user, role: str):
+        return cls.objects.filter(user=user, role=role).exists()
+
 
 # When user is created or saved, also save volunteer
 @receiver(post_save, sender=User)
