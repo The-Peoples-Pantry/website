@@ -33,7 +33,7 @@ class MealRequestView(HelpRequestView):
     form_class = MealRequestForm
 
     def get(self, request):
-        if MealDelivery.objects.exclude(status=Status.DELIVERED).count() >= settings.PAUSE_MEALS:
+        if MealDelivery.requests_paused():
             return render(request, 'recipients/meal_paused.html')
         return super().get(request)
 

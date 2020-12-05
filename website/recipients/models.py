@@ -376,6 +376,11 @@ class MealDelivery(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     @classmethod
+    def requests_paused(cls):
+        active_requests = MealDelivery.objects.exclude(status=Status.DELIVERED).count()
+        return active_requests >= settings.PAUSE_MEALS
+
+    @classmethod
     def has_open_request(cls, email: str):
         """Does the user with the given email already have open requests?"""
         return cls.objects.filter(request__email=email).exclude(status=Status.DELIVERED).exists()
