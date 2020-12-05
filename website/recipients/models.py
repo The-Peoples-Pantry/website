@@ -279,6 +279,16 @@ class MealRequest(HelpRequest):
         default=True,
     )
 
+    @classmethod
+    def requests_paused(cls):
+        active_requests = cls.objects.exclude(delivery__status=Status.DELIVERED).count()
+        return active_requests >= settings.PAUSE_MEALS
+
+    @classmethod
+    def has_open_request(cls, email: str):
+        """Does the user with the given email already have open requests?"""
+        return cls.objects.filter(email=email).exclude(delivery__status=Status.DELIVERED).exists()
+
 
 class GroceryRequest(HelpRequest):
     vegetables = models.CharField(
@@ -374,16 +384,6 @@ class MealDelivery(models.Model):
     # System
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
-
-    @classmethod
-    def requests_paused(cls):
-        active_requests = MealDelivery.objects.exclude(status=Status.DELIVERED).count()
-        return active_requests >= settings.PAUSE_MEALS
-
-    @classmethod
-    def has_open_request(cls, email: str):
-        """Does the user with the given email already have open requests?"""
-        return cls.objects.filter(request__email=email).exclude(status=Status.DELIVERED).exists()
 
     def send_recipient_meal_notification(self):
         """Send the first notification to a recipient, lets them know that a chef has signed up to cook for them"""

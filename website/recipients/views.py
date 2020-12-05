@@ -33,13 +33,13 @@ class MealRequestView(HelpRequestView):
     form_class = MealRequestForm
 
     def get(self, request):
-        if MealDelivery.requests_paused():
+        if MealRequest.requests_paused():
             return render(request, 'recipients/meal_paused.html')
         return super().get(request)
 
     def get_duplicate(self, form):
         email = form.cleaned_data['email']
-        return MealDelivery.has_open_request(email)
+        return MealRequest.has_open_request(email)
 
     def form_valid(self, form):
         if self.get_duplicate(form):
