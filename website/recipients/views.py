@@ -30,6 +30,14 @@ class MealRequestView(HelpRequestView):
     template_name = 'recipients/new_meal_request.html'
     form_class = MealRequestForm
 
+
+    def get(self, request):
+        if (len(MealRequest.objects.all()) -
+            len(MealDelivery.objects.exclude(status=Status.DELIVERED))) >= 20:
+            return render(request, 'recipients/meal_paused.html')
+        return super().get(request)
+
+
     def get_duplicate(self, form):
         email = form.cleaned_data['email']
         matching_requests = MealRequest.objects.filter(email=email)
