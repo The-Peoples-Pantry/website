@@ -375,6 +375,11 @@ class MealDelivery(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    @classmethod
+    def has_open_request(cls, email: str):
+        """Does the user with the given email already have open requests?"""
+        return cls.objects.filter(request__email=email).exclude(status=Status.DELIVERED).exists()
+
     def send_recipient_meal_notification(self):
         """Send the first notification to a recipient, lets them know that a chef has signed up to cook for them"""
         if not self.request.can_receive_texts:

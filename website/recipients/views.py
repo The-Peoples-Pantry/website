@@ -39,16 +39,7 @@ class MealRequestView(HelpRequestView):
 
     def get_duplicate(self, form):
         email = form.cleaned_data['email']
-        matching_requests = MealRequest.objects.filter(email=email)
-        if matching_requests:
-            all_deliveries = MealDelivery.objects.filter(
-                request__in=matching_requests
-            )
-
-            if (not all_deliveries or all_deliveries.exclude(status=Status.DELIVERED)):
-                return True
-
-        return False
+        return MealDelivery.has_open_request(email)
 
     def form_valid(self, form):
         if self.get_duplicate(form):
