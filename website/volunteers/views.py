@@ -28,7 +28,7 @@ class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
     form_class = ChefSignupForm
     permission_group = 'Chefs'
     filterset_class = ChefSignupFilter
-    queryset = MealRequest.objects.filter(delivery__isnull=True)
+    queryset = MealRequest.objects.filter(delivery__isnull=True).order_by('created_at')
 
     @property
     def success_url(self):
