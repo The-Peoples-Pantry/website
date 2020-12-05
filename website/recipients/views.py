@@ -5,10 +5,9 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
-from django.conf import settings
 
 from .forms import MealRequestForm, GroceryRequestForm
-from .models import MealRequest, GroceryRequest, MealDelivery, Status
+from .models import MealRequest, GroceryRequest
 
 
 def index(request):
