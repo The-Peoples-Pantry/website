@@ -227,6 +227,10 @@ class HelpRequest(ContactModel):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    @property
+    def stale(self):
+        return (timezone.now() - self.created_at).days >= 7
+
     def get_absolute_url(self):
         return reverse_lazy('recipients:request_detail', args=[str(self.id)])
 
