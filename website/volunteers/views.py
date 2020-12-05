@@ -27,6 +27,7 @@ class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
     template_name = "volunteers/chef_signup.html"
     form_class = ChefSignupForm
     permission_group = 'Chefs'
+    permission_group_redirect_url = reverse_lazy('volunteers:chef_application')
     filterset_class = ChefSignupFilter
     queryset = MealRequest.objects.filter(delivery__isnull=True).order_by('created_at')
 
@@ -110,6 +111,7 @@ class ChefIndexView(TaskIndexView):
     """View for chefs to see the meals they've signed up to cook"""
     template_name = "volunteers/chef_list.html"
     permission_group = 'Chefs'
+    permission_group_redirect_url = reverse_lazy('volunteers:chef_application')
 
     def get_queryset(self):
         return self.queryset.filter(chef=self.request.user)
@@ -119,6 +121,7 @@ class MealDeliveryIndexView(TaskIndexView):
     """View for deliverers to see the meal requests they've signed up to deliver"""
     template_name = "volunteers/delivery_list.html"
     permission_group = 'Deliverers'
+    permission_group_redirect_url = reverse_lazy('volunteers:delivery_application')
 
     def get_queryset(self):
         return self.queryset.filter(deliverer=self.request.user)
@@ -136,6 +139,7 @@ class MealDeliverySignupView(LoginRequiredMixin, GroupView, FormView, FilterView
     template_name = "volunteers/delivery_signup.html"
     form_class = MealDeliverySignupForm
     permission_group = 'Deliverers'
+    permission_group_redirect_url = reverse_lazy('volunteers:delivery_application')
     filterset_class = MealDeliverySignupFilter
     queryset = MealDelivery.objects.filter(deliverer__isnull=True,).order_by('date')
 
