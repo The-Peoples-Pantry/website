@@ -4,6 +4,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.views.generic.edit import FormView, UpdateView
 
+from core.models import group_names
 from .forms import UserCreationForm, VolunteerProfileForm
 from volunteers.models import Volunteer
 
@@ -30,9 +31,6 @@ class UserProfileView(LoginRequiredMixin, UpdateView):
     def get_object(self):
         return Volunteer.objects.get(user=self.request.user)
 
-    def get_group_names(self, user):
-        return list(user.groups.all().values_list('name', flat=True))
-
     def get_pending_group_names(self, user):
         return list(user.volunteer_applications.filter(
             approved=False,
@@ -40,7 +38,7 @@ class UserProfileView(LoginRequiredMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["groups"] = self.get_group_names(self.request.user)
+        context["groups"] = group_names(self.request.user)
         context["pending_groups"] = self.get_pending_group_names(self.request.user)
         return context
 

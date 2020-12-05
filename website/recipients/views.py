@@ -5,10 +5,9 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
-from django.conf import settings
 
 from .forms import MealRequestForm, GroceryRequestForm
-from .models import MealRequest, GroceryRequest, MealDelivery, Status
+from .models import MealRequest, GroceryRequest
 
 
 def index(request):
@@ -33,22 +32,13 @@ class MealRequestView(HelpRequestView):
     form_class = MealRequestForm
 
     def get(self, request):
-        if MealDelivery.objects.exclude(status=Status.DELIVERED).count() >= settings.PAUSE_MEALS:
+        if MealRequest.requests_paused():
             return render(request, 'recipients/meal_paused.html')
         return super().get(request)
 
     def get_duplicate(self, form):
         email = form.cleaned_data['email']
-        matching_requests = MealRequest.objects.filter(email=email)
-        if matching_requests:
-            all_deliveries = MealDelivery.objects.filter(
-                request__in=matching_requests
-            )
-
-            if (not all_deliveries or all_deliveries.exclude(status=Status.DELIVERED)):
-                return True
-
-        return False
+        return MealRequest.has_open_request(email)
 
     def form_valid(self, form):
         if self.get_duplicate(form):
@@ -65,7 +55,7 @@ class GroceryRequestView(HelpRequestView):
     form_class = GroceryRequestForm
 
     def get(self, request):
-        if GroceryRequest.objects.count() >= settings.PAUSE_GROCERIES:
+        if GroceryRequest.requests_paused():
             return render(request, 'recipients/grocery_paused.html')
         return super().get(request)
 
