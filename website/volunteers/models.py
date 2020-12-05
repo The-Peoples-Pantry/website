@@ -28,6 +28,7 @@ class FoodTypes(models.TextChoices):
     GLUTEN_FREE = 'Gluten-free', 'Gluten-free'
     LOW_CARB = 'Low carb', 'Low carb'
     HALAL = 'Halal', 'Halal'
+    KOSHER = 'Kosher', 'Kosher'
 
 
 class TransportationTypes(models.TextChoices):

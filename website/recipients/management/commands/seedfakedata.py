@@ -63,6 +63,7 @@ class MealRequestFactory(factory.django.DjangoModelFactory):
     dairy_free = factory.Faker('boolean')
     gluten_free = factory.Faker('boolean')
     halal = factory.Faker('boolean')
+    kosher = factory.Faker('boolean')
     low_carb = factory.Faker('boolean')
     vegan = factory.Faker('boolean')
     vegetarian = factory.Faker('boolean')

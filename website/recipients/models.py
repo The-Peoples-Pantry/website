@@ -260,6 +260,7 @@ class MealRequest(HelpRequest):
     dairy_free = models.BooleanField("Dairy free")
     gluten_free = models.BooleanField("Gluten free")
     halal = models.BooleanField("Halal")
+    kosher = models.BooleanField("Kosher")
     low_carb = models.BooleanField("Low Carbohydrate")
     vegan = models.BooleanField("Vegan")
     vegetarian = models.BooleanField("Vegetarian")

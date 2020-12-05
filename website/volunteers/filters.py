@@ -35,6 +35,7 @@ class ChefSignupFilter(FilterSet):
             'dairy_free': ['exact'],
             'gluten_free': ['exact'],
             'halal': ['exact'],
+            'kosher': ['exact'],
             'low_carb': ['exact'],
             'vegan': ['exact'],
             'vegetarian': ['exact'],
