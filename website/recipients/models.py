@@ -104,8 +104,8 @@ class ContactModel(models.Model):
         "Postal code",
         max_length=settings.POSTAL_CODE_LENGTH
     )
-    anonymized_latitude = models.FloatField(default=43.651070)  # default: Toronto latitude
-    anonymized_longitude = models.FloatField(default=-79.347015)  # default: Toronto longitude
+    anonymized_latitude = models.FloatField(default=43.651070, blank=True)  # default: Toronto latitude
+    anonymized_longitude = models.FloatField(default=-79.347015, blank=True)  # default: Toronto longitude
 
     @property
     def address(self):
