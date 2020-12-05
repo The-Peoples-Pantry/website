@@ -35,7 +35,7 @@ class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
         return self.request.get_full_path()
 
     def can_deliver(self, user):
-        return 'Deliverers' in user.groups.all().values_list('name', flat=True)
+        return user.groups.filter(name='Deliverers').exists()
 
     def get_context_data(self, **kwargs):
         context = super(ChefSignupView, self).get_context_data(**kwargs)
