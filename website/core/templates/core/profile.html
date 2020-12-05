@@ -40,6 +40,7 @@
     <img class="card-img-top" src="{% static 'chef.svg'%}" alt="Card image cap" height="200">
     <div class="card-body">
       <h5 class="card-title">Volunteer to be a chef</h5>
+      <p>Sign up to cook homemade meals for our community.</p>
     </div>
     <div class="card-footer">
       {% if 'Chefs' in pending_groups %}
@@ -56,6 +57,7 @@
     <img class="card-img-top" src="{% static 'deliverer.svg'%}" alt="Card image cap" height="200">
     <div class="card-body">
       <h5 class="card-title">Volunteer to be a deliverer</h5>
+      <p>Sign up to help deliver meals and groceries.</p>
     </div>
     <div class="card-footer">
       {% if 'Deliverers' in pending_groups %}
@@ -72,9 +74,10 @@
     <img class="card-img-top" src="{% static 'organizer.svg'%}" alt="Card image cap" height="200">
     <div class="card-body">
       <h5 class="card-title">Volunteer to be an organizer</h5>
+      <p>Send us an email if you'd like to help out with coordinating logistics.</p>
     </div>
     <div class="card-footer">
-      <a class="btn btn-primary" role="button" href="mailto:thepeoplespantrytoronto@gmail.com?subject=Logistics coordinator application">Email us about helping out with logistics</a>
+      <a class="btn btn-primary" role="button" href="mailto:thepeoplespantrytovolunteers@gmail.com?subject=Logistics coordinator application">Email us</a>
     </div>
   </div>
   {% endif %}
