@@ -41,10 +41,11 @@
         </div>
       </li>
       <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">My tasks</a>
+        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">My dashboard</a>
         <div class="dropdown-menu">
           <a class="dropdown-item" href="{% url 'volunteers:chef_list' %}">My cooking tasks</a>
           <a class="dropdown-item" href="{% url 'volunteers:delivery_list' %}">My delivery tasks</a>
+          <a class="dropdown-item" href="{% url 'volunteers:volunteer_centre' %}">Volunteer resources</a>
         </div>
       </li>
       {% endif %}
