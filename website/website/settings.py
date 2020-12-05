@@ -198,7 +198,8 @@ GOOGLE_MAPS_EMBED_KEY = "AIzaSyB8X4idnj8vEMpU_H0jF53SGr8pRnT2jaQ"
 
 # Textline API
 # https://textline.docs.apiary.io/
-TEXTLINE_API_KEY = getenv("TEXTLINE_API_KEY")
+
+TEXTLINE_ACCESS_TOKEN = getenv("TEXTLINE_ACCESS_TOKEN")
 
 
 # Group Permissions
