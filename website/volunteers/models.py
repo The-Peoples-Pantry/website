@@ -160,7 +160,7 @@ class VolunteerApplication(models.Model):
                 We will be in touch with further training materials
             """),
             None,  # From email (by setting None, it will use DEFAULT_FROM_EMAIL)
-            [self.email]
+            [self.user.email]
         )
 
 
