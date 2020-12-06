@@ -363,7 +363,99 @@ class Status(models.TextChoices):
     DELIVERED = 'Delivered', 'Delivered'
 
 
-class MealDelivery(models.Model):
+class BaseDelivery(models.Model):
+    class Meta:
+        abstract = True
+
+    status = models.CharField(
+        "Status",
+        max_length=settings.DEFAULT_LENGTH,
+        choices=Status.choices,
+        default=Status.UNCONFIRMED
+    )
+    date = models.DateField()
+    pickup_start = models.TimeField(null=True, blank=True)
+    pickup_end = models.TimeField(null=True, blank=True)
+    dropoff_start = models.TimeField(null=True, blank=True)
+    dropoff_end = models.TimeField(null=True, blank=True)
+
+    # System
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def clean(self, *args, **kwargs):
+        super(BaseDelivery, self).clean(*args, **kwargs)
+        if self.pickup_end <= self.pickup_start:
+            raise ValidationError("The pickup end time must be after the pickup start time")
+        if self.dropoff_end <= self.dropoff_start:
+            raise ValidationError("The dropoff end time must be after the dropoff start time")
+        if self.dropoff_start < self.pickup_end:
+            raise ValidationError("The delivery timerange must start after the pickup timerange")
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        return super(BaseDelivery, self).save(*args, **kwargs)
+
+
+    def send_recipient_delivery_notification(self):
+        """Send a notification to a recipient, lets them know that a delivery driver will drop if off within a certain time window"""
+        # Perform validation first that we _can_ send this notification
+        if not self.request.can_receive_texts:
+            raise SendNotificationException("Recipient cannot receive text messages at their phone number")
+
+        if not (self.dropoff_start and self.dropoff_end):
+            raise SendNotificationException("Delivery does not have a dropoff time range scheduled")
+
+        # Date is in the format "Weekday Month Year" eg. Sunday November 29
+        # Time is in the format "Hour:Minute AM/PM" eg. 09:30 PM
+        message = dedent(f"""
+            Hi {self.request.name},
+            This is a message from The People's Pantry.
+            Your delivery is scheduled for {self.date:%A %B %d} between {self.dropoff_start:%I:%M %p} and {self.dropoff_end:%I:%M %p}.
+            Since we depend on volunteers for our deliveries, sometimes we are not able to do all deliveries scheduled for the day. If that’s the case with your delivery, we will inform you by 6 PM on the day of the delivery and your delivery will be rescheduled for the following day.
+            Please confirm you got this message and let us know if you can take the delivery.
+            Thank you!
+        """)
+        send_text(self.request.phone_number, message)
+        self.comments.create(comment=f"Sent a text to recipient: {message}")
+        logger.info("Sent recipient delivery notification text for Request %d to %s", self.request.id, self.request.phone_number)
+
+
+    def send_deliverer_reminder_notification(self):
+        """Send a reminder notification to the deliverer"""
+        if not self.deliverer:
+            raise SendNotificationException("No deliverer assigned to this delivery")
+
+        message = dedent(f"""
+            Hi {self.deliverer.volunteer.name},
+            This is a message from The People's Pantry.
+            Just reminding you of the upcoming request you're delivering for {self.date:%A %B %d}.
+            Please confirm you got this message and let us know if you need any assistance.
+            Thank you!
+        """)
+        send_text(self.deliverer.volunteer.phone_number, message)
+        self.comments.create(comment=f"Sent a text to the deliverer: {message}")
+        logger.info("Sent deliverer reminder notification text for Request %d to %s", self.request.id, self.deliverer.volunteer.phone_number)
+
+
+class GroceryDelivery(BaseDelivery):
+    class Meta:
+        verbose_name_plural = 'grocery deliveries'
+
+    request = models.OneToOneField(
+        GroceryRequest,
+        on_delete=models.CASCADE,
+        related_name='delivery',
+    )
+    deliverer = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET(get_sentinel_user),
+        related_name="delivered_grocery_deliveries",
+        null=True,
+        blank=True,
+    )
+
+class MealDelivery(BaseDelivery):
     class Meta:
         verbose_name_plural = 'meal deliveries'
 
@@ -384,34 +476,7 @@ class MealDelivery(models.Model):
         null=True,
         blank=True,
     )
-    status = models.CharField(
-        "Status",
-        max_length=settings.DEFAULT_LENGTH,
-        choices=Status.choices,
-        default=Status.UNCONFIRMED
-    )
-    date = models.DateField()
-    pickup_start = models.TimeField(null=True, blank=True)
-    pickup_end = models.TimeField(null=True, blank=True)
-    dropoff_start = models.TimeField(null=True, blank=True)
-    dropoff_end = models.TimeField(null=True, blank=True)
 
-    # System
-    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def clean(self, *args, **kwargs):
-        super(MealDelivery, self).clean(*args, **kwargs)
-        if self.pickup_end <= self.pickup_start:
-            raise ValidationError("The pickup end time must be after the pickup start time")
-        if self.dropoff_end <= self.dropoff_start:
-            raise ValidationError("The dropoff end time must be after the dropoff start time")
-        if self.dropoff_start < self.pickup_end:
-            raise ValidationError("The delivery timerange must start after the pickup timerange")
-
-    def save(self, *args, **kwargs):
-        self.full_clean()
-        return super(MealDelivery, self).save(*args, **kwargs)
 
     def send_recipient_meal_notification(self):
         """Send the first notification to a recipient, lets them know that a chef has signed up to cook for them"""
@@ -431,28 +496,6 @@ class MealDelivery(models.Model):
         self.comments.create(comment=f"Sent a text to recipient: {message}")
         logger.info("Sent recipient meal notification text for Meal Request %d to %s", self.request.id, self.request.phone_number)
 
-    def send_recipient_delivery_notification(self):
-        """Send a follow-up notification to a recipient, lets them know that a delivery driver will drop if off within a certain time window"""
-        # Perform validation first that we _can_ send this notification
-        if not self.request.can_receive_texts:
-            raise SendNotificationException("Recipient cannot receive text messages at their phone number")
-
-        if not (self.dropoff_start and self.dropoff_end):
-            raise SendNotificationException("Delivery does not have a dropoff time range scheduled")
-
-        # Date is in the format "Weekday Month Year" eg. Sunday November 29
-        # Time is in the format "Hour:Minute AM/PM" eg. 09:30 PM
-        message = dedent(f"""
-            Hi {self.request.name},
-            This is a message from The People's Pantry.
-            Your delivery is scheduled for {self.date:%A %B %d} between {self.dropoff_start:%I:%M %p} and {self.dropoff_end:%I:%M %p}.
-            Since we depend on volunteers for our deliveries, sometimes we are not able to do all deliveries scheduled for the day. If that’s the case with your delivery, we will inform you by 6 PM on the day of the delivery and your delivery will be rescheduled for the following day.
-            Please confirm you got this message and let us know if you can take the delivery.
-            Thank you!
-        """)
-        send_text(self.request.phone_number, message)
-        self.comments.create(comment=f"Sent a text to recipient: {message}")
-        logger.info("Sent recipient delivery notification text for Meal Request %d to %s", self.request.id, self.request.phone_number)
 
     def send_chef_reminder_notification(self):
         """Send a reminder notification to the chef"""
@@ -470,21 +513,6 @@ class MealDelivery(models.Model):
         self.comments.create(comment=f"Sent a text to the chef: {message}")
         logger.info("Sent chef reminder notification text for Meal Request %d to %s", self.request.id, self.chef.volunteer.phone_number)
 
-    def send_deliverer_reminder_notification(self):
-        """Send a reminder notification to the deliverer"""
-        if not self.deliverer:
-            raise SendNotificationException("No deliverer assigned to this delivery")
-
-        message = dedent(f"""
-            Hi {self.deliverer.volunteer.name},
-            This is a message from The People's Pantry.
-            Just reminding you of the upcoming meal you're delivering for {self.date:%A %B %d}.
-            Please confirm you got this message and let us know if you need any assistance.
-            Thank you!
-        """)
-        send_text(self.deliverer.volunteer.phone_number, message)
-        self.comments.create(comment=f"Sent a text to the deliverer: {message}")
-        logger.info("Sent deliverer reminder notification text for Meal Request %d to %s", self.request.id, self.deliverer.volunteer.phone_number)
 
     def __str__(self):
         return "[%s] Delivering %s to %s for %s" % (
@@ -531,3 +559,7 @@ class GroceryRequestComment(CommentModel):
 
 class MealDeliveryComment(CommentModel):
     subject = models.ForeignKey(MealDelivery, related_name="comments", on_delete=models.CASCADE)
+
+
+class GroceryDeliveryComment(CommentModel):
+    subject = models.ForeignKey(GroceryDelivery, related_name="comments", on_delete=models.CASCADE)

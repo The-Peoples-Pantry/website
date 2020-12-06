@@ -1,3 +1,4 @@
+from itertools import chain
 import logging
 from django.forms import ValidationError
 from django.contrib import messages
@@ -9,12 +10,12 @@ from django.views.generic import ListView, TemplateView
 from django_filters.views import FilterView
 
 from core.models import has_group
-from recipients.models import MealRequest, MealDelivery, Status, SendNotificationException
+from recipients.models import MealRequest, GroceryRequest, GroceryDelivery, MealDelivery, Status, SendNotificationException
 from public.views import GroupView
 from website.maps import distance
-from .forms import MealDeliverySignupForm, ChefSignupForm, ChefApplyForm, DeliveryApplyForm
+from .forms import GroceryDeliverySignupForm, MealDeliverySignupForm, ChefSignupForm, ChefApplyForm, DeliveryApplyForm
 from .models import VolunteerApplication, VolunteerRoles, Volunteer
-from .filters import ChefSignupFilter, MealDeliverySignupFilter
+from .filters import ChefSignupFilter, MealDeliverySignupFilter, GroceryDeliverySignupFilter
 
 
 logger = logging.getLogger(__name__)
@@ -107,14 +108,12 @@ class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
             logger.warn("Skipped sending meal notification for Meal Request %d to %s", meal_request.id, meal_request.phone_number)
 
 
-class TaskIndexView(LoginRequiredMixin, GroupView, ListView):
+
+class ChefIndexView(LoginRequiredMixin, GroupView, ListView):
+    """View for chefs to see the meals they've signed up to cook"""
     model = MealDelivery
     context_object_name = "deliveries"
     queryset = MealDelivery.objects.exclude(status=Status.DELIVERED).order_by('date')
-
-
-class ChefIndexView(TaskIndexView):
-    """View for chefs to see the meals they've signed up to cook"""
     template_name = "volunteers/chef_list.html"
     permission_group = 'Chefs'
     permission_group_redirect_url = reverse_lazy('volunteers:chef_application')
@@ -123,26 +122,124 @@ class ChefIndexView(TaskIndexView):
         return self.queryset.filter(chef=self.request.user)
 
 
-class MealDeliveryIndexView(TaskIndexView):
+class MealDeliveryIndexView(LoginRequiredMixin, GroupView, ListView):
     """View for deliverers to see the meal requests they've signed up to deliver"""
+    model = MealDelivery
     template_name = "volunteers/delivery_list.html"
     permission_group = 'Deliverers'
     permission_group_redirect_url = reverse_lazy('volunteers:delivery_application')
 
+
     def get_queryset(self):
-        return self.queryset.filter(deliverer=self.request.user)
+        meals = MealDelivery.objects.exclude(status=Status.DELIVERED).filter(deliverer=self.request.user)
+        groceries = GroceryDelivery.objects.exclude(status=Status.DELIVERED).filter(deliverer=self.request.user)
+
+        return sorted(chain(meals, groceries), key=lambda instance: instance.date)
+
+    def get_context_data(self, **kwargs):
+        context = super(MealDeliveryIndexView, self).get_context_data(**kwargs)
+
+        context["delivery_sets"] = [
+            (
+                delivery,
+                delivery.__class__.__name__
+            )
+
+            # self.object_list is a MealRequest queryset pre-filtered by ChefSignupFilter
+            for delivery in self.object_list
+        ]
+
+        return context
 
     def post(self, request):
         if request.POST['delivery_id']:
-            instance = MealDelivery.objects.get(uuid=request.POST['delivery_id'])
+            if request.POST['delivery_type'] == 'MealDelivery':
+                instance = MealDelivery.objects.get(uuid=request.POST['delivery_id'])
+            else:
+                instance = GroceryDelivery.objects.get(uuid=request.POST['delivery_id'])
             instance.status = Status.DELIVERED
             instance.save()
         return redirect(self.request.get_full_path())
 
 
+class GroceryDeliverySignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
+    """View for deliverers to sign up to deliver meal requests"""
+    template_name = "volunteers/delivery_signup_groceries.html"
+    form_class = GroceryDeliverySignupForm
+    permission_group = 'Deliverers'
+    permission_group_redirect_url = reverse_lazy('volunteers:delivery_application')
+    filterset_class = GroceryDeliverySignupFilter
+    queryset = GroceryRequest.objects.filter(delivery__isnull=True)
+
+    @property
+    def success_url(self):
+        """Redirect to the same page with same query params to keep the filters"""
+        return self.request.get_full_path()
+
+
+    def get_context_data(self, **kwargs):
+        context = super(GroceryDeliverySignupView, self).get_context_data(**kwargs)
+
+        context["grocery_request_form_sets"] = [
+            (
+                grocery_request,
+                GroceryDeliverySignupForm(initial={'id': grocery_request.id}),
+            )
+            # self.object_list is a MealRequest queryset pre-filtered by ChefSignupFilter
+            for grocery_request in self.object_list
+        ]
+        return context
+
+    def form_invalid(self, form):
+        messages.error(
+            self.request,
+            'Sorry, we were unable to register you for that request, someone else may have already claimed it.'
+        )
+        return redirect(self.success_url)
+
+    def form_valid(self, form):
+        # First fetch the associated meal request
+        # It's possible that someone else has signed up for it, so handle that
+        grocery_request = self.get_grocery_request(form)
+        if grocery_request is None:
+            return self.form_invalid(form)
+
+        try:
+            # If the meal request is still available setup the delivery
+            self.create_delivery(form, grocery_request)
+        except ValidationError as error:
+            messages.error(self.request, error.messages[0])
+            return redirect(self.success_url)
+
+        messages.success(self.request, 'Successfully signed up!')
+        return super().form_valid(form)
+
+    def get_grocery_request(self, form):
+        try:
+            return self.queryset.get(id=form.cleaned_data['id'])
+        except GroceryRequest.DoesNotExist:
+            return None
+
+    def create_delivery(self, form, grocery_request):
+        delivery = GroceryDelivery.objects.create(
+            request=grocery_request,
+            deliverer=self.request.user,
+            status=Status.DRIVER_ASSIGNED,
+            date=form.cleaned_data['delivery_date'],
+            pickup_start=form.cleaned_data['pickup_start'],
+            pickup_end=form.cleaned_data['pickup_end'],
+            dropoff_start=form.cleaned_data['dropoff_start'],
+            dropoff_end=form.cleaned_data['dropoff_end'],
+        )
+
+        try:
+            delivery.send_recipient_delivery_notification()
+        except SendNotificationException:
+            logger.warn("Skipped sending notification for Grocery Request %d to %s", grocery_request.id, grocery_request.phone_number)
+
 class MealDeliverySignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
     """View for deliverers to sign up to deliver meal requests"""
-    template_name = "volunteers/delivery_signup.html"
+    template_name = "volunteers/delivery_signup_meals.html"
     form_class = MealDeliverySignupForm
     permission_group = 'Deliverers'
     permission_group_redirect_url = reverse_lazy('volunteers:delivery_application')

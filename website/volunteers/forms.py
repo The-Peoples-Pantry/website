@@ -49,10 +49,24 @@ def next_weekend(**kwargs):
     return [(next_friday, next_friday), (next_sat, next_sat), (next_sun, next_sun)]
 
 
-class DeliveryDateInput(forms.Select):
+def next_grocery_block(**kwargs):
+    # always leave two days of buffer time
+    buffer_date = datetime.date.today() + datetime.timedelta(2)
+    next_tues = buffer_date + datetime.timedelta((4 - buffer_date.weekday()) % 7)
+    next_weds = next_day(next_tues)
+    return [(next_tues, next_tues), (next_weds, next_weds)]
+
+
+class MealDeliveryDateInput(forms.Select):
     def __init__(self):
         super().__init__(
             choices=next_weekend()
+        )
+
+class GroceryDeliveryDateInput(forms.Select):
+    def __init__(self):
+        super().__init__(
+            choices=next_grocery_block()
         )
 
 
@@ -149,12 +163,22 @@ class DeliveryApplyForm(VolunteerApplicationForm):
 
 class ChefSignupForm(forms.Form):
     id = forms.IntegerField()
-    delivery_date = forms.DateField(widget=DeliveryDateInput)
+    delivery_date = forms.DateField(widget=MealDeliveryDateInput)
     pickup_start = TimeField(initial='12:00')
     pickup_end = TimeField(initial='17:00')
     dropoff_start = TimeField(initial='18:00', required=False)
     dropoff_end = TimeField(initial='21:00', required=False)
     can_deliver = forms.BooleanField(required=False)
+
+
+class GroceryDeliverySignupForm(forms.Form):
+    id = forms.IntegerField()
+    delivery_date = forms.DateField(widget=GroceryDeliveryDateInput)
+    pickup_start = TimeField(initial='12:00')
+    pickup_end = TimeField(initial='17:00')
+    dropoff_start = TimeField(initial='18:00', required=False)
+    dropoff_end = TimeField(initial='21:00', required=False)
+
 
 
 class MealDeliverySignupForm(forms.ModelForm):

@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+
+{% block content %}
+<h1 class="mb-3">Sign up to deliver meals (Toronto)</h1>
+
+<div class="row">
+  <div class="col-md-3 order-md-2">
+    {% if filter %}
+      <form action="" method="get" class="form">
+        <h4>Filters</h4>
+        {% bootstrap_form filter.form %}
+        {% bootstrap_button 'Filter' %}
+        <a class="btn btn-primary ml-2" href={% url 'volunteers:delivery_signup_meals' %}>Reset</a>
+      </form>
+    {% endif %}
+  </div>
+  <div class="col-md-9 order-md-1">
+
+    <p>Here are all the upcoming requests that need to be delivered and their pickup timeframes! Please sign up by selecting a dropoff time frame. You can also <a href={% url 'volunteers:delivery_list' %}>see all the deliveries you've already signed up for here</a>.</p>
+    {% for delivery, form in delivery_form_pairs %}
+      <div class="card mb-4">
+        {# Card header section contains the meal request title #}
+        <div class="card-header font-weight-bold">
+          Pickup timeframe: {{ delivery.date }}, {{ delivery.pickup_start }} to {{ delivery.pickup_end }}
+        </div>
+        <div class="card-body">
+          <div class="row mb-3">
+            <div class="col h6">
+              Meal
+              for {{ delivery.request.num_adults }} adult{{ delivery.request.num_adults | pluralize }}
+              and {{ delivery.request.num_children }} kid{{ delivery.request.num_children | pluralize }}
+            </div>
+          </div>
+          <div class="row mb-4">
+            <div class="col">
+              <h6>Approximate pickup location</h6>
+              <iframe
+                width="350"
+                height="200"
+                frameborder="0" style="border:0"
+                src="{{ delivery.chef.anonymous_map_embed }}&zoom=14" allowfullscreen>
+              </iframe>
+            </div>
+            <div class="col">
+              <h6>Approximate delivery location</h6>
+              <iframe
+                width="350"
+                height="200"
+                frameborder="0" style="border:0"
+                src="{{ delivery.request.anonymous_map_embed }}&zoom=14" allowfullscreen>
+              </iframe>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <form action="" method="post" class="form">
+                {% csrf_token %}
+
+                <h6>Dropoff timerange on {{ delivery.date }}</h6>
+                <div class="row">
+                  <div class="col-sm">
+                    {% bootstrap_field form.dropoff_start %}
+                  </div>
+                  <div class="col-sm">
+                    {% bootstrap_field form.dropoff_end %}
+                  </div>
+                </div>
+
+                {{ form.id.as_hidden }}
+                {{ form.pickup_start.as_hidden }}
+                {{ form.pickup_end.as_hidden }}
+                {% buttons submit="Submit"%}{% endbuttons %}
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <div class="alert alert-info">There are no open delivery requests at this time.</div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
