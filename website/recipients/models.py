@@ -395,7 +395,6 @@ class MealDelivery(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
-
     def clean(self, *args, **kwargs):
         super(MealDelivery, self).clean(*args, **kwargs)
         if self.pickup_end <= self.pickup_start:
@@ -405,11 +404,9 @@ class MealDelivery(models.Model):
         if self.dropoff_start < self.pickup_end:
             raise ValidationError("The delivery timerange must start after the pickup timerange")
 
-
     def save(self, *args, **kwargs):
         self.full_clean()
         return super(MealDelivery, self).save(*args, **kwargs)
-
 
     def send_recipient_meal_notification(self):
         """Send the first notification to a recipient, lets them know that a chef has signed up to cook for them"""
