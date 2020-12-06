@@ -5,6 +5,7 @@ import uuid
 from django.core.mail import send_mail
 from django.db import models
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.urls import reverse_lazy
 from django.utils import timezone
 
@@ -393,6 +394,22 @@ class MealDelivery(models.Model):
     # System
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
+
+
+    def clean(self, *args, **kwargs):
+        super(MealDelivery, self).clean(*args, **kwargs)
+        if self.pickup_end <= self.pickup_start:
+            raise ValidationError("The pickup end time must be after the pickup start time")
+        if self.dropoff_end <= self.dropoff_start:
+            raise ValidationError("The dropoff end time must be after the dropoff start time")
+        if self.dropoff_start < self.pickup_end:
+            raise ValidationError("The delivery timerange must start after the pickup timerange")
+
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        return super(MealDelivery, self).save(*args, **kwargs)
+
 
     def send_recipient_meal_notification(self):
         """Send the first notification to a recipient, lets them know that a chef has signed up to cook for them"""
