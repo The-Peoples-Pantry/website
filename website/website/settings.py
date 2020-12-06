@@ -198,9 +198,7 @@ PAUSE_MEALS = 30
 
 # Maps API keys
 MAPQUEST_API_KEY = "xvB2VYxUF6mByw32kqOszrCXfgC7CuUa"  # Eric's dev account - 15k requests/month
-GOOGLE_MAPS_API_KEY = "AIzaSyCO1r4-P2e5ASqVp1Wgw6jAnFBaOEyGo-s"  # Eric's dev account - hard limit at free tier
-GOOGLE_MAPS_EMBED_KEY = "AIzaSyB8X4idnj8vEMpU_H0jF53SGr8pRnT2jaQ"
-
+GOOGLE_MAPS_PRODUCTION_KEY = getenv("GOOGLE_MAPS_API_KEY") # Env var refers to PPT Developer API key
 
 # Textline API
 # https://textline.docs.apiary.io/
