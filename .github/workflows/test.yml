@@ -22,4 +22,5 @@ jobs:
         run: python manage.py test
 
       - name: Check that migrations are up-to-date
+        working-directory: ./website
         run: python manage.py makemigrations --dry-run --check
