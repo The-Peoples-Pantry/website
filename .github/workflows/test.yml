@@ -12,6 +12,12 @@ jobs:
         with:
           python-version: '3.8.3'
 
+      - name: Set up Python / Pip cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ hashFiles('requirements.txt') }}
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
