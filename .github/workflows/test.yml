@@ -23,6 +23,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Lint code with flake8
+        working-directory: ./website
+        run: flake8 .
+
       - name: Run tests
         working-directory: ./website
         run: python manage.py test
