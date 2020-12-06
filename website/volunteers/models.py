@@ -8,13 +8,6 @@ from django.conf import settings
 from recipients.models import ContactModel
 
 
-class Pronouns(models.TextChoices):
-    SHE = 'She/Her', 'She/Her'
-    HE = 'He/Him', 'He/Him'
-    THEY = 'They/Them', 'They/Them'
-    ZE = 'Ze/Zir', 'Ze/Zir'
-
-
 class CookingTypes(models.TextChoices):
     COOKING = 'Cooking', 'Cooking'
     BAKING = 'Baking', 'Baking'
@@ -65,7 +58,7 @@ class Volunteer(ContactModel):
     )
     pronouns = models.CharField(
         "Pronouns",
-        help_text="Select all that apply",
+        help_text="Please include all of your pronouns",
         max_length=settings.DEFAULT_LENGTH,
         null=True,
         blank=True
