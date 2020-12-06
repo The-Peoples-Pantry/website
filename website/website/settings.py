@@ -153,7 +153,8 @@ else:
 
 PUBLIC_RELATIONS_EMAIL = 'thepeoplespantrytoronto@gmail.com'
 REQUEST_COORDINATORS_EMAIL = 'thepeoplespantryrequests@gmail.com'
-DELIVERY_COORDINATORS_EMAIL = 'thepeoplespantrytovolunteers@gmail.com'
+DELIVERY_COORDINATORS_EMAIL = 'thepeoplespantrydeliveries@gmail.com'
+VOLUNTEER_COORDINATORS_EMAIL = 'thepeoplespantrytovolunteers@gmail.com'
 
 # Authentication
 # https://docs.djangoproject.com/en/3.1/topics/auth/default/

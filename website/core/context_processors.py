@@ -8,8 +8,10 @@ def settings(request):
     # If someone made a programming mistake, or an attacker found an XSS vulnerability, they could potentially expose those settings
     # This context processor is intended as a convenience, but we want to make sure it is still safe
     SETTINGS_ALLOWED_LIST = (
+        'PUBLIC_RELATIONS_EMAIL',
         'REQUEST_COORDINATORS_EMAIL',
         'DELIVERY_COORDINATORS_EMAIL',
+        'VOLUNTEER_COORDINATORS_EMAIL',
     )
     return {
         'settings': {name: getattr(django_settings, name) for name in SETTINGS_ALLOWED_LIST}
