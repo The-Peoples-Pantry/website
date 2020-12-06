@@ -81,6 +81,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'core.context_processors.settings',
             ],
         },
     },
@@ -149,6 +150,11 @@ if EMAIL_HOST:
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 else:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+PUBLIC_RELATIONS_EMAIL = 'thepeoplespantrytoronto@gmail.com'
+REQUEST_COORDINATORS_EMAIL = 'thepeoplespantryrequests@gmail.com'
+DELIVERY_COORDINATORS_EMAIL = 'thepeoplespantrydeliveries@gmail.com'
+VOLUNTEER_COORDINATORS_EMAIL = 'thepeoplespantrytovolunteers@gmail.com'
 
 # Authentication
 # https://docs.djangoproject.com/en/3.1/topics/auth/default/
