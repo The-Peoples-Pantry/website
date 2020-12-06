@@ -1,4 +1,5 @@
 import logging
+from django.forms import ValidationError
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
@@ -69,8 +70,12 @@ class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
         if meal_request is None:
             return self.form_invalid(form)
 
-        # If the meal request is still available setup the delivery
-        self.create_delivery(form, meal_request)
+        try:
+            # If the meal request is still available setup the delivery
+            self.create_delivery(form, meal_request)
+        except ValidationError as error:
+            messages.error(self.request, error.messages[0])
+            return redirect(self.success_url)
 
         messages.success(self.request, 'Successfully signed up!')
         return super().form_valid(form)
@@ -151,16 +156,22 @@ class MealDeliverySignupView(LoginRequiredMixin, GroupView, FormView, FilterView
     def get_context_data(self, alerts={}, **kwargs):
         context = super(MealDeliverySignupView, self).get_context_data(**kwargs)
         context["delivery_form_pairs"] = [
-            (delivery, MealDeliverySignupForm(initial={'id': delivery.id}))
+            (delivery, MealDeliverySignupForm(initial={
+                'id': delivery.id,
+                'pickup_start': delivery.pickup_start,
+                'pickup_end': delivery.pickup_end
+            }))
             for delivery in self.object_list
         ]
         return context
 
     def form_invalid(self, form):
-        messages.error(
-            self.request,
-            'Sorry, we were unable to sign you for that delivery, someone else may have already claimed it.'
-        )
+        message = 'Sorry, we were unable to sign you for that delivery, someone else may have already claimed it.'
+
+        if form.non_field_errors():
+            message = form.non_field_errors()
+
+        messages.error(self.request, message)
         return redirect(self.success_url)
 
     def form_valid(self, form):
