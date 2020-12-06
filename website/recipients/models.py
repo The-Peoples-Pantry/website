@@ -123,7 +123,7 @@ class ContactModel(models.Model):
 
     @property
     def anonymous_map_embed(self):
-        return f"https://www.google.com/maps/embed/v1/place?key={ settings.GOOGLE_MAPS_EMBED_KEY }&q={self.anonymized_latitude},{self.anonymized_longitude}"
+        return f"https://www.google.com/maps/embed/v1/place?key={ settings.GOOGLE_MAPS_PRODUCTION_KEY }&q={self.anonymized_latitude},{self.anonymized_longitude}"
 
     def update_coordinates(self):
         """Updates, but does not commit, anonymized coordinates on the instance"""
