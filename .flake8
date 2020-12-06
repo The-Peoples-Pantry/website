@@ -1,0 +1,3 @@
+[flake8]
+# Ignore error for "line too long"
+ignore = E501

@@ -1,0 +1,36 @@
+name: Test
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8.3'
+
+      - name: Set up Python / Pip cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ hashFiles('requirements.txt') }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip wheel setuptools
+          pip install -r requirements.txt
+
+      - name: Lint code with flake8
+        working-directory: ./website
+        run: flake8 .
+
+      - name: Run tests
+        working-directory: ./website
+        run: python manage.py test
+
+      - name: Check that migrations are up-to-date
+        working-directory: ./website
+        run: python manage.py makemigrations --dry-run --check
