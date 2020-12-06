@@ -34,3 +34,6 @@ factory-boy==3.1.0
 
 # Allows us to track errors using Sentry (https://sentry.io)
 sentry-sdk==0.19.3
+
+# Allows us to lint our code
+flake8== 3.8.4
