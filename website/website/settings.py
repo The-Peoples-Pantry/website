@@ -150,6 +150,10 @@ if EMAIL_HOST:
 else:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
+PUBLIC_RELATIONS_EMAIL = 'thepeoplespantrytoronto@gmail.com'
+REQUEST_COORDINATORS_EMAIL = 'thepeoplespantryrequests@gmail.com'
+DELIVERY_COORDINATORS_EMAIL = 'thepeoplespantrytovolunteers@gmail.com'
+
 # Authentication
 # https://docs.djangoproject.com/en/3.1/topics/auth/default/
 
