@@ -90,6 +90,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'website.wsgi.application'
 
+SITE_ID = 1
+
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
