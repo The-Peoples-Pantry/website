@@ -175,6 +175,12 @@ VOLUNTEER_COORDINATORS_EMAIL = 'thepeoplespantrytovolunteers@gmail.com'
 LOGOUT_REDIRECT_URL = '/'
 
 
+# SSL/HTTPS
+# https://docs.djangoproject.com/en/3.1/topics/security/#ssl-https
+
+SECURE_SSL_REDIRECT = True
+
+
 # sentry-sdk
 # https://docs.sentry.io/platforms/python/guides/django/
 
