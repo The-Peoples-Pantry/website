@@ -6,7 +6,10 @@ from django.db import migrations
 def set_site_domain_name(apps, schema_editor):
     Site = apps.get_model('sites', 'Site')
     db_alias = schema_editor.connection.alias
-    site = Site.objects.using(db_alias).get(id=1)
+    try:
+        site = Site.objects.using(db_alias).get(id=1)
+    except Site.DoesNotExist:
+        site = Site()
     site.name = 'ThePeoplesPantryTO.com'
     site.domain = 'thepeoplespantryto.com'
     site.save()
