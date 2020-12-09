@@ -36,6 +36,9 @@
           {% if meal.stale %}
             <div class="alert alert-info">This request was submitted more than a week ago, please prioritize this if possible.</div>
           {% endif %}
+          {% if distance > settings.MAX_CHEF_DISTANCE %}
+            <div class="alert alert-warning">This request is far from your location. Please choose requests that are closer to you to reduce the strain on our delivery drivers.</div>
+          {% endif %}
           <div class="row">
             <div class="col">
               <h6>Food preferences</h6>
