@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<h1>People's Pantry in the Media</h1>
+<div class="col">
+	<div class="row">
+		<div class="card-deck text-center">
+			{% for story in stories %}
+				<div class="card m-2" style="flex: 1 0 30%; max-width: 30%">
+			    <div class="card-header">
+			    	<img class="card-img-top" src="{% static story.image %}" alt="" height="200">
+			    </div>
+			    <div class="card-body">
+			      <a href="{{ story.link }}" target="_blank" rel="noopener noreferrer"><h5 class="card-title">{{ story.title }}</h5></a>
+			      <div class="font-weight-bold">{{ story.author }}</div>
+			      <div class="font-italic">{{ story.date }}</div>
+			      <div>{{ story.outlet }}</div>
+			    </div>
+			  </div>
+		  {% endfor %}
+		</div>
+	</div>
+</div>
+
+{% endblock %}
