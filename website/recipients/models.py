@@ -28,6 +28,7 @@ class Cities(models.TextChoices):
     NORTH_YORK = 'North York', 'North York'
     SCARBOROUGH = 'Scarborough', 'Scarborough'
     TORONTO = 'Toronto', 'Toronto'
+    YORK = 'York', 'York'
 
 
 class Vegetables(models.TextChoices):
