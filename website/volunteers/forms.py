@@ -13,6 +13,7 @@ def future_date(**kwargs):
 
 class FutureDateInput(forms.DateInput):
     """A date picker widget that allows picking a date range 2-7 days from now"""
+
     def __init__(self):
         super().__init__(attrs={
             'type': 'date',
@@ -23,6 +24,7 @@ class FutureDateInput(forms.DateInput):
 
 class TimeField(forms.TimeField):
     """A field that renders a time picker widget"""
+
     def __init__(self, **kwargs):
         super().__init__(
             input_formats=['%H:%M'],
