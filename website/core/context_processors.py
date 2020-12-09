@@ -12,6 +12,7 @@ def settings(request):
         'REQUEST_COORDINATORS_EMAIL',
         'DELIVERY_COORDINATORS_EMAIL',
         'VOLUNTEER_COORDINATORS_EMAIL',
+        'MAX_CHEF_DISTANCE',
     )
     return {
         'settings': {name: getattr(django_settings, name) for name in SETTINGS_ALLOWED_LIST}

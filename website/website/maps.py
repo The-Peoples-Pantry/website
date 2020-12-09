@@ -1,3 +1,4 @@
+import math
 import requests
 from random import uniform, choice
 
@@ -39,3 +40,24 @@ class Geocoder:
     def generate_noise(self):
         """Generate a random value in range, and randomly positive or negative"""
         return uniform(self.DEGREE_RANGE_LOWER, self.DEGREE_RANGE_HIGHER) * choice([-1, 1])
+
+
+def distance(point1, point2) -> float:
+    """
+    Roughly approximate the distance between two latitude-longitude pairs in km
+
+    Roughly being the keyword here. We're doing a couple of things for simplicity:
+    - We assume a constant latitude degree length of 110km (in truth it varies 110-111)
+    - We use Euclidean distance which is meant for planes, but will work for a spheroid over small distances
+
+    A more complete solution would use the haversine formula, but we're going for simplicity
+    Since we are calculating over small distances, the error is negligible (within a few metres)
+
+    https://en.wikipedia.org/wiki/Euclidean_distance
+    https://en.wikipedia.org/wiki/Latitude#Length_of_a_degree_of_latitude
+    https://en.wikipedia.org/wiki/Haversine_formula
+    """
+    lat1, long1 = point1
+    lat2, long2 = point2
+    degree_length = 110
+    return degree_length * math.sqrt(math.pow(lat1 - lat2, 2) + math.pow(long1 - long2, 2))

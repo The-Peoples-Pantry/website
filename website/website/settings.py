@@ -199,6 +199,9 @@ LONG_TEXT_LENGTH = 1024
 PAUSE_GROCERIES = 140
 PAUSE_MEALS = 30
 
+# Settings for figuring out delivery distances
+MAX_CHEF_DISTANCE = 12  # Chefs can't be more than 12 km away from their recipients
+
 # Maps API keys
 MAPQUEST_API_KEY = "xvB2VYxUF6mByw32kqOszrCXfgC7CuUa"  # Eric's dev account - 15k requests/month
 GOOGLE_MAPS_PRODUCTION_KEY = getenv("GOOGLE_MAPS_API_KEY")  # Env var refers to PPT Developer API key

@@ -11,6 +11,7 @@ from django_filters.views import FilterView
 from core.models import has_group
 from recipients.models import MealRequest, MealDelivery, Status, SendNotificationException
 from public.views import GroupView
+from website.maps import distance
 from .forms import MealDeliverySignupForm, ChefSignupForm, ChefApplyForm, DeliveryApplyForm
 from .models import VolunteerApplication, VolunteerRoles, Volunteer
 from .filters import ChefSignupFilter, MealDeliverySignupFilter
@@ -43,12 +44,12 @@ class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
     def get_context_data(self, **kwargs):
         context = super(ChefSignupView, self).get_context_data(**kwargs)
 
-        context["meal_request_form_sets"] = [
-            (
-                meal_request,
-                ChefSignupForm(initial={'id': meal_request.id}),
-            )
-
+        context["object_contexts"] = [
+            {
+                "meal": meal_request,
+                "form": ChefSignupForm(initial={'id': meal_request.id}),
+                "distance": distance(meal_request.coordinates, self.request.user.volunteer.coordinates),
+            }
             # self.object_list is a MealRequest queryset pre-filtered by ChefSignupFilter
             for meal_request in self.object_list
         ]
