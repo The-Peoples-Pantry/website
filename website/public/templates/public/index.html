@@ -3,7 +3,7 @@
 
 {% block content %}
 
-<div class="col">
+<div class="col-lg-8 mr-auto ml-auto">
 	<div class="row">
 		<div class="container-fluid home--splash home--full-width"></div>
 		<div class="text-center container-fluid pt-4">
@@ -39,7 +39,12 @@
 		  right to their door, 100% free of charge.
 		</p>
 
+		<div class="text-center container-fluid mb-4">
+			<a href="{% url 'public:media' %}"><h3>People's Pantry in the Media</h3></a>
+		</div>
+
 		<div class="text-center container-fluid">
+			<h3 class="text-center">Volunteer with us</h3>
 			<a href="{% url 'signup' %}" class="btn btn-info m-2">
 				<span class="h6">Volunteer in Toronto</span>
 			</a><br />
@@ -50,7 +55,7 @@
 
 		<div class="home--social home--full-width mt-4">
 			<div class="container">
-				<h4>Find us on social media</h4>
+				<h3 class="text-center">Find us on social media</h3>
 				<div class="text-center container-fluid">
 					<a class="home--social-links" href="https://www.facebook.com/groups/675649626532144/">
 						<img alt="Facebook" class="home--social-icons" src="{% static 'icons/facebook.svg' %}"  />
