@@ -314,10 +314,6 @@ class GroceryDeliveryAdmin(admin.ModelAdmin):
         'status',
         'deliverer',
         'date',
-        'pickup_start',
-        'pickup_end',
-        'dropoff_start',
-        'dropoff_end',
     )
     list_filter = (
         'status',

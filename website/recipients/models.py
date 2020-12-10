@@ -10,8 +10,7 @@ from django.urls import reverse_lazy
 from django.utils import timezone
 
 from website.text_messaging import send_text
-from core.models import get_sentinel_user
-from website.maps import Geocoder, GeocoderException
+from core.models import get_sentinel_user, ContactInfo, GroceryPickupAddress
 
 
 logger = logging.getLogger(__name__)
@@ -20,15 +19,6 @@ logger = logging.getLogger(__name__)
 class SendNotificationException(Exception):
     def __init__(self, message: str):
         self.message = message
-
-
-class Cities(models.TextChoices):
-    EAST_YORK = 'East York', 'East York'
-    ETOBICOKE = 'Etobicoke', 'Etobicoke'
-    NORTH_YORK = 'North York', 'North York'
-    SCARBOROUGH = 'Scarborough', 'Scarborough'
-    TORONTO = 'Toronto', 'Toronto'
-    YORK = 'York', 'York'
 
 
 class Vegetables(models.TextChoices):
@@ -71,81 +61,8 @@ class Dairy(models.TextChoices):
     ALMOND_MILK = 'Almond Milk'
 
 
-class ContactModel(models.Model):
-    class Meta:
-        abstract = True
 
-    name = models.CharField(
-        "Full name",
-        max_length=settings.NAME_LENGTH
-    )
-    phone_number = models.CharField(
-        "Phone number",
-        help_text="Use the format 555-555-5555",
-        max_length=settings.PHONE_NUMBER_LENGTH,
-    )
-    email = models.EmailField("Email address")
-    address_1 = models.CharField(
-        "Address line 1",
-        help_text="Street name and number",
-        max_length=settings.ADDRESS_LENGTH
-    )
-    address_2 = models.CharField(
-        "Address line 2",
-        help_text="Apartment, Unit, or Suite number",
-        max_length=settings.ADDRESS_LENGTH,
-        blank=True,
-    )
-    city = models.CharField(
-        "City",
-        max_length=settings.CITY_LENGTH,
-        choices=Cities.choices,
-        default=Cities.TORONTO,
-    )
-    postal_code = models.CharField(
-        "Postal code",
-        max_length=settings.POSTAL_CODE_LENGTH
-    )
-    anonymized_latitude = models.FloatField(default=43.651070, blank=True)  # default: Toronto latitude
-    anonymized_longitude = models.FloatField(default=-79.347015, blank=True)  # default: Toronto longitude
-
-    @property
-    def address(self):
-        return f"{self.address_1} {self.address_2} {self.city} {self.postal_code}"
-
-    @property
-    def address_link(self):
-        address = urllib.parse.quote(self.address)
-        return f"https://www.google.com/maps/place/{address}"
-
-    @property
-    def anonymous_address_link(self):
-        return f"https://www.google.com/maps/place/{self.anonymized_latitude},{self.anonymized_longitude}"
-
-    @property
-    def anonymous_map_embed(self):
-        return f"https://www.google.com/maps/embed/v1/place?key={ settings.GOOGLE_MAPS_PRODUCTION_KEY }&q={self.anonymized_latitude},{self.anonymized_longitude}"
-
-    @property
-    def coordinates(self):
-        return (self.anonymized_latitude, self.anonymized_longitude)
-
-    def update_coordinates(self):
-        """Updates, but does not commit, anonymized coordinates on the instance"""
-        try:
-            latitude, longitude = Geocoder().geocode_anonymized(self.address)
-            self.anonymized_latitude = latitude
-            self.anonymized_longitude = longitude
-        except GeocoderException:
-            logger.exception("Error when updating coordinates for %d", self.uuid)
-
-    def save(self, *args, **kwargs):
-        # Whenever the model is updated, make sure coordinates are updated too
-        self.update_coordinates()
-        super().save(*args, **kwargs)
-
-
-class HelpRequest(ContactModel):
+class HelpRequest(ContactInfo):
     class Meta:
         abstract = True
 
@@ -374,10 +291,6 @@ class BaseDelivery(models.Model):
         default=Status.UNCONFIRMED
     )
     date = models.DateField()
-    pickup_start = models.TimeField(null=True, blank=True)
-    pickup_end = models.TimeField(null=True, blank=True)
-    dropoff_start = models.TimeField(null=True, blank=True)
-    dropoff_end = models.TimeField(null=True, blank=True)
 
     # System
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
@@ -454,10 +367,21 @@ class GroceryDelivery(BaseDelivery):
         null=True,
         blank=True,
     )
+    pickup_address = models.ForeignKey(
+        GroceryPickupAddress,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
 
 class MealDelivery(BaseDelivery):
     class Meta:
         verbose_name_plural = 'meal deliveries'
+
+    pickup_start = models.TimeField(null=True, blank=True)
+    pickup_end = models.TimeField(null=True, blank=True)
+    dropoff_start = models.TimeField(null=True, blank=True)
+    dropoff_end = models.TimeField(null=True, blank=True)
 
     request = models.OneToOneField(
         MealRequest,
