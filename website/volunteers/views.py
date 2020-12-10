@@ -108,7 +108,6 @@ class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
             logger.warn("Skipped sending meal notification for Meal Request %d to %s", meal_request.id, meal_request.phone_number)
 
 
-
 class ChefIndexView(LoginRequiredMixin, GroupView, ListView):
     """View for chefs to see the meals they've signed up to cook"""
     model = MealDelivery
@@ -128,7 +127,6 @@ class MealDeliveryIndexView(LoginRequiredMixin, GroupView, ListView):
     template_name = "volunteers/delivery_list.html"
     permission_group = 'Deliverers'
     permission_group_redirect_url = reverse_lazy('volunteers:delivery_application')
-
 
     def get_queryset(self):
         meals = MealDelivery.objects.exclude(status=Status.DELIVERED).filter(deliverer=self.request.user)
@@ -175,7 +173,6 @@ class GroceryDeliverySignupView(LoginRequiredMixin, GroupView, FormView, FilterV
     def success_url(self):
         """Redirect to the same page with same query params to keep the filters"""
         return self.request.get_full_path()
-
 
     def get_context_data(self, **kwargs):
         context = super(GroceryDeliverySignupView, self).get_context_data(**kwargs)
@@ -236,6 +233,7 @@ class GroceryDeliverySignupView(LoginRequiredMixin, GroupView, FormView, FilterV
             delivery.send_recipient_delivery_notification()
         except SendNotificationException:
             logger.warn("Skipped sending notification for Grocery Request %d to %s", grocery_request.id, grocery_request.phone_number)
+
 
 class MealDeliverySignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
     """View for deliverers to sign up to deliver meal requests"""

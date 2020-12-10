@@ -61,7 +61,6 @@ class Dairy(models.TextChoices):
     ALMOND_MILK = 'Almond Milk'
 
 
-
 class HelpRequest(ContactInfo):
     class Meta:
         abstract = True
@@ -309,7 +308,6 @@ class BaseDelivery(models.Model):
         self.full_clean()
         return super(BaseDelivery, self).save(*args, **kwargs)
 
-
     def send_recipient_delivery_notification(self):
         """Send a notification to a recipient, lets them know that a delivery driver will drop if off within a certain time window"""
         # Perform validation first that we _can_ send this notification
@@ -332,7 +330,6 @@ class BaseDelivery(models.Model):
         send_text(self.request.phone_number, message)
         self.comments.create(comment=f"Sent a text to recipient: {message}")
         logger.info("Sent recipient delivery notification text for Request %d to %s", self.request.id, self.request.phone_number)
-
 
     def send_deliverer_reminder_notification(self):
         """Send a reminder notification to the deliverer"""
@@ -374,6 +371,7 @@ class GroceryDelivery(BaseDelivery):
         blank=True
     )
 
+
 class MealDelivery(BaseDelivery):
     class Meta:
         verbose_name_plural = 'meal deliveries'
@@ -401,7 +399,6 @@ class MealDelivery(BaseDelivery):
         blank=True,
     )
 
-
     def send_recipient_meal_notification(self):
         """Send the first notification to a recipient, lets them know that a chef has signed up to cook for them"""
         if not self.request.can_receive_texts:
@@ -420,7 +417,6 @@ class MealDelivery(BaseDelivery):
         self.comments.create(comment=f"Sent a text to recipient: {message}")
         logger.info("Sent recipient meal notification text for Meal Request %d to %s", self.request.id, self.request.phone_number)
 
-
     def send_chef_reminder_notification(self):
         """Send a reminder notification to the chef"""
         if not self.chef:
@@ -436,7 +432,6 @@ class MealDelivery(BaseDelivery):
         send_text(self.chef.volunteer.phone_number, message)
         self.comments.create(comment=f"Sent a text to the chef: {message}")
         logger.info("Sent chef reminder notification text for Meal Request %d to %s", self.request.id, self.chef.volunteer.phone_number)
-
 
     def __str__(self):
         return "[%s] Delivering %s to %s for %s" % (

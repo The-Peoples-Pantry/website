@@ -50,10 +50,13 @@ class LandlineFilter(admin.SimpleListFilter):
 class MealDeliveryInline(admin.TabularInline):
     model = MealDelivery
 
+
 class GroceryDeliveryInline(admin.TabularInline):
     model = GroceryDelivery
 
 # Assign the current user as author when saving comments from a model admin
+
+
 class CommentInlineFormSet(forms.models.BaseInlineFormSet):
     def save_new(self, form, commit=True):
         obj = super(CommentInlineFormSet, self).save_new(form, commit=False)

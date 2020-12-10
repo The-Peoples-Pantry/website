@@ -112,9 +112,9 @@ class GroceryPickupAddress(ContactInfo):
         max_length=settings.PHONE_NUMBER_LENGTH,
     )
     email = models.EmailField(
-      "Email address if applicable",
-      null=True,
-      blank=True,
+        "Email address if applicable",
+        null=True,
+        blank=True,
     )
 
     def __str__(self):

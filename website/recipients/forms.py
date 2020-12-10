@@ -3,6 +3,7 @@ from django import forms
 from .models import MealRequest, GroceryRequest, Vegetables, Fruits, Grains, Condiments, Protein, Dairy
 from django.conf import settings
 
+
 def get_grocery_delivery_days():
     grocery_shifts = []
     for day in settings.GROCERY_DELIVERY_DAYS:

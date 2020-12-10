@@ -63,6 +63,7 @@ class MealDeliveryDateInput(forms.Select):
             choices=next_weekend()
         )
 
+
 class GroceryDeliveryDateInput(forms.Select):
     def __init__(self):
         super().__init__(
@@ -178,7 +179,6 @@ class GroceryDeliverySignupForm(forms.Form):
     pickup_end = TimeField(initial='17:00')
     dropoff_start = TimeField(initial='18:00', required=False)
     dropoff_end = TimeField(initial='21:00', required=False)
-
 
 
 class MealDeliverySignupForm(forms.ModelForm):
