@@ -30,7 +30,7 @@
       {% if request.user.is_authenticated %}
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-          Current requests
+          Requests
         </a>
         <div class="dropdown-menu">
           <a class="dropdown-item" href="{% url 'volunteers:chef_signup' %}">
@@ -45,7 +45,9 @@
         </div>
       </li>
       <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">My dashboard</a>
+        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+          Tasks
+        </a>
         <div class="dropdown-menu">
           <a class="dropdown-item" href="{% url 'volunteers:chef_list' %}">My cooking tasks</a>
           <a class="dropdown-item" href="{% url 'volunteers:delivery_list' %}">My delivery tasks</a>
