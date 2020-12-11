@@ -1,7 +1,12 @@
+import logging
+import urllib.parse
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.conf import settings
 from website.maps import Geocoder, GeocoderException
+
+
+logger = logging.getLogger(__name__)
 
 
 def get_sentinel_user():

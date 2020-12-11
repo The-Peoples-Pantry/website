@@ -1,6 +1,5 @@
 import logging
 from textwrap import dedent
-import urllib.parse
 import uuid
 from django.core.mail import send_mail
 from django.db import models
