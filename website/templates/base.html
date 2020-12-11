@@ -25,9 +25,10 @@
         {% bootstrap_messages %}
         {% block content %}{% endblock %}
       </section>
-      <footer class="bg-dark">
-        <div class="container text-center pt-3 pb-2">
-          <a class="text-light" href="mailto:{{settings.PUBLIC_RELATIONS_EMAIL}}">Contact us</a>
+      <footer>
+        <hr class="mb-0" />
+        <div class="container text-center py-3">
+          <a href="mailto:{{settings.PUBLIC_RELATIONS_EMAIL}}">Contact us</a>
         </div>
       </footer>
     </div>
