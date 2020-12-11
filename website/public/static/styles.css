@@ -30,7 +30,12 @@ body {
       HOME PAGES
 ------------------------------------ */
 .home--splash {
-  background: url("./splash.jpg") center bottom;
+  background: linear-gradient(
+      rgba(255, 255, 255, 1),
+      25%,
+      rgba(255, 255, 255, 0)
+    ),
+    url("./splash.jpg") center bottom;
   background-size: cover;
   height: 350px;
 }
