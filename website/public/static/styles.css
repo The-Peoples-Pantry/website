@@ -50,3 +50,12 @@ body {
   margin: 1rem;
   display: inline-block;
 }
+
+.icon--footer:hover {
+  text-decoration: none;
+}
+
+.icon--footer > img {
+  width: 1.2rem;
+  height: 1.2rem;
+}
