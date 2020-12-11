@@ -1,0 +1,28 @@
+{% load static %}
+
+<footer>
+  <hr class="mb-0" />
+  <div class="container text-center text-dark py-3">
+    <div class="d-flex justify-content-between">
+      <div>
+        &copy; {% now "Y" %} The People&apos;s Pantry
+        <span class="mx-2">&bull;</span>
+        <a class="text-reset" href="mailto:{{settings.PUBLIC_RELATIONS_EMAIL}}">Contact us</a>
+      </div>
+      <div>
+        <a class="icon--footer mx-2" href="https://www.facebook.com/groups/675649626532144/" target="_blank" rel="noopener noreferrer">
+          <img alt="Facebook" src="{% static 'icons/facebook-mono.svg' %}" />
+        </a>
+        <a class="icon--footer mx-2" href="https://www.instagram.com/peoplespantryto/" target="_blank" rel="noopener noreferrer">
+          <img alt="Instagram" src="{% static 'icons/instagram-mono.svg' %}" />
+        </a>
+        <a class="icon--footer mx-2" href="https://twitter.com/peoplespantryTO" target="_blank" rel="noopener noreferrer">
+          <img alt="Twitter" src="{% static 'icons/twitter-mono.svg' %}" />
+        </a>
+        <a class="icon--footer mx-2" href="https://www.tiktok.com/@thepeoplespantry" target="_blank" rel="noopener noreferrer">
+          <img alt="TikTok" src="{% static 'icons/tiktok-mono.svg' %}" />
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
