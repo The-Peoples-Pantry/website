@@ -18,17 +18,19 @@
     {% block head %}{% endblock %}
   </head>
   <body>
-    {% block navigation %}{% include "nav.html" %}{% endblock %}
+    <div id="page">
+      {% block navigation %}{% include "nav.html" %}{% endblock %}
 
-    <div class="container body">
-      {% bootstrap_messages %}
-      {% block content %}{% endblock %}
+      <section id="content" class="container">
+        {% bootstrap_messages %}
+        {% block content %}{% endblock %}
+      </section>
+      <footer class="bg-dark">
+        <div class="container text-center pt-3 pb-2">
+          <a class="text-light" href="mailto:{{settings.PUBLIC_RELATIONS_EMAIL}}">Contact us</a>
+        </div>
+      </footer>
     </div>
-    <footer class="bg-dark">
-      <div class="container text-center pt-3 pb-2">
-        <a class="text-light" href="mailto:{{settings.PUBLIC_RELATIONS_EMAIL}}">Contact us</a>
-      </div>
-    </footer>
     {% bootstrap_javascript jquery='slim' %}
     {% block custom_jquery %}{% endblock %}
   </body>
