@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark py-3">
+<nav class="navbar navbar-expand-lg navbar-light sticky-top" style="background-color: white">
 
   <a class="navbar-brand" href="{% url 'public:index' %}">The People's Pantry</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -7,88 +7,75 @@
 
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
+
+      {# Requests section #}
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
           Submit a request
         </a>
-        <div class="dropdown-menu">
-          <a class="dropdown-item" href="{% url 'recipients:new_meal_request' %}">
-            Request meals (Toronto)
-          </a>
-          <a class="dropdown-item" href="{% url 'recipients:new_grocery_request' %}">
-            Request groceries (Toronto)
-          </a>
-          <a class="dropdown-item" href="https://forms.gle/uJyEwwX8NbUZb4nX6" target="_blank" rel="noopener noreferrer">
-            Requests for Halton, Hamilton, Guelph/Kitchener
-          </a>
-        </div>
+        <ul class="dropdown-menu">
+          <li><a class="dropdown-item" href="{% url 'recipients:new_meal_request' %}">Request meals</a></li>
+          <li><a class="dropdown-item" href="{% url 'recipients:new_grocery_request' %}">Request groceries</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item" href="https://forms.gle/uJyEwwX8NbUZb4nX6" target="_blank" rel="noopener noreferrer">Outside Toronto</a></li>
+        </ul>
       </li>
+
+      {# Volunteer section #}
       {% if request.user.is_authenticated %}
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-          Current requests
+          Requests
         </a>
-        <div class="dropdown-menu">
-          <a class="dropdown-item" href="{% url 'volunteers:chef_signup' %}">
-            Sign up to cook
-          </a>
-          <a class="dropdown-item" href="{% url 'volunteers:delivery_signup' %}">
-            Sign up to deliver
-          </a>
-          <a class="dropdown-item" target="_blank" rel="noopener noreferrer" href="https://forms.gle/i7BscqiGwyvRL5Fr7">
-            Volunteer in Halton, Hamilton, Guelph/Kitchener
-          </a>
-        </div>
+        <ul class="dropdown-menu">
+          <li><a class="dropdown-item" href="{% url 'volunteers:chef_signup' %}">Sign up to cook</a></li>
+          <li><a class="dropdown-item" href="{% url 'volunteers:delivery_signup' %}">Sign up to deliver</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item" target="_blank" rel="noopener noreferrer" href="https://forms.gle/i7BscqiGwyvRL5Fr7">Outside Toronto</a></li>
+        </ul>
       </li>
       <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">My dashboard</a>
-        <div class="dropdown-menu">
-          <a class="dropdown-item" href="{% url 'volunteers:chef_list' %}">My cooking tasks</a>
-          <a class="dropdown-item" href="{% url 'volunteers:delivery_list' %}">My delivery tasks</a>
-          <a class="dropdown-item" href="{% url 'volunteers:volunteer_centre' %}">Volunteer resources</a>
-        </div>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="{% url 'public:media' %}">
-          Media
+        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+          Tasks
         </a>
+        <ul class="dropdown-menu">
+          <li><a class="dropdown-item" href="{% url 'volunteers:chef_list' %}">My cooking tasks</a></li>
+          <li><a class="dropdown-item" href="{% url 'volunteers:delivery_list' %}">My delivery tasks</a></li>
+          <li><a class="dropdown-item" href="{% url 'volunteers:volunteer_centre' %}">Volunteer resources</a></li>
+        </ul>
       </li>
       {% endif %}
+
+      {# Organizer-only section #}
       {% if request.user.is_staff %}
-      <li class="nav-item">
-        <a class="nav-link" href="{% url 'admin:index' %}">
-          Admin
-        </a>
-      </li>
+      <li class="nav-item"><a class="nav-link" href="{% url 'admin:index' %}">Admin</a></li>
       {% endif %}
     </ul>
-    {% if request.user.is_authenticated %}
+
+    {# User info section, or login/signup if unauthenticated #}
     <ul class="navbar-nav">
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Logged in as: {{ request.user.username }}</a>
-        <div class="dropdown-menu">
-          <a class="dropdown-item" href="{% url 'profile' %}">My profile</a>
-          <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
-        </div>
-      </li>
+      {% if request.user.is_authenticated %}
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Logged in as: {{ request.user.username }}</a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="{% url 'profile' %}">My profile</a></li>
+            <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+          </ul>
+        </li>
+      {% else %}
+        <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Login</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'signup' %}">Signup</a></li>
+      {% endif %}
     </ul>
-    {% else %}
-    <ul class="navbar-nav">
-      <li class="nav-item">
-        <a class="nav-link" href="{% url 'login' %}">Login</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="{% url 'signup' %}">Signup</a>
-      </li>
-    </ul>
-    {% endif %}
-    <ul class="navbar-nav">
+
+    {# Donate section #}
+    <ul class="navbar-nav ">
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle text-light btn btn-info" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Donate</a>
-        <div class="dropdown-menu dropdown-menu-right">
-          <a class="dropdown-item" href="https://donorbox.org/thepeoplespantryto" target="_blank" rel="noopener noreferrer">Donate monthly</a>
-          <a class="dropdown-item" href="https://www.gofundme.com/f/the-people039s-pantry-covid19-emergency-meal-fund" target="_blank" rel="noopener noreferrer">Donate now</a>
-        </div>
+        <ul class="dropdown-menu dropdown-menu-right">
+          <li><a class="dropdown-item" href="https://donorbox.org/thepeoplespantryto" target="_blank" rel="noopener noreferrer">Donate monthly</a></li>
+          <li><a class="dropdown-item" href="https://www.gofundme.com/f/the-people039s-pantry-covid19-emergency-meal-fund" target="_blank" rel="noopener noreferrer">Donate now</a></li>
+        </ul>
       </li>
     </ul>
   </div>
