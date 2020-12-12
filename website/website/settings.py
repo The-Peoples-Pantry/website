@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
+import datetime
 from os import getenv
 from pathlib import Path
 
@@ -196,8 +197,14 @@ DAY_LENGTH = 9  # Longest is "Wednesday"
 LONG_TEXT_LENGTH = 1024
 
 # Settings for pausing requests
-PAUSE_GROCERIES = 140
+PAUSE_GROCERIES = 130
 PAUSE_MEALS = 30
+
+# Grocery settings
+GROCERY_DELIVERY_DAYS = [
+    datetime.datetime(2020, 12, 23),
+    datetime.datetime(2020, 12, 30),
+]
 
 # Settings for figuring out delivery distances
 MAX_CHEF_DISTANCE = 12  # Chefs can't be more than 12 km away from their recipients

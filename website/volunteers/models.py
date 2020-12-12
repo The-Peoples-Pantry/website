@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 from django.conf import settings
-from recipients.models import ContactModel
+from core.models import ContactInfo
 
 
 class CookingTypes(models.TextChoices):
@@ -49,7 +49,7 @@ class VolunteerRoles(models.TextChoices):
     ORGANIZERS = 'Organizers'
 
 
-class Volunteer(ContactModel):
+class Volunteer(ContactInfo):
     user = models.OneToOneField(
         User,
         on_delete=models.CASCADE,
