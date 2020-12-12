@@ -300,8 +300,8 @@ class BaseDelivery(models.Model):
             raise ValidationError("The pickup end time must be after the pickup start time")
         if self.dropoff_end and self.dropoff_start and self.dropoff_end <= self.dropoff_start:
             raise ValidationError("The dropoff end time must be after the dropoff start time")
-        if self.dropoff_start and self.pickup_end and self.dropoff_start < self.pickup_end:
-            raise ValidationError("The delivery timerange must start after the pickup timerange")
+        if self.dropoff_start and self.pickup_start and self.dropoff_start <= self.pickup_start:
+            raise ValidationError("The dropoff start time must be after the pickup start time")
 
     def save(self, *args, **kwargs):
         self.full_clean()
