@@ -88,18 +88,27 @@ class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
             return None
 
     def create_delivery(self, form, meal_request):
-        deliverer = self.request.user if form.cleaned_data['can_deliver'] else None
-        delivery = MealDelivery.objects.create(
-            request=meal_request,
-            deliverer=deliverer,
-            chef=self.request.user,
-            status=Status.CHEF_ASSIGNED,
-            date=form.cleaned_data['delivery_date'],
-            pickup_start=form.cleaned_data['pickup_start'],
-            pickup_end=form.cleaned_data['pickup_end'],
-            dropoff_start=form.cleaned_data['dropoff_start'],
-            dropoff_end=form.cleaned_data['dropoff_end'],
-        )
+        if form.cleaned_data['can_deliver']:
+            delivery = MealDelivery.objects.create(
+                request=meal_request,
+                deliverer=self.request.user,
+                chef=self.request.user,
+                status=Status.DRIVER_ASSIGNED,
+                date=form.cleaned_data['delivery_date'],
+                pickup_start=form.cleaned_data['pickup_start'],
+                pickup_end=form.cleaned_data['pickup_end'],
+                dropoff_start=form.cleaned_data['dropoff_start'],
+                dropoff_end=form.cleaned_data['dropoff_end'],
+            )
+        else:
+            delivery = MealDelivery.objects.create(
+                request=meal_request,
+                chef=self.request.user,
+                status=Status.CHEF_ASSIGNED,
+                date=form.cleaned_data['delivery_date'],
+                pickup_start=form.cleaned_data['pickup_start'],
+                pickup_end=form.cleaned_data['pickup_end'],
+            )
 
         try:
             delivery.send_recipient_meal_notification()

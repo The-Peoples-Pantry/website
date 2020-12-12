@@ -156,6 +156,15 @@ class ChefSignupForm(forms.Form):
     dropoff_end = TimeField(initial='21:00', required=False)
     can_deliver = forms.BooleanField(required=False)
 
+    # If the chef hasn't opted to deliver it, remove the dropoff timerange
+    def clean(self):
+        cleaned_data = super().clean()
+        can_deliver = cleaned_data['can_deliver']
+        if not can_deliver:
+            cleaned_data.pop('dropoff_start')
+            cleaned_data.pop('dropoff_end')
+        return cleaned_data
+
 
 class MealDeliverySignupForm(forms.ModelForm):
     id = forms.IntegerField()
