@@ -10,6 +10,8 @@ from .models import (
     GroceryRequestComment,
     MealDelivery,
     MealDeliveryComment,
+    GroceryDelivery,
+    GroceryDeliveryComment,
     Status,
     SendNotificationException,
 )
@@ -49,7 +51,12 @@ class MealDeliveryInline(admin.TabularInline):
     model = MealDelivery
 
 
+class GroceryDeliveryInline(admin.TabularInline):
+    model = GroceryDelivery
+
 # Assign the current user as author when saving comments from a model admin
+
+
 class CommentInlineFormSet(forms.models.BaseInlineFormSet):
     def save_new(self, form, commit=True):
         obj = super(CommentInlineFormSet, self).save_new(form, commit=False)
@@ -84,6 +91,10 @@ class GroceryRequestCommentInline(CommentInline):
 
 class MealDeliveryCommentInline(CommentInline):
     model = MealDeliveryComment
+
+
+class GroceryDeliveryCommentInline(CommentInline):
+    model = GroceryDeliveryComment
 
 
 class MealRequestAdmin(admin.ModelAdmin):
@@ -183,6 +194,7 @@ class GroceryRequestAdmin(admin.ModelAdmin):
     )
     inlines = (
         GroceryRequestCommentInline,
+        GroceryDeliveryInline
     )
 
 
@@ -298,6 +310,23 @@ class MealDeliveryAdmin(admin.ModelAdmin):
             self.message_user(request, format_html("<p>{}</p>{}", prefix_message, error_messages), messages.ERROR)
 
 
+class GroceryDeliveryAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'request',
+        'status',
+        'deliverer',
+        'date',
+    )
+    list_filter = (
+        'status',
+    )
+    inlines = (
+        GroceryDeliveryCommentInline,
+    )
+
+
 admin.site.register(GroceryRequest, GroceryRequestAdmin)
 admin.site.register(MealRequest, MealRequestAdmin)
 admin.site.register(MealDelivery, MealDeliveryAdmin)
+admin.site.register(GroceryDelivery, GroceryDeliveryAdmin)
