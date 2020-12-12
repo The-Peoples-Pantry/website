@@ -7,6 +7,12 @@ import logging
 
 logging.basicConfig(level=logging.DEBUG)
 
+NAME_FIELD = 'Full name:'
+EMAIL_FIELD = 'Email address:'
+PHONE_FIELD = 'Phone number:'
+ADDRESS_FIELD = 'Full address (including any applicable apartment/unit/suite number):'
+ROLES_FIELD = 'Would you like to...? Check all that apply.'
+
 
 def friendly_entry(entry: dict, required_fields):
     return ', '.join(
@@ -16,9 +22,8 @@ def friendly_entry(entry: dict, required_fields):
         )
     )
 
-
 def csv_to_django(entry: dict):
-    required_fields = ['Full name:', 'Email address:', 'Phone number:']
+    required_fields = [NAME_FIELD, EMAIL_FIELD, PHONE_FIELD]
     for field in required_fields:
         if field not in entry or not entry[field]:
             logging.warning(
@@ -31,10 +36,10 @@ def csv_to_django(entry: dict):
     organizers = Group.objects.get(name='Organizers')
 
     try:
-        full_name = entry['Full name:'].split(' ')
+        full_name = entry[NAME_FIELD].split(' ')
         first_name = full_name[0]
         last_name = ' '.join(full_name[1:])
-        email = entry['Email address:']
+        email = entry[EMAIL_FIELD]
         user = User.objects.create(username=email, first_name=first_name, last_name=last_name, email=email)
 
         random_password = User.objects.make_random_password()
@@ -45,13 +50,13 @@ def csv_to_django(entry: dict):
 
         # Volunteer fields
         volunteer = Volunteer.objects.get(user=user)
-        volunteer.address_1 = entry['Full address (including any applicable apartment/unit/suite number):']
+        volunteer.address_1 = entry[ADDRESS_FIELD]
         # NOTE: Full address is included in address_1; parsing would probably require geocoding query.
         #       Likely better to stick with defaults in `address_2` and `postal_code` for now.
-        volunteer.phone_number = entry['Phone number:']
+        volunteer.phone_number = entry[PHONE_FIELD]
 
         # Role
-        role_selection = entry['Would you like to...? Check all that apply.'].lower()
+        role_selection = entry[ROLES_FIELD].lower()
         if role_selection:
             if 'cook/bake' in role_selection:
                 chefs.user_set.add(user)
