@@ -18,7 +18,7 @@
   <input type="hidden" name="next" value="{{ next }}">
   {% bootstrap_form form %}
   {% buttons submit="Login"%}
-    <a href="{% url 'password_reset' %}">Lost password?</a>
+    <a class="mx-2" href="{% url 'password_reset' %}">Forgot your password?</a>
   {% endbuttons %}
 </form>
 {% endblock %}
