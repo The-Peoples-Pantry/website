@@ -12,6 +12,7 @@ EMAIL_FIELD = 'Email address:'
 PHONE_FIELD = 'Phone number:'
 ADDRESS_FIELD = 'Full address (including any applicable apartment/unit/suite number):'
 ROLES_FIELD = 'Would you like to...? Check all that apply.'
+REQUIRED_FIELDS = [NAME_FIELD, EMAIL_FIELD, PHONE_FIELD]
 
 
 class Command(BaseCommand):
@@ -34,17 +35,16 @@ class Command(BaseCommand):
             for entry in reader:
                 self.csv_to_django(entry)
 
-    def friendly_entry(self, entry: dict, required_fields):
+    def friendly_entry(self, entry: dict):
         return ', '.join(
             map(
                 lambda field: entry[field],
-                required_fields
+                REQUIRED_FIELDS
             )
         )
 
     def csv_to_django(entry: dict):
-        required_fields = [NAME_FIELD, EMAIL_FIELD, PHONE_FIELD]
-        for field in required_fields:
+        for field in REQUIRED_FIELDS:
             if field not in entry or not entry[field]:
                 logging.warning(
                     f'Required entry `{field}` is missing or empty, skipping entry: {str(list(entry.values()))}'
