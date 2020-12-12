@@ -1,6 +1,6 @@
 from django import forms
 from django_filters import FilterSet, DateFilter
-from recipients.models import MealRequest, MealDelivery, GroceryRequest, GroceryDelivery
+from recipients.models import MealRequest, MealDelivery, GroceryDelivery
 
 
 class DateInput(forms.DateInput):

@@ -146,8 +146,8 @@ class DeliveryIndexView(LoginRequiredMixin, GroupView, ListView):
         return sorted(chain(meals, groceries), key=lambda instance: instance.date)
 
     def post(self, request):
-        if (request.POST['delivery_id']
-                and (request.POST['has_chef'] or request.POST['is_groceries'])):
+        if (request.POST['delivery_id'] and
+                (request.POST['has_chef'] or request.POST['is_groceries'])):
             if request.POST['has_chef']:
                 instance = MealDelivery.objects.get(uuid=request.POST['delivery_id'])
             else:
