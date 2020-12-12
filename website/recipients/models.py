@@ -295,7 +295,7 @@ class BaseDelivery(models.Model):
     dropoff_end = models.TimeField(null=True, blank=True)
 
     def clean(self, *args, **kwargs):
-        super(MealDelivery, self).clean(*args, **kwargs)
+        super(BaseDelivery, self).clean(*args, **kwargs)
         if self.pickup_end <= self.pickup_start:
             raise ValidationError("The pickup end time must be after the pickup start time")
         if self.dropoff_end <= self.dropoff_start:
@@ -305,7 +305,7 @@ class BaseDelivery(models.Model):
 
     def save(self, *args, **kwargs):
         self.full_clean()
-        return super(MealDelivery, self).save(*args, **kwargs)
+        return super(BaseDelivery, self).save(*args, **kwargs)
 
     # System
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
