@@ -1,4 +1,5 @@
 import csv
+import operator
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User, Group
 from django.db.utils import IntegrityError
@@ -33,17 +34,12 @@ class Command(BaseCommand):
         with open(csv_path) as csv_input:
             reader = csv.DictReader(csv_input)
             for entry in reader:
-                self.csv_to_django(entry)
+                self.create_user(entry)
 
-    def friendly_entry(self, entry: dict):
-        return ', '.join(
-            map(
-                lambda field: entry[field],
-                REQUIRED_FIELDS
-            )
-        )
+    def format_entry(self, entry: dict):
+        return ', '.join(operator.attrgetter(REQUIRED_FIELDS)())
 
-    def csv_to_django(entry: dict):
+    def create_user(self, entry: dict):
         for field in REQUIRED_FIELDS:
             if field not in entry or not entry[field]:
                 logging.warning(
@@ -86,13 +82,13 @@ class Command(BaseCommand):
                     organizers.user_set.add(user)
                 else:
                     logging.warning(
-                        f'Unknown role selection {role_selection} for entry: {self.friendly_entry(entry, required_fields)}'
+                        f'Unknown role selection {role_selection} for entry: {self.format_entry(entry)}'
                     )
 
             volunteer.save()
 
         except KeyError as e:
-            raise KeyError(f'Entry is missing a required field {str(e)}: {self.friendly_entry(entry, required_fields)}')
+            raise KeyError(f'Entry is missing a required field {str(e)}: {self.format_entry(entry)}')
 
         except IntegrityError as e:
-            logging.warning(f'SKIPPING ENTRY: {str(e)} for entry: {self.friendly_entry(entry, required_fields)}')
+            logging.warning(f'SKIPPING ENTRY: {str(e)} for entry: {self.format_entry(entry)}')
