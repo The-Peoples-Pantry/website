@@ -338,6 +338,50 @@ class GroceryDelivery(BaseDelivery):
         blank=True
     )
 
+    def send_recipient_delivery_notification(self):
+        """Send a follow-up notification to a recipient, lets them know that a delivery driver will drop if off within a certain time window"""
+        # Perform validation first that we _can_ send this notification
+        if not self.request.can_receive_texts:
+            raise SendNotificationException("Recipient cannot receive text messages at their phone number")
+
+        if not (self.dropoff_start and self.dropoff_end):
+            raise SendNotificationException("Delivery does not have a dropoff time range scheduled")
+
+        # Date is in the format "Weekday Month Year" eg. Sunday November 29
+        # Time is in the format "Hour:Minute AM/PM" eg. 09:30 PM
+        message = dedent(f"""
+            Hi {self.request.name},
+            This is a message from The People's Pantry.
+            Your grocery bundle delivery is scheduled for {self.date:%A %B %d} between {self.dropoff_start:%I:%M %p} and {self.dropoff_end:%I:%M %p}.
+            Since we depend on volunteers for our deliveries, sometimes we are not able to do all deliveries scheduled for the day. If that’s the case with your delivery, we will inform you by 6 PM on the day of the delivery and your delivery will be rescheduled for the following day.
+            Please confirm you got this message and let us know if you can take the delivery.
+            Thank you!
+        """)
+        send_text(self.request.phone_number, message)
+        self.comments.create(comment=f"Sent a text to recipient: {message}")
+        logger.info("Sent recipient delivery notification text for Meal Request %d to %s", self.request.id, self.request.phone_number)
+
+    def send_deliverer_reminder_notification(self):
+        """Send a reminder notification to the deliverer"""
+        if not self.deliverer:
+            raise SendNotificationException("No deliverer assigned to this delivery")
+
+        message = dedent(f"""
+            Hi {self.deliverer.volunteer.name},
+            This is a message from The People's Pantry.
+            Just reminding you of the upcoming grocery bundle you're delivering on {self.date:%A %B %d} between {self.dropoff_start:%I:%M %p} and {self.dropoff_end:%I:%M %p}.
+            Please confirm you got this message and let us know if you need any assistance.
+            Thank you!
+        """)
+        send_text(self.deliverer.volunteer.phone_number, message)
+        self.comments.create(comment=f"Sent a text to the deliverer: {message}")
+        logger.info("Sent deliverer reminder notification text for Grocery bundle %d to %s", self.request.id, self.deliverer.volunteer.phone_number)
+
+    def __str__(self):
+        return "[%s] Delivering %s to %s for %s" % (
+            self.status.capitalize(), self.request._meta.verbose_name.capitalize(), self.request.city, self.request.name,
+        )
+
 
 class MealDelivery(BaseDelivery):
     class Meta:

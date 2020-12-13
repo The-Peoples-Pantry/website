@@ -222,7 +222,7 @@ class BaseDeliveryAdmin(admin.ModelAdmin):
             )
     mark_as_delivered.short_description = "Mark deliveries as delivered"
 
-    def __send_notifications(self, request, queryset, method_name):
+    def send_notifications(self, request, queryset, method_name):
         """
         Helper utility for invoking notification sending methods
 
@@ -301,15 +301,15 @@ class MealDeliveryAdmin(BaseDeliveryAdmin):
     )
 
     def notify_recipients_delivery(self, request, queryset):
-        self.__send_notifications(request, queryset, 'send_recipient_delivery_notification')
+        self.send_notifications(request, queryset, 'send_recipient_delivery_notification')
     notify_recipients_delivery.short_description = "Send text message notification to recipients about delivery window"
 
     def notify_chefs_reminder(self, request, queryset):
-        self.__send_notifications(request, queryset, 'send_chef_reminder_notification')
+        self.send_notifications(request, queryset, 'send_chef_reminder_notification')
     notify_chefs_reminder.short_description = "Send text message notification to chefs reminding them about the request"
 
     def notify_deliverers_reminder(self, request, queryset):
-        self.__send_notifications(request, queryset, 'send_deliverer_reminder_notification')
+        self.send_notifications(request, queryset, 'send_deliverer_reminder_notification')
     notify_deliverers_reminder.short_description = "Send text message notification to deliverers reminding them about the request"
 
 
@@ -361,11 +361,11 @@ class GroceryDeliveryAdmin(BaseDeliveryAdmin):
         return actions
 
     def notify_recipients_delivery(self, request, queryset):
-        self.__send_notifications(request, queryset, 'send_recipient_delivery_notification')
+        self.send_notifications(request, queryset, 'send_recipient_delivery_notification')
     notify_recipients_delivery.short_description = "Send text message notification to recipients about delivery window"
 
     def notify_deliverers_reminder(self, request, queryset):
-        self.__send_notifications(request, queryset, 'send_deliverer_reminder_notification')
+        self.send_notifications(request, queryset, 'send_deliverer_reminder_notification')
     notify_deliverers_reminder.short_description = "Send text message notification to deliverers reminding them about the request"
 
 
