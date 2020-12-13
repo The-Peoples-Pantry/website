@@ -1,6 +1,7 @@
 from itertools import chain
 import logging
-import datetime
+from datetime import timedelta, date
+from django.conf import settings
 from django.forms import ValidationError
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -24,12 +25,6 @@ logger = logging.getLogger(__name__)
 
 def delivery_success(request):
     return render(request, 'volunteers/delivery_success.html')
-
-
-def validate_delivery_window(date, form, window):
-    start = datetime.datetime.combine(date, form.cleaned_data['dropoff_start'])
-    end = datetime.datetime.combine(date, form.cleaned_data['dropoff_end'])
-    return (start + datetime.timedelta(hours=window)) >= end
 
 
 class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
@@ -77,10 +72,6 @@ class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
                 self.request,
                 'Sorry, we were unable to register you for that request, someone else may have already claimed it.'
             )
-            return self.form_invalid(form)
-
-        if (not validate_delivery_window(form.cleaned_data['delivery_date'], form, 2)):
-            messages.error(self.request, "Please provide a maximum two hour delivery window")
             return self.form_invalid(form)
 
         try:
@@ -167,7 +158,7 @@ class GroceryDeliverySignupView(LoginRequiredMixin, GroupView, FormView, FilterV
             return self.form_invalid(form)
 
         try:
-            # If the meal request is still available setup the delivery
+            # If the grocery request is still available setup the delivery
             self.update_delivery(form, grocery_request)
         except ValidationError as error:
             messages.error(self.request, error.messages[0])
@@ -185,10 +176,10 @@ class GroceryDeliverySignupView(LoginRequiredMixin, GroupView, FormView, FilterV
     def update_delivery(self, form, grocery_request):
         start_time = form.cleaned_data['availability']
         grocery_request.status = Status.DRIVER_ASSIGNED
-        grocery_request.pickup_start = start_time - datetime.timedelta(hours=1)
+        grocery_request.pickup_start = start_time - timedelta(hours=1)
         grocery_request.pickup_end = start_time
         grocery_request.dropoff_start = start_time
-        grocery_request.dropoff_end = start_time + datetime.timedelta(hours=3)
+        grocery_request.dropoff_end = start_time + timedelta(hours=3)
         grocery_request.deliverer = self.request.user
         grocery_request.date = start_time.date()
         grocery_request.save()
@@ -240,11 +231,12 @@ class MealDeliverySignupView(LoginRequiredMixin, GroupView, FormView, FilterView
                            "'Sorry, we were unable to sign you for that delivery, someone else may have already claimed it.'")
             return self.form_invalid(form)
 
-        if (not validate_delivery_window(delivery.date, form, 2)):
-            messages.error(self.request, "Please provide a maximum two hour delivery window")
-            return self.form_invalid(form)
-
-        self.update_delivery(form, delivery)
+        try:
+            # If the meal request is still available setup the delivery
+            self.update_delivery(form, delivery)
+        except ValidationError as error:
+            messages.error(self.request, error.messages[0])
+            return redirect(self.success_url)
 
         messages.success(self.request, 'Successfully signed up!')
         return super().form_valid(form)
@@ -305,9 +297,14 @@ class DeliveryIndexView(LoginRequiredMixin, GroupView, ListView):
             else:
                 instance = GroceryDelivery.objects.get(uuid=request.POST['delivery_id'])
 
-            if instance.date <= datetime.datetime.now().date():
+            if instance.date <= date.today():
                 instance.status = Status.DELIVERED
                 instance.save()
+                messages.success(
+                    self.request,
+                    'Marked delivery ID #%d to %s as complete! If this was a mistake please email us at %s as soon as possible.' %
+                    (instance.pk, instance.request.address_1, settings.VOLUNTEER_COORDINATORS_EMAIL)
+                )
             else:
                 messages.error(
                     self.request,
