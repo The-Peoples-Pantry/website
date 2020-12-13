@@ -182,12 +182,9 @@ class GroceryRequestAdmin(admin.ModelAdmin):
         'email',
         'phone_number',
         'city',
-        'vegetables',
-        'fruits',
-        'protein',
-        'grains',
-        'condiments',
-        'dairy',
+        'status',
+        'delivery_date',
+        'pickup_address',
         'created_at',
     )
     list_filter = (
@@ -197,6 +194,51 @@ class GroceryRequestAdmin(admin.ModelAdmin):
         GroceryRequestCommentInline,
         GroceryDeliveryInline
     )
+
+    def delivery_date(self, obj):
+        return obj.delivery.date
+    delivery_date.admin_order_field = 'delivery__date'
+
+    def status(self, obj):
+        return obj.delivery.status
+    status.admin_order_field = 'delivery__status'
+
+    def pickup_address(self, obj):
+        return obj.delivery.pickup_address
+    status.admin_order_field = 'delivery__pickup_address'
+
+    def assign_address_action(self, address):
+        def assign_to_address(modeladmin, request, queryset):
+            for delivery_request in queryset:
+                try:
+                    delivery = delivery_request.delivery
+                    delivery.pickup_address = address
+                    delivery.save()
+                except Exception:
+                    delivery = GroceryDelivery.objects.create(
+                        request=delivery_request,
+                        pickup_address=address
+                    )
+
+            self.message_user(request, ngettext(
+                "%s has been set as the pickup address for %d delivery",
+                "%s has been set as the pickup address for %d deliveries",
+                len(queryset)
+            ) % (str(address), len(queryset)), messages.SUCCESS)
+        name = "assign_to_address_%d" % address.pk
+        desc = "Set pickup location to: %s" % str(address)
+        return (name, (assign_to_address, name, desc))
+
+    def get_actions(self, request):
+        actions = {}
+
+        # Dynamically create an action for every pickup address available
+        for address in GroceryPickupAddress.objects.all():
+            name, action = self.assign_address_action(address)
+            actions[name] = action
+
+        actions.update(super(GroceryRequestAdmin, self).get_actions(request))
+        return actions
 
 
 class BaseDeliveryAdmin(admin.ModelAdmin):
