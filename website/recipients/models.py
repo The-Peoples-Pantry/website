@@ -208,9 +208,9 @@ class MealRequest(HelpRequest):
         return active_requests >= settings.PAUSE_MEALS
 
     @classmethod
-    def has_open_request(cls, email: str):
+    def has_open_request(cls, phone: str):
         """Does the user with the given email already have open requests?"""
-        return cls.objects.filter(email=email).exclude(delivery__status=Status.DELIVERED).exists()
+        return cls.objects.filter(phone_number=phone).exclude(delivery__status=Status.DELIVERED).exists()
 
 
 class GroceryRequest(HelpRequest):

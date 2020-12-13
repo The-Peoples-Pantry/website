@@ -37,8 +37,10 @@ class MealRequestView(HelpRequestView):
         return super().get(request)
 
     def get_duplicate(self, form):
-        email = form.cleaned_data['email']
-        return MealRequest.has_open_request(email)
+        if form.cleaned_data['on_behalf_of'] is False:
+            phone = form.cleaned_data['phone_number']
+            return MealRequest.has_open_request(phone)
+        return False
 
     def form_valid(self, form):
         if self.get_duplicate(form):
