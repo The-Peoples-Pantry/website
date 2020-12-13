@@ -1,5 +1,6 @@
 import logging
 from textwrap import dedent
+from datetime import datetime, timedelta
 import uuid
 from django.core.mail import send_mail
 from django.db import models
@@ -404,6 +405,15 @@ class MealDelivery(BaseDelivery):
         null=True,
         blank=True,
     )
+
+    def clean(self, *args, **kwargs):
+        super(MealDelivery, self).clean(*args, **kwargs)
+        if self.dropoff_start and self.dropoff_end and self.date:
+            start = datetime.combine(self.date, self.dropoff_start)
+            end = datetime.combine(self.date, self.dropoff_end)
+            if (start + timedelta(hours=2)) < end:
+                raise ValidationError("The delivery window must be two hours or less.")
+
 
     def send_recipient_meal_notification(self):
         """Send the first notification to a recipient, lets them know that a chef has signed up to cook for them"""
