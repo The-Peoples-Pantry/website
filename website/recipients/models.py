@@ -161,7 +161,7 @@ class HelpRequest(ContactInfo):
             dedent(f"""
                 Hi {self.name},
                 Just confirming that we received your request for The People's Pantry.
-                Your request ID is {self.uuid}
+                Your request ID is {self.id}
             """),
             None,  # From email (by setting None, it will use DEFAULT_FROM_EMAIL)
             [self.email]
