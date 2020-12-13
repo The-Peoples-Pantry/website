@@ -42,6 +42,7 @@ body {
     ),
     url("./splash.jpg") center bottom;
   background-size: cover;
+  background-position: center;
   height: 350px;
 }
 
