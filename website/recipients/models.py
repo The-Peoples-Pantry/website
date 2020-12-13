@@ -414,7 +414,6 @@ class MealDelivery(BaseDelivery):
             if (start + timedelta(hours=2)) < end and self.status is not Status.DELIVERED:
                 raise ValidationError("The delivery window must be two hours or less.")
 
-
     def send_recipient_meal_notification(self):
         """Send the first notification to a recipient, lets them know that a chef has signed up to cook for them"""
         if not self.request.can_receive_texts:
