@@ -3,6 +3,7 @@ import uuid
 from django.contrib import admin, messages
 from django import forms
 from django.utils.html import format_html, format_html_join
+from core.models import GroceryPickupAddress
 from .models import (
     MealRequest,
     MealRequestComment,
@@ -198,44 +199,7 @@ class GroceryRequestAdmin(admin.ModelAdmin):
     )
 
 
-class MealDeliveryAdmin(admin.ModelAdmin):
-    list_display = (
-        'id',
-        'request',
-        'status',
-        'chef',
-        'deliverer',
-        'date',
-        'pickup_start',
-        'pickup_end',
-        'dropoff_start',
-        'dropoff_end',
-    )
-    list_filter = (
-        'status',
-    )
-    actions = (
-        'notify_recipients_delivery',
-        'notify_chefs_reminder',
-        'notify_deliverers_reminder',
-        'mark_as_delivered'
-    )
-    inlines = (
-        MealDeliveryCommentInline,
-    )
-
-    def notify_recipients_delivery(self, request, queryset):
-        self.__send_notifications(request, queryset, 'send_recipient_delivery_notification')
-    notify_recipients_delivery.short_description = "Send text message notification to recipients about delivery window"
-
-    def notify_chefs_reminder(self, request, queryset):
-        self.__send_notifications(request, queryset, 'send_chef_reminder_notification')
-    notify_chefs_reminder.short_description = "Send text message notification to chefs reminding them about the request"
-
-    def notify_deliverers_reminder(self, request, queryset):
-        self.__send_notifications(request, queryset, 'send_deliverer_reminder_notification')
-    notify_deliverers_reminder.short_description = "Send text message notification to deliverers reminding them about the request"
-
+class BaseDeliveryAdmin(admin.ModelAdmin):
     def mark_as_delivered(self, request, queryset):
         queryset = queryset.exclude(status=Status.DELIVERED)
 
@@ -310,20 +274,99 @@ class MealDeliveryAdmin(admin.ModelAdmin):
             self.message_user(request, format_html("<p>{}</p>{}", prefix_message, error_messages), messages.ERROR)
 
 
-class GroceryDeliveryAdmin(admin.ModelAdmin):
+class MealDeliveryAdmin(BaseDeliveryAdmin):
     list_display = (
         'id',
         'request',
         'status',
+        'chef',
+        'deliverer',
+        'date',
+        'pickup_start',
+        'pickup_end',
+        'dropoff_start',
+        'dropoff_end',
+    )
+    list_filter = (
+        'status',
+    )
+    actions = (
+        'notify_recipients_delivery',
+        'notify_chefs_reminder',
+        'notify_deliverers_reminder',
+        'mark_as_delivered'
+    )
+    inlines = (
+        MealDeliveryCommentInline,
+    )
+
+    def notify_recipients_delivery(self, request, queryset):
+        self.__send_notifications(request, queryset, 'send_recipient_delivery_notification')
+    notify_recipients_delivery.short_description = "Send text message notification to recipients about delivery window"
+
+    def notify_chefs_reminder(self, request, queryset):
+        self.__send_notifications(request, queryset, 'send_chef_reminder_notification')
+    notify_chefs_reminder.short_description = "Send text message notification to chefs reminding them about the request"
+
+    def notify_deliverers_reminder(self, request, queryset):
+        self.__send_notifications(request, queryset, 'send_deliverer_reminder_notification')
+    notify_deliverers_reminder.short_description = "Send text message notification to deliverers reminding them about the request"
+
+
+class GroceryDeliveryAdmin(BaseDeliveryAdmin):
+    list_display = (
+        'id',
+        'request',
+        'status',
+        'pickup_address',
         'deliverer',
         'date',
     )
     list_filter = (
         'status',
     )
+    actions = (
+        'mark_as_delivered',
+        'notify_recipients_delivery',
+        'notify_deliverers_reminder'
+    )
     inlines = (
         GroceryDeliveryCommentInline,
     )
+
+    def assign_address_action(self, address):
+        def assign_to_address(modeladmin, request, queryset):
+            for delivery in queryset:
+                delivery.pickup_address = address
+                delivery.save()
+
+            self.message_user(request, ngettext(
+                "%s has been set as the pickup address for %d delivery",
+                "%s has been set as the pickup address for %d deliveries",
+                len(queryset)
+            ) % (str(address), len(queryset)), messages.SUCCESS)
+        name = "assign_to_address_%d" % address.pk
+        desc = "Set pickup location to: %s" % str(address)
+        return (name, (assign_to_address, name, desc))
+
+    def get_actions(self, request):
+        actions = {}
+
+        # Dynamically create an action for every pickup address available
+        for address in GroceryPickupAddress.objects.all():
+            name, action = self.assign_address_action(address)
+            actions[name] = action
+
+        actions.update(super(GroceryDeliveryAdmin, self).get_actions(request))
+        return actions
+
+    def notify_recipients_delivery(self, request, queryset):
+        self.__send_notifications(request, queryset, 'send_recipient_delivery_notification')
+    notify_recipients_delivery.short_description = "Send text message notification to recipients about delivery window"
+
+    def notify_deliverers_reminder(self, request, queryset):
+        self.__send_notifications(request, queryset, 'send_deliverer_reminder_notification')
+    notify_deliverers_reminder.short_description = "Send text message notification to deliverers reminding them about the request"
 
 
 admin.site.register(GroceryRequest, GroceryRequestAdmin)
