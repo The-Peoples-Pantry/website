@@ -11,29 +11,35 @@
   {% for delivery in deliveries %}
     <div class="card mb-4">
       <div class="card-header font-weight-bold">
-        {{ delivery.date }}: Delivering meal for
+        {{ delivery.date }}: Delivering {% if delivery.chef %}meals{% else %}groceries{% endif %} for
         {{ delivery.request.num_adults }} adult{{ delivery.request.num_adults | pluralize }}
         and {{ delivery.request.num_children }} kid{{ delivery.request.num_children | pluralize }}
         <form action="" method="post" onsubmit="return window.confirm('Are you sure you want to mark this delivery as complete? You cannot undo this!')" class="form float-right">
           {% csrf_token %}
           <input type="hidden" name="delivery_id" value="{{ delivery.uuid }}" />
+          <input type="hidden" name="has_chef" value="{{ delivery.chef }}" />
+          <input type="hidden" name="is_groceries" value="{{ delivery.pickup_address }}" />
           {% bootstrap_button 'Mark as delivered' button_class='btn-warning' %}</form>
       </div>
       <div class="card-body">
         <div class="row">
           <div class="col">
             <h6>Pickup information</h6>
-
             <ul>
               <li>Pick up from {{ delivery.pickup_start }} to {{ delivery.pickup_end }}</li>
-              <li>Contact {{ delivery.chef.volunteer.name }} at {{ delivery.chef.volunteer.phone_number }}</li>
-              <li>Address: <a href="{{ delivery.chef.address_link }}" target="_blank" rel="noopener nofollow">{{ delivery.chef.volunteer.address }}</a></li>
+              {% if delivery.chef %}
+                <li>Contact {{ delivery.chef.volunteer.name }} at {{ delivery.chef.volunteer.phone_number }}</li>
+                <li>Address: <a href="{{ delivery.chef.address_link }}" target="_blank" rel="noopener nofollow">{{ delivery.chef.volunteer.address }}</a></li>
+              {% elif delivery.pickup_address %}
+                <li>Contact {{ delivery.pickup_address.name }} at {{ delivery.pickup_address.phone_number }}</li>
+                <li>Address: <a href="{{ delivery.pickup_address.address_link }}" target="_blank" rel="noopener nofollow">{{ delivery.pickup_address.address }}</a></li>
+              {% endif %}
             </ul>
           </div>
           <div class="col">
             <h6>Dropoff information</h6>
             <ul>
-              <li>Drop off from {{ delivery.dropoff_start }} to {{ delivery.dropff_end }}</li>
+              <li>Drop off from {{ delivery.dropoff_start }} to {{ delivery.dropoff_end }}</li>
               <li>Contact {{ delivery.request.name }} at {{ delivery.request.phone_number }}</li>
               <li>Address: <a href="{{ delivery.request.address_link }}" target="_blank" rel="noopener nofollow">{{ delivery.request.address }}</a></li>
             </ul>
@@ -44,7 +50,7 @@
     </div>
 
   {% empty %}
-    <div class="alert alert-info">You haven't signed up for any deliveries! <a href={% url 'volunteers:delivery_signup' %}>Click here</a> to see the list of requests that current need to be delivered.</div>
+    <div class="alert alert-info">You haven't signed up for any deliveries! <a href={% url 'volunteers:delivery_signup_meals' %}>Click here</a> to see the list of requests that current need to be delivered.</div>
   {% endfor %}
   </div>
 </div>

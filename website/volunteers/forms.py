@@ -1,9 +1,13 @@
+import logging
 from ast import literal_eval
 from textwrap import dedent
 import datetime
 from django import forms
-from recipients.models import MealDelivery
+from recipients.models import MealDelivery, GroceryDelivery
 from .models import Volunteer, CookingTypes, FoodTypes, TransportationTypes, DaysOfWeek
+
+
+logger = logging.getLogger(__name__)
 
 
 def future_date(**kwargs):
@@ -40,6 +44,19 @@ def next_day(date):
     return date + datetime.timedelta(1)
 
 
+def get_start_time_display(start_time_str):
+    display_str = start_time_str
+    start_time = start_time_str
+    try:
+        start_time = datetime.datetime.strptime(start_time_str, '%Y-%m-%d %H:%M:%S')
+        end_time = start_time + datetime.timedelta(hours=3)
+        display_str = start_time.strftime('%B %d, %Y %-I%p') + ' - ' + end_time.strftime('%-I%p')
+    except Exception:
+        logger.exception("Error when converting %s to date", start_time_str)
+
+    return (start_time, display_str)
+
+
 def next_weekend(**kwargs):
     # always leave two days of buffer time
     buffer_date = datetime.date.today() + datetime.timedelta(2)
@@ -49,7 +66,7 @@ def next_weekend(**kwargs):
     return [(next_friday, next_friday), (next_sat, next_sat), (next_sun, next_sun)]
 
 
-class DeliveryDateInput(forms.Select):
+class MealDeliveryDateInput(forms.Select):
     def __init__(self):
         super().__init__(
             choices=next_weekend()
@@ -149,7 +166,7 @@ class DeliveryApplyForm(VolunteerApplicationForm):
 
 class ChefSignupForm(forms.Form):
     id = forms.IntegerField()
-    delivery_date = forms.DateField(widget=DeliveryDateInput)
+    delivery_date = forms.DateField(widget=MealDeliveryDateInput)
     pickup_start = TimeField(initial='12:00')
     pickup_end = TimeField(initial='17:00')
     dropoff_start = TimeField(initial='18:00', required=False)
@@ -164,6 +181,25 @@ class ChefSignupForm(forms.Form):
             cleaned_data.pop('dropoff_start')
             cleaned_data.pop('dropoff_end')
         return cleaned_data
+
+
+class GroceryDeliverySignupForm(forms.ModelForm):
+    id = forms.IntegerField()
+    availability = forms.DateTimeField(widget=forms.RadioSelect, label='Dropoff timerange')
+
+    def __init__(self, *args, **kwargs):
+        super(GroceryDeliverySignupForm, self).__init__(*args, **kwargs)
+        initial = kwargs.pop('initial')
+        if 'id' in initial:
+            request = GroceryDelivery.objects.get(id=initial['id']).request
+            self.fields['availability'].widget.choices = [
+                get_start_time_display(start_time)
+                for start_time in literal_eval(getattr(request, 'availability'))
+            ]
+
+    class Meta:
+        model = GroceryDelivery
+        fields = ['id', 'availability']
 
 
 class MealDeliverySignupForm(forms.ModelForm):
