@@ -102,7 +102,7 @@ class HelpRequest(ContactInfo):
     # Information about the delivery
     can_meet_for_delivery = models.BooleanField(
         "Able to meet delivery driver",
-        help_text="We care about safety. Thus, we try to avoid delivery volunteers going into buildings or houses. Would you / the person requiring support be able to meet the delivery person in the lobby or door of the residence, while wearing protective equipment such as masks?",
+        help_text="Please confirm that you / the person requiring support will be able to meet the delivery person in the lobby or door of the residence, while wearing protective equipment such as masks?",
     )
     delivery_details = models.TextField(
         "Delivery details",
@@ -208,9 +208,9 @@ class MealRequest(HelpRequest):
         return active_requests >= settings.PAUSE_MEALS
 
     @classmethod
-    def has_open_request(cls, email: str):
+    def has_open_request(cls, phone: str):
         """Does the user with the given email already have open requests?"""
-        return cls.objects.filter(email=email).exclude(delivery__status=Status.DELIVERED).exists()
+        return cls.objects.filter(phone_number=phone).exclude(delivery__status=Status.DELIVERED).exists()
 
 
 class GroceryRequest(HelpRequest):

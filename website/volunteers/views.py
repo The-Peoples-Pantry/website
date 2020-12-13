@@ -26,6 +26,12 @@ def delivery_success(request):
     return render(request, 'volunteers/delivery_success.html')
 
 
+def validate_delivery_window(date, form, window):
+    start = datetime.datetime.combine(date, form.cleaned_data['dropoff_start'])
+    end = datetime.datetime.combine(date, form.cleaned_data['dropoff_end'])
+    return (start + datetime.timedelta(hours=window)) >= end
+
+
 class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
     """View for chefs to sign up to cook meal requests"""
     template_name = "volunteers/chef_signup.html"
@@ -60,10 +66,6 @@ class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
         return context
 
     def form_invalid(self, form):
-        messages.error(
-            self.request,
-            'Sorry, we were unable to register you for that request, someone else may have already claimed it.'
-        )
         return redirect(self.success_url)
 
     def form_valid(self, form):
@@ -71,6 +73,14 @@ class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
         # It's possible that someone else has signed up for it, so handle that
         meal_request = self.get_meal_request(form)
         if meal_request is None:
+            messages.error(
+                self.request,
+                'Sorry, we were unable to register you for that request, someone else may have already claimed it.'
+            )
+            return self.form_invalid(form)
+
+        if (not validate_delivery_window(form.cleaned_data['delivery_date'], form, 2)):
+            messages.error(self.request, "Please provide a maximum two hour delivery window")
             return self.form_invalid(form)
 
         try:
@@ -118,58 +128,6 @@ class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
             logger.warn("Skipped sending meal notification for Meal Request %d to %s", meal_request.id, meal_request.phone_number)
 
 
-class ChefIndexView(LoginRequiredMixin, GroupView, ListView):
-    """View for chefs to see the meals they've signed up to cook"""
-    model = MealDelivery
-    context_object_name = "deliveries"
-    queryset = MealDelivery.objects.exclude(status=Status.DELIVERED).order_by('date')
-    template_name = "volunteers/chef_list.html"
-    permission_group = 'Chefs'
-    permission_group_redirect_url = reverse_lazy('volunteers:chef_application')
-
-    def get_queryset(self):
-        return self.queryset.filter(chef=self.request.user)
-
-
-class DeliveryIndexView(LoginRequiredMixin, GroupView, ListView):
-    """View for deliverers to see the meal requests they've signed up to deliver"""
-    # model = MealDelivery
-    template_name = "volunteers/delivery_list.html"
-    permission_group = 'Deliverers'
-    permission_group_redirect_url = reverse_lazy('volunteers:delivery_application')
-    context_object_name = "deliveries"
-
-    def get_queryset(self):
-        meals = MealDelivery.objects.exclude(status=Status.DELIVERED).filter(deliverer=self.request.user)
-        groceries = GroceryDelivery.objects.exclude(status=Status.DELIVERED).filter(deliverer=self.request.user)
-
-        return sorted(chain(meals, groceries), key=lambda instance: instance.date)
-
-    def post(self, request):
-        if (request.POST['delivery_id'] and (
-                request.POST['has_chef'] or request.POST['is_groceries'])):
-            if request.POST['has_chef']:
-                instance = MealDelivery.objects.get(uuid=request.POST['delivery_id'])
-            else:
-                instance = GroceryDelivery.objects.get(uuid=request.POST['delivery_id'])
-
-            if instance.date <= datetime.datetime.now().date():
-                instance.status = Status.DELIVERED
-                instance.save()
-            else:
-                messages.error(
-                    self.request,
-                    'You can only mark deliveries complete after the assigned delivery date.'
-                )
-        else:
-            messages.error(
-                self.request,
-                'Something went wrong, sorry about that!'
-            )
-
-        return redirect(self.request.get_full_path())
-
-
 class GroceryDeliverySignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
     """View for deliverers to sign up to deliver meal requests"""
     template_name = "volunteers/delivery_signup_groceries.html"
@@ -194,17 +152,18 @@ class GroceryDeliverySignupView(LoginRequiredMixin, GroupView, FormView, FilterV
         return context
 
     def form_invalid(self, form):
-        messages.error(
-            self.request,
-            'Sorry, we were unable to register you for that request, someone else may have already claimed it.'
-        )
         return redirect(self.success_url)
 
     def form_valid(self, form):
         # First fetch the associated meal request
         # It's possible that someone else has signed up for it, so handle that
         grocery_request = self.get_grocery_request(form)
+
         if grocery_request is None:
+            messages.error(
+                self.request,
+                'Sorry, we were unable to register you for that request, someone else may have already claimed it.'
+            )
             return self.form_invalid(form)
 
         try:
@@ -267,12 +226,8 @@ class MealDeliverySignupView(LoginRequiredMixin, GroupView, FormView, FilterView
         return context
 
     def form_invalid(self, form):
-        message = 'Sorry, we were unable to sign you for that delivery, someone else may have already claimed it.'
-
         if form.non_field_errors():
-            message = form.non_field_errors()
-
-        messages.error(self.request, message)
+            messages.error(self.request, form.non_field_errors())
         return redirect(self.success_url)
 
     def form_valid(self, form):
@@ -281,6 +236,12 @@ class MealDeliverySignupView(LoginRequiredMixin, GroupView, FormView, FilterView
 
         # It's possible that someone else has signed up for it, so handle that
         if delivery is None:
+            messages.error(self.request,
+                           "'Sorry, we were unable to sign you for that delivery, someone else may have already claimed it.'")
+            return self.form_invalid(form)
+
+        if (not validate_delivery_window(delivery.date, form, 2)):
+            messages.error(self.request, "Please provide a maximum two hour delivery window")
             return self.form_invalid(form)
 
         self.update_delivery(form, delivery)
@@ -301,6 +262,71 @@ class MealDeliverySignupView(LoginRequiredMixin, GroupView, FormView, FilterView
         delivery.status = Status.DRIVER_ASSIGNED
         delivery.save()
 
+
+####################################################################
+#                                                                  #
+#                          Task list views                         #
+#                                                                  #
+####################################################################
+
+
+class ChefIndexView(LoginRequiredMixin, GroupView, ListView):
+    """View for chefs to see the meals they've signed up to cook"""
+    model = MealDelivery
+    context_object_name = "deliveries"
+    queryset = MealDelivery.objects.exclude(status=Status.DELIVERED).order_by('date')
+    template_name = "volunteers/chef_list.html"
+    permission_group = 'Chefs'
+    permission_group_redirect_url = reverse_lazy('volunteers:chef_application')
+
+    def get_queryset(self):
+        return self.queryset.filter(chef=self.request.user)
+
+
+class DeliveryIndexView(LoginRequiredMixin, GroupView, ListView):
+    """View for deliverers to see the meal requests they've signed up to deliver"""
+    # model = MealDelivery
+    template_name = "volunteers/delivery_list.html"
+    permission_group = 'Deliverers'
+    permission_group_redirect_url = reverse_lazy('volunteers:delivery_application')
+    context_object_name = "deliveries"
+
+    def get_queryset(self):
+        meals = MealDelivery.objects.exclude(status=Status.DELIVERED).filter(deliverer=self.request.user)
+        groceries = GroceryDelivery.objects.exclude(status=Status.DELIVERED).filter(deliverer=self.request.user)
+
+        return sorted(chain(meals, groceries), key=lambda instance: instance.date)
+
+    def post(self, request):
+        if (request.POST['delivery_id'] and (
+                request.POST['has_chef'] or request.POST['is_groceries'])):
+            if request.POST['has_chef']:
+                instance = MealDelivery.objects.get(uuid=request.POST['delivery_id'])
+            else:
+                instance = GroceryDelivery.objects.get(uuid=request.POST['delivery_id'])
+
+            if instance.date <= datetime.datetime.now().date():
+                instance.status = Status.DELIVERED
+                instance.save()
+            else:
+                messages.error(
+                    self.request,
+                    'You can only mark deliveries complete after the assigned delivery date.'
+                )
+        else:
+            messages.error(
+                self.request,
+                'Something went wrong, sorry about that!'
+            )
+
+        return redirect(self.request.get_full_path())
+
+
+####################################################################
+#                                                                  #
+#                Volunteer application views                       #
+#                                                                  #
+####################################################################
 
 class DeliveryApplicationView(LoginRequiredMixin, FormView, UpdateView):
     form_class = DeliveryApplyForm
