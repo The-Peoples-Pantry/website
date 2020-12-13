@@ -298,6 +298,11 @@ class DeliveryIndexView(LoginRequiredMixin, GroupView, ListView):
             if instance.date <= date.today():
                 instance.status = Status.DELIVERED
                 instance.save()
+                messages.success(
+                    self.request,
+                    'Marked delivery ID #%d to %s as complete! If this was a mistake please email us at %s as soon as possible.' %
+                    (instance.pk, instance.request.address_1, settings.VOLUNTEER_COORDINATORS_EMAIL)
+                )
             else:
                 messages.error(
                     self.request,

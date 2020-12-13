@@ -411,7 +411,7 @@ class MealDelivery(BaseDelivery):
         if self.dropoff_start and self.dropoff_end and self.date:
             start = datetime.combine(self.date, self.dropoff_start)
             end = datetime.combine(self.date, self.dropoff_end)
-            if (start + timedelta(hours=2)) < end:
+            if (start + timedelta(hours=2)) < end and self.status is not Status.DELIVERED:
                 raise ValidationError("The delivery window must be two hours or less.")
 
 
