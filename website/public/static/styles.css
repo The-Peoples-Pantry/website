@@ -27,6 +27,10 @@ body {
   content: "\25BC";
 }
 
+.navbar-light .navbar-nav .nav-link {
+  color: rgba(0,0,0,0.8);
+}
+
 /* -----------------------------------
       HOME PAGES
 ------------------------------------ */
