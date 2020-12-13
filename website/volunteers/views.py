@@ -1,6 +1,7 @@
 from itertools import chain
 import logging
-from datetime import timedelta
+from datetime import timedelta, date
+from django.conf import settings
 from django.forms import ValidationError
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
