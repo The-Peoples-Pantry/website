@@ -26,6 +26,12 @@ def delivery_success(request):
     return render(request, 'volunteers/delivery_success.html')
 
 
+def validate_delivery_window(date, form, window):
+    start = datetime.datetime.combine(date, form.cleaned_data['dropoff_start'])
+    end = datetime.datetime.combine(date, form.cleaned_data['dropoff_end'])
+    return (start + datetime.timedelta(hours=window)) >= end
+
+
 class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
     """View for chefs to sign up to cook meal requests"""
     template_name = "volunteers/chef_signup.html"
@@ -60,10 +66,6 @@ class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
         return context
 
     def form_invalid(self, form):
-        messages.error(
-            self.request,
-            'Sorry, we were unable to register you for that request, someone else may have already claimed it.'
-        )
         return redirect(self.success_url)
 
     def form_valid(self, form):
@@ -71,6 +73,14 @@ class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
         # It's possible that someone else has signed up for it, so handle that
         meal_request = self.get_meal_request(form)
         if meal_request is None:
+            messages.error(
+                self.request,
+                'Sorry, we were unable to register you for that request, someone else may have already claimed it.'
+            )
+            return self.form_invalid(form)
+
+        if (not validate_delivery_window(form.cleaned_data['delivery_date'], form, 2)):
+            messages.error(self.request, "Please provide a maximum two hour delivery window")
             return self.form_invalid(form)
 
         try:
@@ -194,17 +204,18 @@ class GroceryDeliverySignupView(LoginRequiredMixin, GroupView, FormView, FilterV
         return context
 
     def form_invalid(self, form):
-        messages.error(
-            self.request,
-            'Sorry, we were unable to register you for that request, someone else may have already claimed it.'
-        )
         return redirect(self.success_url)
 
     def form_valid(self, form):
         # First fetch the associated meal request
         # It's possible that someone else has signed up for it, so handle that
         grocery_request = self.get_grocery_request(form)
+
         if grocery_request is None:
+            messages.error(
+                self.request,
+                'Sorry, we were unable to register you for that request, someone else may have already claimed it.'
+            )
             return self.form_invalid(form)
 
         try:
@@ -267,12 +278,8 @@ class MealDeliverySignupView(LoginRequiredMixin, GroupView, FormView, FilterView
         return context
 
     def form_invalid(self, form):
-        message = 'Sorry, we were unable to sign you for that delivery, someone else may have already claimed it.'
-
         if form.non_field_errors():
-            message = form.non_field_errors()
-
-        messages.error(self.request, message)
+            messages.error(self.request, form.non_field_errors())
         return redirect(self.success_url)
 
     def form_valid(self, form):
@@ -281,6 +288,12 @@ class MealDeliverySignupView(LoginRequiredMixin, GroupView, FormView, FilterView
 
         # It's possible that someone else has signed up for it, so handle that
         if delivery is None:
+            messages.error(self.request,
+                           "'Sorry, we were unable to sign you for that delivery, someone else may have already claimed it.'")
+            return self.form_invalid(form)
+
+        if (not validate_delivery_window(delivery.date, form, 2)):
+            messages.error(self.request, "Please provide a maximum two hour delivery window")
             return self.form_invalid(form)
 
         self.update_delivery(form, delivery)

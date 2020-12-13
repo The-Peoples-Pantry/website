@@ -170,7 +170,7 @@ class ChefSignupForm(forms.Form):
     pickup_start = TimeField(initial='12:00')
     pickup_end = TimeField(initial='17:00')
     dropoff_start = TimeField(initial='18:00', required=False)
-    dropoff_end = TimeField(initial='21:00', required=False)
+    dropoff_end = TimeField(initial='20:00', required=False)
     can_deliver = forms.BooleanField(required=False)
 
     # If the chef hasn't opted to deliver it, remove the dropoff timerange
@@ -205,7 +205,7 @@ class GroceryDeliverySignupForm(forms.ModelForm):
 class MealDeliverySignupForm(forms.ModelForm):
     id = forms.IntegerField()
     dropoff_start = TimeField(initial='18:00')
-    dropoff_end = TimeField(initial='21:00')
+    dropoff_end = TimeField(initial='20:00')
 
     class Meta:
         model = MealDelivery
