@@ -1,10 +1,11 @@
 import csv
-import functools
+import logging
 import operator
 from django.core.management.base import BaseCommand
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User
 from django.db.utils import IntegrityError
-import logging
+
+from volunteers.models import VolunteerRoles, VolunteerApplication
 
 logging.basicConfig(level=logging.INFO)
 
@@ -63,20 +64,23 @@ class Command(BaseCommand):
                     f'Skipping line {line_number}: {e.message}'
                 ))
 
-    @functools.cached_property
-    def chef_group(self):
-        return Group.objects.get(name='Chefs')
-
-    @functools.cached_property
-    def deliverer_group(self):
-        return Group.objects.get(name='Deliverers')
-
     def format_entry(self, entry: dict):
         return ', '.join(operator.attrgetter(REQUIRED_FIELDS)())
 
     def split_name(self, name: str):
         first, *rest = name.split(' ')
         return first, ' '.join(rest)
+
+    def get_roles(self, entry: dict):
+        field = entry[ROLES_FIELD].lower()
+        roles = []
+        if CHEF_INDICATOR in field:
+            roles.append(VolunteerRoles.CHEFS)
+        if DELIVERER_INDICATOR in field:
+            roles.append(VolunteerRoles.DELIVERERS)
+        if ADMINISTRATOR_INDICATOR in field:
+            self.stdout.write('Skipping administrative role')
+        return roles
 
     def validate(self, entry: dict):
         for field in REQUIRED_FIELDS:
@@ -95,7 +99,6 @@ class Command(BaseCommand):
         food_types = entry[FOOD_TYPES_FIELD]
         cleaning_supplies = entry[CLEANING_SUPPLIES_FIELD]
         ppe = entry[PPE_FIELD]
-        roles = entry[ROLES_FIELD].lower()
         first_name, last_name = self.split_name(full_name)
 
         # NOTE: receiver enforces that volunteer object is created here as well
@@ -123,14 +126,8 @@ class Command(BaseCommand):
             user.volunteer.have_ppe = True
         user.volunteer.save()
 
-        # Role
-        if CHEF_INDICATOR in roles:
-            self.chef_group.user_set.add(user)
-        elif DELIVERER_INDICATOR in roles:
-            self.deliverer_group.user_set.add(user)
-        elif ADMINISTRATOR_INDICATOR in roles:
-            self.stdout.write('Skipping administrative role')
-        else:
-            self.stdout.write(self.style.ERROR(f'Unexpected role {roles}'))
+        for role in self.get_roles(entry):
+            application = VolunteerApplication.objects.create(user=user, role=role)
+            application.approve()
 
         self.stdout.write(self.style.SUCCESS(f'Successfully added user {user.id}'))
