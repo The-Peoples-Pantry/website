@@ -128,58 +128,6 @@ class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
             logger.warn("Skipped sending meal notification for Meal Request %d to %s", meal_request.id, meal_request.phone_number)
 
 
-class ChefIndexView(LoginRequiredMixin, GroupView, ListView):
-    """View for chefs to see the meals they've signed up to cook"""
-    model = MealDelivery
-    context_object_name = "deliveries"
-    queryset = MealDelivery.objects.exclude(status=Status.DELIVERED).order_by('date')
-    template_name = "volunteers/chef_list.html"
-    permission_group = 'Chefs'
-    permission_group_redirect_url = reverse_lazy('volunteers:chef_application')
-
-    def get_queryset(self):
-        return self.queryset.filter(chef=self.request.user)
-
-
-class DeliveryIndexView(LoginRequiredMixin, GroupView, ListView):
-    """View for deliverers to see the meal requests they've signed up to deliver"""
-    # model = MealDelivery
-    template_name = "volunteers/delivery_list.html"
-    permission_group = 'Deliverers'
-    permission_group_redirect_url = reverse_lazy('volunteers:delivery_application')
-    context_object_name = "deliveries"
-
-    def get_queryset(self):
-        meals = MealDelivery.objects.exclude(status=Status.DELIVERED).filter(deliverer=self.request.user)
-        groceries = GroceryDelivery.objects.exclude(status=Status.DELIVERED).filter(deliverer=self.request.user)
-
-        return sorted(chain(meals, groceries), key=lambda instance: instance.date)
-
-    def post(self, request):
-        if (request.POST['delivery_id'] and (
-                request.POST['has_chef'] or request.POST['is_groceries'])):
-            if request.POST['has_chef']:
-                instance = MealDelivery.objects.get(uuid=request.POST['delivery_id'])
-            else:
-                instance = GroceryDelivery.objects.get(uuid=request.POST['delivery_id'])
-
-            if instance.date <= datetime.datetime.now().date():
-                instance.status = Status.DELIVERED
-                instance.save()
-            else:
-                messages.error(
-                    self.request,
-                    'You can only mark deliveries complete after the assigned delivery date.'
-                )
-        else:
-            messages.error(
-                self.request,
-                'Something went wrong, sorry about that!'
-            )
-
-        return redirect(self.request.get_full_path())
-
-
 class GroceryDeliverySignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
     """View for deliverers to sign up to deliver meal requests"""
     template_name = "volunteers/delivery_signup_groceries.html"
@@ -314,6 +262,71 @@ class MealDeliverySignupView(LoginRequiredMixin, GroupView, FormView, FilterView
         delivery.status = Status.DRIVER_ASSIGNED
         delivery.save()
 
+
+####################################################################
+#                                                                  #
+#                          Task list views                         #
+#                                                                  #
+####################################################################
+
+
+class ChefIndexView(LoginRequiredMixin, GroupView, ListView):
+    """View for chefs to see the meals they've signed up to cook"""
+    model = MealDelivery
+    context_object_name = "deliveries"
+    queryset = MealDelivery.objects.exclude(status=Status.DELIVERED).order_by('date')
+    template_name = "volunteers/chef_list.html"
+    permission_group = 'Chefs'
+    permission_group_redirect_url = reverse_lazy('volunteers:chef_application')
+
+    def get_queryset(self):
+        return self.queryset.filter(chef=self.request.user)
+
+
+class DeliveryIndexView(LoginRequiredMixin, GroupView, ListView):
+    """View for deliverers to see the meal requests they've signed up to deliver"""
+    # model = MealDelivery
+    template_name = "volunteers/delivery_list.html"
+    permission_group = 'Deliverers'
+    permission_group_redirect_url = reverse_lazy('volunteers:delivery_application')
+    context_object_name = "deliveries"
+
+    def get_queryset(self):
+        meals = MealDelivery.objects.exclude(status=Status.DELIVERED).filter(deliverer=self.request.user)
+        groceries = GroceryDelivery.objects.exclude(status=Status.DELIVERED).filter(deliverer=self.request.user)
+
+        return sorted(chain(meals, groceries), key=lambda instance: instance.date)
+
+    def post(self, request):
+        if (request.POST['delivery_id'] and (
+                request.POST['has_chef'] or request.POST['is_groceries'])):
+            if request.POST['has_chef']:
+                instance = MealDelivery.objects.get(uuid=request.POST['delivery_id'])
+            else:
+                instance = GroceryDelivery.objects.get(uuid=request.POST['delivery_id'])
+
+            if instance.date <= datetime.datetime.now().date():
+                instance.status = Status.DELIVERED
+                instance.save()
+            else:
+                messages.error(
+                    self.request,
+                    'You can only mark deliveries complete after the assigned delivery date.'
+                )
+        else:
+            messages.error(
+                self.request,
+                'Something went wrong, sorry about that!'
+            )
+
+        return redirect(self.request.get_full_path())
+
+
+####################################################################
+#                                                                  #
+#                Volunteer application views                       #
+#                                                                  #
+####################################################################
 
 class DeliveryApplicationView(LoginRequiredMixin, FormView, UpdateView):
     form_class = DeliveryApplyForm
