@@ -253,5 +253,7 @@ GROUP_PERMISSIONS = {
         'view_groceryrequestcomment',
         'add_mealdeliverycomment',
         'view_mealdeliverycomment',
+        'view_volunteerapplication',
+        'view_volunteer',
     ]
 }
