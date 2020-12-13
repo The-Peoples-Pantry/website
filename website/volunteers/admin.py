@@ -1,5 +1,4 @@
 from django.contrib import admin, messages
-from django.contrib.auth.models import Group
 from django.db import transaction
 from django.utils.translation import ngettext
 
@@ -25,14 +24,12 @@ class VolunteerApplicationAdmin(admin.ModelAdmin):
         # De-select any values that have already been approved
         queryset = queryset.filter(approved=False)
 
-        # Add each user to the appropriate group
+        # Approve each application and keep count
+        # If the application has already been approved it won't count towards the total
+        updated = 0
         for application in queryset:
-            user = application.user
-            group = Group.objects.get(name=application.role)
-            user.groups.add(group)
-
-        # Mark the applications as approved
-        updated = queryset.update(approved=True)
+            if application.approve():
+                updated += 1
 
         if updated:
             self.message_user(request, ngettext(
