@@ -1,7 +1,7 @@
 from textwrap import dedent
 from django.core.mail import send_mail
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import Group, User
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 from django.conf import settings
@@ -149,6 +149,18 @@ class VolunteerApplication(models.Model):
     @classmethod
     def has_applied(cls, user, role: str):
         return cls.objects.filter(user=user, role=role).exists()
+
+    def approve(self):
+        """Approves the application if it hasn't been already.
+        Returns False if the application has already been approved, else True
+        """
+        if self.approved:
+            return False
+        group = Group.objects.get(name=self.role)
+        self.user.groups.add(group)
+        self.approved = True
+        self.save()
+        return True
 
     def send_confirmation_email(self):
         send_mail(

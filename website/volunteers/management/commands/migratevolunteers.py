@@ -1,76 +1,45 @@
 import csv
-from django.core.management.base import BaseCommand
-from django.contrib.auth.models import User, Group
-from django.db.utils import IntegrityError
-from volunteers.models import Volunteer
 import logging
+import operator
+from textwrap import dedent
+from django.core.management.base import BaseCommand
+from django.core.mail import send_mail, get_connection
+from django.contrib.auth.models import User
+from django.db.utils import IntegrityError
 
-logging.basicConfig(level=logging.DEBUG)
+from volunteers.models import VolunteerRoles, VolunteerApplication
+
+logging.basicConfig(level=logging.INFO)
+
+# Fields
+NAME_FIELD = 'Full name:'
+EMAIL_FIELD = 'Email address:'
+PHONE_FIELD = 'Phone number:'
+# NOTE: Full address is included in address_1; parsing would probably require geocoding query.
+#       Likely better to stick with defaults in `address_2` and `postal_code` for now.
+ADDRESS_FIELD = 'Full address (including any applicable apartment/unit/suite number):'
+ROLES_FIELD = 'Would you like to...? Check all that apply.'
+PRONOUNS_FIELD = 'Preferred pronouns:'
+COOKING_PREFS_FIELD = 'What do you prefer to cook/bake? Check all that apply.'
+FOOD_TYPES_FIELD = 'What kind of meals/baked goods are you able to prepare? Check all that apply. '
+CLEANING_SUPPLIES_FIELD = 'Do you have cleaning supplies (soap, disinfectant, etc.) to clean your hands and kitchen?'
+PPE_FIELD = 'Do you have a mask you can use while cooking/baking and packaging food?'
+CHEF_DAYS_AVAILABLE_FIELD = 'What days of the week are you able to cook/bake? '
+CHEF_TOTAL_HOURS_FIELD = 'How many hours can you spend cooking/baking per week?'
+DELIVERY_DAYS_AVAILABLE_FIELD = 'What days of the week are you able to deliver? Check all that apply.'
+BAKING_VOLUME_FIELD = 'For BAKERS: how many "units" of baked goods can you bake each time? '
+TRANSPORTATION_FIELD = 'What means of transportation would you be using for deliveries? Check all that apply.'
+REQUIRED_FIELDS = [NAME_FIELD, EMAIL_FIELD, ADDRESS_FIELD, PHONE_FIELD]
+
+# Roles
+CHEF_INDICATOR = 'cook/bake'
+DELIVERER_INDICATOR = 'deliver'
+ADMINISTRATOR_INDICATOR = 'administrative'
 
 
-def friendly_entry(entry: dict, required_fields):
-    return ', '.join(
-        map(
-            lambda field: entry[field],
-            required_fields
-        )
-    )
-
-
-def csv_to_django(entry: dict):
-    required_fields = ['Full name:', 'Email address:', 'Phone number:']
-    for field in required_fields:
-        if field not in entry or not entry[field]:
-            logging.warning(
-                f'Required entry `{field}` is missing or empty, skipping entry: {str(list(entry.values()))}'
-            )
-            return
-
-    chefs = Group.objects.get(name='Chefs')
-    deliverers = Group.objects.get(name='Deliverers')
-    organizers = Group.objects.get(name='Organizers')
-
-    try:
-        full_name = entry['Full name:'].split(' ')
-        first_name = full_name[0]
-        last_name = ' '.join(full_name[1:])
-        email = entry['Email address:']
-        user = User.objects.create(username=email, first_name=first_name, last_name=last_name, email=email)
-
-        random_password = User.objects.make_random_password()
-        user.set_password(random_password)
-
-        # NOTE: receiver enforces that volunteer object is created here as well
-        user.save()
-
-        # Volunteer fields
-        volunteer = Volunteer.objects.get(user=user)
-        volunteer.address_1 = entry['Full address (including any applicable apartment/unit/suite number):']
-        # NOTE: Full address is included in address_1; parsing would probably require geocoding query.
-        #       Likely better to stick with defaults in `address_2` and `postal_code` for now.
-        volunteer.phone_number = entry['Phone number:']
-
-        # Role
-        role_selection = entry['Would you like to...? Check all that apply.'].lower()
-        if role_selection:
-            if 'cook/bake' in role_selection:
-                chefs.user_set.add(user)
-            elif 'deliver' in role_selection:
-                deliverers.user_set.add(user)
-            elif 'administrative' in role_selection:
-                organizers.user_set.add(user)
-            else:
-                logging.warning(
-                    f'Unknown role selection {role_selection} for entry: {friendly_entry(entry, required_fields)}'
-                )
-
-        volunteer.save()
-
-    except KeyError as e:
-        raise KeyError(f'Entry is missing a required field {str(e)}: {friendly_entry(entry, required_fields)}')
-
-    except IntegrityError as e:
-        logging.warning(f'SKIPPING ENTRY: {str(e)} for entry: {friendly_entry(entry, required_fields)}')
+class ValidationError(Exception):
+    def __init__(self, message):
+        self.message = message
 
 
 class Command(BaseCommand):
@@ -89,6 +58,116 @@ class Command(BaseCommand):
         csv_path = kwargs['csv']
 
         with open(csv_path) as csv_input:
-            reader = csv.DictReader(csv_input)
-            for entry in reader:
-                csv_to_django(entry)
+            entries = list(csv.DictReader(csv_input))
+
+        # Create a mail connection to avoid opening a new one for each email
+        with get_connection() as connection:
+            self.connection = connection
+            for index, entry in enumerate(entries):
+                line_number = index + 1
+                try:
+                    self.create_user(entry)
+                except IntegrityError:
+                    self.stdout.write(f'Skipping line {line_number}: already exists')
+                except ValidationError as e:
+                    self.stdout.write(self.style.NOTICE(
+                        f'Skipping line {line_number}: {e.message}'
+                    ))
+
+    def format_entry(self, entry: dict):
+        return ', '.join(operator.attrgetter(REQUIRED_FIELDS)())
+
+    def split_name(self, name: str):
+        first, *rest = name.split(' ')
+        return first, ' '.join(rest)
+
+    def get_roles(self, entry: dict):
+        field = entry[ROLES_FIELD].lower()
+        roles = []
+        if CHEF_INDICATOR in field:
+            roles.append(VolunteerRoles.CHEFS)
+        if DELIVERER_INDICATOR in field:
+            roles.append(VolunteerRoles.DELIVERERS)
+        if ADMINISTRATOR_INDICATOR in field:
+            self.stdout.write('Skipping administrative role')
+        return roles
+
+    def validate(self, entry: dict):
+        for field in REQUIRED_FIELDS:
+            if not entry.get(field):
+                raise ValidationError(f'Missing required field ({field})')
+
+    def create_user(self, entry: dict):
+        self.validate(entry)
+
+        full_name = entry[NAME_FIELD]
+        email = entry[EMAIL_FIELD]
+        address = entry[ADDRESS_FIELD]
+        phone_number = entry[PHONE_FIELD]
+        pronouns = entry[PRONOUNS_FIELD]
+        cooking_prefs = entry[COOKING_PREFS_FIELD]
+        food_types = entry[FOOD_TYPES_FIELD]
+        cleaning_supplies = entry[CLEANING_SUPPLIES_FIELD]
+        days_available = entry[CHEF_DAYS_AVAILABLE_FIELD] or entry[DELIVERY_DAYS_AVAILABLE_FIELD]
+        total_hours_available = entry[CHEF_TOTAL_HOURS_FIELD]
+        baking_volume = entry[BAKING_VOLUME_FIELD]
+        transportation_options = entry[TRANSPORTATION_FIELD]
+        ppe = entry[PPE_FIELD]
+        first_name, last_name = self.split_name(full_name)
+
+        # NOTE: receiver enforces that volunteer object is created here as well
+        user = User.objects.create(
+            username=email,
+            first_name=first_name,
+            last_name=last_name,
+            email=email
+        )
+        random_password = User.objects.make_random_password()
+        user.set_password(random_password)
+        user.save()
+
+        # Volunteer fields
+        user.volunteer.name = full_name
+        user.volunteer.email = email
+        user.volunteer.address_1 = address
+        user.volunteer.phone_number = phone_number
+        user.volunteer.pronouns = pronouns
+        user.volunteer.cooking_prefs = cooking_prefs
+        user.volunteer.food_types = food_types
+        user.volunteer.days_available = days_available
+        user.volunteer.total_hours_available = total_hours_available
+        user.volunteer.baking_volume = baking_volume
+        user.volunteer.transportation_options = transportation_options
+        if cleaning_supplies == 'Yes':
+            user.volunteer.have_cleaning_supplies = True
+        if ppe == 'Yes':
+            user.volunteer.have_ppe = True
+        user.volunteer.save()
+
+        for role in self.get_roles(entry):
+            application = VolunteerApplication.objects.create(user=user, role=role)
+            application.approve()
+
+        send_mail(
+            "Welcome to The People's Pantry's new website",
+            dedent("""
+                You're receiving this email because of your work as a volunteer with The People's Pantry Toronto.
+
+                As you may know, earlier this year we had to pause our meal delivery program while working on improvements to our processes.
+                Today we're pleased to welcome you to our new website: https://www.thepeoplespantryto.com
+
+                This website will be the new place where our recipients can submit requests and where you can login to offer your help. You'll be able to filter requests by location, size, and dietary restrictions. You'll also be able to see a dashboard of all of the requests that you're currently signed up for.
+                We've imported your information from our previous system, and the last step is for you to create a password.
+                You can apply to set your password by going to https://www.thepeoplespantryto.com/accounts/password_reset/ and entering your email address. We will then email you a link that will allow you to set your password.
+
+                We look forward to continuing our work with you!
+
+                With thanks,
+                The People's Pantry.
+            """),
+            None,  # From email (by setting None, it will use DEFAULT_FROM_EMAIL)
+            [email],
+            connection=self.connection
+        )
+
+        self.stdout.write(self.style.SUCCESS(f'Successfully added user {email}'))
