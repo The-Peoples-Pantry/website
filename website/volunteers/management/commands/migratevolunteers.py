@@ -27,6 +27,7 @@ PPE_FIELD = 'Do you have a mask you can use while cooking/baking and packaging f
 CHEF_DAYS_AVAILABLE_FIELD = 'What days of the week are you able to cook/bake? '
 CHEF_TOTAL_HOURS_FIELD = 'How many hours can you spend cooking/baking per week?'
 DELIVERY_DAYS_AVAILABLE_FIELD = 'What days of the week are you able to deliver? Check all that apply.'
+BAKING_VOLUME_FIELD = 'For BAKERS: how many "units" of baked goods can you bake each time? '
 REQUIRED_FIELDS = [NAME_FIELD, EMAIL_FIELD, ADDRESS_FIELD, PHONE_FIELD]
 
 # Roles
@@ -108,6 +109,7 @@ class Command(BaseCommand):
         cleaning_supplies = entry[CLEANING_SUPPLIES_FIELD]
         days_available = entry[CHEF_DAYS_AVAILABLE_FIELD] or entry[DELIVERY_DAYS_AVAILABLE_FIELD]
         total_hours_available = entry[CHEF_TOTAL_HOURS_FIELD]
+        baking_volume = entry[BAKING_VOLUME_FIELD]
         ppe = entry[PPE_FIELD]
         first_name, last_name = self.split_name(full_name)
 
@@ -132,6 +134,7 @@ class Command(BaseCommand):
         user.volunteer.food_types = food_types
         user.volunteer.days_available = days_available
         user.volunteer.total_hours_available = total_hours_available
+        user.volunteer.baking_volume = baking_volume
         if cleaning_supplies == 'Yes':
             user.volunteer.have_cleaning_supplies = True
         if ppe == 'Yes':
