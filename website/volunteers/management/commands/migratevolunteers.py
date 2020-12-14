@@ -53,9 +53,9 @@ class Command(BaseCommand):
         csv_path = kwargs['csv']
 
         with open(csv_path) as csv_input:
-            reader = list(csv.DictReader(csv_input))
+            entries = list(csv.DictReader(csv_input))
 
-        for index, entry in enumerate(reader):
+        for index, entry in enumerate(entries):
             line_number = index + 1
             try:
                 self.create_user(entry)
