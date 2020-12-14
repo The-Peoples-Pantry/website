@@ -24,6 +24,9 @@ COOKING_PREFS_FIELD = 'What do you prefer to cook/bake? Check all that apply.'
 FOOD_TYPES_FIELD = 'What kind of meals/baked goods are you able to prepare? Check all that apply. '
 CLEANING_SUPPLIES_FIELD = 'Do you have cleaning supplies (soap, disinfectant, etc.) to clean your hands and kitchen?'
 PPE_FIELD = 'Do you have a mask you can use while cooking/baking and packaging food?'
+CHEF_DAYS_AVAILABLE_FIELD = 'What days of the week are you able to cook/bake? '
+CHEF_TOTAL_HOURS_FIELD = 'How many hours can you spend cooking/baking per week?'
+DELIVERY_DAYS_AVAILABLE_FIELD = 'What days of the week are you able to deliver? Check all that apply.'
 REQUIRED_FIELDS = [NAME_FIELD, EMAIL_FIELD, ADDRESS_FIELD, PHONE_FIELD]
 
 # Roles
@@ -103,6 +106,8 @@ class Command(BaseCommand):
         cooking_prefs = entry[COOKING_PREFS_FIELD]
         food_types = entry[FOOD_TYPES_FIELD]
         cleaning_supplies = entry[CLEANING_SUPPLIES_FIELD]
+        days_available = entry[CHEF_DAYS_AVAILABLE_FIELD] or entry[DELIVERY_DAYS_AVAILABLE_FIELD]
+        total_hours_available = entry[CHEF_TOTAL_HOURS_FIELD]
         ppe = entry[PPE_FIELD]
         first_name, last_name = self.split_name(full_name)
 
@@ -125,6 +130,8 @@ class Command(BaseCommand):
         user.volunteer.pronouns = pronouns
         user.volunteer.cooking_prefs = cooking_prefs
         user.volunteer.food_types = food_types
+        user.volunteer.days_available = days_available
+        user.volunteer.total_hours_available = total_hours_available
         if cleaning_supplies == 'Yes':
             user.volunteer.have_cleaning_supplies = True
         if ppe == 'Yes':
