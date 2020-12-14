@@ -2,13 +2,13 @@ import logging
 from textwrap import dedent
 from datetime import datetime, timedelta
 import uuid
-from django.core.mail import send_mail
 from django.db import models
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.urls import reverse_lazy
 from django.utils import timezone
 
+from website.mail import custom_send_mail
 from website.text_messaging import send_text
 from core.models import get_sentinel_user, ContactInfo, GroceryPickupAddress
 
@@ -157,14 +157,13 @@ class HelpRequest(ContactInfo):
         return reverse_lazy('recipients:request_detail', args=[str(self.id)])
 
     def send_confirmation_email(self):
-        send_mail(
+        custom_send_mail(
             "Confirming your The People's Pantry request",
             dedent(f"""
                 Hi {self.name},
                 Just confirming that we received your request for The People's Pantry.
                 Your request ID is {self.id}
             """),
-            None,  # From email (by setting None, it will use DEFAULT_FROM_EMAIL)
             [self.email]
         )
 

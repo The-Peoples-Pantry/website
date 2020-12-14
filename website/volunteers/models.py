@@ -1,11 +1,11 @@
 from textwrap import dedent
-from django.core.mail import send_mail
 from django.db import models
 from django.contrib.auth.models import Group, User
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 from django.conf import settings
 from core.models import ContactInfo
+from website.mail import custom_send_mail
 
 
 class CookingTypes(models.TextChoices):
@@ -163,13 +163,12 @@ class VolunteerApplication(models.Model):
         return True
 
     def send_confirmation_email(self):
-        send_mail(
+        custom_send_mail(
             "Confirming your The People's Pantry volunteer application",
             dedent(f"""
                 Just confirming that we received your request to join the {self.role} volunteer team for The People's Pantry.
                 We will be in touch with further training materials
             """),
-            None,  # From email (by setting None, it will use DEFAULT_FROM_EMAIL)
             [self.user.email]
         )
 

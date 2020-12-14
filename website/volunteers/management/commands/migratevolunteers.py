@@ -3,11 +3,12 @@ import logging
 import operator
 from textwrap import dedent
 from django.core.management.base import BaseCommand
-from django.core.mail import send_mail, get_connection
+from django.core.mail import get_connection
 from django.contrib.auth.models import User
 from django.db.utils import IntegrityError
 
 from volunteers.models import VolunteerRoles, VolunteerApplication
+from website.mail import custom_send_mail
 
 logging.basicConfig(level=logging.INFO)
 
@@ -148,7 +149,7 @@ class Command(BaseCommand):
             application = VolunteerApplication.objects.create(user=user, role=role)
             application.approve()
 
-        send_mail(
+        custom_send_mail(
             "Welcome to The People's Pantry's new website",
             dedent("""
                 You're receiving this email because of your work as a volunteer with The People's Pantry Toronto.
@@ -165,7 +166,6 @@ class Command(BaseCommand):
                 With thanks,
                 The People's Pantry.
             """),
-            None,  # From email (by setting None, it will use DEFAULT_FROM_EMAIL)
             [email],
             connection=self.connection
         )
