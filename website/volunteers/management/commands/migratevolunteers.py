@@ -2,6 +2,7 @@ import csv
 import logging
 import operator
 from textwrap import dedent
+from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.core.mail import get_connection
 from django.contrib.auth.models import User
@@ -167,7 +168,8 @@ class Command(BaseCommand):
                 The People's Pantry.
             """),
             [email],
-            connection=self.connection
+            reply_to=settings.VOLUNTEER_COORDINATORS_EMAIL,
+            connection=self.connection,
         )
 
         self.stdout.write(self.style.SUCCESS(f'Successfully added user {email}'))

@@ -164,7 +164,8 @@ class HelpRequest(ContactInfo):
                 Just confirming that we received your request for The People's Pantry.
                 Your request ID is {self.id}
             """),
-            [self.email]
+            [self.email],
+            reply_to=settings.REQUEST_COORDINATORS_EMAIL
         )
 
     def __str__(self):

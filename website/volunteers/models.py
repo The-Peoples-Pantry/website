@@ -169,7 +169,8 @@ class VolunteerApplication(models.Model):
                 Just confirming that we received your request to join the {self.role} volunteer team for The People's Pantry.
                 We will be in touch with further training materials
             """),
-            [self.user.email]
+            [self.user.email],
+            reply_to=settings.VOLUNTEER_COORDINATORS_EMAIL,
         )
 
 
