@@ -355,7 +355,7 @@ class GroceryDelivery(BaseDelivery):
             This is a message from The People's Pantry.
             Your grocery bundle delivery is scheduled for {self.date:%A %B %d} between {self.dropoff_start:%I:%M %p} and {self.dropoff_end:%I:%M %p}.
             Since we depend on volunteers for our deliveries, sometimes we are not able to do all deliveries scheduled for the day. If that’s the case with your delivery, we will inform you by 6 PM on the day of the delivery and your delivery will be rescheduled for the following day.
-            Please confirm you got this message and let us know if you can take the delivery.
+            Please confirm you got this message and let us know if you can accept the delivery.
             Thank you!
         """)
         send_text(self.request.phone_number, message)
@@ -425,7 +425,7 @@ class MealDelivery(BaseDelivery):
             This is a message from The People's Pantry.
             A chef has been arranged to prepare a meal for you for {self.date:%A %B %d}
             Since we depend on volunteers for our deliveries, sometimes we are not able to do all deliveries scheduled for the day. If that’s the case with your delivery, we will inform you by 6 PM on the day of the delivery and your delivery will be rescheduled for the following day.
-            Please confirm you got this message and let us know if you can take the delivery.
+            Please confirm you got this message and let us know if you can accept the delivery.
             Thank you!
         """)
         send_text(self.request.phone_number, message)
