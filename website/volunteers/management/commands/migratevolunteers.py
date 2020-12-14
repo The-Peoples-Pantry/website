@@ -1,7 +1,9 @@
 import csv
 import logging
 import operator
+from textwrap import dedent
 from django.core.management.base import BaseCommand
+from django.core.mail import send_mail
 from django.contrib.auth.models import User
 from django.db.utils import IntegrityError
 
@@ -129,5 +131,26 @@ class Command(BaseCommand):
         for role in self.get_roles(entry):
             application = VolunteerApplication.objects.create(user=user, role=role)
             application.approve()
+
+        send_mail(
+            "Welcome to The People's Pantry's new website",
+            dedent("""
+                You're receiving this email because of your work as a volunteer with The People's Pantry Toronto.
+
+                As you may know, earlier this year we had to pause our meal delivery program while working on improvements to our processes.
+                Today we're pleased to welcome you to our new website: https://www.thepeoplespantryto.com
+
+                This website will be the new place where our recipients can submit requests and where you can login to offer your help. You'll be able to filter requests by location, size, and dietary restrictions. You'll also be able to see a dashboard of all of the requests that you're currently signed up for.
+                We've imported your information from our previous system, and the last step is for you to create a password.
+                You can apply to set your password by going to https://www.thepeoplespantryto.com/accounts/password_reset/ and entering your email address. We will then email you a link that will allow you to set your password.
+
+                We look forward to continuing our work with you!
+
+                With thanks,
+                The People's Pantry.
+            """),
+            None,  # From email (by setting None, it will use DEFAULT_FROM_EMAIL)
+            [email]
+        )
 
         self.stdout.write(self.style.SUCCESS(f'Successfully added user {user.id}'))
