@@ -153,4 +153,4 @@ class Command(BaseCommand):
             [email]
         )
 
-        self.stdout.write(self.style.SUCCESS(f'Successfully added user {user.id}'))
+        self.stdout.write(self.style.SUCCESS(f'Successfully added user {email}'))
