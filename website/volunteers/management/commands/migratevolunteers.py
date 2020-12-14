@@ -3,7 +3,7 @@ import logging
 import operator
 from textwrap import dedent
 from django.core.management.base import BaseCommand
-from django.core.mail import send_mail
+from django.core.mail import send_mail, get_connection
 from django.contrib.auth.models import User
 from django.db.utils import IntegrityError
 
@@ -55,16 +55,19 @@ class Command(BaseCommand):
         with open(csv_path) as csv_input:
             entries = list(csv.DictReader(csv_input))
 
-        for index, entry in enumerate(entries):
-            line_number = index + 1
-            try:
-                self.create_user(entry)
-            except IntegrityError:
-                self.stdout.write(f'Skipping line {line_number}: already exists')
-            except ValidationError as e:
-                self.stdout.write(self.style.NOTICE(
-                    f'Skipping line {line_number}: {e.message}'
-                ))
+        # Create a mail connection to avoid opening a new one for each email
+        with get_connection() as connection:
+            self.connection = connection
+            for index, entry in enumerate(entries):
+                line_number = index + 1
+                try:
+                    self.create_user(entry)
+                except IntegrityError:
+                    self.stdout.write(f'Skipping line {line_number}: already exists')
+                except ValidationError as e:
+                    self.stdout.write(self.style.NOTICE(
+                        f'Skipping line {line_number}: {e.message}'
+                    ))
 
     def format_entry(self, entry: dict):
         return ', '.join(operator.attrgetter(REQUIRED_FIELDS)())
@@ -150,7 +153,8 @@ class Command(BaseCommand):
                 The People's Pantry.
             """),
             None,  # From email (by setting None, it will use DEFAULT_FROM_EMAIL)
-            [email]
+            [email],
+            connection=self.connection
         )
 
         self.stdout.write(self.style.SUCCESS(f'Successfully added user {email}'))
