@@ -79,10 +79,6 @@ class Command(BaseCommand):
     def format_entry(self, entry: dict):
         return ', '.join(operator.attrgetter(REQUIRED_FIELDS)())
 
-    def split_name(self, name: str):
-        first, *rest = name.split(' ')
-        return first, ' '.join(rest)
-
     def get_roles(self, entry: dict):
         field = entry[ROLES_FIELD].lower()
         roles = []
@@ -94,11 +90,11 @@ class Command(BaseCommand):
             self.stdout.write('Skipping administrative role')
         return roles
 
-    def send_invite_email(self, full_name, email):
+    def send_invite_email(self, name, email):
         custom_send_mail(
             "Welcome to The People's Pantry's new website",
             dedent(f"""
-                Hi {full_name},
+                Hi {name},
 
                 You are receiving this email because of your prior work as a volunteer with The People's Pantry Toronto.
 
@@ -132,7 +128,7 @@ class Command(BaseCommand):
     def create_user(self, entry: dict):
         self.validate(entry)
 
-        full_name = entry[NAME_FIELD]
+        name = entry[NAME_FIELD]
         email = entry[EMAIL_FIELD]
         address = entry[ADDRESS_FIELD]
         phone_number = entry[PHONE_FIELD]
@@ -145,21 +141,15 @@ class Command(BaseCommand):
         baking_volume = entry[BAKING_VOLUME_FIELD]
         transportation_options = entry[TRANSPORTATION_FIELD]
         ppe = entry[PPE_FIELD]
-        first_name, last_name = self.split_name(full_name)
 
         # NOTE: receiver enforces that volunteer object is created here as well
-        user = User.objects.create(
-            username=email,
-            first_name=first_name,
-            last_name=last_name,
-            email=email
-        )
+        user = User.objects.create(username=email, email=email)
         random_password = User.objects.make_random_password()
         user.set_password(random_password)
         user.save()
 
         # Volunteer fields
-        user.volunteer.name = full_name
+        user.volunteer.name = name
         user.volunteer.email = email
         user.volunteer.address_1 = address
         user.volunteer.phone_number = phone_number
@@ -180,6 +170,6 @@ class Command(BaseCommand):
             application = VolunteerApplication.objects.create(user=user, role=role)
             application.approve()
 
-        self.send_invite_email(email, full_name)
+        self.send_invite_email(email, name)
 
         self.stdout.write(self.style.SUCCESS(f'Successfully added user {email}'))
