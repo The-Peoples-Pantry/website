@@ -86,7 +86,7 @@ class Command(BaseCommand):
             self.stdout.write('Skipping administrative role')
         return roles
 
-    def send_invite_email(self, name, email):
+    def send_invite_email(self, email, name):
         custom_send_mail(
             "Welcome to The People's Pantry's new website",
             dedent(f"""
