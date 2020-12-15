@@ -76,9 +76,6 @@ class Command(BaseCommand):
                         f'Skipping line {line_number}: {e.message}'
                     ))
 
-    def format_entry(self, entry: dict):
-        return ', '.join(operator.attrgetter(REQUIRED_FIELDS)())
-
     def get_roles(self, entry: dict):
         field = entry[ROLES_FIELD].lower()
         roles = []
