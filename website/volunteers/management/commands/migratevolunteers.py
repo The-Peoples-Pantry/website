@@ -1,6 +1,5 @@
 import csv
 import logging
-import operator
 from textwrap import dedent
 from django.conf import settings
 from django.core.management.base import BaseCommand
