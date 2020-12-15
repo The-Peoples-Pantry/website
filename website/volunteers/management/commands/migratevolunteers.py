@@ -126,17 +126,6 @@ class Command(BaseCommand):
 
         name = entry[NAME_FIELD]
         email = entry[EMAIL_FIELD]
-        address = entry[ADDRESS_FIELD]
-        phone_number = entry[PHONE_FIELD]
-        pronouns = entry[PRONOUNS_FIELD]
-        cooking_prefs = entry[COOKING_PREFS_FIELD]
-        food_types = entry[FOOD_TYPES_FIELD]
-        cleaning_supplies = entry[CLEANING_SUPPLIES_FIELD]
-        days_available = entry[CHEF_DAYS_AVAILABLE_FIELD] or entry[DELIVERY_DAYS_AVAILABLE_FIELD]
-        total_hours_available = entry[CHEF_TOTAL_HOURS_FIELD]
-        baking_volume = entry[BAKING_VOLUME_FIELD]
-        transportation_options = entry[TRANSPORTATION_FIELD]
-        ppe = entry[PPE_FIELD]
 
         # NOTE: receiver enforces that volunteer object is created here as well
         user = User.objects.create(username=email, email=email)
@@ -147,18 +136,18 @@ class Command(BaseCommand):
         # Volunteer fields
         user.volunteer.name = name
         user.volunteer.email = email
-        user.volunteer.address_1 = address
-        user.volunteer.phone_number = phone_number
-        user.volunteer.pronouns = pronouns
-        user.volunteer.cooking_prefs = cooking_prefs
-        user.volunteer.food_types = food_types
-        user.volunteer.days_available = days_available
-        user.volunteer.total_hours_available = total_hours_available
-        user.volunteer.baking_volume = baking_volume
-        user.volunteer.transportation_options = transportation_options
-        if cleaning_supplies == 'Yes':
+        user.volunteer.address_1 = entry[ADDRESS_FIELD]
+        user.volunteer.phone_number = entry[PHONE_FIELD]
+        user.volunteer.pronouns = entry[PRONOUNS_FIELD]
+        user.volunteer.cooking_prefs = entry[COOKING_PREFS_FIELD]
+        user.volunteer.food_types = entry[FOOD_TYPES_FIELD]
+        user.volunteer.days_available = entry[CHEF_DAYS_AVAILABLE_FIELD] or entry[DELIVERY_DAYS_AVAILABLE_FIELD]
+        user.volunteer.total_hours_available = entry[CHEF_TOTAL_HOURS_FIELD]
+        user.volunteer.baking_volume = entry[BAKING_VOLUME_FIELD]
+        user.volunteer.transportation_options = entry[TRANSPORTATION_FIELD]
+        if entry[CLEANING_SUPPLIES_FIELD] == 'Yes':
             user.volunteer.have_cleaning_supplies = True
-        if ppe == 'Yes':
+        if entry[PPE_FIELD] == 'Yes':
             user.volunteer.have_ppe = True
         user.volunteer.save()
 
