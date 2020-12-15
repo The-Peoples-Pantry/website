@@ -152,20 +152,27 @@ class Command(BaseCommand):
 
         custom_send_mail(
             "Welcome to The People's Pantry's new website",
-            dedent("""
-                You're receiving this email because of your work as a volunteer with The People's Pantry Toronto.
+            dedent(f"""
+                Hi {full_name},
 
-                As you may know, earlier this year we had to pause our meal delivery program while working on improvements to our processes.
-                Today we're pleased to welcome you to our new website: https://www.thepeoplespantryto.com
+                You are receiving this email because of your prior work as a volunteer with The People's Pantry Toronto.
 
-                This website will be the new place where our recipients can submit requests and where you can login to offer your help. You'll be able to filter requests by location, size, and dietary restrictions. You'll also be able to see a dashboard of all of the requests that you're currently signed up for.
-                We've imported your information from our previous system, and the last step is for you to create a password.
-                You can apply to set your password by going to https://www.thepeoplespantryto.com/accounts/password_reset/ and entering your email address. We will then email you a link that will allow you to set your password.
+                Earlier this year, we paused our meal delivery program to improve our processes and set up a more sustainable working process.
+
+                Today, we are pleased to welcome you back and invite you to visit our new website, through which we will be coordinating the project: https://www.thepeoplespantryto.com
+
+                The website will be the new place where our recipients can submit requests and where you can log in to offer your help as a driver or as a chef. You will be able to filter requests by location, size, and dietary restrictions. You will also be able to see a dashboard of all of the requests that you're currently signed up for. Please keep an eye on the dashboard to keep on top of the requests you have signed up to fulfill.
+
+                We have imported your information from our previous system. To finalize your registration for the new website, please create a password by going to https://www.thepeoplespantryto.com/accounts/password_reset/ and entering your email address. We will then email you a link that will allow you to set your password.
+
+                If you are interested in returning as a volunteer, please review the Volunteer Guidelines to refresh your memory: https://bit.ly/3njYU1J
+
+                Finally, please review The People’s Pantry Code of Conduct here: https://bit.ly/3oQ24dN which lays out our organizing principles, and defines boundaries for working with other volunteers and our community. Our volunteers are the face of The People’s Pantry; we want to ensure a respectful and sustainable environment for all of us. 
 
                 We look forward to continuing our work with you!
 
                 With thanks,
-                The People's Pantry.
+                The People's Pantry
             """),
             [email],
             reply_to=settings.VOLUNTEER_COORDINATORS_EMAIL,
