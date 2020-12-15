@@ -101,7 +101,7 @@ class ContactInfo(models.Model):
 
     def save(self, *args, **kwargs):
         # Whenever the model is updated, make sure coordinates are updated too
-        # self.update_coordinates()
+        self.update_coordinates()
         super().save(*args, **kwargs)
 
 
