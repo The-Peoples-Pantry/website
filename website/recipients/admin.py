@@ -1,5 +1,6 @@
 import collections
 import uuid
+from datetime import timedelta, date
 from django.contrib import admin, messages
 from django import forms
 from django.utils.html import format_html, format_html_join
@@ -194,19 +195,36 @@ class MealRequestAdmin(admin.ModelAdmin):
             )
     confirm.short_description = "Mark deliveries as confirmed with recipient"
 
+    def create_delivery_copy(self, original_delivery, meal_request):
+        new_date = original_delivery.date + timedelta(days=7)
+        today = date.today()
+        while new_date <= today:
+            new_date = new_date + timedelta(days=7)
+
+        delivery = MealDelivery.objects.create(
+            request=meal_request,
+            chef=original_delivery.chef,
+            status=Status.CHEF_ASSIGNED,
+            date=new_date,
+            pickup_start=original_delivery.pickup_start,
+            pickup_end=original_delivery.pickup_end
+        )
+        return delivery
+
     def copy(self, request, queryset):
-        ids = []
         for meal_request in queryset:
+            original_id = meal_request.id
+            original_delivery = MealDelivery.objects.get(request=meal_request)
             meal_request.pk = None
             meal_request.uuid = uuid.uuid4()
             meal_request.save()
-            ids.append(meal_request.id)
-
-        self.message_user(request, ngettext(
-            "%d copied meal request has been created with ID %s",
-            "%d copied meal requests have been created with IDs %s",
-            len(ids),
-        ) % (len(ids), (", ").join(str(id) for id in ids)), messages.SUCCESS)
+            new_delivery = self.create_delivery_copy(original_delivery, meal_request)
+            self.message_user(
+                request,
+                "A copy of meal request %d has been created with new id %d and delivery id %d" % (
+                    original_id, meal_request.id, new_delivery.id
+                ), messages.SUCCESS
+            )
     copy.short_description = "Create a copy of selected meal request"
 
 
