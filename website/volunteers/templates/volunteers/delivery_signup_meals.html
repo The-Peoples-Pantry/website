@@ -22,12 +22,12 @@
       <div class="card mb-4">
         {# Card header section contains the meal request title #}
         <div class="card-header font-weight-bold">
-          Pickup timeframe: {{ delivery.date }}, {{ delivery.pickup_start }} to {{ delivery.pickup_end }}
+          Delivery #{{ delivery.id }} - Pickup timeframe: {{ delivery.date }}, {{ delivery.pickup_start }} to {{ delivery.pickup_end }}
         </div>
         <div class="card-body">
           <div class="row mb-3">
             <div class="col h6">
-              Meal
+              Meal #{{ delivery.request.id }}
               for {{ delivery.request.num_adults }} adult{{ delivery.request.num_adults | pluralize }}
               and {{ delivery.request.num_children }} kid{{ delivery.request.num_children | pluralize }}
             </div>

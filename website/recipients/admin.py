@@ -157,7 +157,7 @@ class MealRequestAdmin(admin.ModelAdmin):
     )
 
     def edit_link(self, request):
-        return obj_link(request, 'mealrequest', link_text='Edit&nbsp;request')
+        return obj_link(request, 'mealrequest', link_text='Edit&nbsp;request&nbsp;%d' % request.id)
 
     def delivery_date(self, obj):
         return obj.delivery.date
@@ -390,7 +390,7 @@ class MealDeliveryAdmin(BaseDeliveryAdmin):
     request_landline.short_description = "Landline"
 
     def edit_link(self, delivery):
-        return obj_link(delivery, 'mealdelivery', link_text='Edit&nbsp;delivery')
+        return obj_link(delivery, 'mealdelivery', link_text='Edit&nbsp;delivery&nbsp;%d' % delivery.id)
 
     def request_link(self, delivery):
         return obj_link(delivery.request, 'mealrequest')

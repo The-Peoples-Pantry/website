@@ -25,7 +25,7 @@
 
         {# Card header section contains the meal request title #}
         <div class="card-header font-weight-bold">
-          Meal for {{ meal.num_adults }} adult{{ meal.num_adults | pluralize }}
+          Meal #{{ meal.id }} for {{ meal.num_adults }} adult{{ meal.num_adults | pluralize }}
           and {{ meal.num_children }} kid{{ meal.num_children | pluralize }}
           {% if meal.children_ages %}(aged {{ meal.children_ages }}){% endif %}
           in {{ meal.city }}
