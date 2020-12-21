@@ -7,17 +7,21 @@ from .models import Volunteer, VolunteerApplication
 
 
 class VolunteerAdmin(admin.ModelAdmin):
-    list_display = ('user', 'groups', 'city', 'training_complete')
+    list_display = ('name', 'user', 'groups', 'city', 'training_complete')
 
     def groups(self, obj):
         return group_names(obj.user)
 
 
 class VolunteerApplicationAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user', 'role', 'approved')
+    list_display = ('name', 'user', 'role', 'approved')
     list_filter = ('approved', 'role')
     ordering = ('approved', )
     actions = ('approve', )
+
+    def name(self, app):
+        return app.user.volunteer.name
+    name.short_description = 'Name'
 
     @transaction.atomic
     def approve(self, request, queryset):
