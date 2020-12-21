@@ -10,6 +10,7 @@ from django.urls import reverse_lazy
 from django.views.generic.edit import FormView, UpdateView
 from django.views.generic import ListView, TemplateView
 from django_filters.views import FilterView
+from django.db.models.query_utils import Q
 
 from core.models import has_group
 from recipients.models import MealRequest, GroceryRequest, GroceryDelivery, MealDelivery, Status, SendNotificationException
@@ -34,7 +35,7 @@ class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
     permission_group = 'Chefs'
     permission_group_redirect_url = reverse_lazy('volunteers:chef_application')
     filterset_class = ChefSignupFilter
-    queryset = MealRequest.objects.filter(delivery__isnull=True).order_by('created_at')
+    queryset = MealRequest.objects.filter(Q(delivery__isnull=True) or Q(delivery__chef__isnull=True)).order_by('created_at')
 
     @property
     def success_url(self):
