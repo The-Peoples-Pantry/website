@@ -4,6 +4,7 @@ from django.contrib import admin, messages
 from django import forms
 from django.utils.html import format_html, format_html_join
 from core.models import GroceryPickupAddress
+from django.urls import reverse
 from .models import (
     MealRequest,
     MealRequestComment,
@@ -17,6 +18,22 @@ from .models import (
     SendNotificationException,
 )
 from django.utils.translation import ngettext
+
+
+def user_link(user):
+    if user:
+        display_text = user.volunteer.name or user
+        url = reverse('admin:volunteers_volunteer_change', args=(user.id,))
+        return format_html('<a href="%s">%s</a>' % (url, display_text))
+    return user
+
+
+def obj_link(obj, type, **kwargs):
+    if obj:
+        link_text = kwargs.get('link_text', str(obj))
+        url = reverse('admin:recipients_%s_change' % type, args=(obj.id,))
+        return format_html('<a href="%s">%s</a>' % (url, link_text))
+    return obj
 
 
 class StatusFilter(admin.SimpleListFilter):
@@ -45,6 +62,22 @@ class LandlineFilter(admin.SimpleListFilter):
     def queryset(self, request, queryset):
         if self.value():
             queryset = queryset.filter(can_receive_texts=self.value())
+        return queryset
+
+
+class DeliveryLandlineFilter(admin.SimpleListFilter):
+    title = 'Phone type'
+    parameter_name = 'request_landline'
+
+    def lookups(self, delivery, model_admin):
+        return (
+            (False, 'Landline'),
+            (True, 'Cellphone')
+        )
+
+    def queryset(self, request, queryset):
+        if self.value():
+            queryset = queryset.filter(request__can_receive_texts=self.value())
         return queryset
 
 
@@ -100,9 +133,8 @@ class GroceryDeliveryCommentInline(CommentInline):
 
 class MealRequestAdmin(admin.ModelAdmin):
     list_display = (
-        'id',
+        'edit_link',
         'name',
-        'email',
         'phone_number',
         'landline',
         'city',
@@ -123,6 +155,9 @@ class MealRequestAdmin(admin.ModelAdmin):
         'confirm',
         'copy'
     )
+
+    def edit_link(self, request):
+        return obj_link(request, 'mealrequest', link_text='Edit&nbsp;request')
 
     def delivery_date(self, obj):
         return obj.delivery.date
@@ -318,19 +353,23 @@ class BaseDeliveryAdmin(admin.ModelAdmin):
 
 class MealDeliveryAdmin(BaseDeliveryAdmin):
     list_display = (
-        'id',
-        'request',
-        'status',
-        'chef',
-        'deliverer',
+        'edit_link',
         'date',
+        'request_link',
+        'request_phone',
+        'request_landline',
+        'chef_link',
+        'deliverer_link',
+        'status',
         'pickup_start',
         'pickup_end',
         'dropoff_start',
         'dropoff_end',
     )
+
     list_filter = (
         'status',
+        DeliveryLandlineFilter
     )
     actions = (
         'notify_recipients_delivery',
@@ -341,6 +380,29 @@ class MealDeliveryAdmin(BaseDeliveryAdmin):
     inlines = (
         MealDeliveryCommentInline,
     )
+
+    def request_phone(self, obj):
+        return obj.request.phone_number
+    request_phone.short_description = 'Requestor phone'
+
+    def request_landline(self, obj):
+        return 'No' if obj.request.can_receive_texts else 'Yes'
+    request_landline.short_description = "Landline"
+
+    def edit_link(self, delivery):
+        return obj_link(delivery, 'mealdelivery', link_text='Edit&nbsp;delivery')
+
+    def request_link(self, delivery):
+        return obj_link(delivery.request, 'mealrequest')
+    request_link.short_description = 'Request'
+
+    def chef_link(self, delivery):
+        return user_link(delivery.chef)
+    chef_link.short_description = 'Chef'
+
+    def deliverer_link(self, delivery):
+        return user_link(delivery.deliverer)
+    deliverer_link.short_description = 'Deliverer'
 
     def notify_recipients_delivery(self, request, queryset):
         self.send_notifications(request, queryset, 'send_recipient_delivery_notification')
