@@ -198,7 +198,7 @@ LONG_TEXT_LENGTH = 1024
 
 # Settings for pausing requests
 PAUSE_GROCERIES = 130
-PAUSE_MEALS = 30
+PAUSE_MEALS = 15
 
 # Grocery settings
 GROCERY_DELIVERY_DAYS = [
