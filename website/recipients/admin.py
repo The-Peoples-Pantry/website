@@ -47,14 +47,11 @@ class CompletedFilter(admin.SimpleListFilter):
 
     def lookups(self, request, model_admin):
         return (
-            ('Completed', 'Completed'),
-            ('Not Completed', 'Not Completed'),
+            ('Hide Completed', 'Hide Completed'),
         )
 
     def queryset(self, request, queryset):
-        if self.value() == 'Completed':
-            queryset = queryset.filter(**self.queryset_kwargs())
-        if self.value() == 'Not Completed':
+        if self.value() == 'Hide Completed':
             queryset = queryset.exclude(**self.queryset_kwargs())
         return queryset
 
