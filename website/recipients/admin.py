@@ -3,6 +3,7 @@ import uuid
 from datetime import timedelta, date
 from django.contrib import admin, messages
 from django import forms
+from django.core.exceptions import ObjectDoesNotExist
 from django.utils.html import format_html, format_html_join
 from core.models import GroceryPickupAddress
 from django.urls import reverse
@@ -35,6 +36,37 @@ def obj_link(obj, type, **kwargs):
         url = reverse('admin:recipients_%s_change' % type, args=(obj.id,))
         return format_html('<a href="%s">%s</a>' % (url, link_text))
     return obj
+
+
+class CompletedFilter(admin.SimpleListFilter):
+    title = 'Completed'
+    parameter_name = 'completed'
+
+    def queryset_kwargs(self):
+        raise NotImplementedError
+
+    def lookups(self, request, model_admin):
+        return (
+            ('Completed', 'Completed'),
+            ('Not Completed', 'Not Completed'),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == 'Completed':
+            queryset = queryset.filter(**self.queryset_kwargs())
+        if self.value() == 'Not Completed':
+            queryset = queryset.exclude(**self.queryset_kwargs())
+        return queryset
+
+
+class MealRequestCompletedFilter(CompletedFilter):
+    def queryset_kwargs(self):
+        return {'delivery__status': Status.DELIVERED}
+
+
+class MealDeliveryCompletedFilter(CompletedFilter):
+    def queryset_kwargs(self):
+        return {'status': Status.DELIVERED}
 
 
 class StatusFilter(admin.SimpleListFilter):
@@ -142,8 +174,10 @@ class MealRequestAdmin(admin.ModelAdmin):
         'created_at',
         'delivery_date',
         'status',
+        'completed',
     )
     list_filter = (
+        MealRequestCompletedFilter,
         StatusFilter,
         LandlineFilter,
         'created_at',
@@ -167,6 +201,14 @@ class MealRequestAdmin(admin.ModelAdmin):
     def status(self, obj):
         return obj.delivery.status
     status.admin_order_field = 'delivery__status'
+
+    def completed(self, obj):
+        try:
+            return obj.delivery.status == Status.DELIVERED
+        except ObjectDoesNotExist:
+            return False
+    completed.admin_order_field = 'delivery__status'
+    completed.boolean = True
 
     def landline(self, obj):
         return 'No' if obj.can_receive_texts else 'Yes'
@@ -383,9 +425,11 @@ class MealDeliveryAdmin(BaseDeliveryAdmin):
         'pickup_end',
         'dropoff_start',
         'dropoff_end',
+        'completed',
     )
 
     list_filter = (
+        MealDeliveryCompletedFilter,
         'status',
         DeliveryLandlineFilter
     )
@@ -421,6 +465,11 @@ class MealDeliveryAdmin(BaseDeliveryAdmin):
     def deliverer_link(self, delivery):
         return user_link(delivery.deliverer)
     deliverer_link.short_description = 'Deliverer'
+
+    def completed(self, obj):
+        return obj.status == Status.DELIVERED
+    completed.admin_order_field = 'status'
+    completed.boolean = True
 
     def notify_recipients_delivery(self, request, queryset):
         self.send_notifications(request, queryset, 'send_recipient_delivery_notification')
