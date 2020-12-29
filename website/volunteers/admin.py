@@ -2,6 +2,7 @@ from django.contrib import admin, messages
 from django.db import transaction
 from django.utils.translation import ngettext
 
+from core.admin import user_link
 from core.models import group_names
 from .models import Volunteer, VolunteerApplication
 
@@ -14,14 +15,18 @@ class VolunteerAdmin(admin.ModelAdmin):
 
 
 class VolunteerApplicationAdmin(admin.ModelAdmin):
-    list_display = ('name', 'user', 'role', 'approved')
+    list_display = ('app', 'name', 'user', 'role', 'approved')
     list_filter = ('approved', 'role')
     ordering = ('approved', )
     actions = ('approve', )
 
-    def name(self, app):
-        return app.user.volunteer.name
+    def name(self, application):
+        return user_link(application.user)
     name.short_description = 'Name'
+
+    def app(self, application):
+        return 'Edit application'
+    app.short_description = 'Application'
 
     @transaction.atomic
     def approve(self, request, queryset):
