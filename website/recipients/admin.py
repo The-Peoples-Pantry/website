@@ -6,7 +6,8 @@ from django import forms
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.html import format_html, format_html_join
 from core.models import GroceryPickupAddress
-from django.urls import reverse
+from core.admin import user_link, obj_link
+
 from .models import (
     MealRequest,
     MealRequestComment,
@@ -20,22 +21,6 @@ from .models import (
     SendNotificationException,
 )
 from django.utils.translation import ngettext
-
-
-def user_link(user):
-    if user:
-        display_text = user.volunteer.name or user
-        url = reverse('admin:volunteers_volunteer_change', args=(user.id,))
-        return format_html('<a href="%s">%s</a>' % (url, display_text))
-    return user
-
-
-def obj_link(obj, type, **kwargs):
-    if obj:
-        link_text = kwargs.get('link_text', str(obj))
-        url = reverse('admin:recipients_%s_change' % type, args=(obj.id,))
-        return format_html('<a href="%s">%s</a>' % (url, link_text))
-    return obj
 
 
 def short_time(time_obj):
