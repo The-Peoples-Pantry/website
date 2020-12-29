@@ -11,9 +11,9 @@
   {% for delivery in deliveries %}
     <div class="card mb-4">
       <div class="card-header font-weight-bold">
-        {{ delivery.date }}: Delivering {% if delivery.chef %}meals{% else %}groceries{% endif %} for
+        {{ delivery.date }}: Request #{{ delivery.request.id }} ({% if delivery.chef %}meals{% else %}groceries{% endif %} for
         {{ delivery.request.num_adults }} adult{{ delivery.request.num_adults | pluralize }}
-        and {{ delivery.request.num_children }} kid{{ delivery.request.num_children | pluralize }}
+        and {{ delivery.request.num_children }} kid{{ delivery.request.num_children | pluralize }})
         <form action="" method="post" onsubmit="return window.confirm('Are you sure you want to mark this delivery as complete? You cannot undo this!')" class="form float-right">
           {% csrf_token %}
           <input type="hidden" name="delivery_id" value="{{ delivery.uuid }}" />

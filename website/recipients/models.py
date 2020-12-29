@@ -169,8 +169,8 @@ class HelpRequest(ContactInfo):
         )
 
     def __str__(self):
-        return "%s: %d adult(s) and %d kid(s) in %s " % (
-            self.name, self.num_adults, self.num_children, self.city,
+        return "Request #%d (%s): %d adult(s) and %d kid(s) in %s " % (
+            self.id, self.name, self.num_adults, self.num_children, self.city,
         )
 
 
@@ -288,7 +288,7 @@ class BaseDelivery(models.Model):
         choices=Status.choices,
         default=Status.UNCONFIRMED
     )
-    date = models.DateField(null=True, blank=True)
+    date = models.DateField("Delivery date", null=True, blank=True)
     pickup_start = models.TimeField(null=True, blank=True)
     pickup_end = models.TimeField(null=True, blank=True)
     dropoff_start = models.TimeField(null=True, blank=True)
@@ -375,8 +375,8 @@ class GroceryDelivery(BaseDelivery):
         logger.info("Sent deliverer reminder notification text for Grocery bundle %d to %s", self.request.id, self.deliverer.volunteer.phone_number)
 
     def __str__(self):
-        return "[%s] Delivering %s to %s for %s" % (
-            self.status.capitalize(), self.request._meta.verbose_name.capitalize(), self.request.city, self.request.name,
+        return "[%s] Delivering request id #%d (%s) to %s for %s" % (
+            self.status.capitalize(), self.request.id, self.request._meta.verbose_name.capitalize(), self.request.city, self.request.name,
         )
 
 
@@ -484,11 +484,6 @@ class MealDelivery(BaseDelivery):
         send_text(self.deliverer.volunteer.phone_number, message)
         self.comments.create(comment=f"Sent a text to the deliverer: {message}")
         logger.info("Sent deliverer reminder notification text for Meal Request %d to %s", self.request.id, self.deliverer.volunteer.phone_number)
-
-    def __str__(self):
-        return "[%s] Delivering %s to %s for %s" % (
-            self.status.capitalize(), self.request._meta.verbose_name.capitalize(), self.request.city, self.request.name,
-        )
 
 
 class CommentModel(models.Model):
