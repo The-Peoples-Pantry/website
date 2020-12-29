@@ -42,6 +42,9 @@ class CompletedFilter(admin.SimpleListFilter):
     title = 'Completed'
     parameter_name = 'completed'
 
+    def queryset_kwargs(self):
+        raise NotImplementedError
+
     def lookups(self, request, model_admin):
         return (
             ('Completed', 'Completed'),
@@ -50,10 +53,20 @@ class CompletedFilter(admin.SimpleListFilter):
 
     def queryset(self, request, queryset):
         if self.value() == 'Completed':
-            queryset = queryset.filter(delivery__status=Status.DELIVERED)
+            queryset = queryset.filter(**self.queryset_kwargs())
         if self.value() == 'Not Completed':
-            queryset = queryset.exclude(delivery__status=Status.DELIVERED)
+            queryset = queryset.exclude(**self.queryset_kwargs())
         return queryset
+
+
+class MealRequestCompletedFilter(CompletedFilter):
+    def queryset_kwargs(self):
+        return {'delivery__status': Status.DELIVERED}
+
+
+class MealDeliveryCompletedFilter(CompletedFilter):
+    def queryset_kwargs(self):
+        return {'status': Status.DELIVERED}
 
 
 class StatusFilter(admin.SimpleListFilter):
@@ -164,7 +177,7 @@ class MealRequestAdmin(admin.ModelAdmin):
         'completed',
     )
     list_filter = (
-        CompletedFilter,
+        MealRequestCompletedFilter,
         StatusFilter,
         LandlineFilter,
         'created_at',
@@ -412,9 +425,11 @@ class MealDeliveryAdmin(BaseDeliveryAdmin):
         'pickup_end',
         'dropoff_start',
         'dropoff_end',
+        'completed',
     )
 
     list_filter = (
+        MealDeliveryCompletedFilter,
         'status',
         DeliveryLandlineFilter
     )
@@ -450,6 +465,11 @@ class MealDeliveryAdmin(BaseDeliveryAdmin):
     def deliverer_link(self, delivery):
         return user_link(delivery.deliverer)
     deliverer_link.short_description = 'Deliverer'
+
+    def completed(self, obj):
+        return obj.status == Status.DELIVERED
+    completed.admin_order_field = 'status'
+    completed.boolean = True
 
     def notify_recipients_delivery(self, request, queryset):
         self.send_notifications(request, queryset, 'send_recipient_delivery_notification')
