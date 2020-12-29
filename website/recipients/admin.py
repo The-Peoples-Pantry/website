@@ -38,6 +38,15 @@ def obj_link(obj, type, **kwargs):
     return obj
 
 
+def short_time(time_obj):
+    try:
+        return time_obj.strftime('%-I %p')
+    except ValueError:
+        return time_obj.strftime('%I %p')
+    except AttributeError:
+        return 'None'
+
+
 class CompletedFilter(admin.SimpleListFilter):
     title = 'Completed'
     parameter_name = 'completed'
@@ -414,17 +423,15 @@ class BaseDeliveryAdmin(admin.ModelAdmin):
 class MealDeliveryAdmin(BaseDeliveryAdmin):
     list_display = (
         'edit_link',
-        'date',
         'request_link',
         'request_phone',
         'request_landline',
         'chef_link',
         'deliverer_link',
         'status',
-        'pickup_start',
-        'pickup_end',
-        'dropoff_start',
-        'dropoff_end',
+        'date',
+        'pickup_range',
+        'dropoff_range',
         'completed',
     )
 
@@ -452,7 +459,7 @@ class MealDeliveryAdmin(BaseDeliveryAdmin):
     request_landline.short_description = "Landline"
 
     def edit_link(self, delivery):
-        return obj_link(delivery, 'mealdelivery', link_text='Edit&nbsp;delivery&nbsp;%d' % delivery.id)
+        return obj_link(delivery, 'mealdelivery', link_text='Edit&nbsp;delivery')
 
     def request_link(self, delivery):
         return obj_link(delivery.request, 'mealrequest')
@@ -465,6 +472,14 @@ class MealDeliveryAdmin(BaseDeliveryAdmin):
     def deliverer_link(self, delivery):
         return user_link(delivery.deliverer)
     deliverer_link.short_description = 'Deliverer'
+
+    def pickup_range(self, delivery):
+        return short_time(delivery.pickup_start) + ' - ' + short_time(delivery.pickup_end)
+    pickup_range.short_description = 'Pickup range'
+
+    def dropoff_range(self, delivery):
+        return short_time(delivery.dropoff_start) + ' - ' + short_time(delivery.dropoff_end)
+    dropoff_range.short_description = 'Dropoff range'
 
     def completed(self, obj):
         return obj.status == Status.DELIVERED

@@ -11,7 +11,7 @@
     {% for delivery in deliveries %}
       <div class="card mb-4">
         <div class="card-header font-weight-bold">
-          Meal for {{ delivery.request.num_adults }} adult{{ delivery.request.num_adults | pluralize }}
+          Request #{{ delivery.request.id }}: Meal for {{ delivery.request.num_adults }} adult{{ delivery.request.num_adults | pluralize }}
                 and {{ delivery.request.num_children }} kid{{ delivery.request.num_children | pluralize }}
                 {% if delivery.request.children_ages %}
                   (aged {{ delivery.request.children_ages }})
