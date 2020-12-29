@@ -112,7 +112,7 @@ class HelpRequest(ContactInfo):
     )
     availability = models.TextField(
         "Availability",
-        help_text="Please list the days and times that you're available to receive a delivery",
+        help_text="Our deliveries will be done on Fridays, Saturdays and Sundays between 12 and 8 PM. Please list the days and times that you're available to receive a delivery",
     )
 
     # Information about the requester
