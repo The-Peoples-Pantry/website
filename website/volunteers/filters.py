@@ -50,7 +50,6 @@ class DeliverySignupFilter(FilterSet):
         self.filters['request__city'].label = "City"
         self.filters['request__num_adults__lt'].label = "Number of adults in the household is less than"
         self.filters['request__num_children__lt'].label = "Number of children in the household is less than"
-        self.filters['date'].label = "Delivery date"
 
     class Meta:
         abstract = True
@@ -65,7 +64,6 @@ class MealDeliverySignupFilter(FilterSet):
             'request__city': ['exact'],
             'request__num_adults': ['lt'],
             'request__num_children': ['lt'],
-            'date': ['exact'],
         }
 
 
