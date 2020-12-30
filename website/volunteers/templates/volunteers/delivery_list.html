@@ -45,6 +45,9 @@
             </ul>
           </div>
         </div>
+        <p>
+          {{ delivery.request.delivery_details }}
+        </p>
         <a href="mailto:{{settings.REQUEST_COORDINATORS_EMAIL}},{{settings.DELIVERY_COORDINATORS_EMAIL}}?subject=Deliverer Change Request for Delivery ID {{ delivery.id }}" class="btn btn-primary">Request a change</a>
       </div>
     </div>
