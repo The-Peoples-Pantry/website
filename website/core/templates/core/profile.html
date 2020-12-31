@@ -36,11 +36,15 @@
 
 <div class="card-deck mt-5">
   {% if 'Chefs' not in groups %}
-  <div class="card text-center">
+  <div class="card">
     <img class="card-img-top" src="{% static 'chef.svg'%}" alt="Card image cap" height="200">
     <div class="card-body">
       <h5 class="card-title">Volunteer to be a chef</h5>
-      <p>Sign up to cook homemade meals for our community.</p>
+      <small>
+        <p>Chefs or cooking volunteers are responsible for signing up for meal requests, cooking for requesters, and doing brief coordination with delivery volunteers on delivery days (Fridays, Saturdays, and Sundays).</p>
+        <p>They are responsible for purchasing containers and ingredients for their meals and applying for reimbursement when needed. Time commitment varies depending on the chefs’ availability.</p>
+        <p>However, since The People’s Pantry provides four meals per person, cooking and packaging time depends on the number of people and requests to be done.</p>
+      </small>
     </div>
     <div class="card-footer">
       {% if 'Chefs' in pending_groups %}
@@ -53,11 +57,15 @@
   {% endif %}
 
   {% if 'Deliverers' not in groups %}
-  <div class="card text-center">
+  <div class="card">
     <img class="card-img-top" src="{% static 'deliverer.svg'%}" alt="Card image cap" height="200">
     <div class="card-body">
       <h5 class="card-title">Volunteer to be a deliverer</h5>
-      <p>Sign up to help deliver meals and groceries.</p>
+      <small>
+        <p>Delivery volunteers are responsible for picking up meals and/or grocery packages from a chef or picking point and delivering the food to the requesters.</p>
+        <p>They are responsible for ensuring the deliveries are done correctly and informing the logistics team of any problems that arise and when the delivery is completed. Time commitment varies depending on the volunteer’s availability.</p>
+        <p>Deliveries are done on Fridays, Saturdays, and Sundays starting noon, and the last pick up is at 5 PM. Deliveries take place within a 12.5 Km radius from the pickup point. </p>
+      </small>
     </div>
     <div class="card-footer">
       {% if 'Deliverers' in pending_groups %}
@@ -70,11 +78,16 @@
   {% endif %}
 
   {% if 'Organizers' not in groups %}
-  <div class="card  text-center">
+  <div class="card">
     <img class="card-img-top" src="{% static 'organizer.svg'%}" alt="Card image cap" height="200">
     <div class="card-body">
       <h5 class="card-title">Volunteer to be an organizer</h5>
-      <p>Send us an email if you'd like to help out with coordinating logistics.</p>
+      <small>
+        <p>Logistics volunteers are primarily involved in the organization and communication behind the work at TPP. </p>
+        <p>This requires organizing and scheduling deliveries, contacting and coordinating among members of different teams, reaching out to recipients, and more. Our work is highly collaborative and essential to the overall functioning of TPP.</p>
+        <p>The logistics work is divided amongst teams. Please, be mindful of the time commitment and your skills. As we are all volunteers, incorporating new members into the teams always entails effort and time that is valuable to keep TPP going.</p>
+        <p>To be a logistics volunteer, you must have consistent access to wifi and a laptop/desktop device. Although most teams have flexible schedules, volunteers must adhere to the weekly arranged shifts and a minimum time commitment of two months.</p>
+      </small>
     </div>
     <div class="card-footer">
       <a class="btn btn-primary" role="button" href="mailto:{{settings.VOLUNTEER_COORDINATORS_EMAIL}}?subject=Logistics coordinator application">Email us</a>
