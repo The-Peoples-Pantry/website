@@ -24,9 +24,13 @@ class InGroupFilter(admin.SimpleListFilter):
 
 
 class VolunteerAdmin(admin.ModelAdmin):
-    list_display = ('name', 'user', 'groups', 'city', 'training_complete', 'is_staff')
+    list_display = ('edit_link', 'name', 'user', 'groups', 'city', 'training_complete', 'is_staff')
     actions = ('remove_permissions',)
     list_filter = (InGroupFilter,)
+
+    def edit_link(self, obj):
+        return 'Edit'
+    edit_link.short_description = 'Volunteer'
 
     def groups(self, obj):
         return group_names(obj.user)
