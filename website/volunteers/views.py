@@ -93,7 +93,7 @@ class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
 
     def create_delivery(self, form, meal_request):
         if form.cleaned_data['can_deliver']:
-            delivery = MealDelivery.objects.create(
+            MealDelivery.objects.create(
                 request=meal_request,
                 deliverer=self.request.user,
                 chef=self.request.user,
@@ -105,7 +105,7 @@ class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
                 dropoff_end=form.cleaned_data['dropoff_end'],
             )
         else:
-            delivery = MealDelivery.objects.create(
+            MealDelivery.objects.create(
                 request=meal_request,
                 chef=self.request.user,
                 status=Status.CHEF_ASSIGNED,
@@ -113,11 +113,6 @@ class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
                 pickup_start=form.cleaned_data['pickup_start'],
                 pickup_end=form.cleaned_data['pickup_end'],
             )
-
-        try:
-            delivery.send_recipient_meal_notification()
-        except SendNotificationException:
-            logger.warn("Skipped sending meal notification for Meal Request %d to %s", meal_request.id, meal_request.phone_number)
 
 
 class GroceryDeliverySignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
