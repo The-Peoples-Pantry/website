@@ -1,15 +1,32 @@
 from django.contrib import admin, messages
+from django.contrib.auth.models import Group
 from django.db import transaction
 from django.utils.translation import ngettext
+
 
 from core.admin import user_link
 from core.models import group_names
 from .models import Volunteer, VolunteerApplication
 
 
+class InGroupFilter(admin.SimpleListFilter):
+    title = 'Groups'
+    parameter_name = 'groups'
+
+    def lookups(self, request, model_admin):
+        groups = Group.objects.all().values_list('name', flat=True)
+        return zip(groups, groups)
+
+    def queryset(self, request, queryset):
+        if self.value():
+            queryset = Volunteer.objects.filter(user__groups__name=self.value())
+        return queryset
+
+
 class VolunteerAdmin(admin.ModelAdmin):
     list_display = ('name', 'user', 'groups', 'city', 'training_complete', 'is_staff')
     actions = ('remove_permissions',)
+    list_filter = (InGroupFilter,)
 
     def groups(self, obj):
         return group_names(obj.user)
