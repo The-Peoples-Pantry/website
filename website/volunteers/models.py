@@ -126,6 +126,10 @@ class Volunteer(ContactInfo):
     )
     training_complete = models.BooleanField("Training Complete", default=False)
 
+    def remove_permissions(self):
+        self.user.groups.clear()
+        self.user.save()
+
 
 class VolunteerApplication(models.Model):
     class Meta:

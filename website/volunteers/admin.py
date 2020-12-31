@@ -8,10 +8,44 @@ from .models import Volunteer, VolunteerApplication
 
 
 class VolunteerAdmin(admin.ModelAdmin):
-    list_display = ('name', 'user', 'groups', 'city', 'training_complete')
+    list_display = ('name', 'user', 'groups', 'city', 'training_complete', 'is_staff')
+    actions = ('remove_permissions',)
 
     def groups(self, obj):
         return group_names(obj.user)
+
+    def is_staff(self, obj):
+        return obj.user.is_staff
+    is_staff.boolean = True
+
+    @transaction.atomic
+    def remove_permissions(self, request, queryset):
+        updated = 0
+
+        for volunteer in queryset:
+            if (volunteer.user == request.user):
+                self.message_user(
+                    request,
+                    "You cannot remove your own permissions, as that might prevent you from seeing this page",
+                    messages.WARNING
+                )
+            elif not volunteer.user.is_staff:
+                volunteer.remove_permissions()
+                updated += 1
+
+        if updated:
+            self.message_user(request, ngettext(
+                "Permissions have been removed from %d user.",
+                "Permissions have been removed from %d users.",
+                updated,
+            ) % updated, messages.SUCCESS)
+        else:
+            self.message_user(
+                request,
+                "All selected volunteers are staff (contact an admin to change this)",
+                messages.WARNING
+            )
+    remove_permissions.short_description = "Remove selected non-staff volunteers from ALL groups"
 
 
 class VolunteerApplicationAdmin(admin.ModelAdmin):
