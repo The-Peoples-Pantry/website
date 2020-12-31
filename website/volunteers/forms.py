@@ -105,7 +105,12 @@ I agree to follow the safety and security measures provided to me by The Peopleâ
         super(VolunteerApplicationForm, self).__init__(*args, **kwargs)
         for field in ['days_available', 'food_types', 'cooking_prefs', 'transportation_options']:
             if getattr(self.instance, field):
-                self.initial[field] = literal_eval(getattr(self.instance, field))
+                try:
+                    self.initial[field] = literal_eval(getattr(self.instance, field))
+                except ValueError:
+                    # Handle errors when the field is set to something invalid
+                    # This can happen if the value was set manually by a staff member through the admin
+                    pass
 
     class Meta:
         model = Volunteer
