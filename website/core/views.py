@@ -12,7 +12,7 @@ from volunteers.models import Volunteer
 class UserCreationView(FormView):
     form_class = UserCreationForm
     template_name = "core/signup.html"
-    success_url = reverse_lazy('public:index')
+    success_url = reverse_lazy('profile')
 
     def form_valid(self, form):
         # Save the form to create the user
