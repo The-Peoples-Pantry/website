@@ -164,6 +164,7 @@ class VolunteerApplication(models.Model):
         self.user.groups.add(group)
         self.approved = True
         self.save()
+        self.send_approved_email()
         return True
 
     def send_confirmation_email(self):
@@ -173,6 +174,50 @@ class VolunteerApplication(models.Model):
                 Just confirming that we received your request to join the {self.role} volunteer team for The People's Pantry.
                 We will be in touch with further training materials
             """),
+            [self.user.email],
+            reply_to=settings.VOLUNTEER_COORDINATORS_EMAIL,
+        )
+
+    def send_approved_email(self):
+        if self.role == VolunteerRoles.CHEFS:
+            body = dedent(f"""
+                Thank you for signing up to be a cooking volunteer with The People’s Pantry! We are a volunteer initiative dedicated to safely providing cooked meals and grocery packages to people who have been disproportionately affected by the COVID-19 pandemic.
+
+                You have been approved to become a chef with us. We are so glad to have you on board. Please, make sure to check our Cooking Volunteers Guidelines before signing up to cook for a requester: https://docs.google.com/document/d/1OCS-i_pm87MsT-POAbcDCKrv6SBA0J9tepOaETyLwmY/edit
+
+                You’ll also be added to join the People’s Pantry Workspace on Slack. Slack is the primary way in which we communicate with each other. If you have any questions or issues with cooking or delivery, you can contact the Chefs Coordinators at {settings.VOLUNTEER_COORDINATORS_EMAIL}.
+
+                The People’s Pantry thanks you sincerely for becoming a part of our community of volunteers. Our initiative depends on volunteers like you, and we simply cannot overstate our appreciation! Stay safe and healthy!
+
+                The People’s Pantry team
+            """)
+        elif self.role == VolunteerRoles.DELIVERERS:
+            body = dedent(f"""
+                Thank you for signing up to be a delivery volunteer with The People’s Pantry! We are a volunteer initiative dedicated to safely providing cooked meals and grocery packages to people who have been disproportionately affected by the COVID-19 pandemic.
+
+                You have been approved as a delivery volunteer. We are so glad to have you on board. Please, make sure to check our Delivery Guidelines before signing up to do any deliveries: https://docs.google.com/document/d/1Kxf0Zz3dMO7vI410VMY5sTJX3PMh7Mt8dGQIgNmQwGs/edit
+
+                You’ll also be added to join the People’s Pantry Workspace on Slack. Slack is the primary way in which we communicate with each other. If you have any questions or issues with cooking or delivery, you can contact the Delivery Volunteers Coordinators at {settings.VOLUNTEER_COORDINATORS_EMAIL}.
+
+                The People’s Pantry thanks you sincerely for becoming a part of our community of volunteers. Our initiative depends on volunteers like you, and we simply cannot overstate our appreciation! Stay safe and healthy!
+
+                The People’s Pantry team
+            """)
+        elif self.role == VolunteerRoles.ORGANIZERS:
+            body = dedent(f"""
+                Thank you for signing up to be a logistics volunteer with The People’s Pantry! We are a volunteer initiative dedicated to safely providing cooked meals and grocery packages to people who have been disproportionately affected by the COVID-19 pandemic.
+
+                You have been approved as a logistics volunteer. We are so glad to have you on board. Please, make sure to check our Logistics Volunteers Guidelines before proceeding to do anything else: https://docs.google.com/document/d/16IY8xmK8oTgC-yp-fCpkjCFPF-kJaK8l5vpoSDvTXWw/edit
+
+                You’ll also be added to join the People’s Pantry Workspace on Slack. Slack is the primary way in which we communicate with each other. If you have any questions or issues with cooking or delivery, you can contact the Central Volunteers Intake Team at {settings.VOLUNTEER_COORDINATORS_EMAIL}
+
+                The People’s Pantry thanks you sincerely for becoming a part of our community of volunteers. Our initiative depends on volunteers like you, and we simply cannot overstate our appreciation! Stay safe and healthy!
+
+                The People’s Pantry team
+            """)
+        custom_send_mail(
+            "Your volunteer application for The People's Pantry has been approved!",
+            body,
             [self.user.email],
             reply_to=settings.VOLUNTEER_COORDINATORS_EMAIL,
         )
