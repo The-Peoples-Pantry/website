@@ -49,6 +49,18 @@ class VolunteerRoles(models.TextChoices):
     ORGANIZERS = 'Organizers'
 
 
+# Organizer volunteers fall into the following categories
+class OrganizerTeams(models.TextChoices):
+    REQUESTS = ('Requests', 'Requests')
+    VOLUNTEER_INTAKE = ('Volunteer Intake', 'Central Volunteer Intake')
+    CHEF_COORDINATORS = ('Chef Coordinators', 'Chefs Coordinators')
+    DELIVERER_COORDINATORS = ('Deliverer Coordinators', 'Delivery Volunteers Coordinators')
+    FINANCES = ('Finances', 'Grants and Finances')
+    TECH = ('Tech', 'Tech')
+    SOCIAL_MEDIA = ('Social Media', 'Social Media')
+    OUTREACH = ('Outreach', 'Outreach')
+
+
 class Volunteer(ContactInfo):
     user = models.OneToOneField(
         User,
@@ -126,6 +138,13 @@ class Volunteer(ContactInfo):
     )
     training_complete = models.BooleanField("Training Complete", default=False)
 
+    # Fields for organizers only
+    organizer_teams = models.CharField(
+        "Organizer teams",
+        max_length=settings.DEFAULT_LENGTH,
+        blank=True,
+    )
+
     def remove_permissions(self):
         self.user.groups.clear()
         self.user.save()
@@ -145,6 +164,11 @@ class VolunteerApplication(models.Model):
     role = models.CharField(
         max_length=50,
         choices=VolunteerRoles.choices,
+    )
+    organizer_teams = models.CharField(
+        "Organizer teams",
+        max_length=settings.DEFAULT_LENGTH,
+        blank=True,
     )
     approved = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
