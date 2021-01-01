@@ -7,40 +7,33 @@
   <div class="col-lg-8 mr-auto ml-auto">
     <h1>Volunteer to {% block application_type %}{% endblock application_type %}</h1>
     <div class="alert alert-info">
+    {% block alert_content %}
       <p>Please read the following <strong>Requirements for volunteering</strong> carefully:</p>
 
-      <div>
-        <h6>Health</h6>
-          <p>
-            Please do not volunteer if you are currently experiencing any of the following symptoms or have experienced them within the last 14 days:
-          </p>
-          <ul>
-            <li>Fever</li>
-            <li>Shortness of breath or difficulty breathing</li>
-            <li>Fatigue</li>
-            <li>Flu-like symptoms</li>
-            <li>Upper respiratory symptoms</li>
-            <li>Loss of taste and/or smell</li>
-            <li>You have had close contact with someone in self-isolation or who is experiencing any of the above health symptoms within the last 14 days</li>
-            <li>You have had close contact with someone who is awaiting test results or has otherwise been diagnosed with COVID-19 within the last 14 days</li>
-          </ul>
-      </div>
+      <h6>Health</h6>
+      <p>Please do not volunteer if you are currently experiencing any of the following symptoms or have experienced them within the last 14 days:</p>
+      <ul>
+        <li>Fever</li>
+        <li>Shortness of breath or difficulty breathing</li>
+        <li>Fatigue</li>
+        <li>Flu-like symptoms</li>
+        <li>Upper respiratory symptoms</li>
+        <li>Loss of taste and/or smell</li>
+        <li>You have had close contact with someone in self-isolation or who is experiencing any of the above health symptoms within the last 14 days</li>
+        <li>You have had close contact with someone who is awaiting test results or has otherwise been diagnosed with COVID-19 within the last 14 days</li>
+      </ul>
 
-      <div>
-        <h6>Travel</h6>
-        <p>
-          Please do not volunteer if any of the following apply to you:
-        </p>
-        <ul>
-          <li>You have travelled outside of Canada in the last 14 days</li>
-          <li>You have had close contact with anyone who has travelled outside of Canada within the last 14 days</li>
-          <li>You have been in a crowd with 200+ people within the last 14 days</li>
-        </ul>
-      </div>
-      <div>
-        If you meet all of the above requirements for volunteering, please fill out this form to the best of your abilities.
-      </div>
-    </div class>
+      <h6>Travel</h6>
+      <p>Please do not volunteer if any of the following apply to you:</p>
+      <ul>
+        <li>You have travelled outside of Canada in the last 14 days</li>
+        <li>You have had close contact with anyone who has travelled outside of Canada within the last 14 days</li>
+        <li>You have been in a crowd with 200+ people within the last 14 days</li>
+      </ul>
+
+      <p>If you meet all of the above requirements for volunteering, please fill out this form to the best of your abilities.</p>
+    {% endblock alert_content %}
+    </div>
 
     <form action="" method="post" class="form">
       {% csrf_token %}
