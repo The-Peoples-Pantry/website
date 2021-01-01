@@ -4,7 +4,7 @@ from textwrap import dedent
 import datetime
 from django import forms
 from recipients.models import MealDelivery, GroceryDelivery
-from .models import Volunteer, CookingTypes, FoodTypes, TransportationTypes, DaysOfWeek
+from .models import Volunteer, CookingTypes, FoodTypes, TransportationTypes, DaysOfWeek, OrganizerTeams
 
 
 logger = logging.getLogger(__name__)
@@ -143,7 +143,8 @@ class ChefApplyForm(VolunteerApplicationForm):
             'user',
             'email',
             'pronouns',
-            'training_complete'
+            'training_complete',
+            'organizer_teams',
         ]
 
 
@@ -158,6 +159,42 @@ class DeliveryApplyForm(VolunteerApplicationForm):
     class Meta(VolunteerApplicationForm.Meta):
         model = Volunteer
         exclude = [
+            'cooking_prefs',
+            'food_types',
+            'have_cleaning_supplies',
+            'baking_volume',
+            'user',
+            'email',
+            'pronouns',
+            'training_complete',
+            'organizer_teams',
+        ]
+
+
+class OrganizerApplyForm(VolunteerApplicationForm):
+    confirm_minimum_commitment = forms.BooleanField(
+        label="I can commit to the two-month minimum volunteer commitment",
+        required=True,
+    )
+    organizer_teams = forms.MultipleChoiceField(
+        label="Which teams would you be interested in joining?",
+        required=True,
+        widget=forms.CheckboxSelectMultiple,
+        choices=OrganizerTeams.choices,
+    )
+
+    policy_text = dedent("""
+        I acknowledge that as a volunteer, I am being entrusted with confidential information. I understand and agree to the following: I shall not, at any time during or subsequent to my volunteering for The People's Pantry, disclose or make use of confidential information or other's personal information without permission. Examples include, but are not limited to, names, addresses, and phone numbers. I will also respect the privacy of the recipients and other volunteers and will not make contact with them beyond the context of a food pick-up/delivery.
+
+        I agree to follow the safety and security measures provided to me by The People’s Pantry, the Canadian government, and other trusted health information providers to the best of my ability while volunteering, both for myself and others. I acknowledge that I am fully responsible for my safety and security, as well as that of my personal belongings while volunteering. I specifically waive all liabilities, claims and/or actions against all organizations, communities, and affiliates part of The People's Pantry.
+    """)
+
+    class Meta(VolunteerApplicationForm.Meta):
+        model = Volunteer
+        exclude = [
+            'transportation_options',
+            'pickup_locations',
+            'dropoff_locations',
             'cooking_prefs',
             'food_types',
             'have_cleaning_supplies',

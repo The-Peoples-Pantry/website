@@ -12,5 +12,7 @@ urlpatterns = [
     path('delivery-signup', views.MealDeliverySignupView.as_view(), name='delivery_signup_meals'),
     path('delivery-signup-groceries', views.GroceryDeliverySignupView.as_view(), name='delivery_signup_groceries'),
     path('delivery-list', views.DeliveryIndexView.as_view(), name='delivery_list'),
+    path('organizer-application', views.OrganizerApplicationView.as_view(), name='organizer_application'),
+    path('organizer-application-received', views.OrganizerApplicationReceivedView.as_view(), name='organizer_application_received'),
     path('volunteer-centre', views.VolunteerResourcesView.as_view(), name='volunteer_centre'),
 ]

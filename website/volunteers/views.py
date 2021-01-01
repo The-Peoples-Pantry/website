@@ -16,7 +16,7 @@ from core.models import has_group
 from recipients.models import MealRequest, GroceryRequest, GroceryDelivery, MealDelivery, Status, SendNotificationException
 from public.views import GroupView
 from website.maps import distance
-from .forms import GroceryDeliverySignupForm, MealDeliverySignupForm, ChefSignupForm, ChefApplyForm, DeliveryApplyForm
+from .forms import GroceryDeliverySignupForm, MealDeliverySignupForm, ChefSignupForm, ChefApplyForm, DeliveryApplyForm, OrganizerApplyForm
 from .models import VolunteerApplication, VolunteerRoles, Volunteer
 from .filters import ChefSignupFilter, MealDeliverySignupFilter, GroceryDeliverySignupFilter
 
@@ -365,6 +365,33 @@ class ChefApplicationView(LoginRequiredMixin, FormView, UpdateView):
 
 class ChefApplicationReceivedView(LoginRequiredMixin, TemplateView):
     template_name = "volunteers/chef_application_received.html"
+
+
+class OrganizerApplicationView(LoginRequiredMixin, FormView, UpdateView):
+    form_class = OrganizerApplyForm
+    template_name = "volunteers/organizer_application.html"
+    success_url = reverse_lazy('volunteers:organizer_application_received')
+
+    def get_object(self):
+        return Volunteer.objects.get(user=self.request.user)
+
+    def get(self, request, *args, **kwargs):
+        if VolunteerApplication.has_applied(self.request.user, VolunteerRoles.ORGANIZERS):
+            return redirect(self.success_url)
+        return super().get(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        application = VolunteerApplication.objects.create(
+            user=self.request.user,
+            role=VolunteerRoles.ORGANIZERS,
+            organizer_teams=form.cleaned_data["organizer_teams"],
+        )
+        application.send_confirmation_email()
+        return super().form_valid(form)
+
+
+class OrganizerApplicationReceivedView(LoginRequiredMixin, TemplateView):
+    template_name = "volunteers/organizer_application_received.html"
 
 
 class VolunteerResourcesView(LoginRequiredMixin, TemplateView):
