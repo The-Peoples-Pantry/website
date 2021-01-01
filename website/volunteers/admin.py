@@ -24,7 +24,7 @@ class InGroupFilter(admin.SimpleListFilter):
 
 
 class VolunteerAdmin(admin.ModelAdmin):
-    list_display = ('edit_link', 'name', 'user', 'groups', 'city', 'training_complete', 'is_staff')
+    list_display = ('edit_link', 'name', 'user', 'groups', 'organizer_teams', 'city', 'training_complete', 'is_staff')
     actions = ('remove_permissions',)
     list_filter = (InGroupFilter,)
 
@@ -70,7 +70,7 @@ class VolunteerAdmin(admin.ModelAdmin):
 
 
 class VolunteerApplicationAdmin(admin.ModelAdmin):
-    list_display = ('app', 'name', 'user', 'role', 'approved')
+    list_display = ('app', 'name', 'user', 'role', 'organizer_teams', 'approved')
     list_filter = ('approved', 'role')
     ordering = ('approved', )
     actions = ('approve', )

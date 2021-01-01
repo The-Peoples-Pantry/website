@@ -16,7 +16,7 @@ from core.models import has_group
 from recipients.models import MealRequest, GroceryRequest, GroceryDelivery, MealDelivery, Status, SendNotificationException
 from public.views import GroupView
 from website.maps import distance
-from .forms import GroceryDeliverySignupForm, MealDeliverySignupForm, ChefSignupForm, ChefApplyForm, DeliveryApplyForm
+from .forms import GroceryDeliverySignupForm, MealDeliverySignupForm, ChefSignupForm, ChefApplyForm, DeliveryApplyForm, OrganizerApplyForm
 from .models import VolunteerApplication, VolunteerRoles, Volunteer
 from .filters import ChefSignupFilter, MealDeliverySignupFilter, GroceryDeliverySignupFilter
 
@@ -321,50 +321,48 @@ class DeliveryIndexView(LoginRequiredMixin, GroupView, ListView):
 #                                                                  #
 ####################################################################
 
-class DeliveryApplicationView(LoginRequiredMixin, FormView, UpdateView):
+class VolunteerApplicationView(LoginRequiredMixin, FormView, UpdateView):
+    success_url = reverse_lazy('volunteers:application_received')
+
+    def get_object(self):
+        return Volunteer.objects.get(user=self.request.user)
+
+    def get(self, request, *args, **kwargs):
+        if VolunteerApplication.has_applied(self.request.user, self.role):
+            return redirect(self.success_url)
+        return super().get(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        organizer_teams = form.cleaned_data.get("organizer_teams", "")
+        application = VolunteerApplication.objects.create(
+            user=self.request.user,
+            role=self.role,
+            organizer_teams=organizer_teams
+        )
+        application.send_confirmation_email()
+        return super().form_valid(form)
+
+
+class DeliveryApplicationView(VolunteerApplicationView):
+    role = VolunteerRoles.DELIVERERS
     form_class = DeliveryApplyForm
     template_name = "volunteers/delivery_application.html"
-    success_url = reverse_lazy('volunteers:delivery_application_received')
-
-    def get_object(self):
-        return Volunteer.objects.get(user=self.request.user)
-
-    def get(self, request, *args, **kwargs):
-        if VolunteerApplication.has_applied(self.request.user, VolunteerRoles.DELIVERERS):
-            return redirect(self.success_url)
-        return super().get(request, *args, **kwargs)
-
-    def form_valid(self, form):
-        application = VolunteerApplication.objects.create(user=self.request.user, role=VolunteerRoles.DELIVERERS)
-        application.send_confirmation_email()
-        return super().form_valid(form)
 
 
-class DeliveryApplicationReceivedView(LoginRequiredMixin, TemplateView):
-    template_name = "volunteers/delivery_application_received.html"
-
-
-class ChefApplicationView(LoginRequiredMixin, FormView, UpdateView):
+class ChefApplicationView(VolunteerApplicationView):
+    role = VolunteerRoles.CHEFS
     form_class = ChefApplyForm
     template_name = "volunteers/chef_application.html"
-    success_url = reverse_lazy('volunteers:chef_application_received')
-
-    def get_object(self):
-        return Volunteer.objects.get(user=self.request.user)
-
-    def get(self, request, *args, **kwargs):
-        if VolunteerApplication.has_applied(self.request.user, VolunteerRoles.CHEFS):
-            return redirect(self.success_url)
-        return super().get(request, *args, **kwargs)
-
-    def form_valid(self, form):
-        application = VolunteerApplication.objects.create(user=self.request.user, role=VolunteerRoles.CHEFS)
-        application.send_confirmation_email()
-        return super().form_valid(form)
 
 
-class ChefApplicationReceivedView(LoginRequiredMixin, TemplateView):
-    template_name = "volunteers/chef_application_received.html"
+class OrganizerApplicationView(VolunteerApplicationView):
+    role = VolunteerRoles.ORGANIZERS
+    form_class = OrganizerApplyForm
+    template_name = "volunteers/organizer_application.html"
+
+
+class ApplicationReceivedView(LoginRequiredMixin, TemplateView):
+    template_name = "volunteers/application_received.html"
 
 
 class VolunteerResourcesView(LoginRequiredMixin, TemplateView):
