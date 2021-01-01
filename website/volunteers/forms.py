@@ -86,13 +86,15 @@ class VolunteerApplicationForm(forms.ModelForm):
         choices=DaysOfWeek.choices,
     )
 
-    policy_text = dedent("""I acknowledge that I have read and understood the volunteer requirements presented at the beginning of this form pertaining to health and travel restrictions. I certify that you meet all of the requirements to volunteer.
+    policy_text = dedent("""
+        I acknowledge that I have read and understood the volunteer requirements presented at the beginning of this form pertaining to health and travel restrictions. I certify that you meet all of the requirements to volunteer.
 
-I acknowledge that I will, to the best of my ability, only prepare foods I feel comfortable making, follow all standard safe cooking guidelines (e.g. thoroughly cooking meat, not using any expired products, storing foods at safe temperatures, etc.), be cognizant of other's food restrictions or allergies and only volunteer to cook for a family if you can comply with these restrictions, be truthful and thorough to list all ingredients where applicable.
+        I acknowledge that I will, to the best of my ability, only prepare foods I feel comfortable making, follow all standard safe cooking guidelines (e.g. thoroughly cooking meat, not using any expired products, storing foods at safe temperatures, etc.), be cognizant of other's food restrictions or allergies and only volunteer to cook for a family if you can comply with these restrictions, be truthful and thorough to list all ingredients where applicable.
 
-I acknowledge that as a volunteer, I am being entrusted with confidential information. I understand and agree to the following: I shall not, at any time during or subsequent to my volunteering for The People's Pantry, disclose or make use of confidential information or other's personal information without permission. Examples include, but are not limited to, names, addresses, and phone numbers. I will also respect the privacy of the recipients and other volunteers and will not make contact with them beyond the context of a food pick-up/delivery.
+        I acknowledge that as a volunteer, I am being entrusted with confidential information. I understand and agree to the following: I shall not, at any time during or subsequent to my volunteering for The People's Pantry, disclose or make use of confidential information or other's personal information without permission. Examples include, but are not limited to, names, addresses, and phone numbers. I will also respect the privacy of the recipients and other volunteers and will not make contact with them beyond the context of a food pick-up/delivery.
 
-I agree to follow the safety and security measures provided to me by The People’s Pantry, the Canadian government, and other trusted health information providers to the best of my ability while volunteering, both for myself and others. I acknowledge that I am fully responsible for my safety and security, as well as that of my personal belongings, while volunteering. I specifically waive all liabilities, claims and/or actions against all organizations, communities, and affiliates part of the The People's Pantry.""")
+        I agree to follow the safety and security measures provided to me by The People’s Pantry, the Canadian government, and other trusted health information providers to the best of my ability while volunteering, both for myself and others. I acknowledge that I am fully responsible for my safety and security, as well as that of my personal belongings, while volunteering. I specifically waive all liabilities, claims and/or actions against all organizations, communities, and affiliates part of the The People's Pantry.
+    """)
 
     accept_terms = forms.BooleanField(
         label="I have carefully read and understood these terms.",
