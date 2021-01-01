@@ -186,6 +186,10 @@ class VolunteerApplication(models.Model):
             return False
         group = Group.objects.get(name=self.role)
         self.user.groups.add(group)
+        if self.role == VolunteerRoles.ORGANIZERS:
+            # Organizers get staff status so they can access the Admin pages
+            self.user.is_staff = True
+            self.user.save()
         self.approved = True
         self.save()
         self.send_approved_email()
