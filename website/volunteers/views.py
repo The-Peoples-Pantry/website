@@ -322,6 +322,8 @@ class DeliveryIndexView(LoginRequiredMixin, GroupView, ListView):
 ####################################################################
 
 class VolunteerApplicationView(LoginRequiredMixin, FormView, UpdateView):
+    success_url = reverse_lazy('volunteers:application_received')
+
     def get_object(self):
         return Volunteer.objects.get(user=self.request.user)
 
@@ -345,33 +347,22 @@ class DeliveryApplicationView(VolunteerApplicationView):
     role = VolunteerRoles.DELIVERERS
     form_class = DeliveryApplyForm
     template_name = "volunteers/delivery_application.html"
-    success_url = reverse_lazy('volunteers:delivery_application_received')
-
-
-class DeliveryApplicationReceivedView(LoginRequiredMixin, TemplateView):
-    template_name = "volunteers/delivery_application_received.html"
 
 
 class ChefApplicationView(VolunteerApplicationView):
     role = VolunteerRoles.CHEFS
     form_class = ChefApplyForm
     template_name = "volunteers/chef_application.html"
-    success_url = reverse_lazy('volunteers:chef_application_received')
-
-
-class ChefApplicationReceivedView(LoginRequiredMixin, TemplateView):
-    template_name = "volunteers/chef_application_received.html"
 
 
 class OrganizerApplicationView(VolunteerApplicationView):
     role = VolunteerRoles.ORGANIZERS
     form_class = OrganizerApplyForm
     template_name = "volunteers/organizer_application.html"
-    success_url = reverse_lazy('volunteers:organizer_application_received')
 
 
-class OrganizerApplicationReceivedView(LoginRequiredMixin, TemplateView):
-    template_name = "volunteers/organizer_application_received.html"
+class ApplicationReceivedView(LoginRequiredMixin, TemplateView):
+    template_name = "volunteers/application_received.html"
 
 
 class VolunteerResourcesView(LoginRequiredMixin, TemplateView):
