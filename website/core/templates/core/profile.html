@@ -90,7 +90,7 @@
       </small>
     </div>
     <div class="card-footer">
-      <a class="btn btn-primary" role="button" href="mailto:{{settings.VOLUNTEER_COORDINATORS_EMAIL}}?subject=Logistics coordinator application">Email us</a>
+      <a class="btn btn-primary" role="button" href="{% url 'volunteers:organizer_application' %}">Apply now</a>
     </div>
   </div>
   {% endif %}
