@@ -4,6 +4,8 @@ from django.contrib.auth.models import Group, User
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 from django.conf import settings
+from multiselectfield import MultiSelectField
+
 from core.models import ContactInfo
 from website.mail import custom_send_mail
 
@@ -155,9 +157,12 @@ class Volunteer(ContactInfo):
     training_complete = models.BooleanField("Training Complete", default=False)
 
     # Fields for organizers only
-    organizer_teams = models.CharField(
+    organizer_teams = MultiSelectField(
         "Organizer teams",
+        help_text="Which teams would you be interested in joining?",
         max_length=settings.DEFAULT_LENGTH,
+        choices=OrganizerTeams.choices,
+        min_choices=1,
         blank=True,
     )
 
@@ -185,9 +190,12 @@ class VolunteerApplication(models.Model):
         max_length=50,
         choices=VolunteerRoles.choices,
     )
-    organizer_teams = models.CharField(
+    organizer_teams = MultiSelectField(
         "Organizer teams",
+        help_text="Which teams would you be interested in joining?",
         max_length=settings.DEFAULT_LENGTH,
+        choices=OrganizerTeams.choices,
+        min_choices=1,
         blank=True,
     )
     approved = models.BooleanField(default=False)

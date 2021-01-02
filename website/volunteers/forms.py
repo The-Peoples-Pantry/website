@@ -3,8 +3,8 @@ from ast import literal_eval
 from textwrap import dedent
 import datetime
 from django import forms
-from recipients.models import MealDelivery
-from .models import Volunteer, CookingTypes, FoodTypes, TransportationTypes, DaysOfWeek, OrganizerTeams
+from recipients.models import MealDelivery, GroceryDelivery
+from .models import Volunteer, CookingTypes, FoodTypes, TransportationTypes, DaysOfWeek
 
 
 logger = logging.getLogger(__name__)
@@ -163,12 +163,6 @@ class OrganizerApplyForm(VolunteerApplicationForm):
     confirm_minimum_commitment = forms.BooleanField(
         label="I can commit to the two-month minimum volunteer commitment",
         required=True,
-    )
-    organizer_teams = forms.MultipleChoiceField(
-        label="Which teams would you be interested in joining?",
-        required=True,
-        widget=forms.CheckboxSelectMultiple,
-        choices=OrganizerTeams.choices,
     )
 
     policy_text = dedent("""
