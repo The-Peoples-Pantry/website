@@ -78,19 +78,6 @@ class VolunteerApplicationForm(forms.ModelForm):
         required=True
     )
 
-    # I know this is ugly but this is the cleanest way I could find of
-    # prepopulating a multiple choice field with values that are stored as a charstring
-    def __init__(self, *args, **kwargs):
-        super(VolunteerApplicationForm, self).__init__(*args, **kwargs)
-        for field in []:
-            if getattr(self.instance, field):
-                try:
-                    self.initial[field] = literal_eval(getattr(self.instance, field))
-                except ValueError:
-                    # Handle errors when the field is set to something invalid
-                    # This can happen if the value was set manually by a staff member through the admin
-                    pass
-
     class Meta:
         model = Volunteer
         exclude = ['user']
