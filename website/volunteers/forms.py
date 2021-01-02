@@ -63,13 +63,6 @@ class VolunteerApplicationForm(forms.ModelForm):
         required=True,
     )
 
-    days_available = forms.MultipleChoiceField(
-        label="What days of the week are you available to volunteer?",
-        required=True,
-        widget=forms.CheckboxSelectMultiple,
-        choices=DaysOfWeek.choices,
-    )
-
     policy_text = dedent("""
         I acknowledge that I have read and understood the volunteer requirements presented at the beginning of this form pertaining to health and travel restrictions. I certify that you meet all of the requirements to volunteer.
 
@@ -89,7 +82,7 @@ class VolunteerApplicationForm(forms.ModelForm):
     # prepopulating a multiple choice field with values that are stored as a charstring
     def __init__(self, *args, **kwargs):
         super(VolunteerApplicationForm, self).__init__(*args, **kwargs)
-        for field in ['days_available']:
+        for field in []:
             if getattr(self.instance, field):
                 try:
                     self.initial[field] = literal_eval(getattr(self.instance, field))

@@ -86,10 +86,12 @@ class Volunteer(ContactInfo):
         null=True,
         blank=True
     )
-    days_available = models.CharField(
+    days_available = MultiSelectField(
         "Days available",
         help_text="What days of the week are you available to volunteer?",
         max_length=settings.DEFAULT_LENGTH,
+        choices=DaysOfWeek.choices,
+        min_choices=1,
         null=True
     )
     total_hours_available = models.CharField(
