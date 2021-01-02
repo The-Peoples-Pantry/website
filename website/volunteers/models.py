@@ -127,10 +127,12 @@ class Volunteer(ContactInfo):
         null=True,
         blank=True
     )
-    food_types = models.CharField(
+    food_types = MultiSelectField(
         "Food types",
         help_text="What kind of meals/baked goods are you able to prepare? Check all that apply.",
         max_length=settings.DEFAULT_LENGTH,
+        choices=FoodTypes.choices,
+        min_choices=1,
         null=True,
         blank=True
     )
