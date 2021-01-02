@@ -30,6 +30,8 @@ class TransportationTypes(models.TextChoices):
     SM_CAR = 'Small car', 'Small car'
     BIKE_SUMMER = 'Bike - Spring to Fall deliveries only', 'Bike - Spring to Fall deliveries only'
     BIKE_ALL = 'Bike - Can deliver in snow', 'Bike - Can deliver in snow'
+    PEDESTRIAN = 'Pedestrian', 'Pedestrian'
+    PUBLIC_TRANSIT = 'Public Transit', 'Public Transit'
 
 
 class DaysOfWeek(models.TextChoices):
