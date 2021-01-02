@@ -89,7 +89,7 @@ class VolunteerApplicationForm(forms.ModelForm):
     # prepopulating a multiple choice field with values that are stored as a charstring
     def __init__(self, *args, **kwargs):
         super(VolunteerApplicationForm, self).__init__(*args, **kwargs)
-        for field in ['days_available', 'food_types', 'cooking_prefs', 'transportation_options']:
+        for field in ['days_available', 'food_types', 'cooking_prefs']:
             if getattr(self.instance, field):
                 try:
                     self.initial[field] = literal_eval(getattr(self.instance, field))
@@ -136,13 +136,6 @@ class ChefApplyForm(VolunteerApplicationForm):
 
 
 class DeliveryApplyForm(VolunteerApplicationForm):
-    transportation_options = forms.MultipleChoiceField(
-        label="What means of transportation do you have access to for deliveries? Check all that apply.",
-        required=True,
-        widget=forms.CheckboxSelectMultiple,
-        choices=TransportationTypes.choices,
-    )
-
     class Meta(VolunteerApplicationForm.Meta):
         model = Volunteer
         exclude = [

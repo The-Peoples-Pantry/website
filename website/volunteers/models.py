@@ -147,12 +147,14 @@ class Volunteer(ContactInfo):
     )
 
     # Fields for delivery people only
-    transportation_options = models.CharField(
+    transportation_options = MultiSelectField(
         "Transportation options",
         help_text="What means of transportation do you have access to for deliveries? Check all that apply.",
         max_length=settings.DEFAULT_LENGTH,
-        null=True,
-        blank=True
+        choices=TransportationTypes.choices,
+        min_choices=1,
+        blank=True,
+        null=True
     )
     training_complete = models.BooleanField("Training Complete", default=False)
 
