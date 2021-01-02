@@ -118,10 +118,12 @@ class Volunteer(ContactInfo):
     )
 
     # Fields for cooks only
-    cooking_prefs = models.CharField(
+    cooking_prefs = MultiSelectField(
         "Cooking type",
         help_text="What do you prefer to cook/bake? Check all that apply.",
         max_length=settings.DEFAULT_LENGTH,
+        choices=CookingTypes.choices,
+        min_choices=1,
         null=True,
         blank=True
     )
