@@ -58,11 +58,6 @@ class MealDeliveryDateInput(forms.Select):
 
 
 class VolunteerApplicationForm(forms.ModelForm):
-    have_ppe = forms.BooleanField(
-        label="I have access to personal protective equipment such as masks, gloves",
-        required=True,
-    )
-
     policy_text = dedent("""
         I acknowledge that I have read and understood the volunteer requirements presented at the beginning of this form pertaining to health and travel restrictions. I certify that you meet all of the requirements to volunteer.
 
@@ -73,6 +68,10 @@ class VolunteerApplicationForm(forms.ModelForm):
         I agree to follow the safety and security measures provided to me by The People’s Pantry, the Canadian government, and other trusted health information providers to the best of my ability while volunteering, both for myself and others. I acknowledge that I am fully responsible for my safety and security, as well as that of my personal belongings, while volunteering. I specifically waive all liabilities, claims and/or actions against all organizations, communities, and affiliates part of the The People's Pantry.
     """)
 
+    have_ppe = forms.BooleanField(
+        label="I have access to personal protective equipment such as masks, gloves",
+        required=True,
+    )
     accept_terms = forms.BooleanField(
         label="I have carefully read and understood these terms.",
         required=True
