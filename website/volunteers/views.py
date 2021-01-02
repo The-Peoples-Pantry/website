@@ -327,10 +327,10 @@ class VolunteerApplicationView(LoginRequiredMixin, FormView, UpdateView):
     def get_object(self):
         return Volunteer.objects.get(user=self.request.user)
 
-    def get(self, request, *args, **kwargs):
+    def dispatch(self, request, *args, **kwargs):
         if VolunteerApplication.has_applied(self.request.user, self.role):
             return redirect(self.success_url)
-        return super().get(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
         organizer_teams = form.cleaned_data.get("organizer_teams", "")
