@@ -193,7 +193,7 @@ class MealDeliverySignupView(LoginRequiredMixin, GroupView, FormView, FilterView
     permission_group = 'Deliverers'
     permission_group_redirect_url = reverse_lazy('volunteers:delivery_application')
     filterset_class = MealDeliverySignupFilter
-    queryset = MealDelivery.objects.filter(deliverer__isnull=True,).order_by('date')
+    queryset = MealDelivery.objects.exclude(status=Status.DELIVERED).filter(deliverer__isnull=True,).order_by('date')
 
     @property
     def success_url(self):
