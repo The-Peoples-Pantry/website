@@ -35,7 +35,7 @@ class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
     permission_group = 'Chefs'
     permission_group_redirect_url = reverse_lazy('volunteers:chef_application')
     filterset_class = ChefSignupFilter
-    queryset = MealRequest.objects.filter(Q(delivery__isnull=True) or Q(delivery__chef__isnull=True)).order_by('created_at')
+    queryset = MealRequest.objects.filter(Q(delivery__isnull=True) | Q(delivery__chef__isnull=True)).order_by('created_at')
 
     @property
     def success_url(self):
