@@ -321,8 +321,9 @@ class DeliveryIndexView(LoginRequiredMixin, GroupView, ListView):
 #                                                                  #
 ####################################################################
 
-class VolunteerApplicationView(LoginRequiredMixin, FormView, UpdateView):
+class VolunteerApplicationView(FormView, UpdateView):
     success_url = reverse_lazy('volunteers:application_received')
+    login_url = '/accounts/login/'
 
     def get_object(self):
         return Volunteer.objects.get(user=self.request.user)
@@ -343,19 +344,19 @@ class VolunteerApplicationView(LoginRequiredMixin, FormView, UpdateView):
         return super().form_valid(form)
 
 
-class DeliveryApplicationView(VolunteerApplicationView):
+class DeliveryApplicationView(LoginRequiredMixin, VolunteerApplicationView):
     role = VolunteerRoles.DELIVERERS
     form_class = DeliveryApplyForm
     template_name = "volunteers/delivery_application.html"
 
 
-class ChefApplicationView(VolunteerApplicationView):
+class ChefApplicationView(LoginRequiredMixin, VolunteerApplicationView):
     role = VolunteerRoles.CHEFS
     form_class = ChefApplyForm
     template_name = "volunteers/chef_application.html"
 
 
-class OrganizerApplicationView(VolunteerApplicationView):
+class OrganizerApplicationView(LoginRequiredMixin, VolunteerApplicationView):
     role = VolunteerRoles.ORGANIZERS
     form_class = OrganizerApplyForm
     template_name = "volunteers/organizer_application.html"
