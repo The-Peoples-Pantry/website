@@ -12,6 +12,17 @@
       name="description"
       content="A mutual aid project providing free hot meals and grocery care packages to anyone impacted by COVID-19 across Toronto"
     />
+    
+    {# Open graph content for proper display on social media #}
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="The People's Pantry Toronto" />
+    <meta property="og:description" content="A mutual aid project providing free hot meals and grocery care packages to anyone impacted by COVID-19 across Toronto" />
+    <meta property="og:image" content="{% static "splash.jpg" %}" />
+    <meta property="og:url" content="https://www.thepeoplespantryto.com" />
+    <meta property="twitter:card" content="summary" />
+    <meta property="twitter:site" content="thepeoplespantryto" />
+
     {% bootstrap_css %}
     <link rel="stylesheet" href="{% static 'styles.css' %}">
     <title>{% block title %}The People's Pantry{% endblock %}</title>
