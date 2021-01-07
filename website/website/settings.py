@@ -207,7 +207,7 @@ GROCERY_DELIVERY_DAYS = [
 ]
 
 # Settings for figuring out delivery distances
-MAX_CHEF_DISTANCE = 12  # Chefs can't be more than 12 km away from their recipients
+MAX_CHEF_DISTANCE = 10  # Chefs can't be more than this many km away from their recipients
 
 # Maps API keys
 MAPQUEST_API_KEY = "xvB2VYxUF6mByw32kqOszrCXfgC7CuUa"  # Eric's dev account - 15k requests/month
