@@ -25,7 +25,7 @@ class InGroupFilter(admin.SimpleListFilter):
 
 class VolunteerAdmin(admin.ModelAdmin):
     list_display = ('edit_link', 'name', 'user', 'groups', 'organizer_teams', 'city', 'training_complete', 'is_staff')
-    actions = ('remove_permissions',)
+    actions = ('remove_permissions', 'mark_training_complete')
     list_filter = (InGroupFilter,)
 
     def edit_link(self, obj):
@@ -67,6 +67,16 @@ class VolunteerAdmin(admin.ModelAdmin):
                 messages.WARNING
             )
     remove_permissions.short_description = "Remove selected non-staff volunteers from ALL groups"
+
+    @transaction.atomic
+    def mark_training_complete(self, request, queryset):
+        updated = queryset.update(training_complete=True)
+        self.message_user(request, ngettext(
+            "Training marked as complete for %d user.",
+            "Training marked as complete for %d users.",
+            updated,
+        ) % updated, messages.SUCCESS)
+    mark_training_complete.short_description = "Mark training as complete for selected volunteers"
 
 
 class VolunteerApplicationAdmin(admin.ModelAdmin):
