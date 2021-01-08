@@ -507,6 +507,40 @@ class MealDelivery(BaseDelivery):
         self.comments.create(comment=f"Sent a text to the deliverer: {message}")
         logger.info("Sent deliverer reminder notification text for Meal Request %d to %s", self.request.id, self.deliverer.volunteer.phone_number)
 
+    def send_detailed_deliverer_notification(self):
+        """Send a detailed notification to the deliverer with content for the delivery"""
+        if not self.deliverer:
+            raise SendNotificationException("No deliverer assigned to this delivery")
+
+        if not self.chef:
+            raise SendNotificationException("No chef assigned to this delivery")
+
+        if not self.date:
+            raise SendNotificationException("Delivery does not have a date scheduled")
+
+        if not (self.pickup_start and self.pickup_end):
+            raise SendNotificationException("Delivery does not have a pickup time range scheduled")
+
+        if not (self.dropoff_start and self.dropoff_end):
+            raise SendNotificationException("Delivery does not have a dropoff time range scheduled")
+
+        # Date is in the format "Weekday Month Year" eg. Sunday November 29
+        # Time is in the format "Hour:Minute AM/PM" eg. 09:30 PM
+        message = dedent(f"""
+            Hi {self.deliverer.volunteer.name},
+            This is a reminder about your delivery for The People’s Pantry today.
+            Pick up the meals from {self.chef.volunteer.name} at {self.chef.volunteer.address}, phone number {self.chef.volunteer.phone_number}, between {self.pickup_start:%I:%M %p} and {self.pickup_end:%I:%M %p}.
+
+            The recipient, {self.request.name} ({self.request.id}) is at {self.request.address}. Notify them when you arrive at {self.request.phone_number}.
+            The delivery instructions are: {self.request.delivery_details}.
+
+            Send a text if you have any problems with your delivery, and please let us know when the delivery is completed.
+            Thank you for your help!
+        """)
+        send_text(self.deliverer.volunteer.phone_number, message)
+        self.comments.create(comment=f"Sent a text to the deliverer: {message}")
+        logger.info("Sent deliverer detailed notification text for Meal Request %d to %s", self.request.id, self.deliverer.volunteer.phone_number)
+
 
 class CommentModel(models.Model):
     class Meta:
