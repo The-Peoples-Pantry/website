@@ -430,6 +430,28 @@ class MealDelivery(BaseDelivery):
         self.comments.create(comment=f"Sent a text to recipient: {message}")
         logger.info("Sent recipient meal notification text for Meal Request %d to %s", self.request.id, self.request.phone_number)
 
+    def send_recipient_reminder_notification(self):
+        """Send a reminder notification to a recipient of the delivery, intended for use on the day of"""
+        # Perform validation first that we _can_ send this notification
+        if not self.request.can_receive_texts:
+            raise SendNotificationException("Recipient cannot receive text messages at their phone number")
+
+        if not (self.dropoff_start and self.dropoff_end):
+            raise SendNotificationException("Delivery does not have a dropoff time range scheduled")
+
+        if self.deliverer is None:
+            raise SendNotificationException("Delivery does not have a deliverer assigned")
+
+        # Time is in the format "Hour:Minute AM/PM" eg. 09:30 PM
+        message = dedent(f"""
+            Hi {self.request.name},
+            This is a reminder about your delivery from The People’s Pantry today. {self.deliverer.volunteer.name or 'A delivery volunteer'} will be at your home between {self.dropoff_start:%I:%M %p} and {self.dropoff_end:%I:%M %p}.
+            Thanks, and stay safe!
+        """)
+        send_text(self.request.phone_number, message)
+        self.comments.create(comment=f"Sent a text to recipient: {message}")
+        logger.info("Sent recipient reminder notification text for Meal Request %d to %s", self.request.id, self.request.phone_number)
+
     def send_recipient_delivery_notification(self):
         """Send a follow-up notification to a recipient, lets them know that a delivery driver will drop if off within a certain time window"""
         # Perform validation first that we _can_ send this notification
