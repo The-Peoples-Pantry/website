@@ -100,6 +100,13 @@ class Volunteer(ContactInfo):
         help_text="Do you have access to personal protective equipment such as masks, gloves, etc?",
         default=False
     )
+    notes = models.CharField(
+        "Notes",
+        help_text="Please include any relevant info the coordinator may need to know, such as upcoming holidays, changes in circumstances, etc",
+        max_length=settings.DEFAULT_LENGTH,
+        null=True,
+        blank=True
+    )
 
     # Fields for cooks only
     cooking_prefs = models.CharField(

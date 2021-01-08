@@ -88,4 +88,4 @@ class UserCreationForm(forms.ModelForm):
 class VolunteerProfileForm(forms.ModelForm):
     class Meta:
         model = Volunteer
-        fields = ['name', 'phone_number', 'address_1', 'address_2', 'pronouns', 'postal_code', 'city']
+        fields = ['name', 'phone_number', 'address_1', 'address_2', 'pronouns', 'notes', 'postal_code', 'city']
