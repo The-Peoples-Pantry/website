@@ -428,6 +428,7 @@ class MealDeliveryAdmin(BaseDeliveryAdmin):
         'notify_recipients_reminder',
         'notify_chefs_reminder',
         'notify_deliverers_reminder',
+        'notify_deliverers_details',
         'mark_as_delivered'
     )
     inlines = (
@@ -486,6 +487,10 @@ class MealDeliveryAdmin(BaseDeliveryAdmin):
     def notify_deliverers_reminder(self, request, queryset):
         self.send_notifications(request, queryset, 'send_deliverer_reminder_notification')
     notify_deliverers_reminder.short_description = "Send text message notification to deliverers reminding them about the request"
+
+    def notify_deliverers_details(self, request, queryset):
+        self.send_notifications(request, queryset, 'send_detailed_deliverer_notification')
+    notify_deliverers_details.short_description = "Send text message notification to deliverers with details about TODAY's request"
 
 
 class GroceryDeliveryAdmin(BaseDeliveryAdmin):
