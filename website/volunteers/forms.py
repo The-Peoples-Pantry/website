@@ -145,6 +145,7 @@ class ChefApplyForm(VolunteerApplicationForm):
             'user',
             'email',
             'pronouns',
+            'notes',
             'training_complete',
             'organizer_teams',
         ]
@@ -168,6 +169,7 @@ class DeliveryApplyForm(VolunteerApplicationForm):
             'user',
             'email',
             'pronouns',
+            'notes',
             'training_complete',
             'organizer_teams',
         ]
@@ -202,6 +204,7 @@ class OrganizerApplyForm(VolunteerApplicationForm):
             'have_cleaning_supplies',
             'baking_volume',
             'user',
+            'notes',
             'email',
             'pronouns',
             'training_complete'

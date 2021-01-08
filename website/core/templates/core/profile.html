@@ -28,6 +28,7 @@
             <div class="col-sm">{% bootstrap_field form.postal_code %}</div>
           </div>
           {% bootstrap_field form.pronouns %}
+          {% bootstrap_field form.notes %}
         </div>
       </div>
 
@@ -90,7 +91,11 @@
       </small>
     </div>
     <div class="card-footer">
-      <a class="btn btn-primary" role="button" href="{% url 'volunteers:organizer_application' %}">Apply now</a>
+      {% if 'Organizers' in pending_groups %}
+        <button type="button" class="btn btn-primary" disabled>Your application is pending</button>
+      {% else %}
+        <a class="btn btn-primary" role="button" href="{% url 'volunteers:organizer_application' %}">Apply now</a>
+      {% endif %}
     </div>
   </div>
   {% endif %}
