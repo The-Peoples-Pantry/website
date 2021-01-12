@@ -23,13 +23,12 @@ class HiddenValidationForm(forms.Form):
 class ChefSignupFilter(FilterSet):
     def __init__(self, *args, **kwargs):
         super(ChefSignupFilter, self).__init__(*args, **kwargs)
-        self.filters['city__contains'].label = 'City'
 
     class Meta:
         form = HiddenValidationForm
         model = MealRequest
         fields = {
-            'city': ['contains'],
+            'city': ['exact'],
             'num_adults': ['lt'],
             'num_children': ['lt'],
             'dairy_free': ['exact'],
