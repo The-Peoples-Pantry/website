@@ -2,7 +2,10 @@
 {% load bootstrap4 %}
 
 {% block content %}
-<h1 class="mb-3">Sign up to deliver meals (Toronto)</h1>
+<h1 class="mb-3">
+  {% if new_since_last_visited %}<span class="badge badge-pill badge-primary" title="New requests were added since you last visited">{{ new_since_last_visited}} New</span>{% endif %}
+  Sign up to deliver meals
+</h1>
 
 <div class="row">
   <div class="col-md-3 order-md-2">
@@ -22,6 +25,7 @@
       <div class="card mb-4">
         {# Card header section contains the meal request title #}
         <div class="card-header font-weight-bold">
+          {% if last_visited < delivery.created_at.timestamp %}<span class="badge badge-pill badge-primary" title="This delivery was added since you last visited this page">New</span>{% endif %}
           Delivery for Request #{{ delivery.request.id }} - Pickup timeframe: {{ delivery.date }}, {{ delivery.pickup_start }} to {{ delivery.pickup_end }}
         </div>
         <div class="card-body">
