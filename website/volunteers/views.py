@@ -218,8 +218,23 @@ class MealDeliverySignupView(LoginRequiredMixin, GroupView, FormView, FilterView
         """Redirect to the same page with same query params to keep the filters"""
         return self.request.get_full_path()
 
+    def get_and_set_last_visited(self):
+        """Retrieve the timestamp when this user last viewed this page, then set a new one"""
+        session_key = 'last_visited_delivery_signup'
+        last_visited = self.request.session.get(session_key, 0)
+        self.request.session[session_key] = time.time()
+        return last_visited
+
+    def new_since(self, timestamp):
+        """Count how many of object_list are new (created) since a given timestamp"""
+        return len([
+            obj for obj in self.object_list
+            if timestamp < obj.created_at.timestamp()
+        ])
+
     def get_context_data(self, alerts={}, **kwargs):
         context = super(MealDeliverySignupView, self).get_context_data(**kwargs)
+        last_visited = self.get_and_set_last_visited()
         context["delivery_form_pairs"] = [
             (delivery, MealDeliverySignupForm(initial={
                 'id': delivery.id,
@@ -228,6 +243,8 @@ class MealDeliverySignupView(LoginRequiredMixin, GroupView, FormView, FilterView
             }))
             for delivery in self.object_list
         ]
+        context["new_since_last_visited"] = self.new_since(last_visited)
+        context["last_visited"] = last_visited
         return context
 
     def form_invalid(self, form):
