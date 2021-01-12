@@ -49,7 +49,7 @@ class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
         return has_group(user, 'Deliverers')
 
     def get_and_set_last_visited(self):
-        """Retrieve the timestamp when this user last viewed this page, then set a new one""" 
+        """Retrieve the timestamp when this user last viewed this page, then set a new one"""
         session_key = 'last_visited_chef_signup'
         last_visited = self.request.session.get(session_key, 0)
         self.request.session[session_key] = time.time()
