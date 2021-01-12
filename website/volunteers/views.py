@@ -55,8 +55,16 @@ class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
         self.request.session[session_key] = time.time()
         return last_visited
 
+    def new_since(self, timestamp):
+        """Count how many of object_list are new (created) since a given timestamp"""
+        return len([
+            obj for obj in self.object_list
+            if timestamp < obj.updated_at.timestamp()
+        ])
+
     def get_context_data(self, **kwargs):
         context = super(ChefSignupView, self).get_context_data(**kwargs)
+        last_visited = self.get_and_set_last_visited()
         context["object_contexts"] = [
             {
                 "meal": meal_request,
@@ -66,7 +74,8 @@ class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
             # self.object_list is a MealRequest queryset pre-filtered by ChefSignupFilter
             for meal_request in self.object_list
         ]
-        context["last_visited"] = self.get_and_set_last_visited()
+        context["last_visited"] = last_visited
+        context["new_since_last_visited"] = self.new_since(last_visited)
         context["can_deliver"] = self.can_deliver(self.request.user)
         return context
 
