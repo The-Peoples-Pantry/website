@@ -59,7 +59,7 @@ class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
         """Count how many of object_list are new (created) since a given timestamp"""
         return len([
             obj for obj in self.object_list
-            if timestamp < obj.updated_at.timestamp()
+            if timestamp < obj.created_at.timestamp()
         ])
 
     def get_context_data(self, **kwargs):
