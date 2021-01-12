@@ -28,7 +28,7 @@
 
         {# Card header section contains the meal request title #}
         <div class="card-header font-weight-bold">
-          {% if last_visited < meal.created_at.timestamp %}<span class="badge badge-pill badge-primary mr-1" title="This request was added since you last visited this page">New</span>{% endif %}
+          {% if last_visited < meal.created_at.timestamp %}<span class="badge badge-pill badge-primary" title="This request was added since you last visited this page">New</span>{% endif %}
           Request #{{ meal.id }}: Meal for {{ meal.num_adults }} adult{{ meal.num_adults | pluralize }}
           and {{ meal.num_children }} kid{{ meal.num_children | pluralize }}
           {% if meal.children_ages %}(aged {{ meal.children_ages }}){% endif %}
