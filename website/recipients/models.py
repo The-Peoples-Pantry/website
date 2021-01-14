@@ -272,8 +272,8 @@ class GroceryRequest(HelpRequest):
 class Status(models.TextChoices):
     UNCONFIRMED = 'Unconfirmed', 'Unconfirmed'
     CHEF_ASSIGNED = 'Chef Assigned', 'Chef Assigned'
-    DATE_CONFIRMED = 'Delivery Date Confirmed', 'Delivery Date Confirmed'
     DRIVER_ASSIGNED = 'Driver Assigned', 'Driver Assigned'
+    DATE_CONFIRMED = 'Delivery Date Confirmed', 'Delivery Date Confirmed'
     RESCHEDULED = 'Recipient Rescheduled', 'Recipient Rescheduled'
     DELIVERED = 'Delivered', 'Delivered'
 
