@@ -411,6 +411,8 @@ class MealDelivery(BaseDelivery):
             end = datetime.combine(self.date, self.dropoff_end)
             if (start + timedelta(hours=2)) < end and self.status is not Status.DELIVERED:
                 raise ValidationError("The delivery window must be two hours or less.")
+        if self.deliverer and (not self.dropoff_start or not self.dropoff_end):
+            raise ValidationError("Please specify a dropoff window.")
 
     def send_recipient_meal_notification(self):
         """Send the first notification to a recipient, lets them know that a chef has signed up to cook for them"""
