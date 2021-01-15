@@ -63,6 +63,11 @@
                 </ul>
               {% endif %}
 
+              {% if meal.availability %}
+                <h6>Availability</h6>
+                <p>{{ meal.availability }}</p>
+              {% endif %}
+
               <form action="" method="post" class="form">
                 {% csrf_token %}
 
