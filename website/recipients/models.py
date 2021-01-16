@@ -201,13 +201,22 @@ class MealRequest(HelpRequest):
     @classmethod
     def requests_paused(cls):
         """Are requests currently paused?"""
-        active_requests = cls.objects.exclude(delivery__status=Status.DELIVERED).count()
-        return active_requests >= settings.PAUSE_MEALS
+        return cls.active_requests() >= settings.PAUSE_MEALS
+
+    @classmethod
+    def active_requests(cls):
+        return cls.objects.exclude(
+            delivery__status__in=(Status.DATE_CONFIRMED, Status.DELIVERED)
+        ).count()
 
     @classmethod
     def has_open_request(cls, phone: str):
         """Does the user with the given email already have open requests?"""
-        return cls.objects.filter(phone_number=phone).exclude(delivery__status=Status.DELIVERED).exists()
+        return cls.objects.filter(
+            phone_number=phone
+        ).exclude(
+            delivery__status__in=(Status.DATE_CONFIRMED, Status.DELIVERED)
+        ).exists()
 
 
 class GroceryRequest(HelpRequest):
