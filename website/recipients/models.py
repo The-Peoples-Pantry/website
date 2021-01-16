@@ -7,6 +7,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.urls import reverse_lazy
 from django.utils import timezone
+import pytz
 
 from website.mail import custom_send_mail
 from website.text_messaging import send_text
@@ -201,13 +202,29 @@ class MealRequest(HelpRequest):
     @classmethod
     def requests_paused(cls):
         """Are requests currently paused?"""
-        active_requests = cls.objects.exclude(delivery__status=Status.DELIVERED).count()
-        return active_requests >= settings.PAUSE_MEALS
+        return cls.active_requests() >= settings.PAUSE_MEALS or not cls.within_signup_period()
+
+    @classmethod
+    def within_signup_period(cls):
+        now = timezone.now().astimezone(pytz.timezone('America/Toronto'))
+        is_saturday = now.strftime('%A') == 'Saturday'
+        is_after_ten_am = now.hour >= 10
+        return is_saturday and is_after_ten_am
+
+    @classmethod
+    def active_requests(cls):
+        return cls.objects.exclude(
+            delivery__status__in=(Status.DATE_CONFIRMED, Status.DELIVERED)
+        ).count()
 
     @classmethod
     def has_open_request(cls, phone: str):
         """Does the user with the given email already have open requests?"""
-        return cls.objects.filter(phone_number=phone).exclude(delivery__status=Status.DELIVERED).exists()
+        return cls.objects.filter(
+            phone_number=phone
+        ).exclude(
+            delivery__status__in=(Status.DATE_CONFIRMED, Status.DELIVERED)
+        ).exists()
 
 
 class GroceryRequest(HelpRequest):
