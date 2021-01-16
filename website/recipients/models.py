@@ -7,6 +7,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.urls import reverse_lazy
 from django.utils import timezone
+import pytz
 
 from website.mail import custom_send_mail
 from website.text_messaging import send_text
@@ -201,7 +202,14 @@ class MealRequest(HelpRequest):
     @classmethod
     def requests_paused(cls):
         """Are requests currently paused?"""
-        return cls.active_requests() >= settings.PAUSE_MEALS
+        return cls.active_requests() >= settings.PAUSE_MEALS or not cls.within_signup_period()
+
+    @classmethod
+    def within_signup_period(cls):
+        now = timezone.now().astimezone(pytz.timezone('America/Toronto'))
+        is_saturday = now.strftime('%A') == 'Saturday'
+        is_after_ten_am = now.hour >= 10
+        return is_saturday and is_after_ten_am
 
     @classmethod
     def active_requests(cls):
