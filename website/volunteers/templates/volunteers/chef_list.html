@@ -21,13 +21,26 @@
           <div class="row">
             <div class="col">
               <h6>Food preferences</h6>
-              <p>{{ delivery.request.food_preferences }}</p>
+              <p>
+                {% if delivery.request.food_preferences %}
+                  {{ delivery.request.food_preferences }}
+                {% else %}
+                  None
+                {% endif %}
+              </p>
 
               <h6>Food allergies</h6>
-              <p>{{ delivery.request.food_allergies }}</p>
+              <p>
+                {% if delivery.request.food_allergies %}
+                  {{ delivery.request.food_allergies }}
+                {% else %}
+                  None
+                {% endif %}
+              </p>
+
             </div>
             <div class="col">
-              {% if delivery.request.vegan or delivery.request.vegetarian or delivery.request.dairy_free or delivery.request.gluten_free or delivery.request.halal or delivery.request.low_carb %}
+              {% if delivery.request.vegan or delivery.request.vegetarian or delivery.request.dairy_free or delivery.request.gluten_free or delivery.request.halal or delivery.request.low_carb or not delivery.request.will_accept_vegan or not delivery.request.will_accept_vegetarian %}
                 <h6>Other dietary information</h6>
                 <ul>
                   {% if delivery.request.vegan %} <li>Vegan</li> {% endif %}
@@ -36,6 +49,12 @@
                   {% if delivery.request.gluten_free %} <li>Gluten Freen</li> {% endif %}
                   {% if delivery.request.halal %} <li>Halal</li> {% endif %}
                   {% if delivery.request.low_carb %} <li>Low-carb</li> {% endif %}
+                  {% if not delivery.request.will_accept_vegan %}
+                    <li>Will <strong>not</strong> accept vegan meals</li>
+                  {% endif %}
+                  {% if not delivery.request.will_accept_vegetarian %}
+                    <li>Will <strong>not</strong> accept vegetarian meals</li>
+                  {% endif %}
                 </ul>
               {% endif %}
             </div>

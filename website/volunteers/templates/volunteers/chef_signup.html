@@ -45,13 +45,17 @@
           {% endif %}
           <div class="row">
             <div class="col">
+              {% if meal.food_preferences %}
               <h6>Food preferences</h6>
               <p>{{ meal.food_preferences }}</p>
+              {% endif %}
 
-              <h6>Food allergies</h6>
-              <p>{{ meal.food_allergies }}</p>
+              {% if meal.food_allergies %}
+                <h6>Food allergies</h6>
+                <p>{{ meal.food_allergies }}</p>
+              {% endif %}
 
-              {% if meal.vegan or meal.vegetarian or meal.dairy_free or meal.gluten_free or meal.halal or meal.low_carb %}
+              {% if meal.vegan or meal.vegetarian or meal.dairy_free or meal.gluten_free or meal.halal or meal.low_carb or not meal.will_accept_vegan or not meal.will_accept_vegetarian %}
                 <h6>Other dietary information</h6>
                 <ul>
                   {% if meal.vegan %} <li>Vegan</li> {% endif %}
@@ -60,6 +64,12 @@
                   {% if meal.gluten_free %} <li>Gluten Freen</li> {% endif %}
                   {% if meal.halal %} <li>Halal</li> {% endif %}
                   {% if meal.low_carb %} <li>Low-carb</li> {% endif %}
+                  {% if not meal.will_accept_vegan %}
+                    <li>Will <strong>not</strong> accept vegan meals</li>
+                  {% endif %}
+                  {% if not meal.will_accept_vegetarian %}
+                    <li>Will <strong>not</strong> accept vegetarian meals</li>
+                  {% endif %}
                 </ul>
               {% endif %}
 
