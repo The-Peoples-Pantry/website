@@ -48,6 +48,9 @@
         <p>
           {{ delivery.request.delivery_details }}
         </p>
+        <p>
+          The recipient will{% if not delivery.request.can_meet_for_delivery %} <strong>not</strong>{% endif %} be able to meet you in the lobby or door of the residence.
+        </p>
         <a href="mailto:{{settings.REQUEST_COORDINATORS_EMAIL}},{{settings.DELIVERY_COORDINATORS_EMAIL}}?subject=Deliverer Change Request for Delivery for Request ID {{ delivery.request.id }}" class="btn btn-primary">Request a change</a>
       </div>
     </div>

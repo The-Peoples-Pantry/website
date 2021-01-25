@@ -72,7 +72,10 @@
                   </div>
                 </div>
                 <p>
-                  Please provide a two hour maximum delivery window
+                  Please provide a two hour maximum delivery window.
+                </p>
+                <p>
+                  The recipient will{% if not delivery.request.can_meet_for_delivery %} <strong>not</strong>{% endif %} be able to meet you in the lobby or door of the residence.
                 </p>
 
                 {{ form.id.as_hidden }}
