@@ -33,7 +33,6 @@ class TelephoneInput(forms.TextInput):
 class HelpRequestForm(forms.ModelForm):
     # Force the terms to be accepted in order to submit the form
     accept_terms = forms.BooleanField(required=True)
-    can_meet_for_delivery = forms.BooleanField(required=True, help_text="Please confirm that you / the person requiring support will be able to meet the delivery person in the lobby or door of the residence, while wearing protective equipment such as masks?")
 
     terms_of_service_text = dedent("""
         I acknowledge that The People's Pantry IS NOT RESPONSIBLE FOR ANY ISSUES I MAY HAVE WITH THE FOOD THAT HAS BEEN DELIVERED TO ME. This may include, but is not limited to, allergies, food outside of dietary preferences or restrictions, or digestive tract issues caused by consuming the food. I understand that The People's Pantry will not knowingly provide me with food to which I have an allergy, is outside of my dietary restrictions, or foods that are otherwise unsafe to eat, but is not liable for any issues that may occur.
