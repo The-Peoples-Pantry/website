@@ -12,6 +12,14 @@ def index(request):
 def media(request):
     stories = [
         {
+            'title': "The People's Pantry in Toronto provides free home-cooked meals to those in need",
+            'author': 'Olivia Little',
+            'date': '2021-01-11',
+            'link': 'https://www.blogto.com/eat_drink/2021/01/peoples-pantry-toronto-provides-free-home-cooked-meals-those-need/',
+            'image': 'media/blogto.png',
+            'outlet': 'BlogTO'
+        },
+        {
             'title': 'The Peoples Pantry is Helping Combat Food Insecurity',
             'author': 'Stella Acquisto',
             'date': '2020-07-28',
