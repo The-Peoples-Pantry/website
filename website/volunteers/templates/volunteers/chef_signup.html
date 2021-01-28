@@ -7,6 +7,8 @@
   Sign up to cook meals
 </h1>
 
+{% if can_deliver %}{% include 'volunteers/essential_service_notice.html' %}{% endif %}
+
 <div class="row">
   <div class="col-md-3 order-md-2">
     {% if filter %}
