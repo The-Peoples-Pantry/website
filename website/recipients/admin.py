@@ -426,6 +426,7 @@ class MealDeliveryAdmin(BaseDeliveryAdmin):
     actions = (
         'notify_recipients_delivery',
         'notify_recipients_reminder',
+        'notify_recipients_feedback',
         'notify_chefs_reminder',
         'notify_deliverers_reminder',
         'notify_deliverers_details',
@@ -479,6 +480,10 @@ class MealDeliveryAdmin(BaseDeliveryAdmin):
     def notify_recipients_reminder(self, request, queryset):
         self.send_notifications(request, queryset, 'send_recipient_reminder_notification')
     notify_recipients_reminder.short_description = "Send text message notification to recipient reminding them about TODAY's request"
+
+    def notify_recipients_feedback(self, request, queryset):
+        self.send_notifications(request, queryset, 'send_recipient_feedback_request')
+    notify_recipients_feedback.short_description = "Send text message notification to recipient requesting their feedback through form"
 
     def notify_chefs_reminder(self, request, queryset):
         self.send_notifications(request, queryset, 'send_chef_reminder_notification')
