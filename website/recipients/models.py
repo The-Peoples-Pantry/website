@@ -495,6 +495,22 @@ class MealDelivery(BaseDelivery):
         self.comments.create(comment=f"Sent a text to recipient: {message}")
         logger.info("Sent recipient delivery notification text for Meal Request %d to %s", self.request.id, self.request.phone_number)
 
+    def send_recipient_feedback_request(self):
+        """Send a link to our feedback form to a recipient"""
+        # Perform validation first that we _can_ send this notification
+        if not self.request.can_receive_texts:
+            raise SendNotificationException("Recipient cannot receive text messages at their phone number")
+
+        message = dedent(f"""
+            Hi {self.request.name},
+            This is a message from The People's Pantry.
+            If you have any feedback about your recent delivery, we would love to hear it at https://forms.gle/koGhJF1YMee5h3149
+            Thank you!
+        """)
+        send_text(self.request.phone_number, message)
+        self.comments.create(comment=f"Sent a text to recipient: {message}")
+        logger.info("Sent recipient feedback request text for Meal Request %d to %s", self.request.id, self.request.phone_number)
+
     def send_chef_reminder_notification(self):
         """Send a reminder notification to the chef"""
         if not self.chef:
