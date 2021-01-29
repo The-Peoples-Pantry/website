@@ -481,6 +481,9 @@ class MealDelivery(BaseDelivery):
         if not (self.dropoff_start and self.dropoff_end):
             raise SendNotificationException("Delivery does not have a dropoff time range scheduled")
 
+        if self.deliverer is None:
+            raise SendNotificationException("Delivery does not have a deliverer assigned")
+
         # Date is in the format "Weekday Month Year" eg. Sunday November 29
         # Time is in the format "Hour:Minute AM/PM" eg. 09:30 PM
         message = dedent(f"""
