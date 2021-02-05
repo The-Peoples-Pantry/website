@@ -382,7 +382,7 @@ class GroceryDelivery(BaseDelivery):
             raise SendNotificationException("No deliverer assigned to this delivery")
 
         message = dedent(f"""
-            Hi {self.deliverer.volunteer.name},
+            Hi {self.deliverer.volunteer.preferred_name},
             This is a message from The People's Pantry.
             Just reminding you of the upcoming grocery bundle you're delivering on {self.date:%A %B %d} between {self.dropoff_start:%I:%M %p} and {self.dropoff_end:%I:%M %p}.
             Please confirm you got this message and let us know if you need any assistance.
@@ -465,7 +465,7 @@ class MealDelivery(BaseDelivery):
         # Time is in the format "Hour:Minute AM/PM" eg. 09:30 PM
         message = dedent(f"""
             Hi {self.request.name},
-            This is a reminder about your delivery from The People’s Pantry today. {self.deliverer.volunteer.name or 'A delivery volunteer'} will be at your home between {self.dropoff_start:%I:%M %p} and {self.dropoff_end:%I:%M %p}.
+            This is a reminder about your delivery from The People’s Pantry today. {self.deliverer.volunteer.preferred_name or 'A delivery volunteer'} will be at your home between {self.dropoff_start:%I:%M %p} and {self.dropoff_end:%I:%M %p}.
             Thanks, and stay safe!
         """)
         send_text(self.request.phone_number, message)
@@ -520,7 +520,7 @@ class MealDelivery(BaseDelivery):
             raise SendNotificationException("No chef assigned to this delivery")
 
         message = dedent(f"""
-            Hi {self.chef.volunteer.name},
+            Hi {self.chef.volunteer.preferred_name},
             This is a message from The People's Pantry.
             Just reminding you of the upcoming meal you're preparing for {self.date:%A %B %d}.
             Please confirm you got this message and let us know if you need any assistance.
@@ -536,7 +536,7 @@ class MealDelivery(BaseDelivery):
             raise SendNotificationException("No deliverer assigned to this delivery")
 
         message = dedent(f"""
-            Hi {self.deliverer.volunteer.name},
+            Hi {self.deliverer.volunteer.preferred_name},
             This is a message from The People's Pantry.
             Just reminding you of the upcoming meal you're delivering for {self.date:%A %B %d}.
             Please confirm you got this message and let us know if you need any assistance.
@@ -566,9 +566,9 @@ class MealDelivery(BaseDelivery):
         # Date is in the format "Weekday Month Year" eg. Sunday November 29
         # Time is in the format "Hour:Minute AM/PM" eg. 09:30 PM
         message = dedent(f"""
-            Hi {self.deliverer.volunteer.name},
+            Hi {self.deliverer.volunteer.preferred_name},
             This is a reminder about your delivery for The People’s Pantry today.
-            Pick up the meals from {self.chef.volunteer.name} at {self.chef.volunteer.address}, phone number {self.chef.volunteer.phone_number}, between {self.pickup_start:%I:%M %p} and {self.pickup_end:%I:%M %p}.
+            Pick up the meals from {self.chef.volunteer.preferred_name} at {self.chef.volunteer.address}, phone number {self.chef.volunteer.phone_number}, between {self.pickup_start:%I:%M %p} and {self.pickup_end:%I:%M %p}.
 
             The recipient, {self.request.name} ({self.request.id}) is at {self.request.address}. Notify them when you arrive at {self.request.phone_number}.
             The delivery instructions are: {self.request.delivery_details}.

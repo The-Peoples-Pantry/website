@@ -161,6 +161,10 @@ class Volunteer(ContactInfo):
         blank=True,
     )
 
+    @property
+    def preferred_name(self):
+        return self.short_name or self.name
+
     def remove_permissions(self):
         self.user.groups.clear()
         self.user.save()
