@@ -36,7 +36,8 @@ class ContactInfo(models.Model):
         abstract = True
 
     name = models.CharField(
-        "Full name",
+        "Name",
+        help_text="This name will be visible within The People's Pantry, if you'd prefer privacy please use your shortened name",
         max_length=settings.NAME_LENGTH
     )
     phone_number = models.CharField(
