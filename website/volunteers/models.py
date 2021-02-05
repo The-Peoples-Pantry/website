@@ -70,6 +70,13 @@ class Volunteer(ContactInfo):
         primary_key=True,
         related_name="volunteer"
     )
+    short_name = models.CharField(
+        "Short name",
+        help_text="(Optional) A short version of your name that we will use for your privacy when contacting recipients",
+        max_length=settings.DEFAULT_LENGTH,
+        null=True,
+        blank=True,
+    )
     pronouns = models.CharField(
         "Pronouns",
         help_text="Please include all of your pronouns",
@@ -153,6 +160,10 @@ class Volunteer(ContactInfo):
         max_length=settings.DEFAULT_LENGTH,
         blank=True,
     )
+
+    @property
+    def preferred_name(self):
+        return self.short_name or self.name
 
     def remove_permissions(self):
         self.user.groups.clear()
