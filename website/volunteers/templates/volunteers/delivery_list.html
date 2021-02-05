@@ -28,7 +28,7 @@
             <ul>
               <li>Pick up from {{ delivery.pickup_start }} to {{ delivery.pickup_end }}</li>
               {% if delivery.chef %}
-                <li>Contact {{ delivery.chef.volunteer.name }} at {{ delivery.chef.volunteer.phone_number }}</li>
+                <li>Contact {{ delivery.chef.volunteer.preferred_name }} at {{ delivery.chef.volunteer.phone_number }}</li>
                 <li>Address: <a href="{{ delivery.chef.address_link }}" target="_blank" rel="noopener nofollow">{{ delivery.chef.volunteer.address }}</a></li>
               {% elif delivery.pickup_address %}
                 <li>Contact {{ delivery.pickup_address.name }} at {{ delivery.pickup_address.phone_number }}</li>
