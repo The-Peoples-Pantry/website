@@ -87,7 +87,6 @@ class VolunteerApplicationAdmin(admin.ModelAdmin):
     actions = ('approve', )
     search_fields = ('user__volunteer__name', 'user__email')
 
-
     def name(self, application):
         return user_link(application.user)
     name.short_description = 'Name'
