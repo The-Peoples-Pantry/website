@@ -27,6 +27,7 @@ class VolunteerAdmin(admin.ModelAdmin):
     list_display = ('edit_link', 'name', 'user', 'groups', 'organizer_teams', 'city', 'training_complete', 'is_staff')
     actions = ('remove_permissions', 'mark_training_complete')
     list_filter = (InGroupFilter,)
+    search_fields = ('name', 'user__email')
 
     def edit_link(self, obj):
         return 'Edit'
@@ -84,6 +85,8 @@ class VolunteerApplicationAdmin(admin.ModelAdmin):
     list_filter = ('approved', 'role')
     ordering = ('approved', )
     actions = ('approve', )
+    search_fields = ('user__volunteer__name', 'user__email')
+
 
     def name(self, application):
         return user_link(application.user)
