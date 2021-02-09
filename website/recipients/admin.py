@@ -181,6 +181,7 @@ class MealRequestAdmin(admin.ModelAdmin):
         'confirm',
         'copy'
     )
+    search_fields = ('name', 'email', 'phone_number')
 
     def edit_link(self, request):
         return 'Edit request %d' % request.id
@@ -434,6 +435,13 @@ class MealDeliveryAdmin(BaseDeliveryAdmin):
     )
     inlines = (
         MealDeliveryCommentInline,
+    )
+    search_fields = (
+        'request__name',
+        'chef__email',
+        'chef__volunteer__name',
+        'deliverer__email',
+        'deliverer__volunteer__name',
     )
 
     def request_phone(self, obj):
