@@ -401,5 +401,5 @@ class ApplicationReceivedView(LoginRequiredMixin, TemplateView):
     template_name = "volunteers/application_received.html"
 
 
-class VolunteerResourcesView(LoginRequiredMixin, TemplateView):
-    template_name = "volunteers/volunteer_centre.html"
+class ResourcesView(LoginRequiredMixin, TemplateView):
+    template_name = "volunteers/resources.html"

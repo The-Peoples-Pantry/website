@@ -12,5 +12,5 @@ urlpatterns = [
     path('delivery-signup-groceries', views.GroceryDeliverySignupView.as_view(), name='delivery_signup_groceries'),
     path('delivery-list', views.DeliveryIndexView.as_view(), name='delivery_list'),
     path('organizer-application', views.OrganizerApplicationView.as_view(), name='organizer_application'),
-    path('volunteer-centre', views.VolunteerResourcesView.as_view(), name='volunteer_centre'),
+    path('resources', views.ResourcesView.as_view(), name='resources'),
 ]
