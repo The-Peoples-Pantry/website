@@ -505,10 +505,7 @@ class MealDelivery(BaseDelivery):
             raise SendNotificationException("Recipient cannot receive text messages at their phone number")
 
         message = dedent(f"""
-            Hi {self.request.name},
-            This is a message from The People's Pantry.
-            If you have any feedback about your recent delivery, we would love to hear it at https://forms.gle/koGhJF1YMee5h3149
-            Thank you!
+            Hello {self.request.name} How did you like your meals this week? We appreciate any feedback you have. If you are comfortable with us sharing your anonymized feedback on social media, please let us know - it helps us raise money for the program. If not, that’s okay too. Thanks!
         """)
         send_text(self.request.phone_number, message)
         self.comments.create(comment=f"Sent a text to recipient: {message}")
