@@ -1,7 +1,7 @@
 import datetime
 from textwrap import dedent
 from django import forms
-from .models import MealRequest, GroceryRequest, Vegetables, Fruits, Grains, Condiments, Protein, Dairy
+from .models import MealRequest, Vegetables, Fruits, Grains, Condiments, Protein, Dairy
 from django.conf import settings
 
 
@@ -63,42 +63,3 @@ class HelpRequestForm(forms.ModelForm):
 class MealRequestForm(HelpRequestForm):
     class Meta(HelpRequestForm.Meta):
         model = MealRequest
-
-
-class GroceryRequestForm(HelpRequestForm):
-    class Meta(HelpRequestForm.Meta):
-        model = GroceryRequest
-
-    vegetables = forms.MultipleChoiceField(
-        required=False,
-        widget=forms.CheckboxSelectMultiple,
-        choices=Vegetables.choices,
-    )
-    fruits = forms.MultipleChoiceField(
-        required=False,
-        widget=forms.CheckboxSelectMultiple,
-        choices=Fruits.choices,
-    )
-    grains = forms.MultipleChoiceField(
-        required=False,
-        widget=forms.CheckboxSelectMultiple,
-        choices=Grains.choices,
-    )
-    condiments = forms.MultipleChoiceField(
-        required=False,
-        widget=forms.CheckboxSelectMultiple,
-        choices=Condiments.choices,
-    )
-    protein = forms.ChoiceField(
-        required=False,
-        choices=Protein.choices,
-    )
-    dairy = forms.ChoiceField(
-        required=False,
-        choices=Dairy.choices,
-    )
-    availability = forms.MultipleChoiceField(
-        required=False,
-        widget=forms.CheckboxSelectMultiple,
-        choices=get_grocery_delivery_days,
-    )
