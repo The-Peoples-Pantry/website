@@ -3,7 +3,7 @@ from ast import literal_eval
 from textwrap import dedent
 import datetime
 from django import forms
-from recipients.models import MealDelivery, GroceryDelivery
+from recipients.models import MealDelivery
 from .models import Volunteer, CookingTypes, FoodTypes, TransportationTypes, DaysOfWeek, OrganizerTeams
 
 
@@ -228,25 +228,6 @@ class ChefSignupForm(forms.Form):
             cleaned_data.pop('dropoff_start')
             cleaned_data.pop('dropoff_end')
         return cleaned_data
-
-
-class GroceryDeliverySignupForm(forms.ModelForm):
-    id = forms.IntegerField()
-    availability = forms.DateTimeField(widget=forms.RadioSelect, label='Dropoff timerange')
-
-    def __init__(self, *args, **kwargs):
-        super(GroceryDeliverySignupForm, self).__init__(*args, **kwargs)
-        initial = kwargs.pop('initial')
-        if 'id' in initial:
-            request = GroceryDelivery.objects.get(id=initial['id']).request
-            self.fields['availability'].widget.choices = [
-                get_start_time_display(start_time)
-                for start_time in literal_eval(getattr(request, 'availability'))
-            ]
-
-    class Meta:
-        model = GroceryDelivery
-        fields = ['id', 'availability']
 
 
 class MealDeliverySignupForm(forms.ModelForm):
