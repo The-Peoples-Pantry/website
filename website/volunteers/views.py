@@ -14,7 +14,7 @@ from django_filters.views import FilterView
 from django.db.models.query_utils import Q
 
 from core.models import has_group
-from recipients.models import MealRequest, GroceryRequest, GroceryDelivery, MealDelivery, Status, SendNotificationException
+from recipients.models import MealRequest, MealDelivery, Status, SendNotificationException
 from public.views import GroupView
 from website.maps import distance
 from .forms import MealDeliverySignupForm, ChefSignupForm, ChefApplyForm, DeliveryApplyForm, OrganizerApplyForm
@@ -245,17 +245,11 @@ class DeliveryIndexView(LoginRequiredMixin, GroupView, ListView):
 
     def get_queryset(self):
         meals = MealDelivery.objects.exclude(status=Status.DELIVERED).filter(deliverer=self.request.user)
-        groceries = GroceryDelivery.objects.exclude(status=Status.DELIVERED).filter(deliverer=self.request.user)
-
-        return sorted(chain(meals, groceries), key=lambda instance: instance.date)
+        return sorted(meals), key=lambda instance: instance.date)
 
     def post(self, request):
-        if (request.POST['delivery_id'] and (
-                request.POST['has_chef'] or request.POST['is_groceries'])):
-            if request.POST['has_chef']:
-                instance = MealDelivery.objects.get(uuid=request.POST['delivery_id'])
-            else:
-                instance = GroceryDelivery.objects.get(uuid=request.POST['delivery_id'])
+        if request.POST['delivery_id'] and request.POST['has_chef']:
+            instance = MealDelivery.objects.get(uuid=request.POST['delivery_id'])
 
             if instance.date <= date.today():
                 instance.status = Status.DELIVERED
