@@ -263,72 +263,6 @@ class MealRequestAdmin(admin.ModelAdmin):
     copy.short_description = "Create a copy of selected meal request"
 
 
-class GroceryRequestAdmin(admin.ModelAdmin):
-    list_display = (
-        'id',
-        'name',
-        'email',
-        'phone_number',
-        'city',
-        'status',
-        'delivery_date',
-        'pickup_address',
-        'created_at',
-    )
-    list_filter = (
-        'created_at',
-    )
-    inlines = (
-        GroceryRequestCommentInline,
-        GroceryDeliveryInline
-    )
-
-    def delivery_date(self, obj):
-        return obj.delivery.date
-    delivery_date.admin_order_field = 'delivery__date'
-
-    def status(self, obj):
-        return obj.delivery.status
-    status.admin_order_field = 'delivery__status'
-
-    def pickup_address(self, obj):
-        return obj.delivery.pickup_address
-    status.admin_order_field = 'delivery__pickup_address'
-
-    def assign_address_action(self, address):
-        def assign_to_address(modeladmin, request, queryset):
-            for delivery_request in queryset:
-                try:
-                    delivery = delivery_request.delivery
-                    delivery.pickup_address = address
-                    delivery.save()
-                except Exception:
-                    delivery = GroceryDelivery.objects.create(
-                        request=delivery_request,
-                        pickup_address=address
-                    )
-
-            self.message_user(request, ngettext(
-                "%s has been set as the pickup address for %d delivery",
-                "%s has been set as the pickup address for %d deliveries",
-                len(queryset)
-            ) % (str(address), len(queryset)), messages.SUCCESS)
-        name = "assign_to_address_%d" % address.pk
-        desc = "Set pickup location to: %s" % str(address)
-        return (name, (assign_to_address, name, desc))
-
-    def get_actions(self, request):
-        actions = {}
-
-        # Dynamically create an action for every pickup address available
-        for address in GroceryPickupAddress.objects.all():
-            name, action = self.assign_address_action(address)
-            actions[name] = action
-
-        actions.update(super(GroceryRequestAdmin, self).get_actions(request))
-        return actions
-
-
 class BaseDeliveryAdmin(admin.ModelAdmin):
     def mark_as_delivered(self, request, queryset):
         queryset = queryset.exclude(status=Status.DELIVERED)
@@ -562,7 +496,6 @@ class GroceryDeliveryAdmin(BaseDeliveryAdmin):
     notify_deliverers_reminder.short_description = "Send text message notification to deliverers reminding them about the request"
 
 
-admin.site.register(GroceryRequest, GroceryRequestAdmin)
 admin.site.register(MealRequest, MealRequestAdmin)
 admin.site.register(MealDelivery, MealDeliveryAdmin)
 admin.site.register(GroceryDelivery, GroceryDeliveryAdmin)
