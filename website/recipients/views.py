@@ -6,6 +6,9 @@ from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 
+from .forms import MealRequestForm
+from .models import MealRequest
+
 
 def index(request):
     return render(request, 'recipients/index.html')
