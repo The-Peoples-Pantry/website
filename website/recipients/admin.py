@@ -5,7 +5,6 @@ from django.contrib import admin, messages
 from django import forms
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.html import format_html, format_html_join
-from core.models import GroceryPickupAddress
 from core.admin import user_link, obj_link
 
 from .models import (
