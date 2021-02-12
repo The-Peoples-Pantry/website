@@ -5,19 +5,6 @@ from .models import MealRequest, Vegetables, Fruits, Grains, Condiments, Protein
 from django.conf import settings
 
 
-def day_to_datetime(day, oclock):
-    return datetime.datetime.combine(day, datetime.time(oclock))
-
-
-def get_grocery_delivery_days():
-    grocery_shifts = []
-    for day in settings.GROCERY_DELIVERY_DAYS:
-        grocery_shifts.append((day_to_datetime(day, 12), day.strftime("%B %d, %Y") + ' 12-3pm'))
-        grocery_shifts.append((day_to_datetime(day, 15), day.strftime("%B %d, %Y") + ' 3-6m'))
-
-    return grocery_shifts
-
-
 class TelephoneInput(forms.TextInput):
     input_type = 'tel'
 
