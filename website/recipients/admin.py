@@ -13,8 +13,6 @@ from .models import (
     MealRequestComment,
     MealDelivery,
     MealDeliveryComment,
-    GroceryDelivery,
-    GroceryDeliveryComment,
     Status,
     SendNotificationException,
 )
@@ -107,12 +105,7 @@ class MealDeliveryInline(admin.TabularInline):
     model = MealDelivery
 
 
-class GroceryDeliveryInline(admin.TabularInline):
-    model = GroceryDelivery
-
 # Assign the current user as author when saving comments from a model admin
-
-
 class CommentInlineFormSet(forms.models.BaseInlineFormSet):
     def save_new(self, form, commit=True):
         obj = super(CommentInlineFormSet, self).save_new(form, commit=False)
@@ -143,10 +136,6 @@ class MealRequestCommentInline(CommentInline):
 
 class MealDeliveryCommentInline(CommentInline):
     model = MealDeliveryComment
-
-
-class GroceryDeliveryCommentInline(CommentInline):
-    model = GroceryDeliveryComment
 
 
 class MealRequestAdmin(admin.ModelAdmin):
