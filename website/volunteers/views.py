@@ -17,9 +17,9 @@ from core.models import has_group
 from recipients.models import MealRequest, GroceryRequest, GroceryDelivery, MealDelivery, Status, SendNotificationException
 from public.views import GroupView
 from website.maps import distance
-from .forms import GroceryDeliverySignupForm, MealDeliverySignupForm, ChefSignupForm, ChefApplyForm, DeliveryApplyForm, OrganizerApplyForm
+from .forms import MealDeliverySignupForm, ChefSignupForm, ChefApplyForm, DeliveryApplyForm, OrganizerApplyForm
 from .models import VolunteerApplication, VolunteerRoles, Volunteer
-from .filters import ChefSignupFilter, MealDeliverySignupFilter, GroceryDeliverySignupFilter
+from .filters import ChefSignupFilter, MealDeliverySignupFilter
 
 
 logger = logging.getLogger(__name__)
@@ -131,77 +131,6 @@ class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
                 pickup_start=form.cleaned_data['pickup_start'],
                 pickup_end=form.cleaned_data['pickup_end'],
             )
-
-
-class GroceryDeliverySignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
-    """View for deliverers to sign up to deliver meal requests"""
-    template_name = "volunteers/delivery_signup_groceries.html"
-    form_class = GroceryDeliverySignupForm
-    permission_group = 'Deliverers'
-    permission_group_redirect_url = reverse_lazy('volunteers:delivery_application')
-    filterset_class = GroceryDeliverySignupFilter
-    queryset = GroceryDelivery.objects.filter(deliverer__isnull=True)
-
-    @property
-    def success_url(self):
-        """Redirect to the same page with same query params to keep the filters"""
-        return self.request.get_full_path()
-
-    def get_context_data(self, **kwargs):
-        context = super(GroceryDeliverySignupView, self).get_context_data(**kwargs)
-
-        context["grocery_delivery_form_pairs"] = [
-            (grocery_delivery, GroceryDeliverySignupForm(initial={'id': grocery_delivery.id}))
-            for grocery_delivery in self.object_list
-        ]
-        return context
-
-    def form_invalid(self, form):
-        return redirect(self.success_url)
-
-    def form_valid(self, form):
-        # First fetch the associated meal request
-        # It's possible that someone else has signed up for it, so handle that
-        grocery_request = self.get_grocery_request(form)
-
-        if grocery_request is None:
-            messages.error(
-                self.request,
-                'Sorry, we were unable to register you for that request, someone else may have already claimed it.'
-            )
-            return self.form_invalid(form)
-
-        try:
-            # If the grocery request is still available setup the delivery
-            self.update_delivery(form, grocery_request)
-        except ValidationError as error:
-            messages.error(self.request, error.messages[0])
-            return redirect(self.success_url)
-
-        messages.success(self.request, 'Successfully signed up!')
-        return super().form_valid(form)
-
-    def get_grocery_request(self, form):
-        try:
-            return self.queryset.get(id=form.cleaned_data['id'])
-        except GroceryRequest.DoesNotExist:
-            return None
-
-    def update_delivery(self, form, grocery_request):
-        start_time = form.cleaned_data['availability']
-        grocery_request.status = Status.DRIVER_ASSIGNED
-        grocery_request.pickup_start = start_time - timedelta(hours=1)
-        grocery_request.pickup_end = start_time
-        grocery_request.dropoff_start = start_time
-        grocery_request.dropoff_end = start_time + timedelta(hours=3)
-        grocery_request.deliverer = self.request.user
-        grocery_request.date = start_time.date()
-        grocery_request.save()
-
-        try:
-            grocery_request.send_recipient_delivery_notification()
-        except SendNotificationException:
-            logger.warn("Skipped sending notification for Grocery Request %d to %s", grocery_request.id, grocery_request.phone_number)
 
 
 class MealDeliverySignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
