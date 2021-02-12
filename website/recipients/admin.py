@@ -11,8 +11,6 @@ from core.admin import user_link, obj_link
 from .models import (
     MealRequest,
     MealRequestComment,
-    GroceryRequest,
-    GroceryRequestComment,
     MealDelivery,
     MealDeliveryComment,
     GroceryDelivery,
@@ -141,10 +139,6 @@ class CommentInline(admin.TabularInline):
 
 class MealRequestCommentInline(CommentInline):
     model = MealRequestComment
-
-
-class GroceryRequestCommentInline(CommentInline):
-    model = GroceryRequestComment
 
 
 class MealDeliveryCommentInline(CommentInline):
