@@ -1,8 +1,9 @@
 import datetime
 from textwrap import dedent
 from django import forms
-from .models import MealRequest, Vegetables, Fruits, Grains, Condiments, Protein, Dairy
 from django.conf import settings
+
+from .models import MealRequest
 
 
 class TelephoneInput(forms.TextInput):

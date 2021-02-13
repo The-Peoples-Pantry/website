@@ -22,46 +22,6 @@ class SendNotificationException(Exception):
         self.message = message
 
 
-class Vegetables(models.TextChoices):
-    CARROTS = 'Carrots'
-    GARLIC = 'Garlic'
-    ONIONS = 'Onions'
-    POTATOES = 'Potatoes'
-    SPINACH = 'Spinach'
-
-
-class Fruits(models.TextChoices):
-    APPLES = 'Apples'
-    BANANAS = 'Bananas'
-    ORANGES = 'Oranges'
-
-
-class Protein(models.TextChoices):
-    BEEF = 'Beef'
-    CHICKEN = 'Chicken'
-    TOFU = 'Tofu'
-    EGGS = 'Eggs'
-
-
-class Grains(models.TextChoices):
-    BLACK_BEANS = 'Black Beans'
-    CHICKPEAS = 'Chickpeas'
-    LENTILS = 'Lentils'
-    RICE = 'Rice'
-    PASTA = 'Pasta'
-
-
-class Condiments(models.TextChoices):
-    FLOUR = 'Flour'
-    SUGAR = 'Sugar'
-    TOMATO_SAUCE = 'Tomato Sauce'
-
-
-class Dairy(models.TextChoices):
-    MILK = 'Milk'
-    ALMOND_MILK = 'Almond Milk'
-
-
 class HelpRequest(ContactInfo):
     class Meta:
         abstract = True
