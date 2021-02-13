@@ -18,17 +18,9 @@ def success(request):
     return render(request, 'recipients/success.html')
 
 
-class HelpRequestView(FormView):
-    success_url = reverse_lazy('recipients:success')
-
-    def form_valid(self, form):
-        instance = form.save()
-        instance.send_confirmation_email()
-        return super().form_valid(form)
-
-
-class MealRequestView(HelpRequestView):
+class MealRequestView(FormView):
     template_name = 'recipients/new_meal_request.html'
+    success_url = reverse_lazy('recipients:success')
     form_class = MealRequestForm
 
     def get(self, request):
@@ -49,6 +41,9 @@ class MealRequestView(HelpRequestView):
                 Please give us some time to fulfill that request first before submitting another.
             """))
             return super().form_invalid(form)
+
+        instance = form.save()
+        instance.send_confirmation_email()
         return super().form_valid(form)
 
 
