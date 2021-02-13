@@ -197,14 +197,7 @@ DAY_LENGTH = 9  # Longest is "Wednesday"
 LONG_TEXT_LENGTH = 1024
 
 # Settings for pausing requests
-PAUSE_GROCERIES = 130
 PAUSE_MEALS = 30
-
-# Grocery settings
-GROCERY_DELIVERY_DAYS = [
-    datetime.datetime(2020, 12, 23),
-    datetime.datetime(2020, 12, 30),
-]
 
 # Settings for figuring out delivery distances
 MAX_CHEF_DISTANCE = 10  # Chefs can't be more than this many km away from their recipients
