@@ -10,22 +10,6 @@ from .models import Volunteer, CookingTypes, FoodTypes, TransportationTypes, Day
 logger = logging.getLogger(__name__)
 
 
-def future_date(**kwargs):
-    now = datetime.datetime.now().date()
-    return now + datetime.timedelta(**kwargs)
-
-
-class FutureDateInput(forms.DateInput):
-    """A date picker widget that allows picking a date range 2-7 days from now"""
-
-    def __init__(self):
-        super().__init__(attrs={
-            'type': 'date',
-            'min': future_date(days=2),
-            'max': future_date(days=7),
-        })
-
-
 class TimeField(forms.TimeField):
     """A field that renders a time picker widget"""
 
