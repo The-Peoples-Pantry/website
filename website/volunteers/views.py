@@ -25,10 +25,6 @@ from .filters import ChefSignupFilter, MealDeliverySignupFilter, GroceryDelivery
 logger = logging.getLogger(__name__)
 
 
-def delivery_success(request):
-    return render(request, 'volunteers/delivery_success.html')
-
-
 class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
     """View for chefs to sign up to cook meal requests"""
     template_name = "volunteers/chef_signup.html"
