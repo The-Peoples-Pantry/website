@@ -22,10 +22,7 @@ class SendNotificationException(Exception):
         self.message = message
 
 
-class HelpRequest(ContactInfo):
-    class Meta:
-        abstract = True
-
+class MealRequest(ContactInfo):
     # Information about the recipient
     can_receive_texts = models.BooleanField(
         "Can receive texts",
@@ -103,40 +100,6 @@ class HelpRequest(ContactInfo):
         blank=True,
     )
 
-    # Legal
-    accept_terms = models.BooleanField("Accept terms")
-
-    # System
-    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    @property
-    def stale(self):
-        return (timezone.now() - self.created_at).days >= 7
-
-    def get_absolute_url(self):
-        return reverse_lazy('recipients:request_detail', args=[str(self.id)])
-
-    def send_confirmation_email(self):
-        custom_send_mail(
-            "Confirming your The People's Pantry request",
-            dedent(f"""
-                Hi {self.name},
-                Just confirming that we received your request for The People's Pantry.
-                Your request ID is {self.id}
-            """),
-            [self.email],
-            reply_to=settings.REQUEST_COORDINATORS_EMAIL
-        )
-
-    def __str__(self):
-        return "Request #%d (%s): %d adult(s) and %d kid(s) in %s " % (
-            self.id, self.name, self.num_adults, self.num_children, self.city,
-        )
-
-
-class MealRequest(HelpRequest):
     dairy_free = models.BooleanField("Dairy free")
     gluten_free = models.BooleanField("Gluten free")
     halal = models.BooleanField("Halal")
@@ -159,6 +122,14 @@ class MealRequest(HelpRequest):
         help_text="Are you willing to accept a vegetarian meal even if you are not vegetarian?",
         default=True,
     )
+
+    # Legal
+    accept_terms = models.BooleanField("Accept terms")
+
+    # System
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     @classmethod
     def requests_paused(cls):
@@ -186,6 +157,30 @@ class MealRequest(HelpRequest):
         ).exclude(
             delivery__status__in=(Status.DATE_CONFIRMED, Status.DELIVERED)
         ).exists()
+
+    @property
+    def stale(self):
+        return (timezone.now() - self.created_at).days >= 7
+
+    def get_absolute_url(self):
+        return reverse_lazy('recipients:request_detail', args=[str(self.id)])
+
+    def send_confirmation_email(self):
+        custom_send_mail(
+            "Confirming your The People's Pantry request",
+            dedent(f"""
+                Hi {self.name},
+                Just confirming that we received your request for The People's Pantry.
+                Your request ID is {self.id}
+            """),
+            [self.email],
+            reply_to=settings.REQUEST_COORDINATORS_EMAIL
+        )
+
+    def __str__(self):
+        return "Request #%d (%s): %d adult(s) and %d kid(s) in %s " % (
+            self.id, self.name, self.num_adults, self.num_children, self.city,
+        )
 
 
 class Status(models.TextChoices):
