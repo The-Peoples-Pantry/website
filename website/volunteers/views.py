@@ -135,7 +135,7 @@ class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
 
 class MealDeliverySignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
     """View for deliverers to sign up to deliver meal requests"""
-    template_name = "volunteers/delivery_signup_meals.html"
+    template_name = "volunteers/delivery_signup.html"
     form_class = MealDeliverySignupForm
     permission_group = 'Deliverers'
     permission_group_redirect_url = reverse_lazy('volunteers:delivery_application')
