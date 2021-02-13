@@ -197,41 +197,7 @@ class Status(models.TextChoices):
     DELIVERED = 'Delivered', 'Delivered'
 
 
-class BaseDelivery(models.Model):
-    class Meta:
-        abstract = True
-
-    status = models.CharField(
-        "Status",
-        max_length=settings.DEFAULT_LENGTH,
-        choices=Status.choices,
-        default=Status.UNCONFIRMED
-    )
-    date = models.DateField("Delivery date", null=True, blank=True)
-    pickup_start = models.TimeField(null=True, blank=True)
-    pickup_end = models.TimeField(null=True, blank=True)
-    dropoff_start = models.TimeField(null=True, blank=True)
-    dropoff_end = models.TimeField(null=True, blank=True)
-
-    def clean(self, *args, **kwargs):
-        super(BaseDelivery, self).clean(*args, **kwargs)
-        if self.pickup_end and self.pickup_start and self.pickup_end <= self.pickup_start:
-            raise ValidationError("The pickup end time must be after the pickup start time")
-        if self.dropoff_end and self.dropoff_start and self.dropoff_end <= self.dropoff_start:
-            raise ValidationError("The dropoff end time must be after the dropoff start time")
-        if self.dropoff_start and self.pickup_start and self.dropoff_start <= self.pickup_start:
-            raise ValidationError("The dropoff start time must be after the pickup start time")
-
-    def save(self, *args, **kwargs):
-        self.full_clean()
-        return super(BaseDelivery, self).save(*args, **kwargs)
-
-    # System
-    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-
-class MealDelivery(BaseDelivery):
+class MealDelivery(models.Model):
     class Meta:
         verbose_name_plural = 'meal deliveries'
 
@@ -255,8 +221,34 @@ class MealDelivery(BaseDelivery):
         blank=True,
     )
 
+    status = models.CharField(
+        "Status",
+        max_length=settings.DEFAULT_LENGTH,
+        choices=Status.choices,
+        default=Status.UNCONFIRMED
+    )
+    date = models.DateField("Delivery date", null=True, blank=True)
+    pickup_start = models.TimeField(null=True, blank=True)
+    pickup_end = models.TimeField(null=True, blank=True)
+    dropoff_start = models.TimeField(null=True, blank=True)
+    dropoff_end = models.TimeField(null=True, blank=True)
+
+    # System
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        return super(MealDelivery, self).save(*args, **kwargs)
+
     def clean(self, *args, **kwargs):
         super(MealDelivery, self).clean(*args, **kwargs)
+        if self.pickup_end and self.pickup_start and self.pickup_end <= self.pickup_start:
+            raise ValidationError("The pickup end time must be after the pickup start time")
+        if self.dropoff_end and self.dropoff_start and self.dropoff_end <= self.dropoff_start:
+            raise ValidationError("The dropoff end time must be after the dropoff start time")
+        if self.dropoff_start and self.pickup_start and self.dropoff_start <= self.pickup_start:
+            raise ValidationError("The dropoff start time must be after the pickup start time")
         if self.dropoff_start and self.dropoff_end and self.date:
             start = datetime.combine(self.date, self.dropoff_start)
             end = datetime.combine(self.date, self.dropoff_end)
