@@ -186,8 +186,10 @@ if SENTRY_DSN:
 
 # django-sql-explorer
 # https://django-sql-explorer.readthedocs.io/en/latest/install.html
-EXPLORER_CONNECTIONS = { 'Default': 'default' }
+EXPLORER_CONNECTIONS = {'Default': 'default'}
 EXPLORER_DEFAULT_CONNECTION = 'default'
+EXPLORER_PERMISSION_VIEW = lambda request: request.user.is_staff
+EXPLORER_PERMISSION_CHANGE = lambda request: request.user.is_superuser
 
 
 # Configure hosted settings automatically using django_heroku
