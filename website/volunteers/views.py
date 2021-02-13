@@ -248,26 +248,20 @@ class DeliveryIndexView(LoginRequiredMixin, GroupView, ListView):
         return sorted(meals, key=lambda instance: instance.date)
 
     def post(self, request):
-        if request.POST['delivery_id'] and request.POST['has_chef']:
-            instance = MealDelivery.objects.get(uuid=request.POST['delivery_id'])
+        instance = MealDelivery.objects.get(uuid=request.POST['delivery_id'])
 
-            if instance.date <= date.today():
-                instance.status = Status.DELIVERED
-                instance.save()
-                messages.success(
-                    self.request,
-                    'Marked delivery ID #%d to %s as complete! If this was a mistake please email us at %s as soon as possible.' %
-                    (instance.pk, instance.request.address_1, settings.VOLUNTEER_COORDINATORS_EMAIL)
-                )
-            else:
-                messages.error(
-                    self.request,
-                    'You can only mark deliveries complete after the assigned delivery date.'
-                )
+        if instance.date <= date.today():
+            instance.status = Status.DELIVERED
+            instance.save()
+            messages.success(
+                self.request,
+                'Marked delivery ID #%d to %s as complete! If this was a mistake please email us at %s as soon as possible.' %
+                (instance.pk, instance.request.address_1, settings.VOLUNTEER_COORDINATORS_EMAIL)
+            )
         else:
             messages.error(
                 self.request,
-                'Something went wrong, sorry about that!'
+                'You can only mark deliveries complete after the assigned delivery date.'
             )
 
         return redirect(self.request.get_full_path())
