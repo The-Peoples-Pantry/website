@@ -5,7 +5,7 @@ from django.conf import settings
 from django.forms import ValidationError
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic.edit import FormView, UpdateView
 from django.views.generic import ListView, TemplateView
@@ -22,10 +22,6 @@ from .filters import ChefSignupFilter, MealDeliverySignupFilter
 
 
 logger = logging.getLogger(__name__)
-
-
-def delivery_success(request):
-    return render(request, 'volunteers/delivery_success.html')
 
 
 class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
