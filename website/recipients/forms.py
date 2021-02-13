@@ -18,7 +18,7 @@ class TelephoneInput(forms.TextInput):
         })
 
 
-class HelpRequestForm(forms.ModelForm):
+class MealRequestForm(forms.ModelForm):
     # Force the terms to be accepted in order to submit the form
     accept_terms = forms.BooleanField(required=True)
 
@@ -35,8 +35,8 @@ class HelpRequestForm(forms.ModelForm):
     """)
 
     class Meta:
+        model = MealRequest
         exclude = ['uuid', 'created_at', 'updated_at', 'anonymized_latitude', 'anonymized_longitude']
-
         widgets = {
             'phone_number': TelephoneInput(),
             'requester_phone_number': TelephoneInput(),
@@ -46,8 +46,3 @@ class HelpRequestForm(forms.ModelForm):
             'availability': forms.Textarea(attrs={'rows': 3}),
             'notes': forms.Textarea(attrs={'rows': 3}),
         }
-
-
-class MealRequestForm(HelpRequestForm):
-    class Meta(HelpRequestForm.Meta):
-        model = MealRequest
