@@ -103,23 +103,3 @@ class ContactInfo(models.Model):
         # Whenever the model is updated, make sure coordinates are updated too
         self.update_coordinates()
         super().save(*args, **kwargs)
-
-
-class GroceryPickupAddress(ContactInfo):
-    name = models.CharField(
-        "Name of volunteer responsible for this address",
-        max_length=settings.NAME_LENGTH
-    )
-    phone_number = models.CharField(
-        "Phone number of volunteer responsible for this address",
-        help_text="Use the format 555-555-5555",
-        max_length=settings.PHONE_NUMBER_LENGTH,
-    )
-    email = models.EmailField(
-        "Email address if applicable",
-        null=True,
-        blank=True,
-    )
-
-    def __str__(self):
-        return self.address_1

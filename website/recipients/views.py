@@ -6,8 +6,8 @@ from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 
-from .forms import MealRequestForm, GroceryRequestForm
-from .models import MealRequest, GroceryRequest
+from .forms import MealRequestForm
+from .models import MealRequest
 
 
 def index(request):
@@ -18,17 +18,9 @@ def success(request):
     return render(request, 'recipients/success.html')
 
 
-class HelpRequestView(FormView):
-    success_url = reverse_lazy('recipients:success')
-
-    def form_valid(self, form):
-        instance = form.save()
-        instance.send_confirmation_email()
-        return super().form_valid(form)
-
-
-class MealRequestView(HelpRequestView):
+class MealRequestView(FormView):
     template_name = 'recipients/new_meal_request.html'
+    success_url = reverse_lazy('recipients:success')
     form_class = MealRequestForm
 
     def get(self, request):
@@ -49,17 +41,10 @@ class MealRequestView(HelpRequestView):
                 Please give us some time to fulfill that request first before submitting another.
             """))
             return super().form_invalid(form)
+
+        instance = form.save()
+        instance.send_confirmation_email()
         return super().form_valid(form)
-
-
-class GroceryRequestView(HelpRequestView):
-    template_name = 'recipients/new_grocery_request.html'
-    form_class = GroceryRequestForm
-
-    def get(self, request):
-        if GroceryRequest.requests_paused():
-            return render(request, 'recipients/grocery_paused.html')
-        return super().get(request)
 
 
 class MealRequestDetail(LoginRequiredMixin, DetailView):

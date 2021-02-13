@@ -1,8 +1,5 @@
-from django.contrib import admin
 from django.utils.html import format_html
 from django.urls import reverse
-
-from .models import GroceryPickupAddress
 
 
 def user_link(user):
@@ -19,6 +16,3 @@ def obj_link(obj, type, **kwargs):
         url = reverse('admin:recipients_%s_change' % type, args=(obj.id,))
         return format_html('<a href="%s">%s</a>' % (url, link_text))
     return obj
-
-
-admin.site.register(GroceryPickupAddress)

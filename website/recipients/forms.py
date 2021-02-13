@@ -1,21 +1,7 @@
-import datetime
 from textwrap import dedent
 from django import forms
-from .models import MealRequest, GroceryRequest, Vegetables, Fruits, Grains, Condiments, Protein, Dairy
-from django.conf import settings
 
-
-def day_to_datetime(day, oclock):
-    return datetime.datetime.combine(day, datetime.time(oclock))
-
-
-def get_grocery_delivery_days():
-    grocery_shifts = []
-    for day in settings.GROCERY_DELIVERY_DAYS:
-        grocery_shifts.append((day_to_datetime(day, 12), day.strftime("%B %d, %Y") + ' 12-3pm'))
-        grocery_shifts.append((day_to_datetime(day, 15), day.strftime("%B %d, %Y") + ' 3-6m'))
-
-    return grocery_shifts
+from .models import MealRequest
 
 
 class TelephoneInput(forms.TextInput):
@@ -30,7 +16,7 @@ class TelephoneInput(forms.TextInput):
         })
 
 
-class HelpRequestForm(forms.ModelForm):
+class MealRequestForm(forms.ModelForm):
     # Force the terms to be accepted in order to submit the form
     accept_terms = forms.BooleanField(required=True)
 
@@ -47,8 +33,8 @@ class HelpRequestForm(forms.ModelForm):
     """)
 
     class Meta:
+        model = MealRequest
         exclude = ['uuid', 'created_at', 'updated_at', 'anonymized_latitude', 'anonymized_longitude']
-
         widgets = {
             'phone_number': TelephoneInput(),
             'requester_phone_number': TelephoneInput(),
@@ -58,47 +44,3 @@ class HelpRequestForm(forms.ModelForm):
             'availability': forms.Textarea(attrs={'rows': 3}),
             'notes': forms.Textarea(attrs={'rows': 3}),
         }
-
-
-class MealRequestForm(HelpRequestForm):
-    class Meta(HelpRequestForm.Meta):
-        model = MealRequest
-
-
-class GroceryRequestForm(HelpRequestForm):
-    class Meta(HelpRequestForm.Meta):
-        model = GroceryRequest
-
-    vegetables = forms.MultipleChoiceField(
-        required=False,
-        widget=forms.CheckboxSelectMultiple,
-        choices=Vegetables.choices,
-    )
-    fruits = forms.MultipleChoiceField(
-        required=False,
-        widget=forms.CheckboxSelectMultiple,
-        choices=Fruits.choices,
-    )
-    grains = forms.MultipleChoiceField(
-        required=False,
-        widget=forms.CheckboxSelectMultiple,
-        choices=Grains.choices,
-    )
-    condiments = forms.MultipleChoiceField(
-        required=False,
-        widget=forms.CheckboxSelectMultiple,
-        choices=Condiments.choices,
-    )
-    protein = forms.ChoiceField(
-        required=False,
-        choices=Protein.choices,
-    )
-    dairy = forms.ChoiceField(
-        required=False,
-        choices=Dairy.choices,
-    )
-    availability = forms.MultipleChoiceField(
-        required=False,
-        widget=forms.CheckboxSelectMultiple,
-        choices=get_grocery_delivery_days,
-    )

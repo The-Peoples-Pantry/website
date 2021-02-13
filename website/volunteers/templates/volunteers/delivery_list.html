@@ -11,14 +11,12 @@
   {% for delivery in deliveries %}
     <div class="card mb-4">
       <div class="card-header font-weight-bold">
-        {{ delivery.date }}: Request #{{ delivery.request.id }} ({% if delivery.chef %}meals{% else %}groceries{% endif %} for
+        {{ delivery.date }}: Request #{{ delivery.request.id }} (meals for
         {{ delivery.request.num_adults }} adult{{ delivery.request.num_adults | pluralize }}
         and {{ delivery.request.num_children }} kid{{ delivery.request.num_children | pluralize }})
         <form action="" method="post" onsubmit="return window.confirm('Are you sure you want to mark this delivery as complete? You cannot undo this!')" class="form float-right">
           {% csrf_token %}
           <input type="hidden" name="delivery_id" value="{{ delivery.uuid }}" />
-          <input type="hidden" name="has_chef" value="{{ delivery.chef }}" />
-          <input type="hidden" name="is_groceries" value="{{ delivery.pickup_address }}" />
           {% bootstrap_button 'Mark as delivered' button_class='btn-warning' %}</form>
       </div>
       <div class="card-body">
@@ -56,7 +54,7 @@
     </div>
 
   {% empty %}
-    <div class="alert alert-info">You haven't signed up for any deliveries! <a href={% url 'volunteers:delivery_signup_meals' %}>Click here</a> to see the list of requests that current need to be delivered.</div>
+    <div class="alert alert-info">You haven't signed up for any deliveries! <a href={% url 'volunteers:delivery_signup' %}>Click here</a> to see the list of requests that current need to be delivered.</div>
   {% endfor %}
   </div>
 </div>

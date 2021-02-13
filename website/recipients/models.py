@@ -11,7 +11,7 @@ import pytz
 
 from website.mail import custom_send_mail
 from website.text_messaging import send_text
-from core.models import get_sentinel_user, ContactInfo, GroceryPickupAddress
+from core.models import get_sentinel_user, ContactInfo
 
 
 logger = logging.getLogger(__name__)
@@ -22,50 +22,7 @@ class SendNotificationException(Exception):
         self.message = message
 
 
-class Vegetables(models.TextChoices):
-    CARROTS = 'Carrots'
-    GARLIC = 'Garlic'
-    ONIONS = 'Onions'
-    POTATOES = 'Potatoes'
-    SPINACH = 'Spinach'
-
-
-class Fruits(models.TextChoices):
-    APPLES = 'Apples'
-    BANANAS = 'Bananas'
-    ORANGES = 'Oranges'
-
-
-class Protein(models.TextChoices):
-    BEEF = 'Beef'
-    CHICKEN = 'Chicken'
-    TOFU = 'Tofu'
-    EGGS = 'Eggs'
-
-
-class Grains(models.TextChoices):
-    BLACK_BEANS = 'Black Beans'
-    CHICKPEAS = 'Chickpeas'
-    LENTILS = 'Lentils'
-    RICE = 'Rice'
-    PASTA = 'Pasta'
-
-
-class Condiments(models.TextChoices):
-    FLOUR = 'Flour'
-    SUGAR = 'Sugar'
-    TOMATO_SAUCE = 'Tomato Sauce'
-
-
-class Dairy(models.TextChoices):
-    MILK = 'Milk'
-    ALMOND_MILK = 'Almond Milk'
-
-
-class HelpRequest(ContactInfo):
-    class Meta:
-        abstract = True
-
+class MealRequest(ContactInfo):
     # Information about the recipient
     can_receive_texts = models.BooleanField(
         "Can receive texts",
@@ -143,40 +100,6 @@ class HelpRequest(ContactInfo):
         blank=True,
     )
 
-    # Legal
-    accept_terms = models.BooleanField("Accept terms")
-
-    # System
-    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    @property
-    def stale(self):
-        return (timezone.now() - self.created_at).days >= 7
-
-    def get_absolute_url(self):
-        return reverse_lazy('recipients:request_detail', args=[str(self.id)])
-
-    def send_confirmation_email(self):
-        custom_send_mail(
-            "Confirming your The People's Pantry request",
-            dedent(f"""
-                Hi {self.name},
-                Just confirming that we received your request for The People's Pantry.
-                Your request ID is {self.id}
-            """),
-            [self.email],
-            reply_to=settings.REQUEST_COORDINATORS_EMAIL
-        )
-
-    def __str__(self):
-        return "Request #%d (%s): %d adult(s) and %d kid(s) in %s " % (
-            self.id, self.name, self.num_adults, self.num_children, self.city,
-        )
-
-
-class MealRequest(HelpRequest):
     dairy_free = models.BooleanField("Dairy free")
     gluten_free = models.BooleanField("Gluten free")
     halal = models.BooleanField("Halal")
@@ -199,6 +122,14 @@ class MealRequest(HelpRequest):
         help_text="Are you willing to accept a vegetarian meal even if you are not vegetarian?",
         default=True,
     )
+
+    # Legal
+    accept_terms = models.BooleanField("Accept terms")
+
+    # System
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     @classmethod
     def requests_paused(cls):
@@ -227,64 +158,29 @@ class MealRequest(HelpRequest):
             delivery__status__in=(Status.DATE_CONFIRMED, Status.DELIVERED)
         ).exists()
 
+    @property
+    def stale(self):
+        return (timezone.now() - self.created_at).days >= 7
 
-class GroceryRequest(HelpRequest):
-    vegetables = models.CharField(
-        "Vegetables",
-        help_text="Select all that you want",
-        max_length=settings.DEFAULT_LENGTH,
-    )
-    fruits = models.CharField(
-        "Fruits",
-        help_text="Select all that you want",
-        max_length=settings.DEFAULT_LENGTH,
-    )
-    protein = models.CharField(
-        "Protein",
-        help_text="Select one of the following",
-        choices=Protein.choices,
-        max_length=settings.DEFAULT_LENGTH,
-        null=True,
-        blank=True,
-    )
-    grains = models.CharField(
-        "Grains",
-        help_text="Select up to 3",
-        max_length=settings.DEFAULT_LENGTH,
-    )
-    condiments = models.CharField(
-        "Condiments",
-        help_text="Select all that you want",
-        max_length=settings.DEFAULT_LENGTH,
-    )
-    dairy = models.CharField(
-        "Dairy",
-        help_text="Select one of the following",
-        choices=Dairy.choices,
-        max_length=settings.DEFAULT_LENGTH,
+    def get_absolute_url(self):
+        return reverse_lazy('recipients:request_detail', args=[str(self.id)])
 
-    )
-    baked_goods = models.BooleanField(
-        "Baked goods",
-        help_text="Sometimes we have baked goods to offer in our bundles, would you want baked goods?"
-    )
-    kid_snacks = models.BooleanField(
-        "Kid snacks",
-        help_text="Sometimes we have kid snacks to offer in our bundles, would you want kids' snacks?"
-    )
-    hygiene_products = models.CharField(
-        "Hygiene products",
-        help_text="Sometimes we are able to include personal hygiene products in our bundles, what personal hygiene products would you want? For example: sanitary pads, shampoo, etc.",
-        max_length=settings.LONG_TEXT_LENGTH,
-        blank=True,
-    )
+    def send_confirmation_email(self):
+        custom_send_mail(
+            "Confirming your The People's Pantry request",
+            dedent(f"""
+                Hi {self.name},
+                Just confirming that we received your request for The People's Pantry.
+                Your request ID is {self.id}
+            """),
+            [self.email],
+            reply_to=settings.REQUEST_COORDINATORS_EMAIL
+        )
 
-    @classmethod
-    def requests_paused(cls):
-        """Are requests currently paused?"""
-        # TODO: Update this to exclude completed grocery deliveries once we have GroceryDelivery
-        active_requests = cls.objects.count()
-        return active_requests >= settings.PAUSE_GROCERIES
+    def __str__(self):
+        return "Request #%d (%s): %d adult(s) and %d kid(s) in %s " % (
+            self.id, self.name, self.num_adults, self.num_children, self.city,
+        )
 
 
 class Status(models.TextChoices):
@@ -296,109 +192,7 @@ class Status(models.TextChoices):
     DELIVERED = 'Delivered', 'Delivered'
 
 
-class BaseDelivery(models.Model):
-    class Meta:
-        abstract = True
-
-    status = models.CharField(
-        "Status",
-        max_length=settings.DEFAULT_LENGTH,
-        choices=Status.choices,
-        default=Status.UNCONFIRMED
-    )
-    date = models.DateField("Delivery date", null=True, blank=True)
-    pickup_start = models.TimeField(null=True, blank=True)
-    pickup_end = models.TimeField(null=True, blank=True)
-    dropoff_start = models.TimeField(null=True, blank=True)
-    dropoff_end = models.TimeField(null=True, blank=True)
-
-    def clean(self, *args, **kwargs):
-        super(BaseDelivery, self).clean(*args, **kwargs)
-        if self.pickup_end and self.pickup_start and self.pickup_end <= self.pickup_start:
-            raise ValidationError("The pickup end time must be after the pickup start time")
-        if self.dropoff_end and self.dropoff_start and self.dropoff_end <= self.dropoff_start:
-            raise ValidationError("The dropoff end time must be after the dropoff start time")
-        if self.dropoff_start and self.pickup_start and self.dropoff_start <= self.pickup_start:
-            raise ValidationError("The dropoff start time must be after the pickup start time")
-
-    def save(self, *args, **kwargs):
-        self.full_clean()
-        return super(BaseDelivery, self).save(*args, **kwargs)
-
-    # System
-    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-
-class GroceryDelivery(BaseDelivery):
-    class Meta:
-        verbose_name_plural = 'grocery deliveries'
-
-    request = models.OneToOneField(
-        GroceryRequest,
-        on_delete=models.CASCADE,
-        related_name='delivery',
-    )
-    deliverer = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.SET(get_sentinel_user),
-        related_name="delivered_grocery_deliveries",
-        null=True,
-        blank=True,
-    )
-    pickup_address = models.ForeignKey(
-        GroceryPickupAddress,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True
-    )
-
-    def send_recipient_delivery_notification(self):
-        """Send a follow-up notification to a recipient, lets them know that a delivery driver will drop if off within a certain time window"""
-        # Perform validation first that we _can_ send this notification
-        if not self.request.can_receive_texts:
-            raise SendNotificationException("Recipient cannot receive text messages at their phone number")
-
-        if not (self.dropoff_start and self.dropoff_end):
-            raise SendNotificationException("Delivery does not have a dropoff time range scheduled")
-
-        # Date is in the format "Weekday Month Year" eg. Sunday November 29
-        # Time is in the format "Hour:Minute AM/PM" eg. 09:30 PM
-        message = dedent(f"""
-            Hi {self.request.name},
-            This is a message from The People's Pantry.
-            Your grocery bundle delivery is scheduled for {self.date:%A %B %d} between {self.dropoff_start:%I:%M %p} and {self.dropoff_end:%I:%M %p}.
-            Since we depend on volunteers for our deliveries, sometimes we are not able to do all deliveries scheduled for the day. If that’s the case with your delivery, we will inform you by 6 PM on the day of the delivery and your delivery will be rescheduled for the following day.
-            Please confirm you got this message and let us know if you can accept the delivery.
-            Thank you!
-        """)
-        send_text(self.request.phone_number, message)
-        self.comments.create(comment=f"Sent a text to recipient: {message}")
-        logger.info("Sent recipient delivery notification text for Meal Request %d to %s", self.request.id, self.request.phone_number)
-
-    def send_deliverer_reminder_notification(self):
-        """Send a reminder notification to the deliverer"""
-        if not self.deliverer:
-            raise SendNotificationException("No deliverer assigned to this delivery")
-
-        message = dedent(f"""
-            Hi {self.deliverer.volunteer.preferred_name},
-            This is a message from The People's Pantry.
-            Just reminding you of the upcoming grocery bundle you're delivering on {self.date:%A %B %d} between {self.dropoff_start:%I:%M %p} and {self.dropoff_end:%I:%M %p}.
-            Please confirm you got this message and let us know if you need any assistance.
-            Thank you!
-        """)
-        send_text(self.deliverer.volunteer.phone_number, message)
-        self.comments.create(comment=f"Sent a text to the deliverer: {message}")
-        logger.info("Sent deliverer reminder notification text for Grocery bundle %d to %s", self.request.id, self.deliverer.volunteer.phone_number)
-
-    def __str__(self):
-        return "[%s] Delivering request id #%d (%s) to %s for %s" % (
-            self.status.capitalize(), self.request.id, self.request._meta.verbose_name.capitalize(), self.request.city, self.request.name,
-        )
-
-
-class MealDelivery(BaseDelivery):
+class MealDelivery(models.Model):
     class Meta:
         verbose_name_plural = 'meal deliveries'
 
@@ -422,8 +216,34 @@ class MealDelivery(BaseDelivery):
         blank=True,
     )
 
+    status = models.CharField(
+        "Status",
+        max_length=settings.DEFAULT_LENGTH,
+        choices=Status.choices,
+        default=Status.UNCONFIRMED
+    )
+    date = models.DateField("Delivery date", null=True, blank=True)
+    pickup_start = models.TimeField(null=True, blank=True)
+    pickup_end = models.TimeField(null=True, blank=True)
+    dropoff_start = models.TimeField(null=True, blank=True)
+    dropoff_end = models.TimeField(null=True, blank=True)
+
+    # System
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        return super(MealDelivery, self).save(*args, **kwargs)
+
     def clean(self, *args, **kwargs):
         super(MealDelivery, self).clean(*args, **kwargs)
+        if self.pickup_end and self.pickup_start and self.pickup_end <= self.pickup_start:
+            raise ValidationError("The pickup end time must be after the pickup start time")
+        if self.dropoff_end and self.dropoff_start and self.dropoff_end <= self.dropoff_start:
+            raise ValidationError("The dropoff end time must be after the dropoff start time")
+        if self.dropoff_start and self.pickup_start and self.dropoff_start <= self.pickup_start:
+            raise ValidationError("The dropoff start time must be after the pickup start time")
         if self.dropoff_start and self.dropoff_end and self.date:
             start = datetime.combine(self.date, self.dropoff_start)
             end = datetime.combine(self.date, self.dropoff_end)
@@ -611,13 +431,5 @@ class MealRequestComment(CommentModel):
     subject = models.ForeignKey(MealRequest, related_name="comments", on_delete=models.CASCADE)
 
 
-class GroceryRequestComment(CommentModel):
-    subject = models.ForeignKey(GroceryRequest, related_name="comments", on_delete=models.CASCADE)
-
-
 class MealDeliveryComment(CommentModel):
     subject = models.ForeignKey(MealDelivery, related_name="comments", on_delete=models.CASCADE)
-
-
-class GroceryDeliveryComment(CommentModel):
-    subject = models.ForeignKey(GroceryDelivery, related_name="comments", on_delete=models.CASCADE)

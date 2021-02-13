@@ -1,6 +1,6 @@
 from django import forms
 from django_filters import FilterSet, DateFilter
-from recipients.models import MealRequest, MealDelivery, GroceryDelivery
+from recipients.models import MealRequest, MealDelivery
 
 
 class DateInput(forms.DateInput):
@@ -63,15 +63,4 @@ class MealDeliverySignupFilter(FilterSet):
             'request__city': ['exact'],
             'request__num_adults': ['lt'],
             'request__num_children': ['lt'],
-        }
-
-
-class GroceryDeliverySignupFilter(FilterSet):
-    class Meta:
-        model = GroceryDelivery
-        fields = {
-            'request__city': ['exact'],
-            'request__num_adults': ['lt'],
-            'request__num_children': ['lt'],
-            'date': ['exact'],
         }

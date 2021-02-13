@@ -1,7 +1,6 @@
-from itertools import chain
 import logging
 import time
-from datetime import timedelta, date
+from datetime import date
 from django.conf import settings
 from django.forms import ValidationError
 from django.contrib import messages
@@ -14,12 +13,12 @@ from django_filters.views import FilterView
 from django.db.models.query_utils import Q
 
 from core.models import has_group
-from recipients.models import MealRequest, GroceryRequest, GroceryDelivery, MealDelivery, Status, SendNotificationException
+from recipients.models import MealRequest, MealDelivery, Status
 from public.views import GroupView
 from website.maps import distance
-from .forms import GroceryDeliverySignupForm, MealDeliverySignupForm, ChefSignupForm, ChefApplyForm, DeliveryApplyForm, OrganizerApplyForm
+from .forms import MealDeliverySignupForm, ChefSignupForm, ChefApplyForm, DeliveryApplyForm, OrganizerApplyForm
 from .models import VolunteerApplication, VolunteerRoles, Volunteer
-from .filters import ChefSignupFilter, MealDeliverySignupFilter, GroceryDeliverySignupFilter
+from .filters import ChefSignupFilter, MealDeliverySignupFilter
 
 
 logger = logging.getLogger(__name__)
@@ -129,80 +128,9 @@ class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
             )
 
 
-class GroceryDeliverySignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
-    """View for deliverers to sign up to deliver meal requests"""
-    template_name = "volunteers/delivery_signup_groceries.html"
-    form_class = GroceryDeliverySignupForm
-    permission_group = 'Deliverers'
-    permission_group_redirect_url = reverse_lazy('volunteers:delivery_application')
-    filterset_class = GroceryDeliverySignupFilter
-    queryset = GroceryDelivery.objects.filter(deliverer__isnull=True)
-
-    @property
-    def success_url(self):
-        """Redirect to the same page with same query params to keep the filters"""
-        return self.request.get_full_path()
-
-    def get_context_data(self, **kwargs):
-        context = super(GroceryDeliverySignupView, self).get_context_data(**kwargs)
-
-        context["grocery_delivery_form_pairs"] = [
-            (grocery_delivery, GroceryDeliverySignupForm(initial={'id': grocery_delivery.id}))
-            for grocery_delivery in self.object_list
-        ]
-        return context
-
-    def form_invalid(self, form):
-        return redirect(self.success_url)
-
-    def form_valid(self, form):
-        # First fetch the associated meal request
-        # It's possible that someone else has signed up for it, so handle that
-        grocery_request = self.get_grocery_request(form)
-
-        if grocery_request is None:
-            messages.error(
-                self.request,
-                'Sorry, we were unable to register you for that request, someone else may have already claimed it.'
-            )
-            return self.form_invalid(form)
-
-        try:
-            # If the grocery request is still available setup the delivery
-            self.update_delivery(form, grocery_request)
-        except ValidationError as error:
-            messages.error(self.request, error.messages[0])
-            return redirect(self.success_url)
-
-        messages.success(self.request, 'Successfully signed up!')
-        return super().form_valid(form)
-
-    def get_grocery_request(self, form):
-        try:
-            return self.queryset.get(id=form.cleaned_data['id'])
-        except GroceryRequest.DoesNotExist:
-            return None
-
-    def update_delivery(self, form, grocery_request):
-        start_time = form.cleaned_data['availability']
-        grocery_request.status = Status.DRIVER_ASSIGNED
-        grocery_request.pickup_start = start_time - timedelta(hours=1)
-        grocery_request.pickup_end = start_time
-        grocery_request.dropoff_start = start_time
-        grocery_request.dropoff_end = start_time + timedelta(hours=3)
-        grocery_request.deliverer = self.request.user
-        grocery_request.date = start_time.date()
-        grocery_request.save()
-
-        try:
-            grocery_request.send_recipient_delivery_notification()
-        except SendNotificationException:
-            logger.warn("Skipped sending notification for Grocery Request %d to %s", grocery_request.id, grocery_request.phone_number)
-
-
 class MealDeliverySignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
     """View for deliverers to sign up to deliver meal requests"""
-    template_name = "volunteers/delivery_signup_meals.html"
+    template_name = "volunteers/delivery_signup.html"
     form_class = MealDeliverySignupForm
     permission_group = 'Deliverers'
     permission_group_redirect_url = reverse_lazy('volunteers:delivery_application')
@@ -311,36 +239,23 @@ class DeliveryIndexView(LoginRequiredMixin, GroupView, ListView):
     context_object_name = "deliveries"
 
     def get_queryset(self):
-        meals = MealDelivery.objects.exclude(status=Status.DELIVERED).filter(deliverer=self.request.user)
-        groceries = GroceryDelivery.objects.exclude(status=Status.DELIVERED).filter(deliverer=self.request.user)
-
-        return sorted(chain(meals, groceries), key=lambda instance: instance.date)
+        return MealDelivery.objects.exclude(status=Status.DELIVERED).filter(deliverer=self.request.user).order_by('date')
 
     def post(self, request):
-        if (request.POST['delivery_id'] and (
-                request.POST['has_chef'] or request.POST['is_groceries'])):
-            if request.POST['has_chef']:
-                instance = MealDelivery.objects.get(uuid=request.POST['delivery_id'])
-            else:
-                instance = GroceryDelivery.objects.get(uuid=request.POST['delivery_id'])
+        instance = MealDelivery.objects.get(uuid=request.POST['delivery_id'])
 
-            if instance.date <= date.today():
-                instance.status = Status.DELIVERED
-                instance.save()
-                messages.success(
-                    self.request,
-                    'Marked delivery ID #%d to %s as complete! If this was a mistake please email us at %s as soon as possible.' %
-                    (instance.pk, instance.request.address_1, settings.VOLUNTEER_COORDINATORS_EMAIL)
-                )
-            else:
-                messages.error(
-                    self.request,
-                    'You can only mark deliveries complete after the assigned delivery date.'
-                )
+        if instance.date <= date.today():
+            instance.status = Status.DELIVERED
+            instance.save()
+            messages.success(
+                self.request,
+                'Marked delivery ID #%d to %s as complete! If this was a mistake please email us at %s as soon as possible.' %
+                (instance.pk, instance.request.address_1, settings.VOLUNTEER_COORDINATORS_EMAIL)
+            )
         else:
             messages.error(
                 self.request,
-                'Something went wrong, sorry about that!'
+                'You can only mark deliveries complete after the assigned delivery date.'
             )
 
         return redirect(self.request.get_full_path())
