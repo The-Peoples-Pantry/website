@@ -37,3 +37,6 @@ sentry-sdk==0.19.3
 
 # Allows us to lint our code (https://flake8.pycqa.org/en/latest/)
 flake8== 3.8.4
+
+# Allows admins to browse interactive queries
+django-sql-explorer==2.1.2

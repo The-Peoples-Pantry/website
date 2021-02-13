@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'bootstrap4',
     'django_filters',
+    'explorer',
     'core',
     'public',
     'volunteers',
@@ -181,6 +182,15 @@ if SENTRY_DSN:
         # django.contrib.auth) you may enable sending PII data.
         send_default_pii=True
     )
+
+
+# django-sql-explorer
+# https://django-sql-explorer.readthedocs.io/en/latest/install.html
+EXPLORER_CONNECTIONS = {'Default': 'default'}
+EXPLORER_DEFAULT_CONNECTION = 'default'
+EXPLORER_PERMISSION_VIEW = lambda request: request.user.is_staff
+EXPLORER_PERMISSION_CHANGE = lambda request: request.user.is_superuser
+
 
 # Configure hosted settings automatically using django_heroku
 django_heroku.settings(locals())
