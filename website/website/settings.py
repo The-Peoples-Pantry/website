@@ -183,6 +183,13 @@ if SENTRY_DSN:
         send_default_pii=True
     )
 
+
+# django-sql-explorer
+# https://django-sql-explorer.readthedocs.io/en/latest/install.html
+EXPLORER_CONNECTIONS = { 'Default': 'default' }
+EXPLORER_DEFAULT_CONNECTION = 'default'
+
+
 # Configure hosted settings automatically using django_heroku
 django_heroku.settings(locals())
 
