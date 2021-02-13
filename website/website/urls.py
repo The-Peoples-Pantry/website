@@ -24,6 +24,7 @@ admin.site.site_title = "The People's Pantry admin"
 
 urlpatterns = [
     path('', include('public.urls')),
+    path('explorer/', include('explorer.urls')),
     path('signup', UserCreationView.as_view(), name='signup'),
     path('accounts/', include('django.contrib.auth.urls')),
     # login redirects to accounts/profile on successful login
