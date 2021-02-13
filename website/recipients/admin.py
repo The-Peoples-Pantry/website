@@ -245,82 +245,7 @@ class MealRequestAdmin(admin.ModelAdmin):
     copy.short_description = "Create a copy of selected meal request"
 
 
-class BaseDeliveryAdmin(admin.ModelAdmin):
-    def mark_as_delivered(self, request, queryset):
-        queryset = queryset.exclude(status=Status.DELIVERED)
-
-        # Updated all deliveries associated with given request
-        for delivery in queryset:
-            delivery.status = Status.DELIVERED
-            delivery.save()
-
-        if queryset:
-            self.message_user(request, ngettext(
-                "%d delivery has been marked as delivered",
-                "%d deliveries have been marked as delivered",
-                len(queryset),
-            ) % len(queryset), messages.SUCCESS)
-        else:
-            self.message_user(
-                request,
-                "No updates were made",
-                messages.WARNING
-            )
-    mark_as_delivered.short_description = "Mark deliveries as delivered"
-
-    def send_notifications(self, request, queryset, method_name):
-        """
-        Helper utility for invoking notification sending methods
-
-        This is more complex than usual because we need to account for situations where we send a subset of notifications.
-        Some notifications might succeed while others fail.
-        If they all succeed, we simply emit the success message with a "Success" status
-        If they partially fail, we emit info on both the successes and an error breakdown, with a "Warning" status
-        If they all fail, we emit the error breakdown with a "Error" status
-
-        method_name is the name of the method to invoke on each delivery instance.
-        """
-        successes, errors = [], []
-
-        # Try to notify all recipients, capture any error messages that are received
-        for delivery in queryset:
-            try:
-                send_notification_method = getattr(delivery, method_name)
-                send_notification_method()
-                successes.append(delivery)
-            except SendNotificationException as e:
-                errors.append(e.message)
-
-        sent = len(successes)
-        unsent = len(errors)
-        total = sent + unsent
-
-        prefix_message = ngettext(
-            "%d delivery was selected",
-            "%d deliveries were selected",
-            total,
-        ) % total
-        success_message = ngettext(
-            "%d text message was sent",
-            "%d text messages were sent",
-            sent,
-        ) % sent
-
-        # An unordered list of grouped errors, along with the count of how many times the error happened
-        error_messages = format_html_join(
-            "\n", "<p><strong>{} message(s) not sent because: {}</strong></p>",
-            ((count, error_message) for (error_message, count) in collections.Counter(errors).items()),
-        )
-
-        if sent and unsent:
-            self.message_user(request, format_html("<p>{}</p><p>{}</p>{}", prefix_message, success_message, error_messages), messages.WARNING)
-        elif sent:
-            self.message_user(request, format_html("<p>{}</p><p>{}</p>", prefix_message, success_message), messages.SUCCESS)
-        elif unsent:
-            self.message_user(request, format_html("<p>{}</p>{}", prefix_message, error_messages), messages.ERROR)
-
-
-class MealDeliveryAdmin(BaseDeliveryAdmin):
+class MealDeliveryAdmin(admin.ModelAdmin):
     list_display = (
         'edit_link',
         'request_link',
@@ -396,6 +321,79 @@ class MealDeliveryAdmin(BaseDeliveryAdmin):
         return obj.status == Status.DELIVERED
     completed.admin_order_field = 'status'
     completed.boolean = True
+
+    def mark_as_delivered(self, request, queryset):
+        queryset = queryset.exclude(status=Status.DELIVERED)
+
+        # Updated all deliveries associated with given request
+        for delivery in queryset:
+            delivery.status = Status.DELIVERED
+            delivery.save()
+
+        if queryset:
+            self.message_user(request, ngettext(
+                "%d delivery has been marked as delivered",
+                "%d deliveries have been marked as delivered",
+                len(queryset),
+            ) % len(queryset), messages.SUCCESS)
+        else:
+            self.message_user(
+                request,
+                "No updates were made",
+                messages.WARNING
+            )
+    mark_as_delivered.short_description = "Mark deliveries as delivered"
+
+    def send_notifications(self, request, queryset, method_name):
+        """
+        Helper utility for invoking notification sending methods
+
+        This is more complex than usual because we need to account for situations where we send a subset of notifications.
+        Some notifications might succeed while others fail.
+        If they all succeed, we simply emit the success message with a "Success" status
+        If they partially fail, we emit info on both the successes and an error breakdown, with a "Warning" status
+        If they all fail, we emit the error breakdown with a "Error" status
+
+        method_name is the name of the method to invoke on each delivery instance.
+        """
+        successes, errors = [], []
+
+        # Try to notify all recipients, capture any error messages that are received
+        for delivery in queryset:
+            try:
+                send_notification_method = getattr(delivery, method_name)
+                send_notification_method()
+                successes.append(delivery)
+            except SendNotificationException as e:
+                errors.append(e.message)
+
+        sent = len(successes)
+        unsent = len(errors)
+        total = sent + unsent
+
+        prefix_message = ngettext(
+            "%d delivery was selected",
+            "%d deliveries were selected",
+            total,
+        ) % total
+        success_message = ngettext(
+            "%d text message was sent",
+            "%d text messages were sent",
+            sent,
+        ) % sent
+
+        # An unordered list of grouped errors, along with the count of how many times the error happened
+        error_messages = format_html_join(
+            "\n", "<p><strong>{} message(s) not sent because: {}</strong></p>",
+            ((count, error_message) for (error_message, count) in collections.Counter(errors).items()),
+        )
+
+        if sent and unsent:
+            self.message_user(request, format_html("<p>{}</p><p>{}</p>{}", prefix_message, success_message, error_messages), messages.WARNING)
+        elif sent:
+            self.message_user(request, format_html("<p>{}</p><p>{}</p>", prefix_message, success_message), messages.SUCCESS)
+        elif unsent:
+            self.message_user(request, format_html("<p>{}</p>{}", prefix_message, error_messages), messages.ERROR)
 
     def notify_recipients_delivery(self, request, queryset):
         self.send_notifications(request, queryset, 'send_recipient_delivery_notification')
