@@ -244,8 +244,7 @@ class DeliveryIndexView(LoginRequiredMixin, GroupView, ListView):
     context_object_name = "deliveries"
 
     def get_queryset(self):
-        meals = MealDelivery.objects.exclude(status=Status.DELIVERED).filter(deliverer=self.request.user)
-        return sorted(meals, key=lambda instance: instance.date)
+        return MealDelivery.objects.exclude(status=Status.DELIVERED).filter(deliverer=self.request.user).order_by('date')
 
     def post(self, request):
         instance = MealDelivery.objects.get(uuid=request.POST['delivery_id'])
