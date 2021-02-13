@@ -1,7 +1,5 @@
-import datetime
 from textwrap import dedent
 from django import forms
-from django.conf import settings
 
 from .models import MealRequest
 

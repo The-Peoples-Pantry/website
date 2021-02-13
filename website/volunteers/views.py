@@ -1,7 +1,6 @@
-from itertools import chain
 import logging
 import time
-from datetime import timedelta, date
+from datetime import date
 from django.conf import settings
 from django.forms import ValidationError
 from django.contrib import messages
@@ -14,7 +13,7 @@ from django_filters.views import FilterView
 from django.db.models.query_utils import Q
 
 from core.models import has_group
-from recipients.models import MealRequest, MealDelivery, Status, SendNotificationException
+from recipients.models import MealRequest, MealDelivery, Status
 from public.views import GroupView
 from website.maps import distance
 from .forms import MealDeliverySignupForm, ChefSignupForm, ChefApplyForm, DeliveryApplyForm, OrganizerApplyForm
