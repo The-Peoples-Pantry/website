@@ -80,6 +80,7 @@ class VolunteerApplicationForm(forms.ModelForm):
         model = Volunteer
         fields = [
             'name',
+            'short_name',
             'phone_number',
             'address_1',
             'address_2',
@@ -88,6 +89,7 @@ class VolunteerApplicationForm(forms.ModelForm):
             'days_available',
             'total_hours_available',
             'recurring_time_available',
+            'have_ppe',
         ]
 
 
@@ -103,6 +105,7 @@ class ChefApplyForm(VolunteerApplicationForm):
             'cooking_prefs',
             'baking_volume',
             'food_types',
+            'have_cleaning_supplies',
         ]
 
 
@@ -130,6 +133,7 @@ class OrganizerApplyForm(VolunteerApplicationForm):
         fields = [
             *VolunteerApplicationForm.Meta.fields,
             'organizer_teams',
+            'confirm_minimum_commitment',
         ]
 
 
