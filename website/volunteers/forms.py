@@ -1,10 +1,9 @@
 import logging
-from ast import literal_eval
 from textwrap import dedent
 import datetime
 from django import forms
 from recipients.models import MealDelivery
-from .models import Volunteer, CookingTypes, FoodTypes, TransportationTypes, DaysOfWeek, OrganizerTeams
+from .models import Volunteer
 
 
 logger = logging.getLogger(__name__)
@@ -58,18 +57,6 @@ class MealDeliveryDateInput(forms.Select):
 
 
 class VolunteerApplicationForm(forms.ModelForm):
-    have_ppe = forms.BooleanField(
-        label="I have access to personal protective equipment such as masks, gloves",
-        required=True,
-    )
-
-    days_available = forms.MultipleChoiceField(
-        label="What days of the week are you available to volunteer?",
-        required=True,
-        widget=forms.CheckboxSelectMultiple,
-        choices=DaysOfWeek.choices,
-    )
-
     policy_text = dedent("""
         I acknowledge that I have read and understood the volunteer requirements presented at the beginning of this form pertaining to health and travel restrictions. I certify that you meet all of the requirements to volunteer.
 
@@ -80,118 +67,73 @@ class VolunteerApplicationForm(forms.ModelForm):
         I agree to follow the safety and security measures provided to me by The People’s Pantry, the Canadian government, and other trusted health information providers to the best of my ability while volunteering, both for myself and others. I acknowledge that I am fully responsible for my safety and security, as well as that of my personal belongings, while volunteering. I specifically waive all liabilities, claims and/or actions against all organizations, communities, and affiliates part of the The People's Pantry.
     """)
 
+    have_ppe = forms.BooleanField(
+        label="I have access to personal protective equipment such as masks, gloves",
+        required=True,
+    )
     accept_terms = forms.BooleanField(
         label="I have carefully read and understood these terms.",
         required=True
     )
 
-    # I know this is ugly but this is the cleanest way I could find of
-    # prepopulating a multiple choice field with values that are stored as a charstring
-    def __init__(self, *args, **kwargs):
-        super(VolunteerApplicationForm, self).__init__(*args, **kwargs)
-        for field in ['days_available', 'food_types', 'cooking_prefs', 'transportation_options']:
-            if getattr(self.instance, field):
-                try:
-                    self.initial[field] = literal_eval(getattr(self.instance, field))
-                except ValueError:
-                    # Handle errors when the field is set to something invalid
-                    # This can happen if the value was set manually by a staff member through the admin
-                    pass
-
     class Meta:
         model = Volunteer
-        exclude = ['user']
+        fields = [
+            'name',
+            'short_name',
+            'phone_number',
+            'address_1',
+            'address_2',
+            'city',
+            'postal_code',
+            'days_available',
+            'total_hours_available',
+            'recurring_time_available',
+            'have_ppe',
+        ]
 
 
 class ChefApplyForm(VolunteerApplicationForm):
-    cooking_prefs = forms.MultipleChoiceField(
-        label="What do you prefer to cook/bake? Check all that apply.",
-        required=True,
-        widget=forms.CheckboxSelectMultiple,
-        choices=CookingTypes.choices,
-    )
-    food_types = forms.MultipleChoiceField(
-        label="What kind of meals/baked goods are you able to prepare? Check all that apply.",
-        required=True,
-        widget=forms.CheckboxSelectMultiple,
-        choices=FoodTypes.choices,
-    )
     have_cleaning_supplies = forms.BooleanField(
         label="I have adequate cleaning supplies (soap, disinfectant, etc.) to clean my hands and kitchen",
         required=True
     )
 
     class Meta(VolunteerApplicationForm.Meta):
-        exclude = [
-            'transportation_options',
-            'pickup_locations',
-            'dropoff_locations',
-            'user',
-            'email',
-            'pronouns',
-            'notes',
-            'training_complete',
-            'organizer_teams',
+        fields = [
+            *VolunteerApplicationForm.Meta.fields,
+            'cooking_prefs',
+            'baking_volume',
+            'food_types',
+            'have_cleaning_supplies',
         ]
 
 
 class DeliveryApplyForm(VolunteerApplicationForm):
-    transportation_options = forms.MultipleChoiceField(
-        label="What means of transportation do you have access to for deliveries? Check all that apply.",
-        required=True,
-        widget=forms.CheckboxSelectMultiple,
-        choices=TransportationTypes.choices,
-    )
-
     class Meta(VolunteerApplicationForm.Meta):
-        model = Volunteer
-        exclude = [
-            'cooking_prefs',
-            'food_types',
-            'have_cleaning_supplies',
-            'baking_volume',
-            'user',
-            'email',
-            'pronouns',
-            'notes',
-            'training_complete',
-            'organizer_teams',
+        fields = [
+            *VolunteerApplicationForm.Meta.fields,
+            'transportation_options',
         ]
 
 
 class OrganizerApplyForm(VolunteerApplicationForm):
-    confirm_minimum_commitment = forms.BooleanField(
-        label="I can commit to the two-month minimum volunteer commitment",
-        required=True,
-    )
-    organizer_teams = forms.MultipleChoiceField(
-        label="Which teams would you be interested in joining?",
-        required=True,
-        widget=forms.CheckboxSelectMultiple,
-        choices=OrganizerTeams.choices,
-    )
-
     policy_text = dedent("""
         I acknowledge that as a volunteer, I am being entrusted with confidential information. I understand and agree to the following: I shall not, at any time during or subsequent to my volunteering for The People's Pantry, disclose or make use of confidential information or other's personal information without permission. Examples include, but are not limited to, names, addresses, and phone numbers. I will also respect the privacy of the recipients and other volunteers and will not make contact with them beyond the context of a food pick-up/delivery.
 
         I agree to follow the safety and security measures provided to me by The People’s Pantry, the Canadian government, and other trusted health information providers to the best of my ability while volunteering, both for myself and others. I acknowledge that I am fully responsible for my safety and security, as well as that of my personal belongings while volunteering. I specifically waive all liabilities, claims and/or actions against all organizations, communities, and affiliates part of The People's Pantry.
     """)
 
+    confirm_minimum_commitment = forms.BooleanField(
+        label="I can commit to the two-month minimum volunteer commitment",
+        required=True,
+    )
+
     class Meta(VolunteerApplicationForm.Meta):
-        model = Volunteer
-        exclude = [
-            'transportation_options',
-            'pickup_locations',
-            'dropoff_locations',
-            'cooking_prefs',
-            'food_types',
-            'have_cleaning_supplies',
-            'baking_volume',
-            'user',
-            'notes',
-            'email',
-            'pronouns',
-            'training_complete'
+        fields = [
+            *VolunteerApplicationForm.Meta.fields,
+            'organizer_teams',
+            'confirm_minimum_commitment',
         ]
 
 
