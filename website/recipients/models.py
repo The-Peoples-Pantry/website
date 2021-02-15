@@ -1,9 +1,10 @@
 import logging
 from textwrap import dedent
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 import uuid
 from django.db import models
 from django.conf import settings
+from django.forms import model_to_dict
 from django.core.exceptions import ValidationError
 from django.urls import reverse_lazy
 from django.utils import timezone
@@ -162,8 +163,20 @@ class MealRequest(ContactInfo):
     def stale(self):
         return (timezone.now() - self.created_at).days >= 7
 
+    @property
+    def has_delivery(self):
+        return hasattr(self, 'delivery')
+
     def get_absolute_url(self):
         return reverse_lazy('recipients:request_detail', args=[str(self.id)])
+
+    def copy(self):
+        kwargs = model_to_dict(self, exclude=['id'])
+        new = MealRequest.objects.create(**kwargs)
+        if self.has_delivery:
+            new.delivery = self.delivery.copy(new)
+            new.save()
+        return new
 
     def send_confirmation_email(self):
         custom_send_mail(
@@ -251,6 +264,36 @@ class MealDelivery(models.Model):
                 raise ValidationError("The delivery window must be two hours or less.")
         if self.deliverer and (not self.dropoff_start or not self.dropoff_end):
             raise ValidationError("Please specify a dropoff window.")
+
+    def copy(self, meal_request):
+        """Clone the delivery with special business logic
+
+        - The chef should remain the same but not the delivery driver
+        - The date should be on the same day of the week, starting today or later
+        - If the original date is None, so is the new date
+        - Must be assigned to a new meal request (can't have duplicates)
+        - Status should be Chef Assigned
+        """
+        kwargs = model_to_dict(self, fields=[
+            'pickup_start',
+            'pickup_end',
+            'dropoff_start',
+            'dropoff_end',
+        ])
+
+        new_date = self.date
+        today = date.today()
+        if new_date:
+            while new_date <= today:
+                new_date += timedelta(days=7)
+
+        return MealDelivery.objects.create(
+            **kwargs,
+            request=meal_request,
+            chef=self.chef,
+            date=new_date,
+            status=Status.CHEF_ASSIGNED,
+        )
 
     def send_recipient_meal_notification(self):
         """Send the first notification to a recipient, lets them know that a chef has signed up to cook for them"""

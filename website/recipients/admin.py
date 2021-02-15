@@ -1,5 +1,4 @@
 import collections
-import uuid
 from datetime import timedelta, date
 from django.contrib import admin, messages
 from django import forms
@@ -230,17 +229,11 @@ class MealRequestAdmin(admin.ModelAdmin):
 
     def copy(self, request, queryset):
         for meal_request in queryset:
-            original_id = meal_request.id
-            original_delivery = MealDelivery.objects.get(request=meal_request)
-            meal_request.pk = None
-            meal_request.uuid = uuid.uuid4()
-            meal_request.save()
-            new_delivery = self.create_delivery_copy(original_delivery, meal_request)
+            new_meal_request = meal_request.copy()
             self.message_user(
                 request,
-                "A copy of meal request %d has been created with new id %d and delivery id %d" % (
-                    original_id, meal_request.id, new_delivery.id
-                ), messages.SUCCESS
+                f"A copy of meal request {meal_request.id} has been created with new id {new_meal_request.id}",
+                messages.SUCCESS,
             )
     copy.short_description = "Create a copy of selected meal request"
 
