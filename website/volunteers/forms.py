@@ -27,19 +27,6 @@ def next_day(date):
     return date + datetime.timedelta(1)
 
 
-def get_start_time_display(start_time_str):
-    display_str = start_time_str
-    start_time = start_time_str
-    try:
-        start_time = datetime.datetime.strptime(start_time_str, '%Y-%m-%d %H:%M:%S')
-        end_time = start_time + datetime.timedelta(hours=3)
-        display_str = start_time.strftime('%B %d, %Y %-I%p') + ' - ' + end_time.strftime('%-I%p')
-    except Exception:
-        logger.exception("Error when converting %s to date", start_time_str)
-
-    return (start_time, display_str)
-
-
 def next_weekend(**kwargs):
     # always leave two days of buffer time
     buffer_date = datetime.date.today() + datetime.timedelta(2)
