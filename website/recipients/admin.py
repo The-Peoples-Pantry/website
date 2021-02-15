@@ -1,5 +1,4 @@
 import collections
-from datetime import timedelta, date
 from django.contrib import admin, messages
 from django import forms
 from django.core.exceptions import ObjectDoesNotExist
@@ -210,22 +209,6 @@ class MealRequestAdmin(admin.ModelAdmin):
                 messages.WARNING
             )
     confirm.short_description = "Mark deliveries as confirmed with recipient"
-
-    def create_delivery_copy(self, original_delivery, meal_request):
-        new_date = original_delivery.date + timedelta(days=7)
-        today = date.today()
-        while new_date <= today:
-            new_date = new_date + timedelta(days=7)
-
-        delivery = MealDelivery.objects.create(
-            request=meal_request,
-            chef=original_delivery.chef,
-            status=Status.CHEF_ASSIGNED,
-            date=new_date,
-            pickup_start=original_delivery.pickup_start,
-            pickup_end=original_delivery.pickup_end
-        )
-        return delivery
 
     def copy(self, request, queryset):
         for meal_request in queryset:
