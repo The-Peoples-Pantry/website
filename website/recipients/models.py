@@ -369,6 +369,8 @@ class MealDelivery(models.Model):
 
         message = dedent(f"""
             Hello {self.request.name} How did you like your meals this week? We appreciate any feedback you have. If you are comfortable with us sharing your anonymized feedback on social media, please let us know - it helps us raise money for the program. If not, that’s okay too. Thanks!
+
+            The People’s Pantry cook book is currently looking for personal stories on your experience with TPP and the pandemic. It’ll only be 6 questions and can be completely anonymous. If this is something you’re interested in doing, please email Siue at bk913@ncf.ca
         """)
         send_text(self.request.phone_number, message)
         self.comments.create(comment=f"Sent a text to recipient: {message}")
