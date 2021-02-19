@@ -206,7 +206,7 @@ DAY_LENGTH = 9  # Longest is "Wednesday"
 LONG_TEXT_LENGTH = 1024
 
 # Settings for pausing requests
-PAUSE_MEALS = 30
+PAUSE_MEALS = 45
 
 # Settings for figuring out delivery distances
 MAX_CHEF_DISTANCE = 10  # Chefs can't be more than this many km away from their recipients
