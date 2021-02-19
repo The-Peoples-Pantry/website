@@ -201,7 +201,6 @@ class Status(models.TextChoices):
     CHEF_ASSIGNED = 'Chef Assigned', 'Chef Assigned'
     DRIVER_ASSIGNED = 'Driver Assigned', 'Driver Assigned'
     DATE_CONFIRMED = 'Delivery Date Confirmed', 'Delivery Date Confirmed'
-    RESCHEDULED = 'Recipient Rescheduled', 'Recipient Rescheduled'
     DELIVERED = 'Delivered', 'Delivered'
 
 
