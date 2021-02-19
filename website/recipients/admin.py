@@ -260,6 +260,13 @@ class MealDeliveryAdmin(admin.ModelAdmin):
         'deliverer__email',
         'deliverer__volunteer__name',
     )
+    list_select_related = (
+        'request',
+        'chef',
+        'chef__volunteer',
+        'deliverer',
+        'deliverer__volunteer',
+    )
 
     def request_phone(self, obj):
         return obj.request.phone_number
