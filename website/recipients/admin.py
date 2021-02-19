@@ -280,10 +280,12 @@ class MealDeliveryAdmin(admin.ModelAdmin):
     def chef_link(self, delivery):
         return user_link(delivery.chef)
     chef_link.short_description = 'Chef'
+    chef_link.admin_order_field = 'chef__volunteer__name'
 
     def deliverer_link(self, delivery):
         return user_link(delivery.deliverer)
     deliverer_link.short_description = 'Deliverer'
+    deliverer_link.admin_order_field = 'deliverer__volunteer__name'
 
     def pickup_range(self, delivery):
         return short_time(delivery.pickup_start) + ' - ' + short_time(delivery.pickup_end)
