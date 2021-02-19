@@ -162,6 +162,9 @@ class MealRequestAdmin(admin.ModelAdmin):
         'copy'
     )
     search_fields = ('name', 'email', 'phone_number')
+    list_select_related = (
+        'delivery',
+    )
 
     def edit_link(self, request):
         return 'Edit request %d' % request.id
@@ -259,6 +262,13 @@ class MealDeliveryAdmin(admin.ModelAdmin):
         'chef__volunteer__name',
         'deliverer__email',
         'deliverer__volunteer__name',
+    )
+    list_select_related = (
+        'request',
+        'chef',
+        'chef__volunteer',
+        'deliverer',
+        'deliverer__volunteer',
     )
 
     def request_phone(self, obj):

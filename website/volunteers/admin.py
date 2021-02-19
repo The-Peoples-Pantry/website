@@ -86,6 +86,7 @@ class VolunteerApplicationAdmin(admin.ModelAdmin):
     ordering = ('approved', )
     actions = ('approve', )
     search_fields = ('user__volunteer__name', 'user__email')
+    list_select_related = ('user', 'user__volunteer')
 
     def name(self, application):
         return user_link(application.user)
