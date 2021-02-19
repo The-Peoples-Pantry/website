@@ -162,6 +162,9 @@ class MealRequestAdmin(admin.ModelAdmin):
         'copy'
     )
     search_fields = ('name', 'email', 'phone_number')
+    list_select_related = (
+        'delivery',
+    )
 
     def edit_link(self, request):
         return 'Edit request %d' % request.id
