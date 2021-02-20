@@ -308,7 +308,7 @@ class MealDelivery(models.Model):
         message = dedent(f"""
             Hi {self.request.name},
             This is a message from The People's Pantry.
-            A chef has been arranged to prepare a meal for you for {self.date:%A %B %d}
+            A chef has been arranged to prepare a meal for you for {self.date:%A %B %d} for request ID {self.request.id}.
             Since we depend on volunteers for our deliveries, sometimes we are not able to do all deliveries scheduled for the day. If that’s the case with your delivery, we will inform you by 6 PM on the day of the delivery and your delivery will be rescheduled for the following day.
             Please confirm you got this message and let us know if you can accept the delivery.
             Thank you!
@@ -332,7 +332,7 @@ class MealDelivery(models.Model):
         # Time is in the format "Hour:Minute AM/PM" eg. 09:30 PM
         message = dedent(f"""
             Hi {self.request.name},
-            This is a reminder about your delivery from The People’s Pantry today. {self.deliverer.volunteer.preferred_name or 'A delivery volunteer'} will be at your home between {self.dropoff_start:%I:%M %p} and {self.dropoff_end:%I:%M %p}.
+            This is a reminder about your delivery from The People’s Pantry today for request ID {self.request.id}. {self.deliverer.volunteer.preferred_name or 'A delivery volunteer'} will be at your home between {self.dropoff_start:%I:%M %p} and {self.dropoff_end:%I:%M %p}.
             Thanks, and stay safe!
         """)
         send_text(self.request.phone_number, message)
@@ -356,7 +356,7 @@ class MealDelivery(models.Model):
         message = dedent(f"""
             Hi {self.request.name},
             This is a message from The People's Pantry.
-            Your delivery is scheduled for {self.date:%A %B %d} between {self.dropoff_start:%I:%M %p} and {self.dropoff_end:%I:%M %p}.
+            Your delivery for request ID {self.request.id} is scheduled for {self.date:%A %B %d} between {self.dropoff_start:%I:%M %p} and {self.dropoff_end:%I:%M %p}.
             Since we depend on volunteers for our deliveries, sometimes we are not able to do all deliveries scheduled for the day. If that’s the case with your delivery, we will inform you by 6 PM on the day of the delivery and your delivery will be rescheduled for the following day.
             Please confirm you got this message and let us know if you can take the delivery.
             Thank you!
