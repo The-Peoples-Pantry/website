@@ -49,7 +49,7 @@
 
             </div>
             <div class="col">
-              {% if delivery.request.vegan or delivery.request.vegetarian or delivery.request.dairy_free or delivery.request.gluten_free or delivery.request.halal or delivery.request.low_carb or not delivery.request.will_accept_vegan or not delivery.request.will_accept_vegetarian %}
+              {% if delivery.request.vegan or delivery.request.vegetarian or delivery.request.dairy_free or delivery.request.gluten_free or delivery.request.halal or delivery.request.kosher or delivery.request.low_carb or not delivery.request.will_accept_vegan or not delivery.request.will_accept_vegetarian %}
                 <h6>Other dietary information</h6>
                 <ul>
                   {% if delivery.request.vegan %} <li>Vegan</li> {% endif %}

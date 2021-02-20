@@ -57,7 +57,7 @@
                 <p>{{ meal.food_allergies }}</p>
               {% endif %}
 
-              {% if meal.vegan or meal.vegetarian or meal.dairy_free or meal.gluten_free or meal.halal or meal.low_carb or not meal.will_accept_vegan or not meal.will_accept_vegetarian %}
+              {% if meal.vegan or meal.vegetarian or meal.dairy_free or meal.gluten_free or meal.halal or meal.kosher or meal.low_carb or not meal.will_accept_vegan or not meal.will_accept_vegetarian %}
                 <h6>Other dietary information</h6>
                 <ul>
                   {% if meal.vegan %} <li>Vegan</li> {% endif %}
