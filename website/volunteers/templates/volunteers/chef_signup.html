@@ -114,6 +114,8 @@
                   </div>
                 {% endif %}
 
+                {% bootstrap_field form.meal %}
+
                 {{ form.id.as_hidden }}
                 {% buttons submit="Submit"%}{% endbuttons %}
               </form>

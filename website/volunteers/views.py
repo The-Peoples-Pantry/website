@@ -116,6 +116,7 @@ class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
                 pickup_end=form.cleaned_data['pickup_end'],
                 dropoff_start=form.cleaned_data['dropoff_start'],
                 dropoff_end=form.cleaned_data['dropoff_end'],
+                meal=form.cleaned_data['meal'],
             )
         else:
             MealDelivery.objects.create(
@@ -125,6 +126,7 @@ class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
                 date=form.cleaned_data['delivery_date'],
                 pickup_start=form.cleaned_data['pickup_start'],
                 pickup_end=form.cleaned_data['pickup_end'],
+                meal=form.cleaned_data['meal'],
             )
 
 

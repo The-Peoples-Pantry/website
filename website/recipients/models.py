@@ -239,6 +239,11 @@ class MealDelivery(models.Model):
     pickup_end = models.TimeField(null=True, blank=True)
     dropoff_start = models.TimeField(null=True, blank=True)
     dropoff_end = models.TimeField(null=True, blank=True)
+    meal = models.TextField(
+        "Meal",
+        help_text="(Optional) Let us know what you plan on cooking!",
+        blank=True,
+    )
 
     # System
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
