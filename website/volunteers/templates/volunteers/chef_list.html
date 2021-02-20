@@ -49,24 +49,18 @@
 
             </div>
             <div class="col">
-              {% if delivery.request.vegan or delivery.request.vegetarian or delivery.request.dairy_free or delivery.request.gluten_free or delivery.request.halal or delivery.request.kosher or delivery.request.low_carb or not delivery.request.will_accept_vegan or not delivery.request.will_accept_vegetarian %}
-                <h6>Other dietary information</h6>
-                <ul>
-                  {% if delivery.request.vegan %} <li>Vegan</li> {% endif %}
-                  {% if delivery.request.vegetarian %} <li>Vegetarian</li> {% endif %}
-                  {% if delivery.request.dairy_free %} <li>Dairy Free</li> {% endif %}
-                  {% if delivery.request.gluten_free %} <li>Gluten Freen</li> {% endif %}
-                  {% if delivery.request.halal %} <li>Halal</li> {% endif %}
-                  {% if delivery.request.kosher %} <li>Kosher</li> {% endif %}
-                  {% if delivery.request.low_carb %} <li>Low-carb</li> {% endif %}
-                  {% if not delivery.request.will_accept_vegan %}
-                    <li>Will <strong>not</strong> accept vegan meals</li>
-                  {% endif %}
-                  {% if not delivery.request.will_accept_vegetarian %}
-                    <li>Will <strong>not</strong> accept vegetarian meals</li>
-                  {% endif %}
-                </ul>
-              {% endif %}
+              <h6>Other dietary information</h6>
+              <ul>
+                {% if delivery.request.vegan %} <li>Vegan</li> {% endif %}
+                {% if delivery.request.vegetarian %} <li>Vegetarian</li> {% endif %}
+                {% if delivery.request.dairy_free %} <li>Dairy Free</li> {% endif %}
+                {% if delivery.request.gluten_free %} <li>Gluten Freen</li> {% endif %}
+                {% if delivery.request.halal %} <li>Halal</li> {% endif %}
+                {% if delivery.request.kosher %} <li>Kosher</li> {% endif %}
+                {% if delivery.request.low_carb %} <li>Low-carb</li> {% endif %}
+                <li>Will {% if not delivery.request.will_accept_vegan %}<strong>not </strong>{% endif %}accept vegan meals</li>
+                <li>Will {% if not delivery.request.will_accept_vegetarian %}<strong>not </strong>{% endif %}accept vegetarian meals</li>
+              </ul>
             </div>
           </div>
           <div class="row">
