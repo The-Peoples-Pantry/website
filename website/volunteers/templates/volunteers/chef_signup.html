@@ -57,24 +57,18 @@
                 <p>{{ meal.food_allergies }}</p>
               {% endif %}
 
-              {% if meal.vegan or meal.vegetarian or meal.dairy_free or meal.gluten_free or meal.halal or meal.low_carb or not meal.will_accept_vegan or not meal.will_accept_vegetarian %}
-                <h6>Other dietary information</h6>
-                <ul>
-                  {% if meal.vegan %} <li>Vegan</li> {% endif %}
-                  {% if meal.vegetarian %} <li>Vegetarian</li> {% endif %}
-                  {% if meal.dairy_free %} <li>Dairy Free</li> {% endif %}
-                  {% if meal.gluten_free %} <li>Gluten Freen</li> {% endif %}
-                  {% if meal.halal %} <li>Halal</li> {% endif %}
-                  {% if meal.kosher %} <li>Kosher</li> {% endif %}
-                  {% if meal.low_carb %} <li>Low-carb</li> {% endif %}
-                  {% if not meal.will_accept_vegan %}
-                    <li>Will <strong>not</strong> accept vegan meals</li>
-                  {% endif %}
-                  {% if not meal.will_accept_vegetarian %}
-                    <li>Will <strong>not</strong> accept vegetarian meals</li>
-                  {% endif %}
-                </ul>
-              {% endif %}
+              <h6>Other dietary information</h6>
+              <ul>
+                {% if meal.vegan %} <li>Vegan</li> {% endif %}
+                {% if meal.vegetarian %} <li>Vegetarian</li> {% endif %}
+                {% if meal.dairy_free %} <li>Dairy Free</li> {% endif %}
+                {% if meal.gluten_free %} <li>Gluten Freen</li> {% endif %}
+                {% if meal.halal %} <li>Halal</li> {% endif %}
+                {% if meal.kosher %} <li>Kosher</li> {% endif %}
+                {% if meal.low_carb %} <li>Low-carb</li> {% endif %}
+                <li>Will {% if not meal.will_accept_vegan %}<strong>not </strong>{% endif %}accept vegan meals</li>
+                <li>Will {% if not meal.will_accept_vegetarian %}<strong>not </strong>{% endif %}accept vegetarian meals</li>
+              </ul>
 
               {% if meal.availability %}
                 <h6>Availability</h6>
