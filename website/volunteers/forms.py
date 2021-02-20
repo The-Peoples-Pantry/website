@@ -132,6 +132,11 @@ class ChefSignupForm(forms.Form):
     dropoff_start = TimeField(initial='18:00', required=False)
     dropoff_end = TimeField(initial='20:00', required=False)
     can_deliver = forms.BooleanField(required=False)
+    meal = forms.CharField(
+        required=False,
+        help_text="(Optional) Let us know what you plan on cooking!",
+        widget=forms.Textarea(attrs={'rows': 3})
+    )
 
     # If the chef hasn't opted to deliver it, remove the dropoff timerange
     def clean(self):
