@@ -38,6 +38,15 @@
                 {% endif %}
               </p>
 
+              <h6>Meal</h6>
+              <p>
+                {% if delivery.meal %}
+                  {{ delivery.meal }}
+                {% else %}
+                  None specified
+                {% endif %}
+              </p>
+
             </div>
             <div class="col">
               {% if delivery.request.vegan or delivery.request.vegetarian or delivery.request.dairy_free or delivery.request.gluten_free or delivery.request.halal or delivery.request.low_carb or not delivery.request.will_accept_vegan or not delivery.request.will_accept_vegetarian %}
