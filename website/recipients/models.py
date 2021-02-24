@@ -384,13 +384,17 @@ class MealDelivery(models.Model):
         """Send a reminder notification to the chef"""
         if not self.chef:
             raise SendNotificationException("No chef assigned to this delivery")
+        if not self.deliverer:
+            raise SendNotificationException("No deliverer assigned to this delivery")
+        if not (self.pickup_start and self.pickup_end):
+            raise SendNotificationException("Delivery does not have a pickup time range scheduled")
 
         message = dedent(f"""
             Hi {self.chef.volunteer.preferred_name},
-            This is a message from The People's Pantry.
-            Just reminding you of the upcoming meal you're preparing for {self.date:%A %B %d}.
-            Please confirm you got this message and let us know if you need any assistance.
-            Thank you!
+            Your cooked meals for request ID {self.request.id} will be picked up by {self.deliverer.volunteer.preferred_name} on {self.date:%A %B %d} between {self.pickup_start:%I:%M %p} and {self.pickup_end:%I:%M %p}.
+            You can contact them at {self.deliverer.volunteer.phone_number}.
+            If you have more than one delivery, please make sure you are giving the food to the right volunteer.
+            Let us know if you have any issues. Thanks!
         """)
         send_text(self.chef.volunteer.phone_number, message)
         self.comments.create(comment=f"Sent a text to the chef: {message}")
