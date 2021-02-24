@@ -372,9 +372,9 @@ class MealDelivery(models.Model):
             raise SendNotificationException("Recipient cannot receive text messages at their phone number")
 
         message = dedent(f"""
-            Hello {self.request.name} How did you like your meals this week? We appreciate any feedback you have. If you are comfortable with us sharing your anonymized feedback on social media, please let us know - it helps us raise money for the program. If not, that’s okay too. Thanks!
+            Hello {self.request.name} How did you like your meals this week? We appreciate any feedback you have. If you are comfortable with us sharing your anonymized feedback on social media, please let us know - it helps us raise money for the program. If not, that’s okay too.
 
-            The People’s Pantry cook book is currently looking for personal stories on your experience with TPP and the pandemic. It’ll only be 6 questions and can be completely anonymous. If this is something you’re interested in doing, please email Siue at bk913@ncf.ca
+            The People’s Pantry cook book is also currently looking for personal stories on your experience with our organization and the pandemic. It’ll only be 6 questions and can be completely anonymous. If this is something you’re interested in doing, please email Siue at bk913@ncf.ca Thanks!
         """)
         send_text(self.request.phone_number, message)
         self.comments.create(comment=f"Sent a text to recipient: {message}")
