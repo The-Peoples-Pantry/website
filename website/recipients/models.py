@@ -140,9 +140,9 @@ class MealRequest(ContactInfo):
     @classmethod
     def within_signup_period(cls):
         now = timezone.now().astimezone(pytz.timezone('America/Toronto'))
-        is_saturday = now.strftime('%A') == 'Saturday'
-        is_after_ten_am = now.hour >= 10
-        return is_saturday and is_after_ten_am
+        is_sunday = now.strftime('%A') == 'Sunday'
+        is_after_noon = now.hour >= 12
+        return is_sunday and is_after_noon
 
     @classmethod
     def active_requests(cls):
