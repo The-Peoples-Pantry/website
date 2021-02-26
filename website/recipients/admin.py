@@ -12,6 +12,8 @@ from .models import (
     MealDeliveryComment,
     Status,
     SendNotificationException,
+    GroceryRequest,
+    GroceryRequestComment,
 )
 from django.utils.translation import ngettext
 
@@ -408,5 +410,44 @@ class MealDeliveryAdmin(admin.ModelAdmin):
     notify_deliverers_details.short_description = "Send text to deliverers with details about TODAY's request"
 
 
+class GroceryRequestCommentInline(CommentInline):
+    model = GroceryRequestComment
+
+
+class GroceryRequestAdmin(admin.ModelAdmin):
+    list_display = (
+        'edit_link',
+        'name',
+        'phone_number',
+        'landline',
+        'city',
+        'created_at',
+        'delivery_date',
+        'completed',
+    )
+    list_filter = (
+        'completed',
+        LandlineFilter,
+        'created_at',
+    )
+    inlines = (
+        GroceryRequestCommentInline,
+    )
+    search_fields = (
+        'name',
+        'email',
+        'phone_number'
+    )
+
+    def edit_link(self, request):
+        return 'Edit request G%d' % request.id
+    edit_link.short_description = 'Edit link'
+
+    def landline(self, obj):
+        return 'No' if obj.can_receive_texts else 'Yes'
+    landline.short_description = "Landline"
+
+
 admin.site.register(MealRequest, MealRequestAdmin)
 admin.site.register(MealDelivery, MealDeliveryAdmin)
+admin.site.register(GroceryRequest, GroceryRequestAdmin)

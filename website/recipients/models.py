@@ -486,3 +486,148 @@ class MealRequestComment(CommentModel):
 
 class MealDeliveryComment(CommentModel):
     subject = models.ForeignKey(MealDelivery, related_name="comments", on_delete=models.CASCADE)
+
+
+class GiftCard(models.TextChoices):
+    WALMART = 'Walmart'
+    PRESIDENTS_CHOICE = "President's Choice"
+    FOOD_SHARE = 'Food Share'
+
+
+class GroceryRequest(ContactInfo):
+    can_receive_texts = models.BooleanField(
+        "Can receive texts",
+        help_text="Can the phone number provided receive text messages?",
+    )
+    notes = models.TextField(
+        "Additional information",
+        help_text="Is there anything else we should know about you or the person you are requesting support for that will help us complete the request better?",
+        blank=True,
+    )
+    gift_card = models.CharField(
+        "Gift card",
+        help_text="What type of digital gift card would you want? We will send this to the email account you provided.",
+        max_length=settings.DEFAULT_LENGTH,
+        choices=GiftCard.choices,
+    )
+
+    # Information about the request itself
+    num_adults = models.PositiveSmallIntegerField("Number of adults in the household")
+    num_children = models.PositiveSmallIntegerField("Number of children in the household")
+    children_ages = models.CharField(
+        "Ages of children",
+        help_text="When able, we will try to provide additional snacks for children. If this is something you would be interested in, please list the ages of any children in the household so we may try to provide appropriate snacks for their age group.",
+        max_length=settings.DEFAULT_LENGTH,
+        blank=True,
+    )
+    food_allergies = models.TextField(
+        "Food allergies",
+        help_text="Please list any allergies or dietary restrictions",
+        blank=True,
+    )
+
+    # Information about community status
+    bipoc = models.BooleanField("Black, Indigenous, and People of Colour (BIPOC)")
+    lgbtq = models.BooleanField("Lesbian, Gay, Bisexual, Trans, Queer (LGBTQ), gender non-conforming or non-binary")
+    has_disability = models.BooleanField("Living with disabilities")
+    immigrant_or_refugee = models.BooleanField("Newly arrived immigrant or refugee")
+    housing_issues = models.BooleanField("Precariously housed (no fixed address, living in a shelter, etc.)")
+    sex_worker = models.BooleanField("Sex worker")
+    single_parent = models.BooleanField("Single parent")
+
+    # Information about the delivery
+    can_meet_for_delivery = models.BooleanField(
+        "Able to meet delivery driver",
+        help_text="Please confirm that you / the person requiring support will be able to meet the delivery person in the lobby or door of the residence, while wearing protective equipment such as masks?",
+        default=True,
+    )
+    delivery_details = models.TextField(
+        "Delivery details",
+        help_text="Please provide us with any details we may need to know for the delivery",
+        blank=True,
+    )
+    delivery_date = models.DateField("Delivery date", null=True, blank=True)
+
+    # Information about the requester
+    # Will be null if on_behalf_of is False, indicating request was by the recipient
+    on_behalf_of = models.BooleanField(
+        "On someone's behalf",
+        help_text="Are you filling out this form on behalf of someone else?",
+    )
+    recipient_notified = models.BooleanField(
+        "Recipient has been notified",
+        help_text="Has the person you're filling out the form for been informed they will get a delivery?",
+    )
+    requester_name = models.CharField(
+        "Your full name",
+        max_length=settings.NAME_LENGTH,
+        blank=True,
+    )
+    requester_email = models.EmailField(
+        "Your email address",
+        blank=True,
+    )
+    requester_phone_number = models.CharField(
+        "Your phone number",
+        help_text="Use the format 555-555-5555",
+        max_length=settings.PHONE_NUMBER_LENGTH,
+        blank=True,
+    )
+
+    # Legal
+    accept_terms = models.BooleanField("Accept terms")
+
+    # System
+    completed = models.BooleanField(
+        "Completed",
+        help_text="Has this request been completed?",
+        default=False
+    )
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    @classmethod
+    def requests_paused(cls):
+        """Are requests currently paused?"""
+        # TODO: Remove this once we're ready to go live with grocery signups
+        # In the meantime we say we're never paused so that admins can test this out
+        return False
+        return cls.active_requests() >= settings.PAUSE_GROCERIES or not cls.within_signup_period()
+
+    @classmethod
+    def within_signup_period(cls):
+        now = timezone.now().astimezone(pytz.timezone('America/Toronto'))
+        is_sunday = now.strftime('%A') == 'Sunday'
+        is_after_noon = now.hour >= 12
+        return is_sunday and is_after_noon
+
+    @classmethod
+    def active_requests(cls):
+        return cls.objects.exclude(completed=True).count()
+
+    @classmethod
+    def has_open_request(cls, phone: str):
+        """Does the user with the given email already have open requests?"""
+        return cls.objects.filter(phone_number=phone).exclude(completed=True).exists()
+
+    def send_confirmation_email(self):
+        custom_send_mail(
+            "Confirming your The People's Pantry request",
+            dedent(f"""
+                Hi {self.name},
+                Just confirming that we received your request for The People's Pantry.
+                Your request ID is G{self.id}
+            """),
+            [self.email],
+            reply_to=settings.REQUEST_COORDINATORS_EMAIL
+        )
+
+    def __str__(self):
+        return "Request #G%d (%s): %d adult(s) and %d kid(s) in %s " % (
+            self.id, self.name, self.num_adults, self.num_children, self.city,
+        )
+
+
+class GroceryRequestComment(CommentModel):
+    subject = models.ForeignKey(GroceryRequest, related_name="comments", on_delete=models.CASCADE)
