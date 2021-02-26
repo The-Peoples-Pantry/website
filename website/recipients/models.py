@@ -546,6 +546,7 @@ class GroceryRequest(ContactInfo):
         help_text="Please provide us with any details we may need to know for the delivery",
         blank=True,
     )
+    delivery_date = models.DateField("Delivery date", null=True, blank=True)
 
     # Information about the requester
     # Will be null if on_behalf_of is False, indicating request was by the recipient
