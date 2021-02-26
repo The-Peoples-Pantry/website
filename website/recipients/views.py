@@ -6,8 +6,8 @@ from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 
-from .forms import MealRequestForm
-from .models import MealRequest
+from .forms import MealRequestForm, GroceryRequestForm
+from .models import MealRequest, GroceryRequest
 
 
 def index(request):
@@ -48,3 +48,30 @@ class MealRequestView(FormView):
 class MealRequestDetail(LoginRequiredMixin, DetailView):
     model = MealRequest
     template_name = "recipients/meal_detail.html"
+
+
+class GroceryRequestView(FormView):
+    template_name = 'recipients/new_grocery_request.html'
+    success_url = reverse_lazy('recipients:success')
+    form_class = GroceryRequestForm
+
+    def get(self, request):
+        if GroceryRequest.requests_paused():
+            return render(request, 'recipients/grocery_paused.html')
+        return super().get(request)
+
+    def get_duplicate(self, form):
+        phone = form.cleaned_data['phone_number']
+        return GroceryRequest.has_open_request(phone)
+
+    def form_valid(self, form):
+        if self.get_duplicate(form):
+            messages.warning(self.request, dedent("""
+                We're sorry, it looks like we currently have an unfulfilled request on file for you already.
+                Please give us some time to fulfill that request first before submitting another.
+            """))
+            return super().form_invalid(form)
+
+        instance = form.save()
+        instance.send_confirmation_email()
+        return super().form_valid(form)
