@@ -623,3 +623,7 @@ class GroceryRequest(ContactInfo):
         return "Request #G%d (%s): %d adult(s) and %d kid(s) in %s " % (
             self.id, self.name, self.num_adults, self.num_children, self.city,
         )
+
+
+class GroceryRequestComment(CommentModel):
+    subject = models.ForeignKey(GroceryRequest, related_name="comments", on_delete=models.CASCADE)
