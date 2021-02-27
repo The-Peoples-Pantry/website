@@ -49,6 +49,11 @@ class MealRequestForm(forms.ModelForm):
 class GroceryRequestForm(forms.ModelForm):
     # Force the terms to be accepted in order to submit the form
     accept_terms = forms.BooleanField(required=True)
+    can_meet_for_delivery = forms.BooleanField(
+        label="Able to meet delivery driver",
+        help_text="Are you (or someone in your household) able to receive the box on the delivery date assigned for your area?",
+        required=True,
+    )
 
     terms_of_service_text = dedent("""
         I acknowledge that MY NAME, EMAIL ADDRESS, PHONE NUMBER, ADDRESS, AND DELIVERY DETAILS WILL BE SHARED WITH FOODSHARE to set up my delivery.

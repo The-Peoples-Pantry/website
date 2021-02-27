@@ -534,12 +534,14 @@ class GroceryRequest(ContactInfo):
     housing_issues = models.BooleanField("Precariously housed (no fixed address, living in a shelter, etc.)")
     sex_worker = models.BooleanField("Sex worker")
     single_parent = models.BooleanField("Single parent")
+    senior = models.BooleanField("Senior citizen")
 
     # Information about the delivery
-    can_meet_for_delivery = models.BooleanField(
-        "Able to meet delivery driver",
-        help_text="Please confirm that you / the person requiring support will be able to meet the delivery person in the lobby or door of the residence, while wearing protective equipment such as masks?",
-        default=True,
+    buzzer = models.CharField(
+        "Buzzer code",
+        help_text="Does your building requires a buzzer code for us to contact you?",
+        blank=True,
+        max_length=settings.DEFAULT_LENGTH,
     )
     delivery_details = models.TextField(
         "Delivery details",
