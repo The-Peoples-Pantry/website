@@ -536,6 +536,12 @@ class GroceryRequest(ContactInfo):
     single_parent = models.BooleanField("Single parent")
 
     # Information about the delivery
+    buzzer = models.CharField(
+        "Buzzer code",
+        help_text="Does your building requires a buzzer code for us to contact you?",
+        blank=True,
+        max_length=settings.DEFAULT_LENGTH,
+    )
     delivery_details = models.TextField(
         "Delivery details",
         help_text="Please provide us with any details we may need to know for the delivery",
