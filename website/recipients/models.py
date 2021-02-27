@@ -536,11 +536,6 @@ class GroceryRequest(ContactInfo):
     single_parent = models.BooleanField("Single parent")
 
     # Information about the delivery
-    can_meet_for_delivery = models.BooleanField(
-        "Able to meet delivery driver",
-        help_text="Please confirm that you / the person requiring support will be able to meet the delivery person in the lobby or door of the residence, while wearing protective equipment such as masks?",
-        default=True,
-    )
     delivery_details = models.TextField(
         "Delivery details",
         help_text="Please provide us with any details we may need to know for the delivery",
