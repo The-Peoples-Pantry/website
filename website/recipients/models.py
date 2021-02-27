@@ -534,6 +534,7 @@ class GroceryRequest(ContactInfo):
     housing_issues = models.BooleanField("Precariously housed (no fixed address, living in a shelter, etc.)")
     sex_worker = models.BooleanField("Sex worker")
     single_parent = models.BooleanField("Single parent")
+    senior = models.BooleanField("Senior citizen")
 
     # Information about the delivery
     buzzer = models.CharField(
