@@ -75,6 +75,10 @@ class MealRequest(ContactInfo):
         "Availability",
         help_text="Our deliveries will be done on Fridays, Saturdays and Sundays between 12 and 8 PM. Please list the days and times that you're available to receive a delivery",
     )
+    covid = models.BooleanField(
+        "COVID-19",
+        help_text="Have you been diagnosed with, or are you currently experiencing any symptoms of COVID-19? Such as fever, cough, difficulty breathing, or chest pain?",
+    )
 
     # Information about the requester
     # Will be null if on_behalf_of is False, indicating request was by the recipient
@@ -548,6 +552,10 @@ class GroceryRequest(ContactInfo):
         "Delivery details",
         help_text="Please provide us with any details we may need to know for the delivery",
         blank=True,
+    )
+    covid = models.BooleanField(
+        "COVID-19",
+        help_text="Have you been diagnosed with, or are you currently experiencing any symptoms of COVID-19? Such as fever, cough, difficulty breathing, or chest pain?",
     )
     delivery_date = models.DateField("Delivery date", null=True, blank=True)
 
