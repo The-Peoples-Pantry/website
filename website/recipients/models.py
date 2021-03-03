@@ -523,7 +523,7 @@ class GroceryRequest(ContactInfo):
     )
     food_allergies = models.TextField(
         "Food allergies",
-        help_text="Please list any allergies or dietary restrictions",
+        help_text="Because of logistics constraints, we are unable to assemble boxes according to your needs. If you have an allergy to a food item that is included in the produce box, we won’t be able to send you the box.",
         blank=True,
     )
 
