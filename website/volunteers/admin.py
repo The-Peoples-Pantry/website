@@ -24,7 +24,7 @@ class InGroupFilter(admin.SimpleListFilter):
 
 
 class VolunteerAdmin(admin.ModelAdmin):
-    list_display = ('edit_link', 'name', 'user', 'groups', 'organizer_teams', 'city', 'training_complete', 'is_staff')
+    list_display = ('edit_link', 'name', 'user', 'groups', 'organizer_teams', 'city', 'training_complete', 'is_staff', 'date_joined')
     actions = ('remove_permissions', 'mark_training_complete')
     list_filter = (InGroupFilter,)
     search_fields = ('name', 'user__email')
@@ -39,6 +39,9 @@ class VolunteerAdmin(admin.ModelAdmin):
     def is_staff(self, obj):
         return obj.user.is_staff
     is_staff.boolean = True
+
+    def date_joined(self, obj):
+        return obj.user.date_joined
 
     @transaction.atomic
     def remove_permissions(self, request, queryset):
