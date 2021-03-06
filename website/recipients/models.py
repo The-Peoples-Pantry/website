@@ -511,9 +511,13 @@ class GroceryRequest(ContactInfo):
     )
     gift_card = models.CharField(
         "Gift card",
-        help_text="What type of digital gift card would you want? We will send this to the email account you provided.",
+        help_text="What type of gift card would you want?",
         max_length=settings.DEFAULT_LENGTH,
         choices=GiftCard.choices,
+    )
+    physical_gift_card = models.BooleanField(
+        "Physical gift card",
+        help_text="By default we will send a digital gift card to the email account you provided, if you would prefer a physical gift card check here.",
     )
 
     # Information about the request itself
