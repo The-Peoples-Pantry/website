@@ -605,9 +605,6 @@ class GroceryRequest(ContactInfo):
     @classmethod
     def requests_paused(cls):
         """Are requests currently paused?"""
-        # TODO: Remove this once we're ready to go live with grocery signups
-        # In the meantime we say we're never paused so that admins can test this out
-        return False
         return cls.active_requests() >= settings.PAUSE_GROCERIES or not cls.within_signup_period()
 
     @classmethod
