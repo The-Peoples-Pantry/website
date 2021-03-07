@@ -522,8 +522,8 @@ class GroceryRequest(ContactInfo):
 
     # Information about the request itself
     num_adults = models.PositiveSmallIntegerField(
-        "Number of adults in the household",
-        help_text="We consider anyone 13 years of age or older to be an adult",
+        "Number of adults and teenagers in the household",
+        help_text="Adults/teenagers 13 years of age and above",
     )
     num_children = models.PositiveSmallIntegerField(
         "Number of children in the household",
