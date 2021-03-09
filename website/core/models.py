@@ -70,8 +70,12 @@ class ContactInfo(models.Model):
     anonymized_longitude = models.FloatField(default=-79.347015, blank=True)  # default: Toronto longitude
 
     @property
+    def province(self):
+        return "Ontario"
+
+    @property
     def address(self):
-        return f"{self.address_1} {self.address_2} {self.city} {self.postal_code}"
+        return f"{self.address_1} {self.address_2} {self.city} {self.province} {self.postal_code}"
 
     @property
     def address_link(self):
