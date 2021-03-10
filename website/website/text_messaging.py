@@ -34,6 +34,7 @@ class TextMessagingAPI:
                 headers={
                     "X-TGP-ACCESS-TOKEN": self.access_token,
                 },
+                timeout=10,
             )
             response.raise_for_status()
             return response.json()
@@ -41,7 +42,7 @@ class TextMessagingAPI:
             raise TextMessagingAPIException from e
 
 
-def send_text(phone_number: str, message: str, fail_silently=True):
+def send_text(phone_number: str, message: str):
     """Text the message to the phone number"""
     try:
         api = TextMessagingAPI()
