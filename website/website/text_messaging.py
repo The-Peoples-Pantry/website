@@ -41,7 +41,7 @@ class TextMessagingAPI:
             raise TextMessagingAPIException from e
 
 
-def send_text(phone_number: str, message: str, fail_silently=True):
+def send_text(phone_number: str, message: str):
     """Text the message to the phone number"""
     try:
         api = TextMessagingAPI()
