@@ -34,6 +34,7 @@ class TextMessagingAPI:
                 headers={
                     "X-TGP-ACCESS-TOKEN": self.access_token,
                 },
+                timeout=10,
             )
             response.raise_for_status()
             return response.json()
