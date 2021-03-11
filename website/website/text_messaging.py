@@ -13,19 +13,29 @@ class TextMessagingAPIException(Exception):
 
 class TextMessagingAPI:
     API_BASE_URL = "https://application.textline.com/api"
+    GROUPS = {
+        "default": "a3019415-c4d3-4de9-8374-103e8ba690b9",
+        "groceries": "0d427662-aba2-4e4c-9bfb-0bb846f2353a",
+    }
 
     def __init__(self, access_token=TEXTLINE_ACCESS_TOKEN):
         self.access_token = access_token
 
-    def send_text(self, phone_number, message):
+    def send_text(self, phone_number, message, group_name="default"):
         """Send a message to the phone number"""
         if self.access_token is None:
             raise TextMessagingAPIException("Textline access token is not set")
 
         try:
+            group_uuid = self.GROUPS[group_name]
+        except KeyError:
+            raise TextMessagingAPIException("Invalid group_name")
+
+        try:
             response = requests.post(
                 f"{self.API_BASE_URL}/conversations.json",
                 json={
+                    "group_uuid": group_uuid,
                     "phone_number": phone_number,
                     "comment": {
                         "body": message,
