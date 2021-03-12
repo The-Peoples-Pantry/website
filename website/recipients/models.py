@@ -611,7 +611,7 @@ class GroceryRequest(ContactInfo):
 
     def clean(self, *args, **kwargs):
         latitude, longitude = self.fetched_coordinates
-        if not GroceryDeliveryArea().includes(longitude, latitude):
+        if not GroceryDeliveryArea.singleton().includes(longitude, latitude):
             raise ValidationError("Sorry, we don't currently offer grocery delivery in your area")
 
     @classmethod
