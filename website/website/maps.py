@@ -1,12 +1,48 @@
+import glob
 import math
-import requests
 from random import uniform, choice
+
+import geojson
+import requests
+import shapely.geometry
+import shapely.prepared
 
 from django.conf import settings
 
 
 class GeocoderException(Exception):
     pass
+
+
+class GroceryDeliveryArea:
+    @property
+    def geojson_dir(self):
+        return settings.BASE_DIR / 'data'
+
+    @property
+    def geojson_filenames(self):
+        return glob.glob(f"{self.geojson_dir}/*.geojson")
+
+    @property
+    def feature_collections(self):
+        for filename in self.geojson_filenames:
+            yield self.load_feature_collection(filename)
+
+    @property
+    def regions(self):
+        for feature_collection in self.feature_collections:
+            coordinates = geojson.utils.coords(feature_collection)
+            polygon = shapely.geometry.Polygon(coordinates).convex_hull
+            prepared_polygon = shapely.prepared.prep(polygon)
+            yield prepared_polygon
+
+    def load_feature_collection(self, filename):
+        with open(filename) as f:
+            return geojson.load(f)
+
+    def includes(self, longitude, latitude):
+        point = shapely.geometry.Point(longitude, latitude)
+        return any(region.contains(point) for region in self.regions)
 
 
 class Geocoder:
