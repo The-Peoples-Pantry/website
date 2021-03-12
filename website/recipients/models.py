@@ -10,6 +10,7 @@ from django.urls import reverse_lazy
 from django.utils import timezone
 import pytz
 
+from website.maps import GroceryDeliveryArea
 from website.mail import custom_send_mail
 from website.text_messaging import send_text
 from core.models import get_sentinel_user, ContactInfo
@@ -607,6 +608,11 @@ class GroceryRequest(ContactInfo):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def clean(self, *args, **kwargs):
+        latitude, longitude = self.fetched_coordinates
+        if not GroceryDeliveryArea().includes(longitude, latitude):
+            raise ValidationError("Sorry, we don't currently offer grocery delivery in your area")
 
     @classmethod
     def requests_paused(cls):
