@@ -612,6 +612,7 @@ class GroceryRequest(ContactInfo):
     def clean(self, *args, **kwargs):
         latitude, longitude = self.fetched_coordinates
         if not GroceryDeliveryArea.singleton().includes(longitude, latitude):
+            logger.warning("Address outside of delivery area", extra={'address': self.address, 'coordinates': self.fetched_coordinates})
             raise ValidationError("Sorry, we don't currently offer grocery delivery in your area")
 
     @classmethod
