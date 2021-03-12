@@ -10,12 +10,14 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
+import logging
 from os import getenv
 from pathlib import Path
 
 import django_heroku
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
+from sentry_sdk.integrations.logging import LoggingIntegration
 
 
 def getenv_bool(key, default=False):
@@ -175,7 +177,10 @@ if SENTRY_DSN:
         # This key is safe to store in version control
         # Learn more here: https://docs.sentry.io/product/sentry-basics/dsn-explainer/
         dsn=SENTRY_DSN,
-        integrations=[DjangoIntegration()],
+        integrations=[
+            LoggingIntegration(level=logging.INFO, event_level=logging.WARNING),
+            DjangoIntegration()
+        ],
         traces_sample_rate=1.0,
 
         # If you wish to associate users to errors (assuming you are using
