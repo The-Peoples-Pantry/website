@@ -1,3 +1,4 @@
+import functools
 import logging
 import urllib.parse
 from django.contrib.auth import get_user_model
@@ -94,10 +95,14 @@ class ContactInfo(models.Model):
     def coordinates(self):
         return (self.anonymized_latitude, self.anonymized_longitude)
 
+    @functools.cached_property
+    def fetched_coordinates(self):
+        return Geocoder().geocode_anonymized(self.address)
+
     def update_coordinates(self):
         """Updates, but does not commit, anonymized coordinates on the instance"""
         try:
-            latitude, longitude = Geocoder().geocode_anonymized(self.address)
+            latitude, longitude = self.fetched_coordinates
             self.anonymized_latitude = latitude
             self.anonymized_longitude = longitude
         except GeocoderException:
