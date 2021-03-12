@@ -39,3 +39,6 @@ flake8== 3.8.4
 
 # Allows admins to browse interactive queries
 django-sql-explorer==2.1.2
+
+# Allows us to work with geojson files
+geojson==2.5.0
