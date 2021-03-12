@@ -2,7 +2,7 @@ import math
 import requests
 from random import uniform, choice
 
-from website.settings import MAPQUEST_API_KEY
+from django.conf import settings
 
 
 class GeocoderException(Exception):
@@ -14,7 +14,7 @@ class Geocoder:
     DEGREE_RANGE_LOWER = 0.001
     DEGREE_RANGE_HIGHER = 0.004
 
-    def __init__(self, api_key=MAPQUEST_API_KEY):
+    def __init__(self, api_key=settings.MAPQUEST_API_KEY):
         self.api_key = api_key
 
     def geocode_anonymized(self, address):

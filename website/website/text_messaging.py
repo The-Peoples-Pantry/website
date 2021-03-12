@@ -1,7 +1,7 @@
 import logging
 import requests
 
-from website.settings import TEXTLINE_ACCESS_TOKEN
+from django.conf import settings
 
 
 logger = logging.getLogger(__name__)
@@ -14,7 +14,7 @@ class TextMessagingAPIException(Exception):
 class TextMessagingAPI:
     API_BASE_URL = "https://application.textline.com/api"
 
-    def __init__(self, access_token=TEXTLINE_ACCESS_TOKEN):
+    def __init__(self, access_token=settings.TEXTLINE_ACCESS_TOKEN):
         self.access_token = access_token
 
     def send_text(self, phone_number, message):
