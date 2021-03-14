@@ -211,7 +211,7 @@ DAY_LENGTH = 9  # Longest is "Wednesday"
 LONG_TEXT_LENGTH = 1024
 
 # Settings for pausing requests
-PAUSE_GROCERIES = 80
+PAUSE_GROCERIES = 40
 PAUSE_MEALS = 45
 
 # Settings for figuring out delivery distances

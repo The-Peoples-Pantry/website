@@ -629,7 +629,7 @@ class GroceryRequest(ContactInfo):
 
     @classmethod
     def active_requests(cls):
-        return cls.objects.exclude(completed=True).count()
+        return cls.objects.filter(delivery_date=None).count()
 
     @classmethod
     def has_open_request(cls, phone: str):
