@@ -4,18 +4,6 @@ from django import forms
 from .models import MealRequest, GroceryRequest
 
 
-class TelephoneInput(forms.TextInput):
-    input_type = 'tel'
-
-    def __init__(self, attrs=None):
-        attrs = {} if attrs is None else attrs
-        super().__init__(attrs={
-            'pattern': r'\(?[0-9]{3}\)?[- ]?[0-9]{3}[- ]?[0-9]{4}',
-            'title': 'Telephone input in the form xxx-xxx-xxxx',
-            **attrs,
-        })
-
-
 class MealRequestForm(forms.ModelForm):
     # Force the terms to be accepted in order to submit the form
     accept_terms = forms.BooleanField(required=True)
@@ -36,8 +24,6 @@ class MealRequestForm(forms.ModelForm):
         model = MealRequest
         exclude = ['uuid', 'created_at', 'updated_at', 'anonymized_latitude', 'anonymized_longitude']
         widgets = {
-            'phone_number': TelephoneInput(),
-            'requester_phone_number': TelephoneInput(),
             'food_allergies': forms.Textarea(attrs={'rows': 3}),
             'food_preferences': forms.Textarea(attrs={'rows': 3}),
             'delivery_details': forms.Textarea(attrs={'rows': 3}),
@@ -73,8 +59,6 @@ class GroceryRequestForm(forms.ModelForm):
         model = GroceryRequest
         exclude = ['uuid', 'created_at', 'updated_at', 'anonymized_latitude', 'anonymized_longitude', 'delivery_date', 'completed']
         widgets = {
-            'phone_number': TelephoneInput(),
-            'requester_phone_number': TelephoneInput(),
             'food_allergies': forms.Textarea(attrs={'rows': 3}),
             'delivery_details': forms.Textarea(attrs={'rows': 3}),
             'availability': forms.Textarea(attrs={'rows': 3}),
