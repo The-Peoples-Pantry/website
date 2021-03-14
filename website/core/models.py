@@ -1,6 +1,8 @@
 import functools
 import logging
+import re
 import urllib.parse
+from django import forms
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.conf import settings
@@ -23,6 +25,39 @@ def group_names(user):
     return list(user.groups.all().values_list('name', flat=True))
 
 
+class TelephoneInput(forms.TextInput):
+    input_type = 'tel'
+
+    def __init__(self, attrs=None):
+        attrs = {} if attrs is None else attrs
+        super().__init__(attrs={
+            'pattern': r'\(?[0-9]{3}\)?[- ]?[0-9]{3}[- ]?[0-9]{4}',
+            'title': 'Telephone input in the form xxx-xxx-xxxx',
+            **attrs,
+        })
+
+
+class TelephoneFormField(forms.CharField):
+    widget = TelephoneInput
+
+    def clean(self, value):
+        # Strip any extra characters from the phone number like ), (, space, or -
+        return re.sub(r'[^0-9]', '', super().clean(value))
+
+
+class TelephoneField(models.CharField):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault('help_text', 'Use the format 555-555-5555')
+        kwargs.setdefault('max_length', settings.PHONE_NUMBER_LENGTH)
+        super().__init__(*args, **kwargs)
+
+    def formfield(self, **kwargs):
+        return super().formfield(**{
+            'form_class': TelephoneFormField,
+            **kwargs,
+        })
+
+
 class Cities(models.TextChoices):
     EAST_YORK = 'East York', 'East York'
     ETOBICOKE = 'Etobicoke', 'Etobicoke'
@@ -40,11 +75,7 @@ class ContactInfo(models.Model):
         "Full name",
         max_length=settings.NAME_LENGTH
     )
-    phone_number = models.CharField(
-        "Phone number",
-        help_text="Use the format 555-555-5555",
-        max_length=settings.PHONE_NUMBER_LENGTH,
-    )
+    phone_number = TelephoneField("Phone number")
     email = models.EmailField("Email address")
     address_1 = models.CharField(
         "Address line 1",

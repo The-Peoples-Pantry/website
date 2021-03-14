@@ -13,7 +13,7 @@ import pytz
 from website.maps import GroceryDeliveryArea
 from website.mail import custom_send_mail
 from website.text_messaging import send_text
-from core.models import get_sentinel_user, ContactInfo
+from core.models import get_sentinel_user, ContactInfo, TelephoneField
 
 
 logger = logging.getLogger(__name__)
@@ -100,10 +100,8 @@ class MealRequest(ContactInfo):
         "Your email address",
         blank=True,
     )
-    requester_phone_number = models.CharField(
+    requester_phone_number = TelephoneField(
         "Your phone number",
-        help_text="Use the format 555-555-5555",
-        max_length=settings.PHONE_NUMBER_LENGTH,
         blank=True,
     )
 
@@ -589,10 +587,8 @@ class GroceryRequest(ContactInfo):
         "Your email address",
         blank=True,
     )
-    requester_phone_number = models.CharField(
+    requester_phone_number = TelephoneField(
         "Your phone number",
-        help_text="Use the format 555-555-5555",
-        max_length=settings.PHONE_NUMBER_LENGTH,
         blank=True,
     )
 
