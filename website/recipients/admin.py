@@ -442,6 +442,12 @@ class GroceryRequestAdmin(admin.ModelAdmin):
         'email',
         'phone_number'
     )
+    actions = (
+        'notify_recipients_scheduled',
+        'notify_recipients_allergies',
+        'notify_recipients_reminder',
+        'notify_recipients_rescheduled',
+    )
 
     def edit_link(self, request):
         return 'Edit request G%d' % request.id
@@ -450,6 +456,73 @@ class GroceryRequestAdmin(admin.ModelAdmin):
     def landline(self, obj):
         return 'No' if obj.can_receive_texts else 'Yes'
     landline.short_description = "Landline"
+
+    def send_notifications(self, request, queryset, method_name):
+        """
+        Helper utility for invoking notification sending methods
+
+        This is more complex than usual because we need to account for situations where we send a subset of notifications.
+        Some notifications might succeed while others fail.
+        If they all succeed, we simply emit the success message with a "Success" status
+        If they partially fail, we emit info on both the successes and an error breakdown, with a "Warning" status
+        If they all fail, we emit the error breakdown with a "Error" status
+
+        method_name is the name of the method to invoke on each request instance.
+        """
+        successes, errors = [], []
+
+        # Try to notify all recipients, capture any error messages that are received
+        for grocery_request in queryset:
+            try:
+                send_notification_method = getattr(grocery_request, method_name)
+                send_notification_method()
+                successes.append(grocery_request)
+            except SendNotificationException as e:
+                errors.append(e.message)
+
+        sent = len(successes)
+        unsent = len(errors)
+        total = sent + unsent
+
+        prefix_message = ngettext(
+            "%d request was selected",
+            "%d requests were selected",
+            total,
+        ) % total
+        success_message = ngettext(
+            "%d text message was sent",
+            "%d text messages were sent",
+            sent,
+        ) % sent
+
+        # An unordered list of grouped errors, along with the count of how many times the error happened
+        error_messages = format_html_join(
+            "\n", "<p><strong>{} message(s) not sent because: {}</strong></p>",
+            ((count, error_message) for (error_message, count) in collections.Counter(errors).items()),
+        )
+
+        if sent and unsent:
+            self.message_user(request, format_html("<p>{}</p><p>{}</p>{}", prefix_message, success_message, error_messages), messages.WARNING)
+        elif sent:
+            self.message_user(request, format_html("<p>{}</p><p>{}</p>", prefix_message, success_message), messages.SUCCESS)
+        elif unsent:
+            self.message_user(request, format_html("<p>{}</p>{}", prefix_message, error_messages), messages.ERROR)
+
+    def notify_recipients_scheduled(self, request, queryset):
+        self.send_notifications(request, queryset, 'send_recipient_scheduled_notification')
+    notify_recipients_scheduled.short_description = "Send text to recipients about scheduled date"
+
+    def notify_recipients_allergies(self, request, queryset):
+        self.send_notifications(request, queryset, 'send_recipient_allergy_notification')
+    notify_recipients_allergies.short_description = "Send text to recipients with allergy explanation"
+
+    def notify_recipients_reminder(self, request, queryset):
+        self.send_notifications(request, queryset, 'send_recipient_reminder_notification')
+    notify_recipients_reminder.short_description = "Send text to remind recipients of today's delivery"
+
+    def notify_recipients_rescheduled(self, request, queryset):
+        self.send_notifications(request, queryset, 'send_recipient_rescheduled_notification')
+    notify_recipients_rescheduled.short_description = "Send text to recipients with rescheduled explanation"
 
 
 admin.site.register(MealRequest, MealRequestAdmin)

@@ -642,6 +642,73 @@ class GroceryRequest(ContactInfo):
             reply_to=settings.REQUEST_COORDINATORS_EMAIL
         )
 
+    def send_recipient_scheduled_notification(self):
+        """Send the first notification to a recipient, lets them know their grocery delivery has been scheduled"""
+        if not self.can_receive_texts:
+            raise SendNotificationException("Recipient cannot receive text messages at their phone number")
+
+        if not (self.delivery_date):
+            raise SendNotificationException("Delivery date is not specified")
+
+        # Date is in the format "Weekday Month Year" eg. Sunday November 29
+        message = dedent(f"""
+            Hi {self.name},
+            This is a message from The People's Pantry.
+            Your delivery has been scheduled for {self.delivery_date:%A %B %d}. FoodShare will be delivering your box between 10 AM and 9 PM at your door and/or following your delivery instructions. Please make sure to check your phone regularly so the delivery driver can communicate with you easily.
+            Delivery dates may vary to balance daily orders or if the driver did not get to the delivery by 9 PM. If there are any changes, we will do our best to communicate with you ahead of time.
+            The gift card will be sent directly to the {"address" if self.physical_gift_card else "email address"} you provided in your request form on the same day of the delivery.
+            Thank you and stay safe!
+        """)
+        send_text(self.phone_number, message)
+        self.comments.create(comment=f"Sent a text to recipient: {message}")
+        logger.info("Sent recipient scheduled notification text for Grocery Request %d to %s", self.id, self.phone_number)
+
+    def send_recipient_allergy_notification(self):
+        """Send a notification to a recipient letting them know they won't get the box because of allergens"""
+        if not self.can_receive_texts:
+            raise SendNotificationException("Recipient cannot receive text messages at their phone number")
+
+        # Date is in the format "Weekday Month Year" eg. Sunday November 29
+        message = dedent(f"""
+            Hi {self.name},
+            This is a message from The People's Pantry.
+            Because the FoodShare boxes this week included a food which you listed as an allergy, instead of the produce box, you will receive an extra gift card equal to the box’s value.
+            Please feel free to be in touch with any questions, comments, or concerns.
+        """)
+        send_text(self.phone_number, message)
+        self.comments.create(comment=f"Sent a text to recipient: {message}")
+        logger.info("Sent recipient allergy notification text for Grocery Request %d to %s", self.id, self.phone_number)
+
+    def send_recipient_reminder_notification(self):
+        """Send a notification to a recipient reminding them of today's delivery"""
+        if not self.can_receive_texts:
+            raise SendNotificationException("Recipient cannot receive text messages at their phone number")
+
+        message = dedent(f"""
+            Hello {self.name},
+            This is a message from The People's Pantry.
+            Your FoodShare produce box is scheduled to be delivered today. Just a reminder that boxes are delivered until 9 PM. If you don’t receive your box by that time today, please let us know by replying to this message. When delivery drivers didn’t get to do the delivery because they ran out of time, they will schedule your delivery for the following day.
+            Thanks, and stay safe!
+        """)
+        send_text(self.phone_number, message)
+        self.comments.create(comment=f"Sent a text to recipient: {message}")
+        logger.info("Sent reminder notification text for Grocery Request %d to %s", self.id, self.phone_number)
+
+    def send_recipient_rescheduled_notification(self):
+        """Send a notification to a recipient letting them know that delivery has been rescheduled"""
+        if not self.can_receive_texts:
+            raise SendNotificationException("Recipient cannot receive text messages at their phone number")
+
+        message = dedent(f"""
+            Hello {self.name},
+            This is a message from The People's Pantry.
+            Your produce box delivery wasn’t made because the driver could not contact you or had a problem with your delivery instructions. Your box will be scheduled for the following week on the same day between 10 AM and 9 PM. Please, let us know if you have any issues with the delivery or if you would like to make changes to your delivery instructions.
+            Thanks, and stay safe!
+        """)
+        send_text(self.phone_number, message)
+        self.comments.create(comment=f"Sent a text to recipient: {message}")
+        logger.info("Sent rescheduled notification text for Grocery Request %d to %s", self.id, self.phone_number)
+
     def __str__(self):
         return "Request #G%d (%s): %d adult(s) and %d kid(s) in %s " % (
             self.id, self.name, self.num_adults, self.num_children, self.city,
