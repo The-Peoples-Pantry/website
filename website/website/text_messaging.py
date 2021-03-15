@@ -21,7 +21,7 @@ class TextMessagingAPI:
     def __init__(self, access_token=settings.TEXTLINE_ACCESS_TOKEN):
         self.access_token = access_token
 
-    def send_text(self, phone_number, message, group_name="default"):
+    def send_text(self, phone_number, message, group_name):
         """Send a message to the phone number"""
         if self.access_token is None:
             raise TextMessagingAPIException("Textline access token is not set")
@@ -52,10 +52,10 @@ class TextMessagingAPI:
             raise TextMessagingAPIException from e
 
 
-def send_text(phone_number: str, message: str):
+def send_text(phone_number: str, message: str, group_name: str = "default"):
     """Text the message to the phone number"""
     try:
         api = TextMessagingAPI()
-        api.send_text(phone_number, message)
+        api.send_text(phone_number, message, group_name)
     except TextMessagingAPIException:
         logger.exception("Failed to send text message to %s", phone_number)
