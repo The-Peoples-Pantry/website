@@ -139,7 +139,21 @@ class MealRequest(ContactInfo):
     @classmethod
     def requests_paused(cls):
         """Are requests currently paused?"""
-        return cls.active_requests() >= settings.MEALS_LIMIT or not cls.within_signup_period()
+        return cls.requests_paused_by_limit() or cls.requests_paused_by_period()
+
+    @classmethod
+    def requests_paused_by_period(cls):
+        if settings.DISABLE_MEALS_PERIOD:
+            return False
+
+        return not cls.within_signup_period()
+
+    @classmethod
+    def requests_paused_by_limit(cls):
+        if settings.DISABLE_MEALS_LIMIT:
+            return False
+
+        return cls.active_requests() >= settings.MEALS_LIMIT
 
     @classmethod
     def within_signup_period(cls):
@@ -612,7 +626,21 @@ class GroceryRequest(ContactInfo):
     @classmethod
     def requests_paused(cls):
         """Are requests currently paused?"""
-        return cls.active_requests() >= settings.GROCERIES_LIMIT or not cls.within_signup_period()
+        return cls.requests_paused_by_limit() or cls.requests_paused_by_period()
+
+    @classmethod
+    def requests_paused_by_period(cls):
+        if settings.DISABLE_GROCERIES_PERIOD:
+            return False
+
+        return not cls.within_signup_period()
+
+    @classmethod
+    def requests_paused_by_limit(cls):
+        if settings.DISABLE_GROCERIES_LIMIT:
+            return False
+
+        return cls.active_requests() >= settings.GROCERIES_LIMIT
 
     @classmethod
     def within_signup_period(cls):
