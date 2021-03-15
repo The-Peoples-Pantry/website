@@ -139,7 +139,7 @@ class MealRequest(ContactInfo):
     @classmethod
     def requests_paused(cls):
         """Are requests currently paused?"""
-        return cls.active_requests() >= settings.PAUSE_MEALS or not cls.within_signup_period()
+        return cls.active_requests() >= settings.MEALS_LIMIT or not cls.within_signup_period()
 
     @classmethod
     def within_signup_period(cls):
@@ -612,7 +612,7 @@ class GroceryRequest(ContactInfo):
     @classmethod
     def requests_paused(cls):
         """Are requests currently paused?"""
-        return cls.active_requests() >= settings.PAUSE_GROCERIES or not cls.within_signup_period()
+        return cls.active_requests() >= settings.GROCERIES_LIMIT or not cls.within_signup_period()
 
     @classmethod
     def within_signup_period(cls):
