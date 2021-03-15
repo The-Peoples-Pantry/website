@@ -211,8 +211,13 @@ DAY_LENGTH = 9  # Longest is "Wednesday"
 LONG_TEXT_LENGTH = 1024
 
 # Settings for pausing requests
-PAUSE_GROCERIES = 40
-PAUSE_MEALS = 45
+GROCERIES_LIMIT = 40
+DISABLE_GROCERIES_LIMIT = getenv_bool("DISABLE_GROCERIES_LIMIT", False)
+DISABLE_GROCERIES_PERIOD = getenv_bool("DISABLE_GROCERIES_PERIOD", False)
+
+MEALS_LIMIT = 45
+DISABLE_MEALS_LIMIT = getenv_bool("DISABLE_MEALS_LIMIT", False)
+DISABLE_MEALS_PERIOD = getenv_bool("DISABLE_MEALS_PERIOD", False)
 
 # Settings for figuring out delivery distances
 MAX_CHEF_DISTANCE = 15  # Chefs can't be more than this many km away from their recipients
