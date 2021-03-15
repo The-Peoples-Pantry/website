@@ -444,6 +444,7 @@ class GroceryRequestAdmin(admin.ModelAdmin):
     )
     actions = (
         'notify_recipients_scheduled',
+        'notify_recipients_allergies',
     )
 
     def edit_link(self, request):
@@ -508,6 +509,10 @@ class GroceryRequestAdmin(admin.ModelAdmin):
     def notify_recipients_scheduled(self, request, queryset):
         self.send_notifications(request, queryset, 'send_recipient_scheduled_notification')
     notify_recipients_scheduled.short_description = "Send text to recipients about scheduled date"
+
+    def notify_recipients_allergies(self, request, queryset):
+        self.send_notifications(request, queryset, 'send_recipient_allergy_notification')
+    notify_recipients_allergies.short_description = "Send text to recipients with allergy explanation"
 
 
 admin.site.register(MealRequest, MealRequestAdmin)

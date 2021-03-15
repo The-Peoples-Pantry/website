@@ -662,6 +662,22 @@ class GroceryRequest(ContactInfo):
         self.comments.create(comment=f"Sent a text to recipient: {message}")
         logger.info("Sent recipient scheduled notification text for Grocery Request %d to %s", self.id, self.phone_number)
 
+    def send_recipient_allergy_notification(self):
+        """Send a notification to a recipient letting them know they won't get the box because of allergens"""
+        if not self.can_receive_texts:
+            raise SendNotificationException("Recipient cannot receive text messages at their phone number")
+
+        # Date is in the format "Weekday Month Year" eg. Sunday November 29
+        message = dedent(f"""
+            Hi {self.name},
+            This is a message from The People's Pantry.
+            Because the FoodShare boxes this week included a food which you listed as an allergy, instead of the produce box, you will receive an extra gift card equal to the box’s value.
+            Please feel free to be in touch with any questions, comments, or concerns.
+        """)
+        send_text(self.phone_number, message)
+        self.comments.create(comment=f"Sent a text to recipient: {message}")
+        logger.info("Sent recipient allergy notification text for Grocery Request %d to %s", self.id, self.phone_number)
+
     def __str__(self):
         return "Request #G%d (%s): %d adult(s) and %d kid(s) in %s " % (
             self.id, self.name, self.num_adults, self.num_children, self.city,
