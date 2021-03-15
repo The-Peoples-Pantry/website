@@ -678,6 +678,21 @@ class GroceryRequest(ContactInfo):
         self.comments.create(comment=f"Sent a text to recipient: {message}")
         logger.info("Sent recipient allergy notification text for Grocery Request %d to %s", self.id, self.phone_number)
 
+    def send_recipient_reminder_notification(self):
+        """Send a notification to a recipient reminding them of today's delivery"""
+        if not self.can_receive_texts:
+            raise SendNotificationException("Recipient cannot receive text messages at their phone number")
+
+        message = dedent(f"""
+            Hello {self.name},
+            This is a message from The People's Pantry.
+            Your FoodShare produce box is scheduled to be delivered today. Just a reminder that boxes are delivered until 9 PM. If you don’t receive your box by that time today, please let us know by replying to this message. When delivery drivers didn’t get to do the delivery because they ran out of time, they will schedule your delivery for the following day.
+            Thanks, and stay safe!
+        """)
+        send_text(self.phone_number, message)
+        self.comments.create(comment=f"Sent a text to recipient: {message}")
+        logger.info("Sent reminder notification text for Grocery Request %d to %s", self.id, self.phone_number)
+
     def __str__(self):
         return "Request #G%d (%s): %d adult(s) and %d kid(s) in %s " % (
             self.id, self.name, self.num_adults, self.num_children, self.city,
