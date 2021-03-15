@@ -641,6 +641,27 @@ class GroceryRequest(ContactInfo):
             reply_to=settings.REQUEST_COORDINATORS_EMAIL
         )
 
+    def send_recipient_scheduled_notification(self):
+        """Send the first notification to a recipient, lets them know their grocery delivery has been scheduled"""
+        if not self.can_receive_texts:
+            raise SendNotificationException("Recipient cannot receive text messages at their phone number")
+
+        if not (self.delivery_date):
+            raise SendNotificationException("Delivery date is not specified")
+
+        # Date is in the format "Weekday Month Year" eg. Sunday November 29
+        message = dedent(f"""
+            Hi {self.name},
+            This is a message from The People's Pantry.
+            Your delivery has been scheduled for {self.delivery_date:%A %B %d}. FoodShare will be delivering your box between 10 AM and 9 PM at your door and/or following your delivery instructions. Please make sure to check your phone regularly so the delivery driver can communicate with you easily.
+            Delivery dates may vary to balance daily orders or if the driver did not get to the delivery by 9 PM. If there are any changes, we will do our best to communicate with you ahead of time.
+            The gift card will be sent directly to the {"address" if self.physical_gift_card else "email address"} you provided in your request form on the same day of the delivery.
+            Thank you and stay safe!
+        """)
+        send_text(self.phone_number, message)
+        self.comments.create(comment=f"Sent a text to recipient: {message}")
+        logger.info("Sent recipient scheduled notification text for Grocery Request %d to %s", self.id, self.phone_number)
+
     def __str__(self):
         return "Request #G%d (%s): %d adult(s) and %d kid(s) in %s " % (
             self.id, self.name, self.num_adults, self.num_children, self.city,
