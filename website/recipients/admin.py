@@ -443,6 +443,7 @@ class GroceryRequestAdmin(admin.ModelAdmin):
         'phone_number'
     )
     actions = (
+        'mark_complete',
         'notify_recipients_scheduled',
         'notify_recipients_allergies',
         'notify_recipients_reminder',
@@ -523,6 +524,15 @@ class GroceryRequestAdmin(admin.ModelAdmin):
     def notify_recipients_rescheduled(self, request, queryset):
         self.send_notifications(request, queryset, 'send_recipient_rescheduled_notification')
     notify_recipients_rescheduled.short_description = "Send text to recipients with rescheduled explanation"
+
+    def mark_complete(self, request, queryset):
+        updated = queryset.update(completed=True)
+        self.message_user(request, ngettext(
+            "%d grocery request has been marked complete",
+            "%d grocery requests have been marked complete",
+            updated,
+        ) % updated, messages.SUCCESS)
+    mark_complete.short_description = "Mark selected grocery requests as complete"
 
 
 admin.site.register(MealRequest, MealRequestAdmin)
