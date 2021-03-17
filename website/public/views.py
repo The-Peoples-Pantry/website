@@ -12,6 +12,14 @@ def index(request):
 def media(request):
     stories = [
         {
+            'title': 'Food Justice, Sovereignty, & Security',
+            'author': "The People's Pantry",
+            'date': '2021-03-05',
+            'link': 'https://www.youtube.com/watch?v=DR6SMDL4jYo',
+            'image': 'media/food-justice-panel.png',
+            'outlet': 'YouTube'
+        },
+        {
             'title': "The People's Pantry in Toronto provides free home-cooked meals to those in need",
             'author': 'Olivia Little',
             'date': '2021-01-11',
