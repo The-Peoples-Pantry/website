@@ -505,9 +505,9 @@ class MealDeliveryComment(CommentModel):
 
 
 class GiftCard(models.TextChoices):
-    WALMART = 'Walmart'
-    PRESIDENTS_CHOICE = "President's Choice"
-    FOOD_SHARE = 'Food Share'
+    WALMART = 'Walmart', 'Walmart (Digital)'
+    PRESIDENTS_CHOICE = "President's Choice", "President's Choice (Physical)"
+    FOOD_SHARE = 'Food Share', 'Food Share (Digital)'
 
 
 class GroceryRequest(ContactInfo):
