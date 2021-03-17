@@ -522,7 +522,7 @@ class GroceryRequest(ContactInfo):
     )
     gift_card = models.CharField(
         "Gift card",
-        help_text="What type of gift card would you want?",
+        help_text="We offer both physical (mailed to you) and digital (emailed to you) gift cards. What type of gift card would you want?",
         max_length=settings.DEFAULT_LENGTH,
         choices=GiftCard.choices,
     )
