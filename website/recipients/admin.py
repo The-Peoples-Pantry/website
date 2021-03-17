@@ -422,7 +422,6 @@ class GroceryRequestAdmin(admin.ModelAdmin):
         'landline',
         'city',
         'gift_card',
-        'physical_gift_card',
         'created_at',
         'delivery_date',
         'completed',
@@ -432,7 +431,6 @@ class GroceryRequestAdmin(admin.ModelAdmin):
         LandlineFilter,
         'created_at',
         'gift_card',
-        'physical_gift_card',
     )
     inlines = (
         GroceryRequestCommentInline,

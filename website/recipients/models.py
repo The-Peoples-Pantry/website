@@ -526,10 +526,6 @@ class GroceryRequest(ContactInfo):
         max_length=settings.DEFAULT_LENGTH,
         choices=GiftCard.choices,
     )
-    physical_gift_card = models.BooleanField(
-        "Physical gift card",
-        help_text="By default we will send a digital gift card to the email account you provided, if you would prefer a physical gift card check here.",
-    )
 
     # Information about the request itself
     num_adults = models.PositiveSmallIntegerField(
@@ -684,7 +680,7 @@ class GroceryRequest(ContactInfo):
             This is a message from The People's Pantry.
             Your delivery has been scheduled for {self.delivery_date:%A %B %d}. FoodShare will be delivering your box between 10 AM and 9 PM at your door and/or following your delivery instructions. Please make sure to check your phone regularly so the delivery driver can communicate with you easily.
             Delivery dates may vary to balance daily orders or if the driver did not get to the delivery by 9 PM. If there are any changes, we will do our best to communicate with you ahead of time.
-            The gift card will be sent directly to the {"address" if self.physical_gift_card else "email address"} you provided in your request form on the same day of the delivery.
+            The gift card will be sent to you on the same day of the delivery.
             Thank you and stay safe!
         """)
         send_text(self.phone_number, message, "groceries")
