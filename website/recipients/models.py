@@ -715,7 +715,8 @@ class GroceryRequest(ContactInfo):
         message = dedent(f"""
             Hello {self.name},
             This is a message from The People's Pantry.
-            Your FoodShare produce box is scheduled to be delivered today. Just a reminder that boxes are delivered until 9 PM. If you don’t receive your box by that time today, please let us know by replying to this message. When delivery drivers didn’t get to do the delivery because they ran out of time, they will schedule your delivery for the following day.
+            Your FoodShare produce box is scheduled to be delivered today. Just a reminder that boxes are delivered until 9 PM.  Please let us know once you receive your grocery box.
+            If you don’t receive your box by that time today, please let us know by replying to this message. When delivery drivers didn’t get to do the delivery because they ran out of time, they will schedule your delivery for the following day.
             Thanks, and stay safe!
         """)
         send_text(self.phone_number, message, "groceries")
