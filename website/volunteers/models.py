@@ -267,7 +267,7 @@ class VolunteerApplication(models.Model):
             body = dedent(f"""
                 Thank you for signing up to be a logistics volunteer with The People’s Pantry! We are a volunteer initiative dedicated to safely providing cooked meals to people who have been disproportionately affected by the COVID-19 pandemic.
 
-                You have been approved as a logistics volunteer. We are so glad to have you on board. Please, make sure to check our Logistics Volunteers Guidelines before proceeding to do anything else: https://docs.google.com/document/d/16IY8xmK8oTgC-yp-fCpkjCFPF-kJaK8l5vpoSDvTXWw/edit
+                You have been approved as a logistics volunteer. We are so glad to have you on board. Please, make sure to check our Logistics Volunteers Guidelines before proceeding to do anything else: https://docs.google.com/document/d/1gHHEogvxxtFx1jRd6UoX1K87XoW7weigcTp7GUWrq1c/edit
 
                 You’ll also be added to join the People’s Pantry Workspace on Slack. Slack is the primary way in which we communicate with each other. If you have any questions or issues with cooking or delivery, you can contact the Central Volunteers Intake Team at {settings.VOLUNTEER_COORDINATORS_EMAIL}
 
