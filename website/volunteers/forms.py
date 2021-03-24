@@ -23,6 +23,10 @@ class TimeField(forms.TimeField):
         )
 
 
+def date_label(date):
+    return date.strftime("%A %B %-d, %Y")
+
+
 def next_day(date):
     return date + datetime.timedelta(1)
 
@@ -33,7 +37,11 @@ def next_weekend(**kwargs):
     next_friday = buffer_date + datetime.timedelta((4 - buffer_date.weekday()) % 7)
     next_sat = next_day(next_friday)
     next_sun = next_day(next_sat)
-    return [(next_friday, next_friday), (next_sat, next_sat), (next_sun, next_sun)]
+    return [
+        (next_friday, date_label(next_friday)),
+        (next_sat, date_label(next_sat)),
+        (next_sun, date_label(next_sun)),
+    ]
 
 
 class MealDeliveryDateInput(forms.Select):
