@@ -170,7 +170,7 @@ class MealRequest(ContactInfo):
 
     @classmethod
     def has_open_request(cls, phone: str):
-        """Does the user with the given email already have open requests?"""
+        """Does the user with the given phone number already have open requests?"""
         return cls.objects.filter(
             phone_number=phone
         ).exclude(
@@ -651,8 +651,8 @@ class GroceryRequest(ContactInfo):
 
     @classmethod
     def has_open_request(cls, phone: str):
-        """Does the user with the given email already have open requests?"""
-        return cls.objects.filter(phone_number=phone).exclude(completed=True).exists()
+        """Does the user with the given phone number already have open requests?"""
+        return cls.objects.filter(phone_number=phone, delivery_date=None, completed=False).exists()
 
     def send_confirmation_email(self):
         custom_send_mail(
