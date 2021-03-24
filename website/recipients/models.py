@@ -203,6 +203,8 @@ class MealRequest(ContactInfo):
                 Hi {self.name},
                 Just confirming that we received your request for The People's Pantry.
                 Your request ID is {self.id}
+
+                We depend on volunteers to sign up for our deliveries, and so your delivery will be scheduled once a chef and delivery volunteer sign up for your request (typically within 7-14 days). You will hear from us to confirm your delivery date once volunteers sign up. Thank you!
             """),
             [self.email],
             reply_to=settings.REQUEST_COORDINATORS_EMAIL
