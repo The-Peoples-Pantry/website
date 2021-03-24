@@ -663,6 +663,8 @@ class GroceryRequest(ContactInfo):
                 Hi {self.name},
                 Just confirming that we received your request for The People's Pantry.
                 Your request ID is G{self.id}
+
+                Grocery deliveries take one week to process before arranging a delivery date. Your delivery will be scheduled for the week after next. You will hear from us in 7 days about the date your request is scheduled for.
             """),
             [self.email],
             reply_to=settings.REQUEST_COORDINATORS_EMAIL
