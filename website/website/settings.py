@@ -211,10 +211,21 @@ DAY_LENGTH = 9  # Longest is "Wednesday"
 LONG_TEXT_LENGTH = 1024
 
 # Settings for pausing requests
-GROCERIES_LIMIT = 40
+# Grocery limit is on the number of "boxes" each request gets
+# This comes from a formula based on the number of people in the household
+#
+# Why the calculation?
+# FoodShare limits us to 50 boxes per week, and we calculate that a request
+# can get either 1, 2, or 3 boxes, depending on the number of people in the
+# household.
+# So we want the limit to be 2 lower than the FoodShare limit so that we
+# don't exceed the limit in the case where we're already at 48 or 49 boxes
+# and then someone submits a request that requires 3 or 2 boxes.
+GROCERIES_LIMIT = 50 - 2
 DISABLE_GROCERIES_LIMIT = getenv_bool("DISABLE_GROCERIES_LIMIT", False)
 DISABLE_GROCERIES_PERIOD = getenv_bool("DISABLE_GROCERIES_PERIOD", False)
 
+# Meal limit is on the number of requests submitted
 MEALS_LIMIT = 45
 DISABLE_MEALS_LIMIT = getenv_bool("DISABLE_MEALS_LIMIT", False)
 DISABLE_MEALS_PERIOD = getenv_bool("DISABLE_MEALS_PERIOD", False)
