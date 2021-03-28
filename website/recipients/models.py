@@ -677,7 +677,7 @@ class GroceryRequest(ContactInfo):
             )
         ).aggregate(
             total_boxes=models.Sum('boxes')
-        )['total_boxes']
+        )['total_boxes'] or 0
 
         return boxes
 
