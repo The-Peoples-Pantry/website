@@ -68,38 +68,6 @@ class StatusFilter(admin.SimpleListFilter):
         return queryset
 
 
-class LandlineFilter(admin.SimpleListFilter):
-    title = 'Phone type'
-    parameter_name = 'landline'
-
-    def lookups(self, request, model_admin):
-        return (
-            (False, 'Landline'),
-            (True, 'Cellphone')
-        )
-
-    def queryset(self, request, queryset):
-        if self.value():
-            queryset = queryset.filter(can_receive_texts=self.value())
-        return queryset
-
-
-class DeliveryLandlineFilter(admin.SimpleListFilter):
-    title = 'Phone type'
-    parameter_name = 'request_landline'
-
-    def lookups(self, delivery, model_admin):
-        return (
-            (False, 'Landline'),
-            (True, 'Cellphone')
-        )
-
-    def queryset(self, request, queryset):
-        if self.value():
-            queryset = queryset.filter(request__can_receive_texts=self.value())
-        return queryset
-
-
 class MealDeliveryInline(admin.TabularInline):
     model = MealDelivery
 
@@ -142,7 +110,7 @@ class MealRequestAdmin(admin.ModelAdmin):
         'edit_link',
         'name',
         'phone_number',
-        'landline',
+        'can_receive_texts',
         'city',
         'created_at',
         'delivery_date',
@@ -152,7 +120,7 @@ class MealRequestAdmin(admin.ModelAdmin):
     list_filter = (
         MealRequestCompletedFilter,
         StatusFilter,
-        LandlineFilter,
+        'can_receive_texts',
         'created_at',
     )
     inlines = (
@@ -187,10 +155,6 @@ class MealRequestAdmin(admin.ModelAdmin):
             return False
     completed.admin_order_field = 'delivery__status'
     completed.boolean = True
-
-    def landline(self, obj):
-        return 'No' if obj.can_receive_texts else 'Yes'
-    landline.short_description = "Landline"
 
     def confirm(self, request, queryset):
         confirmed_uuids = [delivery.request.uuid for delivery in MealDelivery.objects.filter(status=Status.DATE_CONFIRMED)]
@@ -231,7 +195,7 @@ class MealDeliveryAdmin(admin.ModelAdmin):
         'edit_link',
         'request_link',
         'request_phone',
-        'request_landline',
+        'request_can_receive_texts',
         'chef_link',
         'deliverer_link',
         'status',
@@ -244,7 +208,7 @@ class MealDeliveryAdmin(admin.ModelAdmin):
     list_filter = (
         MealDeliveryCompletedFilter,
         'status',
-        DeliveryLandlineFilter
+        'request__can_receive_texts',
     )
     actions = (
         'notify_recipients_delivery',
@@ -277,9 +241,10 @@ class MealDeliveryAdmin(admin.ModelAdmin):
         return obj.request.phone_number
     request_phone.short_description = 'Requestor phone'
 
-    def request_landline(self, obj):
-        return 'No' if obj.request.can_receive_texts else 'Yes'
-    request_landline.short_description = "Landline"
+    def request_can_receive_texts(self, obj):
+        return obj.request.can_receive_texts
+    request_can_receive_texts.boolean = True
+    request_can_receive_texts.short_description = "Can receive texts"
 
     def edit_link(self, delivery):
         return 'Edit delivery'
@@ -419,7 +384,7 @@ class GroceryRequestAdmin(admin.ModelAdmin):
         'edit_link',
         'name',
         'phone_number',
-        'landline',
+        'can_receive_texts',
         'city',
         'gift_card',
         'created_at',
@@ -428,7 +393,7 @@ class GroceryRequestAdmin(admin.ModelAdmin):
     )
     list_filter = (
         'completed',
-        LandlineFilter,
+        'can_receive_texts',
         'created_at',
         'gift_card',
     )
@@ -452,10 +417,6 @@ class GroceryRequestAdmin(admin.ModelAdmin):
     def edit_link(self, request):
         return 'Edit request G%d' % request.id
     edit_link.short_description = 'Edit link'
-
-    def landline(self, obj):
-        return 'No' if obj.can_receive_texts else 'Yes'
-    landline.short_description = "Landline"
 
     def send_notifications(self, request, queryset, method_name):
         """
