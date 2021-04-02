@@ -23,13 +23,6 @@ class MealRequestForm(forms.ModelForm):
     class Meta:
         model = MealRequest
         exclude = ['uuid', 'created_at', 'updated_at', 'anonymized_latitude', 'anonymized_longitude']
-        widgets = {
-            'food_allergies': forms.Textarea(attrs={'rows': 3}),
-            'food_preferences': forms.Textarea(attrs={'rows': 3}),
-            'delivery_details': forms.Textarea(attrs={'rows': 3}),
-            'availability': forms.Textarea(attrs={'rows': 3}),
-            'notes': forms.Textarea(attrs={'rows': 3}),
-        }
 
 
 class GroceryRequestForm(forms.ModelForm):
@@ -58,9 +51,3 @@ class GroceryRequestForm(forms.ModelForm):
     class Meta:
         model = GroceryRequest
         exclude = ['uuid', 'created_at', 'updated_at', 'anonymized_latitude', 'anonymized_longitude', 'delivery_date', 'completed']
-        widgets = {
-            'food_allergies': forms.Textarea(attrs={'rows': 3}),
-            'delivery_details': forms.Textarea(attrs={'rows': 3}),
-            'availability': forms.Textarea(attrs={'rows': 3}),
-            'notes': forms.Textarea(attrs={'rows': 3}),
-        }

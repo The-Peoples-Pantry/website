@@ -9,6 +9,14 @@ body {
   background-color: hsl(212, 21, 21);
 }
 
+textarea,
+textarea.form-control {
+  /* Set height of all text boxes, to override Django's default of 10 lines
+     When you account for padding and line height, 5em is approximately 3 lines
+  */
+  height: 5em;
+}
+
 #page {
   display: flex;
   flex-direction: column;
