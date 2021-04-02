@@ -2,6 +2,7 @@ import logging
 import time
 from datetime import date
 from django.conf import settings
+from django.core.exceptions import PermissionDenied
 from django.forms import ValidationError
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -244,7 +245,12 @@ class DeliveryIndexView(LoginRequiredMixin, GroupView, ListView):
         return MealDelivery.objects.exclude(status=Status.DELIVERED).filter(deliverer=self.request.user).order_by('date')
 
     def post(self, request):
-        instance = MealDelivery.objects.get(uuid=request.POST['delivery_id'])
+        instance = MealDelivery.objects.get(id=request.POST['delivery_id'])
+
+        # Ensure that this was submitted by the deliverer
+        # Prevents someone abusing this POST endpoint with delivery_ids that don't "belong" to them
+        if instance.deliverer != request.user:
+            raise PermissionDenied
 
         if instance.date <= date.today():
             instance.status = Status.DELIVERED
