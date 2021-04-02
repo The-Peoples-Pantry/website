@@ -14,8 +14,8 @@ from django_filters.views import FilterView
 from django.db.models.query_utils import Q
 
 from core.models import has_group
+from core.views import GroupRequiredMixin
 from recipients.models import MealRequest, MealDelivery, Status
-from public.views import GroupView
 from website.maps import distance
 from .forms import MealDeliverySignupForm, ChefSignupForm, ChefApplyForm, DeliveryApplyForm, OrganizerApplyForm
 from .models import VolunteerApplication, VolunteerRoles, Volunteer
@@ -25,7 +25,7 @@ from .filters import ChefSignupFilter, MealDeliverySignupFilter
 logger = logging.getLogger(__name__)
 
 
-class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
+class ChefSignupView(LoginRequiredMixin, GroupRequiredMixin, FormView, FilterView):
     """View for chefs to sign up to cook meal requests"""
     template_name = "volunteers/chef_signup.html"
     form_class = ChefSignupForm
@@ -131,7 +131,7 @@ class ChefSignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
             )
 
 
-class MealDeliverySignupView(LoginRequiredMixin, GroupView, FormView, FilterView):
+class MealDeliverySignupView(LoginRequiredMixin, GroupRequiredMixin, FormView, FilterView):
     """View for deliverers to sign up to deliver meal requests"""
     template_name = "volunteers/delivery_signup.html"
     form_class = MealDeliverySignupForm
@@ -220,7 +220,7 @@ class MealDeliverySignupView(LoginRequiredMixin, GroupView, FormView, FilterView
 ####################################################################
 
 
-class ChefIndexView(LoginRequiredMixin, GroupView, ListView):
+class ChefIndexView(LoginRequiredMixin, GroupRequiredMixin, ListView):
     """View for chefs to see the meals they've signed up to cook"""
     model = MealDelivery
     context_object_name = "deliveries"
@@ -233,7 +233,7 @@ class ChefIndexView(LoginRequiredMixin, GroupView, ListView):
         return self.queryset.filter(chef=self.request.user)
 
 
-class DeliveryIndexView(LoginRequiredMixin, GroupView, ListView):
+class DeliveryIndexView(LoginRequiredMixin, GroupRequiredMixin, ListView):
     """View for deliverers to see the meal requests they've signed up to deliver"""
     # model = MealDelivery
     template_name = "volunteers/delivery_list.html"
