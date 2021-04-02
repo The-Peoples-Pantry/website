@@ -231,7 +231,7 @@ DISABLE_MEALS_LIMIT = getenv_bool("DISABLE_MEALS_LIMIT", False)
 DISABLE_MEALS_PERIOD = getenv_bool("DISABLE_MEALS_PERIOD", False)
 
 # Settings for figuring out delivery distances
-MAX_CHEF_DISTANCE = 15  # Chefs can't be more than this many km away from their recipients
+MAX_CHEF_DISTANCE = 12  # Chefs can't be more than this many km away from their recipients
 
 # Maps API keys
 MAPQUEST_API_KEY = "xvB2VYxUF6mByw32kqOszrCXfgC7CuUa"  # Eric's dev account - 15k requests/month
