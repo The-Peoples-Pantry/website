@@ -137,7 +137,7 @@ class ContactInfo(models.Model):
             self.anonymized_latitude = latitude
             self.anonymized_longitude = longitude
         except GeocoderException:
-            logger.exception("Error when updating coordinates for %d", self.uuid)
+            logger.exception("Error when updating coordinates for %d", self.id)
 
     def save(self, *args, **kwargs):
         # Whenever the model is updated, make sure coordinates are updated too

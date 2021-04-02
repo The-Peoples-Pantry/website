@@ -1,7 +1,6 @@
 import logging
 from textwrap import dedent
 from datetime import datetime, timedelta, date
-import uuid
 from django.db import models
 from django.conf import settings
 from django.forms import model_to_dict
@@ -132,7 +131,6 @@ class MealRequest(ContactInfo):
     accept_terms = models.BooleanField("Accept terms")
 
     # System
-    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -266,7 +264,6 @@ class MealDelivery(models.Model):
     )
 
     # System
-    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):
@@ -611,7 +608,6 @@ class GroceryRequest(ContactInfo):
         help_text="Has this request been completed?",
         default=False
     )
-    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

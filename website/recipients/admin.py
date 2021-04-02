@@ -157,8 +157,8 @@ class MealRequestAdmin(admin.ModelAdmin):
     completed.boolean = True
 
     def confirm(self, request, queryset):
-        confirmed_uuids = [delivery.request.uuid for delivery in MealDelivery.objects.filter(status=Status.DATE_CONFIRMED)]
-        queryset = queryset.exclude(uuid__in=confirmed_uuids)
+        confirmed_ids = [delivery.request.id for delivery in MealDelivery.objects.filter(status=Status.DATE_CONFIRMED)]
+        queryset = queryset.exclude(id__in=confirmed_ids)
         updated = 0
 
         # Updated all deliveries associated with given request
