@@ -1,6 +1,6 @@
 from textwrap import dedent
 from django.views.generic.edit import FormView
-from django.views.generic import DetailView
+from django.views.generic import DetailView, TemplateView
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -10,12 +10,12 @@ from .forms import MealRequestForm, GroceryRequestForm
 from .models import MealRequest, GroceryRequest
 
 
-def index(request):
-    return render(request, 'recipients/index.html')
+class RequestIndexView(TemplateView):
+    template_name = 'recipients/index.html'
 
 
-def success(request):
-    return render(request, 'recipients/success.html')
+class RequestSuccessView(TemplateView):
+    template_name = 'recipients/success.html'
 
 
 class MealRequestView(FormView):
