@@ -1,10 +1,11 @@
 from django.contrib import messages
 from django.contrib.auth import login
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.urls import reverse_lazy
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.shortcuts import redirect
+from django.urls import reverse, reverse_lazy
 from django.views.generic.edit import FormView, UpdateView
 
-from core.models import group_names
+from core.models import group_names, has_group
 from .forms import UserCreationForm, VolunteerProfileForm
 from volunteers.models import Volunteer
 
@@ -46,3 +47,15 @@ class UserProfileView(LoginRequiredMixin, UpdateView):
         form.save()
         messages.success(self.request, 'Profile details updated')
         return super().form_valid(form)
+
+
+class GroupRequiredMixin(UserPassesTestMixin):
+    def test_func(self):
+        return has_group(self.request.user, self.permission_group) or self.request.user.is_staff
+
+    def get_permission_group_redirect_url(self):
+        default = reverse('profile')
+        return getattr(self, 'permission_group_redirect_url', default)
+
+    def handle_no_permission(self):
+        return redirect(self.get_permission_group_redirect_url())
