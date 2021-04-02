@@ -747,6 +747,7 @@ class GroceryRequest(ContactInfo):
             This is a message from The People's Pantry.
             Your FoodShare produce box is scheduled to be delivered today. Just a reminder that boxes are delivered until 9 PM.  Please let us know once you receive your grocery box.
             If you don’t receive your box by that time today, please let us know by replying to this message. When delivery drivers didn’t get to do the delivery because they ran out of time, they will schedule your delivery for the following day.
+            Gift cards are delivered SEPARATELY, either by mail (for physical gift cards, timing will depend on Canada post) or via email (be sure to check your spam folder!).
             Thanks, and stay safe!
         """)
         send_text(self.phone_number, message, "groceries")
@@ -763,6 +764,24 @@ class GroceryRequest(ContactInfo):
             This is a message from The People's Pantry.
             Your produce box delivery wasn’t made because the driver could not contact you or had a problem with your delivery instructions. Your box will be scheduled for the following week on the same day between 10 AM and 9 PM. Please, let us know if you have any issues with the delivery or if you would like to make changes to your delivery instructions.
             Thanks, and stay safe!
+        """)
+        send_text(self.phone_number, message, "groceries")
+        self.comments.create(comment=f"Sent a text to recipient: {message}")
+        logger.info("Sent rescheduled notification text for Grocery Request %d to %s", self.id, self.phone_number)
+
+    def send_recipient_confirm_received_notification(self):
+        """Send a notification to a recipient asking them to confirm they received the box"""
+        if not self.can_receive_texts:
+            raise SendNotificationException("Recipient cannot receive text messages at their phone number")
+
+        if not (self.delivery_date):
+            raise SendNotificationException("Delivery date is not specified")
+
+        message = dedent(f"""
+            Hello {self.name},
+            This is a message from The People's Pantry.
+            Can you confirm that you received your produce box on {self.delivery_date:%A %B %d}?
+            Thank you!
         """)
         send_text(self.phone_number, message, "groceries")
         self.comments.create(comment=f"Sent a text to recipient: {message}")

@@ -446,6 +446,7 @@ class GroceryRequestAdmin(admin.ModelAdmin):
         'notify_recipients_allergies',
         'notify_recipients_reminder',
         'notify_recipients_rescheduled',
+        'notify_recipients_confirm_received',
     )
 
     def edit_link(self, request):
@@ -522,6 +523,10 @@ class GroceryRequestAdmin(admin.ModelAdmin):
     def notify_recipients_rescheduled(self, request, queryset):
         self.send_notifications(request, queryset, 'send_recipient_rescheduled_notification')
     notify_recipients_rescheduled.short_description = "Send text to recipients with rescheduled explanation"
+
+    def notify_recipients_confirm_received(self, request, queryset):
+        self.send_notifications(request, queryset, 'send_recipient_confirm_received_notification')
+    notify_recipients_confirm_received.short_description = "Send text to recipients to confirm they received their delivery"
 
     def mark_complete(self, request, queryset):
         updated = queryset.update(completed=True)
