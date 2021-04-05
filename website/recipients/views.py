@@ -23,10 +23,10 @@ class MealRequestView(FormView):
     success_url = reverse_lazy('recipients:success')
     form_class = MealRequestForm
 
-    def get(self, request):
+    def dispatch(self, request):
         if MealRequest.requests_paused():
             return render(request, 'recipients/meal_paused.html')
-        return super().get(request)
+        return super().dispatch(request)
 
     def get_duplicate(self, form):
         phone = form.cleaned_data['phone_number']
@@ -55,10 +55,10 @@ class GroceryRequestView(FormView):
     success_url = reverse_lazy('recipients:success')
     form_class = GroceryRequestForm
 
-    def get(self, request):
+    def dispatch(self, request):
         if GroceryRequest.requests_paused():
             return render(request, 'recipients/grocery_paused.html')
-        return super().get(request)
+        return super().dispatch(request)
 
     def get_duplicate(self, form):
         phone = form.cleaned_data['phone_number']
