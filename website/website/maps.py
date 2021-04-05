@@ -78,6 +78,9 @@ class Geocoder:
 
     def geocode(self, address):
         """Given an address, return the latitude & longitude"""
+        if not self.api_key:
+            return 0.0, 0.0
+
         try:
             response = requests.get(
                 f"{self.API_BASE_URL}/address",
