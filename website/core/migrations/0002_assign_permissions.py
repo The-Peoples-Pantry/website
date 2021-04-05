@@ -56,5 +56,8 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(assign_group_permissions)
+        # DEPRECATED
+        # This migration is now purposely commented out to deprecate it
+        # The new method of assigning permissions is with the management command
+        #  migrations.RunPython(assign_group_permissions)
     ]
