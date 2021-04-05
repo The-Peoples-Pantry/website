@@ -7,6 +7,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('core', '0006_grocerypickupaddress'),
+        ('recipients', '0046_auto_20210212_1858'),
     ]
 
     operations = [
