@@ -234,7 +234,7 @@ DISABLE_MEALS_PERIOD = getenv_bool("DISABLE_MEALS_PERIOD", False)
 MAX_CHEF_DISTANCE = 12  # Chefs can't be more than this many km away from their recipients
 
 # Maps API keys
-MAPQUEST_API_KEY = "xvB2VYxUF6mByw32kqOszrCXfgC7CuUa"  # Eric's dev account - 15k requests/month
+MAPQUEST_API_KEY = getenv("MAPQUEST_API_KEY")  # Eric's dev account - 15k requests/month
 GOOGLE_MAPS_PRODUCTION_KEY = getenv("GOOGLE_MAPS_API_KEY")  # Env var refers to PPT Developer API key
 
 # Textline API
