@@ -203,7 +203,7 @@ class MealRequest(ContactInfo):
                 Your request ID is {self.id}
 
                 We depend on volunteers to sign up for our deliveries, and so your delivery will be scheduled once a chef and delivery volunteer sign up for your request (typically within 7-14 days). You will hear from us to confirm your delivery date once volunteers sign up. Thank you!
-            """),
+            """).strip(),
             [self.email],
             reply_to=settings.REQUEST_COORDINATORS_EMAIL
         )
@@ -329,7 +329,7 @@ class MealDelivery(models.Model):
             Since we depend on volunteers for our deliveries, sometimes we are not able to do all deliveries scheduled for the day. If that’s the case with your delivery, we will inform you by 6 PM on the day of the delivery and your delivery will be rescheduled for the following day.
             Please confirm you got this message and let us know if you can accept the delivery.
             Thank you!
-        """)
+        """).strip()
         TextMessage(self.request.phone_number, message, api=api).send()
         self.comments.create(comment=f"Sent a text to recipient: {message}")
         logger.info("Sent recipient meal notification text for Meal Request %d to %s", self.request.id, self.request.phone_number)
@@ -351,7 +351,7 @@ class MealDelivery(models.Model):
             Hi {self.request.name},
             This is a reminder about your delivery from The People’s Pantry today for request ID {self.request.id}. {self.deliverer.volunteer.preferred_name or 'A delivery volunteer'} will be at your home between {self.dropoff_start:%I:%M %p} and {self.dropoff_end:%I:%M %p}.
             Thanks, and stay safe!
-        """)
+        """).strip()
         TextMessage(self.request.phone_number, message, api=api).send()
         self.comments.create(comment=f"Sent a text to recipient: {message}")
         logger.info("Sent recipient reminder notification text for Meal Request %d to %s", self.request.id, self.request.phone_number)
@@ -377,7 +377,7 @@ class MealDelivery(models.Model):
             Since we depend on volunteers for our deliveries, sometimes we are not able to do all deliveries scheduled for the day. If that’s the case with your delivery, we will inform you by 6 PM on the day of the delivery and your delivery will be rescheduled for the following day.
             Please confirm you got this message and let us know if you can take the delivery.
             Thank you!
-        """)
+        """).strip()
         TextMessage(self.request.phone_number, message, api=api).send()
         self.comments.create(comment=f"Sent a text to recipient: {message}")
         logger.info("Sent recipient delivery notification text for Meal Request %d to %s", self.request.id, self.request.phone_number)
@@ -390,7 +390,7 @@ class MealDelivery(models.Model):
 
         message = dedent(f"""
             Hello {self.request.name} How did you like your meals this week? We appreciate any feedback you have. If you are comfortable with us sharing your anonymized feedback on social media, please let us know - it helps us raise money for the program. If not, that’s okay too.
-        """)
+        """).strip()
         TextMessage(self.request.phone_number, message, api=api).send()
         self.comments.create(comment=f"Sent a text to recipient: {message}")
         logger.info("Sent recipient feedback request text for Meal Request %d to %s", self.request.id, self.request.phone_number)
@@ -410,7 +410,7 @@ class MealDelivery(models.Model):
             You can contact them at {self.deliverer.volunteer.phone_number}.
             If you have more than one delivery, please make sure you are giving the food to the right volunteer.
             Let us know if you have any issues. Thanks!
-        """)
+        """).strip()
         TextMessage(self.chef.volunteer.phone_number, message, api=api).send()
         self.comments.create(comment=f"Sent a text to the chef: {message}")
         logger.info("Sent chef reminder notification text for Meal Request %d to %s", self.request.id, self.chef.volunteer.phone_number)
@@ -426,7 +426,7 @@ class MealDelivery(models.Model):
             Just reminding you of the upcoming meal you're delivering for {self.date:%A %B %d}.
             Please confirm you got this message and let us know if you need any assistance.
             Thank you!
-        """)
+        """).strip()
         TextMessage(self.deliverer.volunteer.phone_number, message, api=api).send()
         self.comments.create(comment=f"Sent a text to the deliverer: {message}")
         logger.info("Sent deliverer reminder notification text for Meal Request %d to %s", self.request.id, self.deliverer.volunteer.phone_number)
@@ -460,7 +460,7 @@ class MealDelivery(models.Model):
 
             Send a text if you have any problems with your delivery, and please let us know when the delivery is completed.
             Thank you for your help!
-        """)
+        """).strip()
         TextMessage(self.deliverer.volunteer.phone_number, message, api=api).send()
         self.comments.create(comment=f"Sent a text to the deliverer: {message}")
         logger.info("Sent deliverer detailed notification text for Meal Request %d to %s", self.request.id, self.deliverer.volunteer.phone_number)
@@ -691,7 +691,7 @@ class GroceryRequest(ContactInfo):
                 Your request ID is G{self.id}
 
                 Grocery deliveries take one week to process before arranging a delivery date. Your delivery will be scheduled for the week after next. You will hear from us in 7 days about the date your request is scheduled for.
-            """),
+            """).strip(),
             [self.email],
             reply_to=settings.REQUEST_COORDINATORS_EMAIL
         )
@@ -712,7 +712,7 @@ class GroceryRequest(ContactInfo):
             Delivery dates may vary to balance daily orders or if the driver did not get to the delivery by 9 PM. If there are any changes, we will do our best to communicate with you ahead of time.
             The gift card will be sent to you on the same day of the delivery.
             Thank you and stay safe!
-        """)
+        """).strip()
         TextMessage(self.phone_number, message, group_name="groceries", api=api).send()
         self.comments.create(comment=f"Sent a text to recipient: {message}")
         logger.info("Sent recipient scheduled notification text for Grocery Request %d to %s", self.id, self.phone_number)
@@ -728,7 +728,7 @@ class GroceryRequest(ContactInfo):
             This is a message from The People's Pantry.
             Because the FoodShare boxes this week included a food which you listed as an allergy, instead of the produce box, you will receive an extra gift card equal to the box’s value.
             Please feel free to be in touch with any questions, comments, or concerns.
-        """)
+        """).strip()
         TextMessage(self.phone_number, message, group_name="groceries", api=api).send()
         self.comments.create(comment=f"Sent a text to recipient: {message}")
         logger.info("Sent recipient allergy notification text for Grocery Request %d to %s", self.id, self.phone_number)
@@ -745,7 +745,7 @@ class GroceryRequest(ContactInfo):
             If you don’t receive your box by that time today, please let us know by replying to this message. When delivery drivers didn’t get to do the delivery because they ran out of time, they will schedule your delivery for the following day.
             Gift cards are delivered SEPARATELY, either by mail (for physical gift cards, timing will depend on Canada post) or via email (be sure to check your spam folder!).
             Thanks, and stay safe!
-        """)
+        """).strip()
         TextMessage(self.phone_number, message, group_name="groceries", api=api).send()
         self.comments.create(comment=f"Sent a text to recipient: {message}")
         logger.info("Sent reminder notification text for Grocery Request %d to %s", self.id, self.phone_number)
@@ -760,7 +760,7 @@ class GroceryRequest(ContactInfo):
             This is a message from The People's Pantry.
             Your produce box delivery wasn’t made because the driver could not contact you or had a problem with your delivery instructions. Your box will be scheduled for the following week on the same day between 10 AM and 9 PM. Please, let us know if you have any issues with the delivery or if you would like to make changes to your delivery instructions.
             Thanks, and stay safe!
-        """)
+        """).strip()
         TextMessage(self.phone_number, message, group_name="groceries", api=api).send()
         self.comments.create(comment=f"Sent a text to recipient: {message}")
         logger.info("Sent rescheduled notification text for Grocery Request %d to %s", self.id, self.phone_number)
@@ -778,7 +778,7 @@ class GroceryRequest(ContactInfo):
             This is a message from The People's Pantry.
             Can you confirm that you received your produce box on {self.delivery_date:%A %B %d}?
             Thank you!
-        """)
+        """).strip()
         TextMessage(self.phone_number, message, group_name="groceries", api=api).send()
         self.comments.create(comment=f"Sent a text to recipient: {message}")
         logger.info("Sent rescheduled notification text for Grocery Request %d to %s", self.id, self.phone_number)
