@@ -713,7 +713,7 @@ class GroceryRequest(ContactInfo):
             The gift card will be sent to you on the same day of the delivery.
             Thank you and stay safe!
         """)
-        send_text(self.phone_number, message, "groceries")
+        send_text(self.phone_number, message, group_name="groceries")
         self.comments.create(comment=f"Sent a text to recipient: {message}")
         logger.info("Sent recipient scheduled notification text for Grocery Request %d to %s", self.id, self.phone_number)
 
@@ -729,7 +729,7 @@ class GroceryRequest(ContactInfo):
             Because the FoodShare boxes this week included a food which you listed as an allergy, instead of the produce box, you will receive an extra gift card equal to the box’s value.
             Please feel free to be in touch with any questions, comments, or concerns.
         """)
-        send_text(self.phone_number, message, "groceries")
+        send_text(self.phone_number, message, group_name="groceries")
         self.comments.create(comment=f"Sent a text to recipient: {message}")
         logger.info("Sent recipient allergy notification text for Grocery Request %d to %s", self.id, self.phone_number)
 
@@ -746,7 +746,7 @@ class GroceryRequest(ContactInfo):
             Gift cards are delivered SEPARATELY, either by mail (for physical gift cards, timing will depend on Canada post) or via email (be sure to check your spam folder!).
             Thanks, and stay safe!
         """)
-        send_text(self.phone_number, message, "groceries")
+        send_text(self.phone_number, message, group_name="groceries")
         self.comments.create(comment=f"Sent a text to recipient: {message}")
         logger.info("Sent reminder notification text for Grocery Request %d to %s", self.id, self.phone_number)
 
@@ -761,7 +761,7 @@ class GroceryRequest(ContactInfo):
             Your produce box delivery wasn’t made because the driver could not contact you or had a problem with your delivery instructions. Your box will be scheduled for the following week on the same day between 10 AM and 9 PM. Please, let us know if you have any issues with the delivery or if you would like to make changes to your delivery instructions.
             Thanks, and stay safe!
         """)
-        send_text(self.phone_number, message, "groceries")
+        send_text(self.phone_number, message, group_name="groceries")
         self.comments.create(comment=f"Sent a text to recipient: {message}")
         logger.info("Sent rescheduled notification text for Grocery Request %d to %s", self.id, self.phone_number)
 
@@ -779,7 +779,7 @@ class GroceryRequest(ContactInfo):
             Can you confirm that you received your produce box on {self.delivery_date:%A %B %d}?
             Thank you!
         """)
-        send_text(self.phone_number, message, "groceries")
+        send_text(self.phone_number, message, group_name="groceries")
         self.comments.create(comment=f"Sent a text to recipient: {message}")
         logger.info("Sent rescheduled notification text for Grocery Request %d to %s", self.id, self.phone_number)
 

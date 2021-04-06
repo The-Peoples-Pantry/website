@@ -6,10 +6,21 @@ from unittest.mock import patch
 
 from django.contrib.auth.models import User
 
-from recipients.models import MealRequest, MealDelivery
+from recipients.models import MealRequest, MealDelivery, GroceryRequest
 
 
-class MealDeliveryTextTests(TestCase):
+class TextTestsMixin:
+    @contextmanager
+    def assert_text_matches(self, expected):
+        with patch('recipients.models.send_text') as send_text:
+            yield
+
+        send_text.assert_called()
+        phone_number, message = send_text.mock_calls[0].args
+        self.assertEquals(message, expected)
+
+
+class MealDeliveryTextTests(TextTestsMixin, TestCase):
     def setUp(self):
         self.deliverer = User.objects.create(
             username="deliverer@example.com",
@@ -66,15 +77,6 @@ class MealDeliveryTextTests(TestCase):
             deliverer=self.deliverer,
             chef=self.chef,
         )
-
-    @contextmanager
-    def assert_text_matches(self, expected):
-        with patch('recipients.models.send_text') as send_text:
-            yield
-
-        send_text.assert_called()
-        phone_number, message = send_text.mock_calls[0].args
-        self.assertEquals(message, expected)
 
     def test_send_recipient_meal_notification(self):
         expected = dedent("""
@@ -152,3 +154,86 @@ class MealDeliveryTextTests(TestCase):
         """)
         with self.assert_text_matches(expected):
             self.delivery.send_detailed_deliverer_notification()
+
+
+class GroceryDeliveryTextTests(TextTestsMixin, TestCase):
+    def setUp(self):
+        self.request = GroceryRequest.objects.create(
+            name="Ryan",
+            phone_number="5555555555",
+            address_1="123 Fake St",
+            address_2="Unit 1",
+            city="Toronto",
+            postal_code="H0H 0H0",
+            can_receive_texts=True,
+            bipoc=False,
+            lgbtq=False,
+            has_disability=False,
+            immigrant_or_refugee=False,
+            housing_issues=False,
+            sex_worker=False,
+            single_parent=False,
+            senior=False,
+            num_adults=1,
+            num_children=0,
+            on_behalf_of=False,
+            recipient_notified=False,
+            accept_terms=True,
+            covid=False,
+            delivery_date=date.fromisoformat('2021-03-15'),
+            delivery_details="Deliver to side door",
+        )
+
+    def test_send_recipient_scheduled_notification(self):
+        expected = dedent("""
+            Hi Ryan,
+            This is a message from The People's Pantry.
+            Your delivery has been scheduled for Monday March 15. FoodShare will be delivering your box between 10 AM and 9 PM at your door and/or following your delivery instructions. Please make sure to check your phone regularly so the delivery driver can communicate with you easily.
+            Delivery dates may vary to balance daily orders or if the driver did not get to the delivery by 9 PM. If there are any changes, we will do our best to communicate with you ahead of time.
+            The gift card will be sent to you on the same day of the delivery.
+            Thank you and stay safe!
+        """)
+        with self.assert_text_matches(expected):
+            self.request.send_recipient_scheduled_notification()
+
+    def test_send_recipient_allergy_notification(self):
+        expected = dedent("""
+            Hi Ryan,
+            This is a message from The People's Pantry.
+            Because the FoodShare boxes this week included a food which you listed as an allergy, instead of the produce box, you will receive an extra gift card equal to the box’s value.
+            Please feel free to be in touch with any questions, comments, or concerns.
+        """)
+        with self.assert_text_matches(expected):
+            self.request.send_recipient_allergy_notification()
+
+    def test_send_recipient_reminder_notification(self):
+        expected = dedent("""
+            Hello Ryan,
+            This is a message from The People's Pantry.
+            Your FoodShare produce box is scheduled to be delivered today. Just a reminder that boxes are delivered until 9 PM.  Please let us know once you receive your grocery box.
+            If you don’t receive your box by that time today, please let us know by replying to this message. When delivery drivers didn’t get to do the delivery because they ran out of time, they will schedule your delivery for the following day.
+            Gift cards are delivered SEPARATELY, either by mail (for physical gift cards, timing will depend on Canada post) or via email (be sure to check your spam folder!).
+            Thanks, and stay safe!
+        """)
+        with self.assert_text_matches(expected):
+            self.request.send_recipient_reminder_notification()
+
+    def test_send_recipient_rescheduled_notification(self):
+        expected = dedent("""
+            Hello Ryan,
+            This is a message from The People's Pantry.
+            Your produce box delivery wasn’t made because the driver could not contact you or had a problem with your delivery instructions. Your box will be scheduled for the following week on the same day between 10 AM and 9 PM. Please, let us know if you have any issues with the delivery or if you would like to make changes to your delivery instructions.
+            Thanks, and stay safe!
+        """)
+        with self.assert_text_matches(expected):
+            self.request.send_recipient_rescheduled_notification()
+
+    def test_send_recipient_confirm_received_notification(self):
+        expected = dedent("""
+            Hello Ryan,
+            This is a message from The People's Pantry.
+            Can you confirm that you received your produce box on Monday March 15?
+            Thank you!
+        """)
+        with self.assert_text_matches(expected):
+            self.request.send_recipient_confirm_received_notification()
