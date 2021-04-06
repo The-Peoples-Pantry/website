@@ -52,10 +52,15 @@ class TextMessagingAPI:
             raise TextMessagingAPIException from e
 
 
-def send_text(phone_number: str, message: str, group_name: str = "default"):
-    """Text the message to the phone number"""
-    try:
-        api = TextMessagingAPI()
-        api.send_text(phone_number, message, group_name)
-    except TextMessagingAPIException:
-        logger.exception("Failed to send text message to %s", phone_number)
+class TextMessage:
+    def __init__(self, phone_number, message, group_name="default", api=None):
+        self.phone_number = phone_number
+        self.message = message
+        self.group_name = group_name
+        self.api = api or TextMessagingAPI()
+
+    def send(self):
+        try:
+            self.api.send_text(self.phone_number, self.message, self.group_name)
+        except TextMessagingAPIException:
+            logger.exception("Failed to send text message to %s", self.phone_number)

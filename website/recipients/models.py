@@ -11,7 +11,7 @@ import pytz
 
 from website.maps import GroceryDeliveryArea
 from website.mail import custom_send_mail
-from website.texts import send_text
+from website.texts import TextMessage
 from core.models import get_sentinel_user, ContactInfo, TelephoneField
 
 
@@ -316,7 +316,7 @@ class MealDelivery(models.Model):
             status=Status.CHEF_ASSIGNED,
         )
 
-    def send_recipient_meal_notification(self):
+    def send_recipient_meal_notification(self, api=None):
         """Send the first notification to a recipient, lets them know that a chef has signed up to cook for them"""
         if not self.request.can_receive_texts:
             raise SendNotificationException("Recipient cannot receive text messages at their phone number")
@@ -330,11 +330,11 @@ class MealDelivery(models.Model):
             Please confirm you got this message and let us know if you can accept the delivery.
             Thank you!
         """)
-        send_text(self.request.phone_number, message)
+        TextMessage(self.request.phone_number, message, api=api).send()
         self.comments.create(comment=f"Sent a text to recipient: {message}")
         logger.info("Sent recipient meal notification text for Meal Request %d to %s", self.request.id, self.request.phone_number)
 
-    def send_recipient_reminder_notification(self):
+    def send_recipient_reminder_notification(self, api=None):
         """Send a reminder notification to a recipient of the delivery, intended for use on the day of"""
         # Perform validation first that we _can_ send this notification
         if not self.request.can_receive_texts:
@@ -352,11 +352,11 @@ class MealDelivery(models.Model):
             This is a reminder about your delivery from The People’s Pantry today for request ID {self.request.id}. {self.deliverer.volunteer.preferred_name or 'A delivery volunteer'} will be at your home between {self.dropoff_start:%I:%M %p} and {self.dropoff_end:%I:%M %p}.
             Thanks, and stay safe!
         """)
-        send_text(self.request.phone_number, message)
+        TextMessage(self.request.phone_number, message, api=api).send()
         self.comments.create(comment=f"Sent a text to recipient: {message}")
         logger.info("Sent recipient reminder notification text for Meal Request %d to %s", self.request.id, self.request.phone_number)
 
-    def send_recipient_delivery_notification(self):
+    def send_recipient_delivery_notification(self, api=None):
         """Send a follow-up notification to a recipient, lets them know that a delivery driver will drop if off within a certain time window"""
         # Perform validation first that we _can_ send this notification
         if not self.request.can_receive_texts:
@@ -378,11 +378,11 @@ class MealDelivery(models.Model):
             Please confirm you got this message and let us know if you can take the delivery.
             Thank you!
         """)
-        send_text(self.request.phone_number, message)
+        TextMessage(self.request.phone_number, message, api=api).send()
         self.comments.create(comment=f"Sent a text to recipient: {message}")
         logger.info("Sent recipient delivery notification text for Meal Request %d to %s", self.request.id, self.request.phone_number)
 
-    def send_recipient_feedback_request(self):
+    def send_recipient_feedback_request(self, api=None):
         """Send a link to our feedback form to a recipient"""
         # Perform validation first that we _can_ send this notification
         if not self.request.can_receive_texts:
@@ -391,11 +391,11 @@ class MealDelivery(models.Model):
         message = dedent(f"""
             Hello {self.request.name} How did you like your meals this week? We appreciate any feedback you have. If you are comfortable with us sharing your anonymized feedback on social media, please let us know - it helps us raise money for the program. If not, that’s okay too.
         """)
-        send_text(self.request.phone_number, message)
+        TextMessage(self.request.phone_number, message, api=api).send()
         self.comments.create(comment=f"Sent a text to recipient: {message}")
         logger.info("Sent recipient feedback request text for Meal Request %d to %s", self.request.id, self.request.phone_number)
 
-    def send_chef_reminder_notification(self):
+    def send_chef_reminder_notification(self, api=None):
         """Send a reminder notification to the chef"""
         if not self.chef:
             raise SendNotificationException("No chef assigned to this delivery")
@@ -411,11 +411,11 @@ class MealDelivery(models.Model):
             If you have more than one delivery, please make sure you are giving the food to the right volunteer.
             Let us know if you have any issues. Thanks!
         """)
-        send_text(self.chef.volunteer.phone_number, message)
+        TextMessage(self.chef.volunteer.phone_number, message, api=api).send()
         self.comments.create(comment=f"Sent a text to the chef: {message}")
         logger.info("Sent chef reminder notification text for Meal Request %d to %s", self.request.id, self.chef.volunteer.phone_number)
 
-    def send_deliverer_reminder_notification(self):
+    def send_deliverer_reminder_notification(self, api=None):
         """Send a reminder notification to the deliverer"""
         if not self.deliverer:
             raise SendNotificationException("No deliverer assigned to this delivery")
@@ -427,11 +427,11 @@ class MealDelivery(models.Model):
             Please confirm you got this message and let us know if you need any assistance.
             Thank you!
         """)
-        send_text(self.deliverer.volunteer.phone_number, message)
+        TextMessage(self.deliverer.volunteer.phone_number, message, api=api).send()
         self.comments.create(comment=f"Sent a text to the deliverer: {message}")
         logger.info("Sent deliverer reminder notification text for Meal Request %d to %s", self.request.id, self.deliverer.volunteer.phone_number)
 
-    def send_detailed_deliverer_notification(self):
+    def send_detailed_deliverer_notification(self, api=None):
         """Send a detailed notification to the deliverer with content for the delivery"""
         if not self.deliverer:
             raise SendNotificationException("No deliverer assigned to this delivery")
@@ -461,7 +461,7 @@ class MealDelivery(models.Model):
             Send a text if you have any problems with your delivery, and please let us know when the delivery is completed.
             Thank you for your help!
         """)
-        send_text(self.deliverer.volunteer.phone_number, message)
+        TextMessage(self.deliverer.volunteer.phone_number, message, api=api).send()
         self.comments.create(comment=f"Sent a text to the deliverer: {message}")
         logger.info("Sent deliverer detailed notification text for Meal Request %d to %s", self.request.id, self.deliverer.volunteer.phone_number)
 
@@ -696,7 +696,7 @@ class GroceryRequest(ContactInfo):
             reply_to=settings.REQUEST_COORDINATORS_EMAIL
         )
 
-    def send_recipient_scheduled_notification(self):
+    def send_recipient_scheduled_notification(self, api=None):
         """Send the first notification to a recipient, lets them know their grocery delivery has been scheduled"""
         if not self.can_receive_texts:
             raise SendNotificationException("Recipient cannot receive text messages at their phone number")
@@ -713,11 +713,11 @@ class GroceryRequest(ContactInfo):
             The gift card will be sent to you on the same day of the delivery.
             Thank you and stay safe!
         """)
-        send_text(self.phone_number, message, group_name="groceries")
+        TextMessage(self.phone_number, message, group_name="groceries", api=api).send()
         self.comments.create(comment=f"Sent a text to recipient: {message}")
         logger.info("Sent recipient scheduled notification text for Grocery Request %d to %s", self.id, self.phone_number)
 
-    def send_recipient_allergy_notification(self):
+    def send_recipient_allergy_notification(self, api=None):
         """Send a notification to a recipient letting them know they won't get the box because of allergens"""
         if not self.can_receive_texts:
             raise SendNotificationException("Recipient cannot receive text messages at their phone number")
@@ -729,11 +729,11 @@ class GroceryRequest(ContactInfo):
             Because the FoodShare boxes this week included a food which you listed as an allergy, instead of the produce box, you will receive an extra gift card equal to the box’s value.
             Please feel free to be in touch with any questions, comments, or concerns.
         """)
-        send_text(self.phone_number, message, group_name="groceries")
+        TextMessage(self.phone_number, message, group_name="groceries", api=api).send()
         self.comments.create(comment=f"Sent a text to recipient: {message}")
         logger.info("Sent recipient allergy notification text for Grocery Request %d to %s", self.id, self.phone_number)
 
-    def send_recipient_reminder_notification(self):
+    def send_recipient_reminder_notification(self, api=None):
         """Send a notification to a recipient reminding them of today's delivery"""
         if not self.can_receive_texts:
             raise SendNotificationException("Recipient cannot receive text messages at their phone number")
@@ -746,11 +746,11 @@ class GroceryRequest(ContactInfo):
             Gift cards are delivered SEPARATELY, either by mail (for physical gift cards, timing will depend on Canada post) or via email (be sure to check your spam folder!).
             Thanks, and stay safe!
         """)
-        send_text(self.phone_number, message, group_name="groceries")
+        TextMessage(self.phone_number, message, group_name="groceries", api=api).send()
         self.comments.create(comment=f"Sent a text to recipient: {message}")
         logger.info("Sent reminder notification text for Grocery Request %d to %s", self.id, self.phone_number)
 
-    def send_recipient_rescheduled_notification(self):
+    def send_recipient_rescheduled_notification(self, api=None):
         """Send a notification to a recipient letting them know that delivery has been rescheduled"""
         if not self.can_receive_texts:
             raise SendNotificationException("Recipient cannot receive text messages at their phone number")
@@ -761,11 +761,11 @@ class GroceryRequest(ContactInfo):
             Your produce box delivery wasn’t made because the driver could not contact you or had a problem with your delivery instructions. Your box will be scheduled for the following week on the same day between 10 AM and 9 PM. Please, let us know if you have any issues with the delivery or if you would like to make changes to your delivery instructions.
             Thanks, and stay safe!
         """)
-        send_text(self.phone_number, message, group_name="groceries")
+        TextMessage(self.phone_number, message, group_name="groceries", api=api).send()
         self.comments.create(comment=f"Sent a text to recipient: {message}")
         logger.info("Sent rescheduled notification text for Grocery Request %d to %s", self.id, self.phone_number)
 
-    def send_recipient_confirm_received_notification(self):
+    def send_recipient_confirm_received_notification(self, api=None):
         """Send a notification to a recipient asking them to confirm they received the box"""
         if not self.can_receive_texts:
             raise SendNotificationException("Recipient cannot receive text messages at their phone number")
@@ -779,7 +779,7 @@ class GroceryRequest(ContactInfo):
             Can you confirm that you received your produce box on {self.delivery_date:%A %B %d}?
             Thank you!
         """)
-        send_text(self.phone_number, message, group_name="groceries")
+        TextMessage(self.phone_number, message, group_name="groceries", api=api).send()
         self.comments.create(comment=f"Sent a text to recipient: {message}")
         logger.info("Sent rescheduled notification text for Grocery Request %d to %s", self.id, self.phone_number)
 

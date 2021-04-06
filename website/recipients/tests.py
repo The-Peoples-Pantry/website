@@ -1,27 +1,16 @@
-from contextlib import contextmanager
 from datetime import date, time
 from django.test import TestCase
 from textwrap import dedent
-from unittest.mock import patch
+from unittest.mock import MagicMock
 
 from django.contrib.auth.models import User
 
 from recipients.models import MealRequest, MealDelivery, GroceryRequest
 
 
-class TextTestsMixin:
-    @contextmanager
-    def assert_text_matches(self, expected):
-        with patch('recipients.models.send_text') as send_text:
-            yield
-
-        send_text.assert_called()
-        phone_number, message = send_text.mock_calls[0].args
-        self.assertEquals(message, expected)
-
-
-class MealDeliveryTextTests(TextTestsMixin, TestCase):
+class MealDeliveryTextTests(TestCase):
     def setUp(self):
+        self.api = MagicMock()
         self.deliverer = User.objects.create(
             username="deliverer@example.com",
             email="deliverer@example.com",
@@ -87,8 +76,8 @@ class MealDeliveryTextTests(TextTestsMixin, TestCase):
             Please confirm you got this message and let us know if you can accept the delivery.
             Thank you!
         """)
-        with self.assert_text_matches(expected):
-            self.delivery.send_recipient_meal_notification()
+        self.delivery.send_recipient_meal_notification(self.api)
+        self.api.send_text.assert_called_with(self.request.phone_number, expected, "default")
 
     def test_send_recipient_reminder_notification(self):
         expected = dedent("""
@@ -96,8 +85,8 @@ class MealDeliveryTextTests(TextTestsMixin, TestCase):
             This is a reminder about your delivery from The People’s Pantry today for request ID 1. Ophelia will be at your home between 02:00 PM and 03:00 PM.
             Thanks, and stay safe!
         """)
-        with self.assert_text_matches(expected):
-            self.delivery.send_recipient_reminder_notification()
+        self.delivery.send_recipient_reminder_notification(self.api)
+        self.api.send_text.assert_called_with(self.request.phone_number, expected, "default")
 
     def test_send_recipient_delivery_notification(self):
         expected = dedent("""
@@ -108,15 +97,15 @@ class MealDeliveryTextTests(TextTestsMixin, TestCase):
             Please confirm you got this message and let us know if you can take the delivery.
             Thank you!
         """)
-        with self.assert_text_matches(expected):
-            self.delivery.send_recipient_delivery_notification()
+        self.delivery.send_recipient_delivery_notification(self.api)
+        self.api.send_text.assert_called_with(self.request.phone_number, expected, "default")
 
     def test_send_recipient_feedback_request(self):
         expected = dedent("""
             Hello Ryan How did you like your meals this week? We appreciate any feedback you have. If you are comfortable with us sharing your anonymized feedback on social media, please let us know - it helps us raise money for the program. If not, that’s okay too.
         """)
-        with self.assert_text_matches(expected):
-            self.delivery.send_recipient_feedback_request()
+        self.delivery.send_recipient_feedback_request(self.api)
+        self.api.send_text.assert_called_with(self.request.phone_number, expected, "default")
 
     def test_send_chef_reminder_notification(self):
         expected = dedent("""
@@ -126,8 +115,8 @@ class MealDeliveryTextTests(TextTestsMixin, TestCase):
             If you have more than one delivery, please make sure you are giving the food to the right volunteer.
             Let us know if you have any issues. Thanks!
         """)
-        with self.assert_text_matches(expected):
-            self.delivery.send_chef_reminder_notification()
+        self.delivery.send_chef_reminder_notification(self.api)
+        self.api.send_text.assert_called_with(self.chef.volunteer.phone_number, expected, "default")
 
     def test_send_deliverer_reminder_notification(self):
         expected = dedent("""
@@ -137,8 +126,8 @@ class MealDeliveryTextTests(TextTestsMixin, TestCase):
             Please confirm you got this message and let us know if you need any assistance.
             Thank you!
         """)
-        with self.assert_text_matches(expected):
-            self.delivery.send_deliverer_reminder_notification()
+        self.delivery.send_deliverer_reminder_notification(self.api)
+        self.api.send_text.assert_called_with(self.deliverer.volunteer.phone_number, expected, "default")
 
     def test_send_detailed_deliverer_notification(self):
         expected = dedent("""
@@ -152,12 +141,13 @@ class MealDeliveryTextTests(TextTestsMixin, TestCase):
             Send a text if you have any problems with your delivery, and please let us know when the delivery is completed.
             Thank you for your help!
         """)
-        with self.assert_text_matches(expected):
-            self.delivery.send_detailed_deliverer_notification()
+        self.delivery.send_detailed_deliverer_notification(self.api)
+        self.api.send_text.assert_called_with(self.deliverer.volunteer.phone_number, expected, "default")
 
 
-class GroceryDeliveryTextTests(TextTestsMixin, TestCase):
+class GroceryDeliveryTextTests(TestCase):
     def setUp(self):
+        self.api = MagicMock()
         self.request = GroceryRequest.objects.create(
             name="Ryan",
             phone_number="5555555555",
@@ -193,8 +183,8 @@ class GroceryDeliveryTextTests(TextTestsMixin, TestCase):
             The gift card will be sent to you on the same day of the delivery.
             Thank you and stay safe!
         """)
-        with self.assert_text_matches(expected):
-            self.request.send_recipient_scheduled_notification()
+        self.request.send_recipient_scheduled_notification(api=self.api)
+        self.api.send_text.assert_called_with(self.request.phone_number, expected, "groceries")
 
     def test_send_recipient_allergy_notification(self):
         expected = dedent("""
@@ -203,8 +193,8 @@ class GroceryDeliveryTextTests(TextTestsMixin, TestCase):
             Because the FoodShare boxes this week included a food which you listed as an allergy, instead of the produce box, you will receive an extra gift card equal to the box’s value.
             Please feel free to be in touch with any questions, comments, or concerns.
         """)
-        with self.assert_text_matches(expected):
-            self.request.send_recipient_allergy_notification()
+        self.request.send_recipient_allergy_notification(api=self.api)
+        self.api.send_text.assert_called_with(self.request.phone_number, expected, "groceries")
 
     def test_send_recipient_reminder_notification(self):
         expected = dedent("""
@@ -215,8 +205,8 @@ class GroceryDeliveryTextTests(TextTestsMixin, TestCase):
             Gift cards are delivered SEPARATELY, either by mail (for physical gift cards, timing will depend on Canada post) or via email (be sure to check your spam folder!).
             Thanks, and stay safe!
         """)
-        with self.assert_text_matches(expected):
-            self.request.send_recipient_reminder_notification()
+        self.request.send_recipient_reminder_notification(api=self.api)
+        self.api.send_text.assert_called_with(self.request.phone_number, expected, "groceries")
 
     def test_send_recipient_rescheduled_notification(self):
         expected = dedent("""
@@ -225,8 +215,8 @@ class GroceryDeliveryTextTests(TextTestsMixin, TestCase):
             Your produce box delivery wasn’t made because the driver could not contact you or had a problem with your delivery instructions. Your box will be scheduled for the following week on the same day between 10 AM and 9 PM. Please, let us know if you have any issues with the delivery or if you would like to make changes to your delivery instructions.
             Thanks, and stay safe!
         """)
-        with self.assert_text_matches(expected):
-            self.request.send_recipient_rescheduled_notification()
+        self.request.send_recipient_rescheduled_notification(api=self.api)
+        self.api.send_text.assert_called_with(self.request.phone_number, expected, "groceries")
 
     def test_send_recipient_confirm_received_notification(self):
         expected = dedent("""
@@ -235,5 +225,5 @@ class GroceryDeliveryTextTests(TextTestsMixin, TestCase):
             Can you confirm that you received your produce box on Monday March 15?
             Thank you!
         """)
-        with self.assert_text_matches(expected):
-            self.request.send_recipient_confirm_received_notification()
+        self.request.send_recipient_confirm_received_notification(api=self.api)
+        self.api.send_text.assert_called_with(self.request.phone_number, expected, "groceries")
