@@ -11,7 +11,7 @@ import pytz
 
 from website.maps import GroceryDeliveryArea
 from website.mail import custom_send_mail
-from website.text_messaging import send_text
+from website.texts import send_text
 from core.models import get_sentinel_user, ContactInfo, TelephoneField
 
 
