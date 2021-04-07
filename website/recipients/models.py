@@ -332,7 +332,6 @@ class MealDelivery(models.Model):
 
     def send_recipient_reminder_notification(self, api=None):
         """Send a reminder notification to a recipient of the delivery, intended for use on the day of"""
-        # Perform validation first that we _can_ send this notification
         if not self.request.can_receive_texts:
             raise SendNotificationException("Recipient cannot receive text messages at their phone number")
 
@@ -353,7 +352,6 @@ class MealDelivery(models.Model):
 
     def send_recipient_delivery_notification(self, api=None):
         """Send a follow-up notification to a recipient, lets them know that a delivery driver will drop if off within a certain time window"""
-        # Perform validation first that we _can_ send this notification
         if not self.request.can_receive_texts:
             raise SendNotificationException("Recipient cannot receive text messages at their phone number")
 
@@ -374,7 +372,6 @@ class MealDelivery(models.Model):
 
     def send_recipient_feedback_request(self, api=None):
         """Send a link to our feedback form to a recipient"""
-        # Perform validation first that we _can_ send this notification
         if not self.request.can_receive_texts:
             raise SendNotificationException("Recipient cannot receive text messages at their phone number")
 
