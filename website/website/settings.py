@@ -97,6 +97,7 @@ SITE_ID = 1
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
+# Value gets overridden by django_heroku when run in Heroku with correct DB settings
 
 DATABASES = {
     'default': {
@@ -198,7 +199,9 @@ EXPLORER_PERMISSION_CHANGE = lambda request: request.user.is_superuser
 
 
 # Configure hosted settings automatically using django_heroku
-django_heroku.settings(locals())
+# Don't run this in a CI test environment though, because it overrides DB settings
+if not getenv_bool("CI"):
+    django_heroku.settings(locals())
 
 # Model constants
 DEFAULT_LENGTH = 256
