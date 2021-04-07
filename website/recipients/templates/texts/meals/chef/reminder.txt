@@ -1,0 +1,5 @@
+Hi {{delivery.chef.volunteer.preferred_name}},
+Your cooked meals for request ID {{request.id}} will be picked up by {{delivery.deliverer.volunteer.preferred_name}} on {{delivery.date|date:"l F j"}} between {{delivery.pickup_start|time:"h:i A"}} and {{delivery.pickup_end|time:"h:i A"}}.
+You can contact them at {{delivery.deliverer.volunteer.phone_number}}.
+If you have more than one delivery, please make sure you are giving the food to the right volunteer.
+Let us know if you have any issues. Thanks!

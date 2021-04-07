@@ -2,6 +2,7 @@ import logging
 import requests
 
 from django.conf import settings
+from django.template.loader import render_to_string
 
 
 logger = logging.getLogger(__name__)
@@ -53,11 +54,16 @@ class TextMessagingAPI:
 
 
 class TextMessage:
-    def __init__(self, phone_number, message, group_name="default", api=None):
+    def __init__(self, phone_number, template, context={}, group_name="default", api=None):
         self.phone_number = phone_number
-        self.message = message
+        self.template = template
+        self.context = context
         self.group_name = group_name
         self.api = api or TextMessagingAPI()
+
+    @property
+    def message(self):
+        return render_to_string(self.template, self.context)
 
     def send(self):
         try:

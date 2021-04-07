@@ -321,17 +321,14 @@ class MealDelivery(models.Model):
         if not self.request.can_receive_texts:
             raise SendNotificationException("Recipient cannot receive text messages at their phone number")
 
-        # Date is in the format "Weekday Month Year" eg. Sunday November 29
-        message = dedent(f"""
-            Hi {self.request.name},
-            This is a message from The People's Pantry.
-            A chef has been arranged to prepare a meal for you for {self.date:%A %B %d} for request ID {self.request.id}.
-            Since we depend on volunteers for our deliveries, sometimes we are not able to do all deliveries scheduled for the day. If that’s the case with your delivery, we will inform you by 6 PM on the day of the delivery and your delivery will be rescheduled for the following day.
-            Please confirm you got this message and let us know if you can accept the delivery.
-            Thank you!
-        """).strip()
-        TextMessage(self.request.phone_number, message, api=api).send()
-        self.comments.create(comment=f"Sent a text to recipient: {message}")
+        text = TextMessage(
+            self.request.phone_number,
+            template="texts/meals/recipient/notification.txt",
+            context={"delivery": self, "request": self.request},
+            api=api,
+        )
+        text.send()
+        self.comments.create(comment=f"Sent a text to recipient: {text.message}")
         logger.info("Sent recipient meal notification text for Meal Request %d to %s", self.request.id, self.request.phone_number)
 
     def send_recipient_reminder_notification(self, api=None):
@@ -346,14 +343,14 @@ class MealDelivery(models.Model):
         if self.deliverer is None:
             raise SendNotificationException("Delivery does not have a deliverer assigned")
 
-        # Time is in the format "Hour:Minute AM/PM" eg. 09:30 PM
-        message = dedent(f"""
-            Hi {self.request.name},
-            This is a reminder about your delivery from The People’s Pantry today for request ID {self.request.id}. {self.deliverer.volunteer.preferred_name or 'A delivery volunteer'} will be at your home between {self.dropoff_start:%I:%M %p} and {self.dropoff_end:%I:%M %p}.
-            Thanks, and stay safe!
-        """).strip()
-        TextMessage(self.request.phone_number, message, api=api).send()
-        self.comments.create(comment=f"Sent a text to recipient: {message}")
+        text = TextMessage(
+            self.request.phone_number,
+            template="texts/meals/recipient/reminder.txt",
+            context={"delivery": self, "request": self.request},
+            api=api,
+        )
+        text.send()
+        self.comments.create(comment=f"Sent a text to recipient: {text.message}")
         logger.info("Sent recipient reminder notification text for Meal Request %d to %s", self.request.id, self.request.phone_number)
 
     def send_recipient_delivery_notification(self, api=None):
@@ -368,18 +365,14 @@ class MealDelivery(models.Model):
         if self.deliverer is None:
             raise SendNotificationException("Delivery does not have a deliverer assigned")
 
-        # Date is in the format "Weekday Month Year" eg. Sunday November 29
-        # Time is in the format "Hour:Minute AM/PM" eg. 09:30 PM
-        message = dedent(f"""
-            Hi {self.request.name},
-            This is a message from The People's Pantry.
-            Your delivery for request ID {self.request.id} is scheduled for {self.date:%A %B %d} between {self.dropoff_start:%I:%M %p} and {self.dropoff_end:%I:%M %p}.
-            Since we depend on volunteers for our deliveries, sometimes we are not able to do all deliveries scheduled for the day. If that’s the case with your delivery, we will inform you by 6 PM on the day of the delivery and your delivery will be rescheduled for the following day.
-            Please confirm you got this message and let us know if you can take the delivery.
-            Thank you!
-        """).strip()
-        TextMessage(self.request.phone_number, message, api=api).send()
-        self.comments.create(comment=f"Sent a text to recipient: {message}")
+        text = TextMessage(
+            self.request.phone_number,
+            template="texts/meals/recipient/delivery.txt",
+            context={"delivery": self, "request": self.request},
+            api=api,
+        )
+        text.send()
+        self.comments.create(comment=f"Sent a text to recipient: {text.message}")
         logger.info("Sent recipient delivery notification text for Meal Request %d to %s", self.request.id, self.request.phone_number)
 
     def send_recipient_feedback_request(self, api=None):
@@ -388,11 +381,14 @@ class MealDelivery(models.Model):
         if not self.request.can_receive_texts:
             raise SendNotificationException("Recipient cannot receive text messages at their phone number")
 
-        message = dedent(f"""
-            Hello {self.request.name} How did you like your meals this week? We appreciate any feedback you have. If you are comfortable with us sharing your anonymized feedback on social media, please let us know - it helps us raise money for the program. If not, that’s okay too.
-        """).strip()
-        TextMessage(self.request.phone_number, message, api=api).send()
-        self.comments.create(comment=f"Sent a text to recipient: {message}")
+        text = TextMessage(
+            self.request.phone_number,
+            template="texts/meals/recipient/feedback.txt",
+            context={"delivery": self, "request": self.request},
+            api=api,
+        )
+        text.send()
+        self.comments.create(comment=f"Sent a text to recipient: {text.message}")
         logger.info("Sent recipient feedback request text for Meal Request %d to %s", self.request.id, self.request.phone_number)
 
     def send_chef_reminder_notification(self, api=None):
@@ -404,15 +400,14 @@ class MealDelivery(models.Model):
         if not (self.pickup_start and self.pickup_end):
             raise SendNotificationException("Delivery does not have a pickup time range scheduled")
 
-        message = dedent(f"""
-            Hi {self.chef.volunteer.preferred_name},
-            Your cooked meals for request ID {self.request.id} will be picked up by {self.deliverer.volunteer.preferred_name} on {self.date:%A %B %d} between {self.pickup_start:%I:%M %p} and {self.pickup_end:%I:%M %p}.
-            You can contact them at {self.deliverer.volunteer.phone_number}.
-            If you have more than one delivery, please make sure you are giving the food to the right volunteer.
-            Let us know if you have any issues. Thanks!
-        """).strip()
-        TextMessage(self.chef.volunteer.phone_number, message, api=api).send()
-        self.comments.create(comment=f"Sent a text to the chef: {message}")
+        text = TextMessage(
+            self.chef.volunteer.phone_number,
+            template="texts/meals/chef/reminder.txt",
+            context={"delivery": self, "request": self.request},
+            api=api,
+        )
+        text.send()
+        self.comments.create(comment=f"Sent a text to the chef: {text.message}")
         logger.info("Sent chef reminder notification text for Meal Request %d to %s", self.request.id, self.chef.volunteer.phone_number)
 
     def send_deliverer_reminder_notification(self, api=None):
@@ -420,15 +415,14 @@ class MealDelivery(models.Model):
         if not self.deliverer:
             raise SendNotificationException("No deliverer assigned to this delivery")
 
-        message = dedent(f"""
-            Hi {self.deliverer.volunteer.preferred_name},
-            This is a message from The People's Pantry.
-            Just reminding you of the upcoming meal you're delivering for {self.date:%A %B %d}.
-            Please confirm you got this message and let us know if you need any assistance.
-            Thank you!
-        """).strip()
-        TextMessage(self.deliverer.volunteer.phone_number, message, api=api).send()
-        self.comments.create(comment=f"Sent a text to the deliverer: {message}")
+        text = TextMessage(
+            self.deliverer.volunteer.phone_number,
+            template="texts/meals/deliverer/reminder.txt",
+            context={"delivery": self, "request": self.request},
+            api=api,
+        )
+        text.send()
+        self.comments.create(comment=f"Sent a text to the deliverer: {text.message}")
         logger.info("Sent deliverer reminder notification text for Meal Request %d to %s", self.request.id, self.deliverer.volunteer.phone_number)
 
     def send_detailed_deliverer_notification(self, api=None):
@@ -448,21 +442,14 @@ class MealDelivery(models.Model):
         if not (self.dropoff_start and self.dropoff_end):
             raise SendNotificationException("Delivery does not have a dropoff time range scheduled")
 
-        # Date is in the format "Weekday Month Year" eg. Sunday November 29
-        # Time is in the format "Hour:Minute AM/PM" eg. 09:30 PM
-        message = dedent(f"""
-            Hi {self.deliverer.volunteer.preferred_name},
-            This is a reminder about your delivery for The People’s Pantry today.
-            Pick up the meals from {self.chef.volunteer.preferred_name} at {self.chef.volunteer.address}, phone number {self.chef.volunteer.phone_number}, between {self.pickup_start:%I:%M %p} and {self.pickup_end:%I:%M %p}.
-
-            The recipient, {self.request.name} ({self.request.id}) is at {self.request.address}. Notify them when you arrive at {self.request.phone_number}.
-            The delivery instructions are: {self.request.delivery_details}.
-
-            Send a text if you have any problems with your delivery, and please let us know when the delivery is completed.
-            Thank you for your help!
-        """).strip()
-        TextMessage(self.deliverer.volunteer.phone_number, message, api=api).send()
-        self.comments.create(comment=f"Sent a text to the deliverer: {message}")
+        text = TextMessage(
+            self.deliverer.volunteer.phone_number,
+            template="texts/meals/deliverer/details.txt",
+            context={"delivery": self, "request": self.request},
+            api=api,
+        )
+        text.send()
+        self.comments.create(comment=f"Sent a text to the deliverer: {text.message}")
         logger.info("Sent deliverer detailed notification text for Meal Request %d to %s", self.request.id, self.deliverer.volunteer.phone_number)
 
 
@@ -704,17 +691,15 @@ class GroceryRequest(ContactInfo):
         if not (self.delivery_date):
             raise SendNotificationException("Delivery date is not specified")
 
-        # Date is in the format "Weekday Month Year" eg. Sunday November 29
-        message = dedent(f"""
-            Hi {self.name},
-            This is a message from The People's Pantry.
-            Your delivery has been scheduled for {self.delivery_date:%A %B %d}. FoodShare will be delivering your box between 10 AM and 9 PM at your door and/or following your delivery instructions. Please make sure to check your phone regularly so the delivery driver can communicate with you easily.
-            Delivery dates may vary to balance daily orders or if the driver did not get to the delivery by 9 PM. If there are any changes, we will do our best to communicate with you ahead of time.
-            The gift card will be sent to you on the same day of the delivery.
-            Thank you and stay safe!
-        """).strip()
-        TextMessage(self.phone_number, message, group_name="groceries", api=api).send()
-        self.comments.create(comment=f"Sent a text to recipient: {message}")
+        text = TextMessage(
+            self.phone_number,
+            template="texts/groceries/scheduled.txt",
+            context={"request": self},
+            group_name="groceries",
+            api=api,
+        )
+        text.send()
+        self.comments.create(comment=f"Sent a text to recipient: {text.message}")
         logger.info("Sent recipient scheduled notification text for Grocery Request %d to %s", self.id, self.phone_number)
 
     def send_recipient_allergy_notification(self, api=None):
@@ -722,15 +707,15 @@ class GroceryRequest(ContactInfo):
         if not self.can_receive_texts:
             raise SendNotificationException("Recipient cannot receive text messages at their phone number")
 
-        # Date is in the format "Weekday Month Year" eg. Sunday November 29
-        message = dedent(f"""
-            Hi {self.name},
-            This is a message from The People's Pantry.
-            Because the FoodShare boxes this week included a food which you listed as an allergy, instead of the produce box, you will receive an extra gift card equal to the box’s value.
-            Please feel free to be in touch with any questions, comments, or concerns.
-        """).strip()
-        TextMessage(self.phone_number, message, group_name="groceries", api=api).send()
-        self.comments.create(comment=f"Sent a text to recipient: {message}")
+        text = TextMessage(
+            self.phone_number,
+            template="texts/groceries/allergy.txt",
+            context={"request": self},
+            group_name="groceries",
+            api=api,
+        )
+        text.send()
+        self.comments.create(comment=f"Sent a text to recipient: {text.message}")
         logger.info("Sent recipient allergy notification text for Grocery Request %d to %s", self.id, self.phone_number)
 
     def send_recipient_reminder_notification(self, api=None):
@@ -738,16 +723,15 @@ class GroceryRequest(ContactInfo):
         if not self.can_receive_texts:
             raise SendNotificationException("Recipient cannot receive text messages at their phone number")
 
-        message = dedent(f"""
-            Hello {self.name},
-            This is a message from The People's Pantry.
-            Your FoodShare produce box is scheduled to be delivered today. Just a reminder that boxes are delivered until 9 PM.  Please let us know once you receive your grocery box.
-            If you don’t receive your box by that time today, please let us know by replying to this message. When delivery drivers didn’t get to do the delivery because they ran out of time, they will schedule your delivery for the following day.
-            Gift cards are delivered SEPARATELY, either by mail (for physical gift cards, timing will depend on Canada post) or via email (be sure to check your spam folder!).
-            Thanks, and stay safe!
-        """).strip()
-        TextMessage(self.phone_number, message, group_name="groceries", api=api).send()
-        self.comments.create(comment=f"Sent a text to recipient: {message}")
+        text = TextMessage(
+            self.phone_number,
+            template="texts/groceries/reminder.txt",
+            context={"request": self},
+            group_name="groceries",
+            api=api,
+        )
+        text.send()
+        self.comments.create(comment=f"Sent a text to recipient: {text.message}")
         logger.info("Sent reminder notification text for Grocery Request %d to %s", self.id, self.phone_number)
 
     def send_recipient_rescheduled_notification(self, api=None):
@@ -755,14 +739,15 @@ class GroceryRequest(ContactInfo):
         if not self.can_receive_texts:
             raise SendNotificationException("Recipient cannot receive text messages at their phone number")
 
-        message = dedent(f"""
-            Hello {self.name},
-            This is a message from The People's Pantry.
-            Your produce box delivery wasn’t made because the driver could not contact you or had a problem with your delivery instructions. Your box will be scheduled for the following week on the same day between 10 AM and 9 PM. Please, let us know if you have any issues with the delivery or if you would like to make changes to your delivery instructions.
-            Thanks, and stay safe!
-        """).strip()
-        TextMessage(self.phone_number, message, group_name="groceries", api=api).send()
-        self.comments.create(comment=f"Sent a text to recipient: {message}")
+        text = TextMessage(
+            self.phone_number,
+            template="texts/groceries/rescheduled.txt",
+            context={"request": self},
+            group_name="groceries",
+            api=api,
+        )
+        text.send()
+        self.comments.create(comment=f"Sent a text to recipient: {text.message}")
         logger.info("Sent rescheduled notification text for Grocery Request %d to %s", self.id, self.phone_number)
 
     def send_recipient_confirm_received_notification(self, api=None):
@@ -773,14 +758,15 @@ class GroceryRequest(ContactInfo):
         if not (self.delivery_date):
             raise SendNotificationException("Delivery date is not specified")
 
-        message = dedent(f"""
-            Hello {self.name},
-            This is a message from The People's Pantry.
-            Can you confirm that you received your produce box on {self.delivery_date:%A %B %d}?
-            Thank you!
-        """).strip()
-        TextMessage(self.phone_number, message, group_name="groceries", api=api).send()
-        self.comments.create(comment=f"Sent a text to recipient: {message}")
+        text = TextMessage(
+            self.phone_number,
+            template="texts/groceries/confirmation.txt",
+            context={"request": self},
+            group_name="groceries",
+            api=api,
+        )
+        text.send()
+        self.comments.create(comment=f"Sent a text to recipient: {text.message}")
         logger.info("Sent rescheduled notification text for Grocery Request %d to %s", self.id, self.phone_number)
 
     def __str__(self):
