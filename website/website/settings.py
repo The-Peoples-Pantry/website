@@ -25,6 +25,10 @@ def getenv_bool(key, default=False):
     val = getenv(key)
     if val is None:
         return default
+    if val.lower() == "true":
+        return True
+    if val.lower() == "false":
+        return False
     return bool(int(val))
 
 
