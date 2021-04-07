@@ -1,0 +1,4 @@
+Hello {{request.name}},
+This is a message from The People's Pantry.
+Can you confirm that you received your produce box on {{request.delivery_date|date:"l F j"}}?
+Thank you!

@@ -1,0 +1,6 @@
+Hi {{request.name}},
+This is a message from The People's Pantry.
+Your delivery has been scheduled for {{request.delivery_date|date:"l F j"}}. FoodShare will be delivering your box between 10 AM and 9 PM at your door and/or following your delivery instructions. Please make sure to check your phone regularly so the delivery driver can communicate with you easily.
+Delivery dates may vary to balance daily orders or if the driver did not get to the delivery by 9 PM. If there are any changes, we will do our best to communicate with you ahead of time.
+The gift card will be sent to you on the same day of the delivery.
+Thank you and stay safe!

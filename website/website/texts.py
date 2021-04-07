@@ -2,6 +2,7 @@ import logging
 import requests
 
 from django.conf import settings
+from django.template.loader import render_to_string
 
 
 logger = logging.getLogger(__name__)
@@ -52,10 +53,19 @@ class TextMessagingAPI:
             raise TextMessagingAPIException from e
 
 
-def send_text(phone_number: str, message: str, group_name: str = "default"):
-    """Text the message to the phone number"""
-    try:
-        api = TextMessagingAPI()
-        api.send_text(phone_number, message, group_name)
-    except TextMessagingAPIException:
-        logger.exception("Failed to send text message to %s", phone_number)
+class TextMessage:
+    def __init__(self, template, context={}, group_name="default", api=None):
+        self.template = template
+        self.context = context
+        self.group_name = group_name
+        self.api = api or TextMessagingAPI()
+
+    @property
+    def message(self):
+        return render_to_string(self.template, self.context)
+
+    def send(self, phone_number):
+        try:
+            self.api.send_text(phone_number, self.message, self.group_name)
+        except TextMessagingAPIException:
+            logger.exception("Failed to send text message to %s", phone_number)
