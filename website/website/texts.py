@@ -54,8 +54,7 @@ class TextMessagingAPI:
 
 
 class TextMessage:
-    def __init__(self, phone_number, template, context={}, group_name="default", api=None):
-        self.phone_number = phone_number
+    def __init__(self, template, context={}, group_name="default", api=None):
         self.template = template
         self.context = context
         self.group_name = group_name
@@ -65,8 +64,8 @@ class TextMessage:
     def message(self):
         return render_to_string(self.template, self.context)
 
-    def send(self):
+    def send(self, phone_number):
         try:
-            self.api.send_text(self.phone_number, self.message, self.group_name)
+            self.api.send_text(phone_number, self.message, self.group_name)
         except TextMessagingAPIException:
-            logger.exception("Failed to send text message to %s", self.phone_number)
+            logger.exception("Failed to send text message to %s", phone_number)

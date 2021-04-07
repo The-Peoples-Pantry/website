@@ -322,12 +322,11 @@ class MealDelivery(models.Model):
             raise SendNotificationException("Recipient cannot receive text messages at their phone number")
 
         text = TextMessage(
-            self.request.phone_number,
             template="texts/meals/recipient/notification.txt",
             context={"delivery": self, "request": self.request},
             api=api,
         )
-        text.send()
+        text.send(self.request.phone_number)
         self.comments.create(comment=f"Sent a text to recipient: {text.message}")
 
     def send_recipient_reminder_notification(self, api=None):
@@ -342,12 +341,11 @@ class MealDelivery(models.Model):
             raise SendNotificationException("Delivery does not have a deliverer assigned")
 
         text = TextMessage(
-            self.request.phone_number,
             template="texts/meals/recipient/reminder.txt",
             context={"delivery": self, "request": self.request},
             api=api,
         )
-        text.send()
+        text.send(self.request.phone_number)
         self.comments.create(comment=f"Sent a text to recipient: {text.message}")
 
     def send_recipient_delivery_notification(self, api=None):
@@ -362,12 +360,11 @@ class MealDelivery(models.Model):
             raise SendNotificationException("Delivery does not have a deliverer assigned")
 
         text = TextMessage(
-            self.request.phone_number,
             template="texts/meals/recipient/delivery.txt",
             context={"delivery": self, "request": self.request},
             api=api,
         )
-        text.send()
+        text.send(self.request.phone_number)
         self.comments.create(comment=f"Sent a text to recipient: {text.message}")
 
     def send_recipient_feedback_request(self, api=None):
@@ -376,12 +373,11 @@ class MealDelivery(models.Model):
             raise SendNotificationException("Recipient cannot receive text messages at their phone number")
 
         text = TextMessage(
-            self.request.phone_number,
             template="texts/meals/recipient/feedback.txt",
             context={"delivery": self, "request": self.request},
             api=api,
         )
-        text.send()
+        text.send(self.request.phone_number)
         self.comments.create(comment=f"Sent a text to recipient: {text.message}")
 
     def send_chef_reminder_notification(self, api=None):
@@ -394,12 +390,11 @@ class MealDelivery(models.Model):
             raise SendNotificationException("Delivery does not have a pickup time range scheduled")
 
         text = TextMessage(
-            self.chef.volunteer.phone_number,
             template="texts/meals/chef/reminder.txt",
             context={"delivery": self, "request": self.request},
             api=api,
         )
-        text.send()
+        text.send(self.chef.volunteer.phone_number)
         self.comments.create(comment=f"Sent a text to the chef: {text.message}")
 
     def send_deliverer_reminder_notification(self, api=None):
@@ -408,12 +403,11 @@ class MealDelivery(models.Model):
             raise SendNotificationException("No deliverer assigned to this delivery")
 
         text = TextMessage(
-            self.deliverer.volunteer.phone_number,
             template="texts/meals/deliverer/reminder.txt",
             context={"delivery": self, "request": self.request},
             api=api,
         )
-        text.send()
+        text.send(self.deliverer.volunteer.phone_number)
         self.comments.create(comment=f"Sent a text to the deliverer: {text.message}")
 
     def send_detailed_deliverer_notification(self, api=None):
@@ -434,12 +428,11 @@ class MealDelivery(models.Model):
             raise SendNotificationException("Delivery does not have a dropoff time range scheduled")
 
         text = TextMessage(
-            self.deliverer.volunteer.phone_number,
             template="texts/meals/deliverer/details.txt",
             context={"delivery": self, "request": self.request},
             api=api,
         )
-        text.send()
+        text.send(self.deliverer.volunteer.phone_number)
         self.comments.create(comment=f"Sent a text to the deliverer: {text.message}")
 
 
@@ -682,13 +675,12 @@ class GroceryRequest(ContactInfo):
             raise SendNotificationException("Delivery date is not specified")
 
         text = TextMessage(
-            self.phone_number,
             template="texts/groceries/scheduled.txt",
             context={"request": self},
             group_name="groceries",
             api=api,
         )
-        text.send()
+        text.send(self.phone_number)
         self.comments.create(comment=f"Sent a text to recipient: {text.message}")
 
     def send_recipient_allergy_notification(self, api=None):
@@ -697,13 +689,12 @@ class GroceryRequest(ContactInfo):
             raise SendNotificationException("Recipient cannot receive text messages at their phone number")
 
         text = TextMessage(
-            self.phone_number,
             template="texts/groceries/allergy.txt",
             context={"request": self},
             group_name="groceries",
             api=api,
         )
-        text.send()
+        text.send(self.phone_number)
         self.comments.create(comment=f"Sent a text to recipient: {text.message}")
 
     def send_recipient_reminder_notification(self, api=None):
@@ -712,13 +703,12 @@ class GroceryRequest(ContactInfo):
             raise SendNotificationException("Recipient cannot receive text messages at their phone number")
 
         text = TextMessage(
-            self.phone_number,
             template="texts/groceries/reminder.txt",
             context={"request": self},
             group_name="groceries",
             api=api,
         )
-        text.send()
+        text.send(self.phone_number)
         self.comments.create(comment=f"Sent a text to recipient: {text.message}")
 
     def send_recipient_rescheduled_notification(self, api=None):
@@ -727,13 +717,12 @@ class GroceryRequest(ContactInfo):
             raise SendNotificationException("Recipient cannot receive text messages at their phone number")
 
         text = TextMessage(
-            self.phone_number,
             template="texts/groceries/rescheduled.txt",
             context={"request": self},
             group_name="groceries",
             api=api,
         )
-        text.send()
+        text.send(self.phone_number)
         self.comments.create(comment=f"Sent a text to recipient: {text.message}")
 
     def send_recipient_confirm_received_notification(self, api=None):
@@ -745,13 +734,12 @@ class GroceryRequest(ContactInfo):
             raise SendNotificationException("Delivery date is not specified")
 
         text = TextMessage(
-            self.phone_number,
             template="texts/groceries/confirmation.txt",
             context={"request": self},
             group_name="groceries",
             api=api,
         )
-        text.send()
+        text.send(self.phone_number)
         self.comments.create(comment=f"Sent a text to recipient: {text.message}")
 
     def __str__(self):
