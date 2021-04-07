@@ -329,7 +329,6 @@ class MealDelivery(models.Model):
         )
         text.send()
         self.comments.create(comment=f"Sent a text to recipient: {text.message}")
-        logger.info("Sent recipient meal notification text for Meal Request %d to %s", self.request.id, self.request.phone_number)
 
     def send_recipient_reminder_notification(self, api=None):
         """Send a reminder notification to a recipient of the delivery, intended for use on the day of"""
@@ -351,7 +350,6 @@ class MealDelivery(models.Model):
         )
         text.send()
         self.comments.create(comment=f"Sent a text to recipient: {text.message}")
-        logger.info("Sent recipient reminder notification text for Meal Request %d to %s", self.request.id, self.request.phone_number)
 
     def send_recipient_delivery_notification(self, api=None):
         """Send a follow-up notification to a recipient, lets them know that a delivery driver will drop if off within a certain time window"""
@@ -373,7 +371,6 @@ class MealDelivery(models.Model):
         )
         text.send()
         self.comments.create(comment=f"Sent a text to recipient: {text.message}")
-        logger.info("Sent recipient delivery notification text for Meal Request %d to %s", self.request.id, self.request.phone_number)
 
     def send_recipient_feedback_request(self, api=None):
         """Send a link to our feedback form to a recipient"""
@@ -389,7 +386,6 @@ class MealDelivery(models.Model):
         )
         text.send()
         self.comments.create(comment=f"Sent a text to recipient: {text.message}")
-        logger.info("Sent recipient feedback request text for Meal Request %d to %s", self.request.id, self.request.phone_number)
 
     def send_chef_reminder_notification(self, api=None):
         """Send a reminder notification to the chef"""
@@ -408,7 +404,6 @@ class MealDelivery(models.Model):
         )
         text.send()
         self.comments.create(comment=f"Sent a text to the chef: {text.message}")
-        logger.info("Sent chef reminder notification text for Meal Request %d to %s", self.request.id, self.chef.volunteer.phone_number)
 
     def send_deliverer_reminder_notification(self, api=None):
         """Send a reminder notification to the deliverer"""
@@ -423,7 +418,6 @@ class MealDelivery(models.Model):
         )
         text.send()
         self.comments.create(comment=f"Sent a text to the deliverer: {text.message}")
-        logger.info("Sent deliverer reminder notification text for Meal Request %d to %s", self.request.id, self.deliverer.volunteer.phone_number)
 
     def send_detailed_deliverer_notification(self, api=None):
         """Send a detailed notification to the deliverer with content for the delivery"""
@@ -450,7 +444,6 @@ class MealDelivery(models.Model):
         )
         text.send()
         self.comments.create(comment=f"Sent a text to the deliverer: {text.message}")
-        logger.info("Sent deliverer detailed notification text for Meal Request %d to %s", self.request.id, self.deliverer.volunteer.phone_number)
 
 
 class CommentModel(models.Model):
@@ -700,7 +693,6 @@ class GroceryRequest(ContactInfo):
         )
         text.send()
         self.comments.create(comment=f"Sent a text to recipient: {text.message}")
-        logger.info("Sent recipient scheduled notification text for Grocery Request %d to %s", self.id, self.phone_number)
 
     def send_recipient_allergy_notification(self, api=None):
         """Send a notification to a recipient letting them know they won't get the box because of allergens"""
@@ -716,7 +708,6 @@ class GroceryRequest(ContactInfo):
         )
         text.send()
         self.comments.create(comment=f"Sent a text to recipient: {text.message}")
-        logger.info("Sent recipient allergy notification text for Grocery Request %d to %s", self.id, self.phone_number)
 
     def send_recipient_reminder_notification(self, api=None):
         """Send a notification to a recipient reminding them of today's delivery"""
@@ -732,7 +723,6 @@ class GroceryRequest(ContactInfo):
         )
         text.send()
         self.comments.create(comment=f"Sent a text to recipient: {text.message}")
-        logger.info("Sent reminder notification text for Grocery Request %d to %s", self.id, self.phone_number)
 
     def send_recipient_rescheduled_notification(self, api=None):
         """Send a notification to a recipient letting them know that delivery has been rescheduled"""
@@ -748,7 +738,6 @@ class GroceryRequest(ContactInfo):
         )
         text.send()
         self.comments.create(comment=f"Sent a text to recipient: {text.message}")
-        logger.info("Sent rescheduled notification text for Grocery Request %d to %s", self.id, self.phone_number)
 
     def send_recipient_confirm_received_notification(self, api=None):
         """Send a notification to a recipient asking them to confirm they received the box"""
@@ -767,7 +756,6 @@ class GroceryRequest(ContactInfo):
         )
         text.send()
         self.comments.create(comment=f"Sent a text to recipient: {text.message}")
-        logger.info("Sent rescheduled notification text for Grocery Request %d to %s", self.id, self.phone_number)
 
     def __str__(self):
         return "Request #G%d (%s): %d adult(s) and %d kid(s) in %s " % (
