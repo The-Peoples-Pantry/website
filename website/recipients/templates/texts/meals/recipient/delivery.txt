@@ -4,3 +4,5 @@ Your delivery for request ID {{request.id}} is scheduled for {{delivery.date|dat
 Since we depend on volunteers for our deliveries, sometimes we are not able to do all deliveries scheduled for the day. If that’s the case with your delivery, we will inform you by 6 PM on the day of the delivery and your delivery will be rescheduled for the following day.
 Please confirm you got this message and let us know if you can take the delivery.
 Thank you!
+
+Reply STOP to unsubscribe

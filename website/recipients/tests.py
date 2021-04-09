@@ -96,6 +96,8 @@ class MealDeliveryTextTests(TestCase):
             Since we depend on volunteers for our deliveries, sometimes we are not able to do all deliveries scheduled for the day. If that’s the case with your delivery, we will inform you by 6 PM on the day of the delivery and your delivery will be rescheduled for the following day.
             Please confirm you got this message and let us know if you can take the delivery.
             Thank you!
+
+            Reply STOP to unsubscribe
         """).strip()
         self.delivery.send_recipient_delivery_notification(self.api)
         self.api.send_text.assert_called_with(self.request.phone_number, expected, "default")
@@ -110,10 +112,13 @@ class MealDeliveryTextTests(TestCase):
     def test_send_chef_reminder_notification(self):
         expected = dedent("""
             Hi Philip,
+            This is a message from The People's Pantry.
             Your cooked meals for request ID 1 will be picked up by Ophelia on Monday March 15 between 12:00 PM and 01:00 PM.
             You can contact them at 5555550000.
             If you have more than one delivery, please make sure you are giving the food to the right volunteer.
             Let us know if you have any issues. Thanks!
+
+            Reply STOP to unsubscribe
         """).strip()
         self.delivery.send_chef_reminder_notification(self.api)
         self.api.send_text.assert_called_with(self.chef.volunteer.phone_number, expected, "default")
@@ -125,6 +130,8 @@ class MealDeliveryTextTests(TestCase):
             Just reminding you of the upcoming meal you're delivering for Monday March 15.
             Please confirm you got this message and let us know if you need any assistance.
             Thank you!
+
+            Reply STOP to unsubscribe
         """).strip()
         self.delivery.send_deliverer_reminder_notification(self.api)
         self.api.send_text.assert_called_with(self.deliverer.volunteer.phone_number, expected, "default")
@@ -182,6 +189,8 @@ class GroceryDeliveryTextTests(TestCase):
             Delivery dates may vary to balance daily orders or if the driver did not get to the delivery by 9 PM. If there are any changes, we will do our best to communicate with you ahead of time.
             The gift card will be sent to you on the same day of the delivery.
             Thank you and stay safe!
+
+            Reply STOP to unsubscribe
         """).strip()
         self.request.send_recipient_scheduled_notification(api=self.api)
         self.api.send_text.assert_called_with(self.request.phone_number, expected, "groceries")
@@ -202,7 +211,7 @@ class GroceryDeliveryTextTests(TestCase):
             This is a message from The People's Pantry.
             Your FoodShare produce box is scheduled to be delivered today. Just a reminder that boxes are delivered until 9 PM.  Please let us know once you receive your grocery box.
             If you don’t receive your box by that time today, please let us know by replying to this message. When delivery drivers didn’t get to do the delivery because they ran out of time, they will schedule your delivery for the following day.
-            Gift cards are delivered SEPARATELY, either by mail (for physical gift cards, timing will depend on Canada post) or via email (be sure to check your spam folder!).
+            Gift cards are delivered separately, either by mail (for physical gift cards, timing will depend on Canada post) or via email (be sure to check your spam folder!).
             Thanks, and stay safe!
         """).strip()
         self.request.send_recipient_reminder_notification(api=self.api)
