@@ -4,3 +4,5 @@ Your delivery has been scheduled for {{request.delivery_date|date:"l F j"}}. Foo
 Delivery dates may vary to balance daily orders or if the driver did not get to the delivery by 9 PM. If there are any changes, we will do our best to communicate with you ahead of time.
 The gift card will be sent to you on the same day of the delivery.
 Thank you and stay safe!
+
+Reply STOP to unsubscribe
