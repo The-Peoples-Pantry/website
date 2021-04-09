@@ -235,14 +235,15 @@ class ChefIndexView(LoginRequiredMixin, GroupRequiredMixin, ListView):
 
 class DeliveryIndexView(LoginRequiredMixin, GroupRequiredMixin, ListView):
     """View for deliverers to see the meal requests they've signed up to deliver"""
-    # model = MealDelivery
+    model = MealDelivery
+    ordering = 'date'
     template_name = "volunteers/delivery_list.html"
     permission_group = 'Deliverers'
     permission_group_redirect_url = reverse_lazy('volunteers:delivery_application')
     context_object_name = "deliveries"
 
     def get_queryset(self):
-        return MealDelivery.objects.exclude(status=Status.DELIVERED).filter(deliverer=self.request.user).order_by('date')
+        return super().get_queryset().filter(deliverer=self.request.user)
 
     def post(self, request):
         instance = MealDelivery.objects.get(id=request.POST['delivery_id'])
