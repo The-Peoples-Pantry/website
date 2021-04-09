@@ -1,0 +1,62 @@
+<div class="card mb-4">
+  <div class="card-header font-weight-bold">
+    Request #{{ delivery.request.id }}: Meal for {{ delivery.request.num_adults }} adult{{ delivery.request.num_adults | pluralize }}
+          and {{ delivery.request.num_children }} kid{{ delivery.request.num_children | pluralize }}
+          {% if delivery.request.children_ages %}
+            (aged {{ delivery.request.children_ages }})
+          {% endif %}
+  </div>
+  <div class="card-body">
+    <div class="row">
+      <div class="col">
+        <h6>Food preferences</h6>
+        <p>
+          {% if delivery.request.food_preferences %}
+            {{ delivery.request.food_preferences }}
+          {% else %}
+            None
+          {% endif %}
+        </p>
+
+        <h6>Food allergies</h6>
+        <p>
+          {% if delivery.request.food_allergies %}
+            {{ delivery.request.food_allergies }}
+          {% else %}
+            None
+          {% endif %}
+        </p>
+
+        <h6>Meal</h6>
+        <p>
+          {% if delivery.meal %}
+            {{ delivery.meal }}
+          {% else %}
+            None specified
+          {% endif %}
+        </p>
+
+      </div>
+      <div class="col">
+        <h6>Other dietary information</h6>
+        <ul>
+          {% if delivery.request.vegan %} <li>Vegan</li> {% endif %}
+          {% if delivery.request.vegetarian %} <li>Vegetarian</li> {% endif %}
+          {% if delivery.request.dairy_free %} <li>Dairy Free</li> {% endif %}
+          {% if delivery.request.gluten_free %} <li>Gluten Freen</li> {% endif %}
+          {% if delivery.request.halal %} <li>Halal</li> {% endif %}
+          {% if delivery.request.kosher %} <li>Kosher</li> {% endif %}
+          {% if delivery.request.low_carb %} <li>Low-carb</li> {% endif %}
+          <li>Will {% if not delivery.request.will_accept_vegan %}<strong>not </strong>{% endif %}accept vegan meals</li>
+          <li>Will {% if not delivery.request.will_accept_vegetarian %}<strong>not </strong>{% endif %}accept vegetarian meals</li>
+        </ul>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <p class="font-weight-strong">This meal will be picked up on {{ delivery.date }} between {{ delivery.pickup_start }} to {{ delivery.pickup_end }} {% if delivery.deliverer %} by {{ delivery.deliverer.volunteer.preferred_name }} (contact them at {{ delivery.deliverer.volunteer.phone_number }}) {% else %} (no delivery person has been assigned yet) {% endif %}</p>
+      </div>
+    </div>
+    <a href="mailto:{{settings.REQUEST_COORDINATORS_EMAIL}},{{settings.DELIVERY_COORDINATORS_EMAIL}}?subject=Chef Change Request for Delivery for Request ID {{ delivery.request.id }}" class="btn btn-primary">Request a change</a>
+  </div>
+</div>
