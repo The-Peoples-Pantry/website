@@ -275,6 +275,10 @@ class MealDelivery(models.Model):
     # System
     created_at = models.DateTimeField(auto_now_add=True)
 
+    @property
+    def delivered(self):
+        return self.status == Status.DELIVERED
+
     def save(self, *args, **kwargs):
         self.full_clean()
         return super(MealDelivery, self).save(*args, **kwargs)

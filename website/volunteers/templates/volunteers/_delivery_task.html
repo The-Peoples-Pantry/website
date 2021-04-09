@@ -4,10 +4,14 @@
     {{ delivery.date }}: Request #{{ delivery.request.id }} (meals for
     {{ delivery.request.num_adults }} adult{{ delivery.request.num_adults | pluralize }}
     and {{ delivery.request.num_children }} kid{{ delivery.request.num_children | pluralize }})
-    <form action="" method="post" onsubmit="return window.confirm('Are you sure you want to mark this delivery as complete? You cannot undo this!')" class="form float-right">
-      {% csrf_token %}
-      <input type="hidden" name="delivery_id" value="{{ delivery.id }}" />
-      {% bootstrap_button 'Mark as delivered' button_class='btn-warning' %}</form>
+
+    {% if not delivery.delivered %}
+      <form action="" method="post" onsubmit="return window.confirm('Are you sure you want to mark this delivery as complete? You cannot undo this!')" class="form float-right">
+        {% csrf_token %}
+        <input type="hidden" name="delivery_id" value="{{ delivery.id }}" />
+        {% bootstrap_button 'Mark as delivered' button_class='btn-warning' %}
+      </form>
+    {% endif %}
   </div>
   <div class="card-body">
     <div class="row">
@@ -34,6 +38,9 @@
     <p>
       The recipient will{% if not delivery.request.can_meet_for_delivery %} <strong>not</strong>{% endif %} be able to meet you in the lobby or door of the residence.
     </p>
-    <a href="mailto:{{settings.REQUEST_COORDINATORS_EMAIL}},{{settings.DELIVERY_COORDINATORS_EMAIL}}?subject=Deliverer Change Request for Delivery for Request ID {{ delivery.request.id }}" class="btn btn-primary">Request a change</a>
+
+    {% if not delivery.delivered %}
+      <a href="mailto:{{settings.REQUEST_COORDINATORS_EMAIL}},{{settings.DELIVERY_COORDINATORS_EMAIL}}?subject=Deliverer Change Request for Delivery for Request ID {{ delivery.request.id }}" class="btn btn-primary">Request a change</a>
+    {% endif %}
   </div>
 </div>

@@ -57,6 +57,8 @@
         <p class="font-weight-strong">This meal will be picked up on {{ delivery.date }} between {{ delivery.pickup_start }} to {{ delivery.pickup_end }} {% if delivery.deliverer %} by {{ delivery.deliverer.volunteer.preferred_name }} (contact them at {{ delivery.deliverer.volunteer.phone_number }}) {% else %} (no delivery person has been assigned yet) {% endif %}</p>
       </div>
     </div>
-    <a href="mailto:{{settings.REQUEST_COORDINATORS_EMAIL}},{{settings.DELIVERY_COORDINATORS_EMAIL}}?subject=Chef Change Request for Delivery for Request ID {{ delivery.request.id }}" class="btn btn-primary">Request a change</a>
+    {% if not delivery.delivered %}
+      <a href="mailto:{{settings.REQUEST_COORDINATORS_EMAIL}},{{settings.DELIVERY_COORDINATORS_EMAIL}}?subject=Chef Change Request for Delivery for Request ID {{ delivery.request.id }}" class="btn btn-primary">Request a change</a>
+    {% endif %}
   </div>
 </div>
