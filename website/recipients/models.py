@@ -222,10 +222,19 @@ class Status(models.TextChoices):
     DELIVERED = 'Delivered', 'Delivered'
 
 
+class MealDeliveryQuerySet(models.QuerySet):
+    def delivered(self):
+        return self.filter(status=Status.DELIVERED)
+
+    def not_delivered(self):
+        return self.exclude(status=Status.DELIVERED)
+
+
 class MealDelivery(models.Model):
     class Meta:
         verbose_name_plural = 'meal deliveries'
 
+    objects = MealDeliveryQuerySet.as_manager()
     request = models.OneToOneField(
         MealRequest,
         on_delete=models.CASCADE,
