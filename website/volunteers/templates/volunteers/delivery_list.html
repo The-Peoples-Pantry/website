@@ -11,7 +11,7 @@
         <a class="nav-link active" id="current-tasks-tab" data-toggle="tab" href="#current-tasks" aria-controls="current-tasks" aria-selected="true">Current</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" id="previous-tasks-tab" data-toggle="tab" href="#previous-tasks" aria-controls="previous-tasks" aria-selected="true">Previous</a>
+        <a class="nav-link" id="completed-tasks-tab" data-toggle="tab" href="#completed-tasks" aria-controls="completed-tasks" aria-selected="true">Completed</a>
       </li>
     </ul>
     <div class="tab-content" id="myTabContent">
@@ -23,7 +23,7 @@
           <div class="alert alert-info">You don't have any upcoming deliveries! <a href={% url 'volunteers:delivery_signup' %}>Click here</a> to see the list of requests that current need to be delivered.</div>
         {% endfor %}
       </div>
-      <div class="tab-pane pt-3" id="previous-tasks" role="tabpanel" aria-labelledby="previous-tasks-tab">
+      <div class="tab-pane pt-3" id="completed-tasks" role="tabpanel" aria-labelledby="completed-tasks-tab">
         <p>Here are all the past deliveries that you've completed.</p>
         {% for delivery in deliveries.delivered %}
           {% include "volunteers/_delivery_task.html" with delivery=delivery %}
