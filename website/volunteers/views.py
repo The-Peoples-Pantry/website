@@ -223,14 +223,14 @@ class MealDeliverySignupView(LoginRequiredMixin, GroupRequiredMixin, FormView, F
 class ChefIndexView(LoginRequiredMixin, GroupRequiredMixin, ListView):
     """View for chefs to see the meals they've signed up to cook"""
     model = MealDelivery
+    ordering = 'date'
     context_object_name = "deliveries"
-    queryset = MealDelivery.objects.exclude(status=Status.DELIVERED).order_by('date')
     template_name = "volunteers/chef_list.html"
     permission_group = 'Chefs'
     permission_group_redirect_url = reverse_lazy('volunteers:chef_application')
 
     def get_queryset(self):
-        return self.queryset.filter(chef=self.request.user)
+        return super().get_queryset().filter(chef=self.request.user)
 
 
 class DeliveryIndexView(LoginRequiredMixin, GroupRequiredMixin, ListView):
