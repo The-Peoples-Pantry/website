@@ -16,19 +16,19 @@
     </ul>
     <div class="tab-content" id="myTabContent">
       <div class="tab-pane pt-3 show active" id="current-tasks" role="tabpanel" aria-labelledby="current-tasks-tab">
-        <p>Here are all the deliveries you've signed up to complete. If you need to make a change to any of these deliveries, please send us an email using the 'Request a change' button and tell us what you need to modify.</p>
+        <p>Here are all the upcoming deliveries you've signed up to complete. If you need to make a change to any of these deliveries, please send us an email using the 'Request a change' button and tell us what you need to modify.</p>
         {% for delivery in deliveries.not_delivered %}
           {% include "volunteers/_delivery_task.html" with delivery=delivery %}
         {% empty %}
-          <div class="alert alert-info">You haven't signed up for any deliveries! <a href={% url 'volunteers:delivery_signup' %}>Click here</a> to see the list of requests that current need to be delivered.</div>
+          <div class="alert alert-info">You don't have any upcoming deliveries! <a href={% url 'volunteers:delivery_signup' %}>Click here</a> to see the list of requests that current need to be delivered.</div>
         {% endfor %}
       </div>
       <div class="tab-pane pt-3" id="previous-tasks" role="tabpanel" aria-labelledby="previous-tasks-tab">
-        <p>Here are all the past deliveries that you've done.</p>
+        <p>Here are all the past deliveries that you've completed.</p>
         {% for delivery in deliveries.delivered %}
           {% include "volunteers/_delivery_task.html" with delivery=delivery %}
         {% empty %}
-          <div class="alert alert-info">You haven't signed up for any deliveries! <a href={% url 'volunteers:delivery_signup' %}>Click here</a> to see the list of requests that current need to be delivered.</div>
+          <div class="alert alert-info">You haven't completed any deliveries yet! <a href={% url 'volunteers:delivery_signup' %}>Click here</a> to see the list of requests that current need to be delivered.</div>
         {% endfor %}
       </div>
     </div>
