@@ -243,12 +243,33 @@ class MealRequest(ContactInfo):
         return reverse_lazy('recipients:request_detail', args=[str(self.id)])
 
     def copy(self):
-        kwargs = model_to_dict(self, exclude=['id'])
-        new = MealRequest.objects.create(**kwargs)
-        if self.has_delivery:
-            new.delivery = self.delivery.copy(new)
-            new.save()
-        return new
+        """Clone the request with special business logic
+        - The chef should remain the same but not the delivery driver
+        - The date should be on the same day of the week, starting today or later
+        - If the original date is None, so is the new date
+        - Status should be Chef Assigned
+        """
+        kwargs = model_to_dict(self, exclude=[
+            'id',
+            'chef',
+            'deliverer',
+            'delivery_date',
+            'status',
+        ])
+
+        new_date = self.delivery_date
+        today = date.today()
+        if new_date:
+            while new_date <= today:
+                new_date += timedelta(days=7)
+
+        return MealRequest.objects.create(
+            **kwargs,
+            chef=self.chef,
+            deliverer=None,
+            delivery_date=new_date,
+            status=Status.CHEF_ASSIGNED,
+        )
 
     def send_confirmation_email(self):
         custom_send_mail(
@@ -438,36 +459,6 @@ class MealDelivery(models.Model):
 
     # System
     created_at = models.DateTimeField(auto_now_add=True)
-
-    def copy(self, meal_request):
-        """Clone the delivery with special business logic
-
-        - The chef should remain the same but not the delivery driver
-        - The date should be on the same day of the week, starting today or later
-        - If the original date is None, so is the new date
-        - Must be assigned to a new meal request (can't have duplicates)
-        - Status should be Chef Assigned
-        """
-        kwargs = model_to_dict(self, fields=[
-            'pickup_start',
-            'pickup_end',
-            'dropoff_start',
-            'dropoff_end',
-        ])
-
-        new_date = self.date
-        today = date.today()
-        if new_date:
-            while new_date <= today:
-                new_date += timedelta(days=7)
-
-        return MealDelivery.objects.create(
-            **kwargs,
-            request=meal_request,
-            chef=self.chef,
-            date=new_date,
-            status=Status.CHEF_ASSIGNED,
-        )
 
 
 class CommentModel(models.Model):
