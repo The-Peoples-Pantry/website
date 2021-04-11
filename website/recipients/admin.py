@@ -130,6 +130,7 @@ class MealRequestAdmin(admin.ModelAdmin):
     actions = (
         'confirm',
         'copy',
+        'mark_as_delivered',
         'notify_recipients_delivery',
         'notify_recipients_reminder',
         'notify_recipients_feedback',
@@ -194,6 +195,20 @@ class MealRequestAdmin(admin.ModelAdmin):
                 messages.SUCCESS,
             )
     copy.short_description = "Create a copy of selected meal request"
+
+    def mark_as_delivered(self, request, queryset):
+        queryset = queryset.exclude(status=Status.DELIVERED)
+        updated = queryset.update(status=Status.DELIVERED)
+
+        if updated:
+            self.message_user(request, ngettext(
+                "%d meal request has been marked as delivered",
+                "%d meal requests have been marked as delivered",
+                updated,
+            ) % updated, messages.SUCCESS)
+        else:
+            self.message_user(request, "No updates were made", messages.WARNING)
+    mark_as_delivered.short_description = "Mark deliveries as delivered"
 
     def send_notifications(self, request, queryset, method_name):
         """
@@ -291,9 +306,6 @@ class MealDeliveryAdmin(admin.ModelAdmin):
         'status',
         'request__can_receive_texts',
     )
-    actions = (
-        'mark_as_delivered',
-    )
     inlines = (
         MealDeliveryCommentInline,
     )
@@ -352,27 +364,6 @@ class MealDeliveryAdmin(admin.ModelAdmin):
     completed.admin_order_field = 'status'
     completed.boolean = True
 
-    def mark_as_delivered(self, request, queryset):
-        queryset = queryset.exclude(status=Status.DELIVERED)
-
-        # Updated all deliveries associated with given request
-        for delivery in queryset:
-            delivery.status = Status.DELIVERED
-            delivery.save()
-
-        if queryset:
-            self.message_user(request, ngettext(
-                "%d delivery has been marked as delivered",
-                "%d deliveries have been marked as delivered",
-                len(queryset),
-            ) % len(queryset), messages.SUCCESS)
-        else:
-            self.message_user(
-                request,
-                "No updates were made",
-                messages.WARNING
-            )
-    mark_as_delivered.short_description = "Mark deliveries as delivered"
 
 
 class GroceryRequestCommentInline(CommentInline):
