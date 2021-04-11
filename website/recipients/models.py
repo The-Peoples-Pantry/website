@@ -488,10 +488,6 @@ class MealRequestComment(CommentModel):
     subject = models.ForeignKey(MealRequest, related_name="comments", on_delete=models.CASCADE)
 
 
-class MealDeliveryComment(CommentModel):
-    subject = models.ForeignKey(MealDelivery, related_name="comments", on_delete=models.CASCADE)
-
-
 class GiftCard(models.TextChoices):
     WALMART = 'Walmart', 'Walmart (Digital)'
     PRESIDENTS_CHOICE = "President's Choice", "President's Choice (Physical)"
