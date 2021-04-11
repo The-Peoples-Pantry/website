@@ -214,9 +214,7 @@ class MealRequest(ContactInfo):
 
     @classmethod
     def active_requests(cls):
-        return cls.objects.exclude(
-            delivery__status__in=(Status.DATE_CONFIRMED, Status.DELIVERED)
-        ).count()
+        return cls.objects.exclude(status__in=(Status.DATE_CONFIRMED, Status.DELIVERED))
 
     @classmethod
     def has_open_request(cls, phone: str):
@@ -224,7 +222,7 @@ class MealRequest(ContactInfo):
         return cls.objects.filter(
             phone_number=phone
         ).exclude(
-            delivery__status__in=(Status.DATE_CONFIRMED, Status.DELIVERED)
+            status__in=(Status.DATE_CONFIRMED, Status.DELIVERED)
         ).exists()
 
     @property
