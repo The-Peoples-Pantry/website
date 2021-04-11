@@ -27,6 +27,7 @@ class MealRequestTextTests(TestCase):
         self.chef.volunteer.save()
         self.request = MealRequest.objects.create(
             name="Ryan",
+            email="ryan@example.com",
             phone_number="5555555555",
             address_1="123 Fake St",
             address_2="Unit 1",
@@ -54,6 +55,7 @@ class MealRequestTextTests(TestCase):
             recipient_notified=False,
             accept_terms=True,
             covid=False,
+            availability="Anytime",
             delivery_details="Deliver to side door",
             delivery_date=date.fromisoformat('2021-03-15'),
             pickup_start=time.fromisoformat('12:00'),
