@@ -216,9 +216,9 @@ class DelivererSignupView(LoginRequiredMixin, GroupRequiredMixin, FormView, Filt
 
 class ChefIndexView(LoginRequiredMixin, GroupRequiredMixin, ListView):
     """View for chefs to see the meals they've signed up to cook"""
-    model = MealDelivery
-    ordering = 'date'
-    context_object_name = "deliveries"
+    model = MealRequest
+    ordering = 'delivery_date'
+    context_object_name = "meal_requests"
     template_name = "volunteers/chef_list.html"
     permission_group = 'Chefs'
     permission_group_redirect_url = reverse_lazy('volunteers:chef_application')
