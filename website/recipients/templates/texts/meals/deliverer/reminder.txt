@@ -1,6 +1,6 @@
-Hi {{delivery.deliverer.volunteer.preferred_name}},
+Hi {{request.delivery.deliverer.volunteer.preferred_name}},
 This is a message from The People's Pantry.
-Just reminding you of the upcoming meal you're delivering for {{delivery.date|date:"l F j"}}.
+Just reminding you of the upcoming meal you're delivering for {{request.delivery.date|date:"l F j"}}.
 Please confirm you got this message and let us know if you need any assistance.
 Thank you!
 
