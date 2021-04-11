@@ -17,7 +17,7 @@ from core.models import has_group
 from core.views import GroupRequiredMixin
 from recipients.models import MealRequest, MealDelivery, Status
 from website.maps import distance
-from .forms import MealDeliverySignupForm, ChefSignupForm, ChefApplyForm, DeliveryApplyForm, OrganizerApplyForm
+from .forms import DelivererSignupForm, ChefSignupForm, ChefApplyForm, DeliveryApplyForm, OrganizerApplyForm
 from .models import VolunteerApplication, VolunteerRoles, Volunteer
 from .filters import ChefSignupFilter, DelivererSignupFilter
 
@@ -134,7 +134,7 @@ class ChefSignupView(LoginRequiredMixin, GroupRequiredMixin, FormView, FilterVie
 class MealDeliverySignupView(LoginRequiredMixin, GroupRequiredMixin, FormView, FilterView):
     """View for deliverers to sign up to deliver meal requests"""
     template_name = "volunteers/delivery_signup.html"
-    form_class = MealDeliverySignupForm
+    form_class = DelivererSignupForm
     permission_group = 'Deliverers'
     permission_group_redirect_url = reverse_lazy('volunteers:delivery_application')
     filterset_class = DelivererSignupFilter
@@ -160,10 +160,11 @@ class MealDeliverySignupView(LoginRequiredMixin, GroupRequiredMixin, FormView, F
         ])
 
     def get_context_data(self, alerts={}, **kwargs):
-        context = super(MealDeliverySignupView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
+        form_class = self.get_form_class()
         last_visited = self.get_and_set_last_visited()
         context["delivery_form_pairs"] = [
-            (delivery, MealDeliverySignupForm(initial={
+            (delivery, form_class(initial={
                 'id': delivery.id,
                 'pickup_start': delivery.pickup_start,
                 'pickup_end': delivery.pickup_end

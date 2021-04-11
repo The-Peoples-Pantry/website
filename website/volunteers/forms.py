@@ -2,7 +2,7 @@ import logging
 from textwrap import dedent
 import datetime
 from django import forms
-from recipients.models import MealDelivery
+from recipients.models import MealRequest
 from .models import Volunteer
 
 
@@ -152,13 +152,13 @@ class ChefSignupForm(forms.Form):
         return cleaned_data
 
 
-class MealDeliverySignupForm(forms.ModelForm):
+class DelivererSignupForm(forms.ModelForm):
     id = forms.IntegerField()
     dropoff_start = TimeField(initial='18:00')
     dropoff_end = TimeField(initial='20:00')
 
     class Meta:
-        model = MealDelivery
+        model = MealRequest
         fields = [
             'id',
             'pickup_start',
