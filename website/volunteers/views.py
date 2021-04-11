@@ -11,7 +11,6 @@ from django.urls import reverse_lazy
 from django.views.generic.edit import FormView, UpdateView
 from django.views.generic import ListView, TemplateView
 from django_filters.views import FilterView
-from django.db.models.query_utils import Q
 
 from core.models import has_group
 from core.views import GroupRequiredMixin
@@ -32,9 +31,8 @@ class ChefSignupView(LoginRequiredMixin, GroupRequiredMixin, FormView, FilterVie
     permission_group = 'Chefs'
     permission_group_redirect_url = reverse_lazy('volunteers:chef_application')
     filterset_class = ChefSignupFilter
-    queryset = MealRequest.objects.exclude(delivery__status=Status.DELIVERED).filter(
-        Q(delivery__isnull=True) | Q(delivery__chef__isnull=True)
-    ).order_by('created_at')
+    queryset = MealRequest.objects.not_delivered().filter(chef__isnull=True)
+    ordering = 'created_at'
 
     @property
     def success_url(self):
@@ -59,12 +57,13 @@ class ChefSignupView(LoginRequiredMixin, GroupRequiredMixin, FormView, FilterVie
         ])
 
     def get_context_data(self, **kwargs):
-        context = super(ChefSignupView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
+        form_class = self.get_form_class()
         last_visited = self.get_and_set_last_visited()
         context["object_contexts"] = [
             {
                 "meal": meal_request,
-                "form": ChefSignupForm(initial={'id': meal_request.id}),
+                "form": form_class(initial={'id': meal_request.id}),
                 "distance": distance(meal_request.coordinates, self.request.user.volunteer.coordinates),
             }
             # self.object_list is a MealRequest queryset pre-filtered by ChefSignupFilter
@@ -91,7 +90,7 @@ class ChefSignupView(LoginRequiredMixin, GroupRequiredMixin, FormView, FilterVie
 
         try:
             # If the meal request is still available setup the delivery
-            self.create_delivery(form, meal_request)
+            self.update_meal_request(form, meal_request)
         except ValidationError as error:
             messages.error(self.request, error.messages[0])
             return redirect(self.success_url)
@@ -105,30 +104,21 @@ class ChefSignupView(LoginRequiredMixin, GroupRequiredMixin, FormView, FilterVie
         except MealRequest.DoesNotExist:
             return None
 
-    def create_delivery(self, form, meal_request):
+    def update_meal_request(self, form, meal_request):
+        meal_request.chef = self.request.user
+        meal_request.meal = form.cleaned_data['meal']
+        meal_request.status = Status.CHEF_ASSIGNED
+        meal_request.delivery_date = form.cleaned_data['delivery_date']
+        meal_request.pickup_start = form.cleaned_data['pickup_start']
+        meal_request.pickup_end = form.cleaned_data['pickup_end']
+
         if form.cleaned_data['can_deliver']:
-            MealDelivery.objects.create(
-                request=meal_request,
-                deliverer=self.request.user,
-                chef=self.request.user,
-                status=Status.DRIVER_ASSIGNED,
-                date=form.cleaned_data['delivery_date'],
-                pickup_start=form.cleaned_data['pickup_start'],
-                pickup_end=form.cleaned_data['pickup_end'],
-                dropoff_start=form.cleaned_data['dropoff_start'],
-                dropoff_end=form.cleaned_data['dropoff_end'],
-                meal=form.cleaned_data['meal'],
-            )
-        else:
-            MealDelivery.objects.create(
-                request=meal_request,
-                chef=self.request.user,
-                status=Status.CHEF_ASSIGNED,
-                date=form.cleaned_data['delivery_date'],
-                pickup_start=form.cleaned_data['pickup_start'],
-                pickup_end=form.cleaned_data['pickup_end'],
-                meal=form.cleaned_data['meal'],
-            )
+            meal_request.deliverer = self.request.user
+            meal_request.status = Status.DRIVER_ASSIGNED
+            meal_request.dropoff_start = form.cleaned_data['dropoff_start']
+            meal_request.dropoff_end = form.cleaned_data['dropoff_end']
+
+        meal_request.save()
 
 
 class DelivererSignupView(LoginRequiredMixin, GroupRequiredMixin, FormView, FilterView):
