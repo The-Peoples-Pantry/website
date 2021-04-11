@@ -2,13 +2,15 @@ import logging
 from textwrap import dedent
 from datetime import timedelta, time, date
 from django.db import models
+from django.db.models import F
+from django.db.models.functions import Power, Sqrt
 from django.conf import settings
 from django.forms import model_to_dict
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 import pytz
 
-from website.maps import GroceryDeliveryArea
+from website.maps import GroceryDeliveryArea, Geocoder
 from website.mail import custom_send_mail
 from website.texts import TextMessage
 from core.models import get_sentinel_user, ContactMixin, AddressMixin, DemographicMixin, TimestampsMixin, TelephoneField
@@ -36,6 +38,25 @@ class MealRequestQuerySet(models.QuerySet):
 
     def not_delivered(self):
         return self.exclude(status=Status.DELIVERED)
+
+    def with_delivery_distance(self, chef=None):
+        """
+        Calculates the distance between the recipient and the chef in kilometres
+        A chef can optionally be provided, for cases like when a chef is signing up
+        If no chef is provided, this assumes that one is signed up
+
+        Calculates based on euclidean distance
+        This isn't ideal for this format, but works fine over short distances
+        """
+        if chef is not None:
+            chef_latitude, chef_longitude = chef.volunteer.coordinates
+        else:
+            chef_latitude = F('chef__volunteer__anonymized_latitude')
+            chef_longitude = F('chef__volunteer__anonymized_longitude')
+
+        a_squared = Power(F('anonymized_latitude') - chef_latitude, 2)
+        b_squared = Power(F('anonymized_longitude') - chef_longitude, 2)
+        return self.annotate(delivery_distance=Sqrt(a_squared + b_squared) * Geocoder.DEGREE_LENGTH)
 
 
 class MealRequest(DemographicMixin, ContactMixin, AddressMixin, TimestampsMixin, models.Model):

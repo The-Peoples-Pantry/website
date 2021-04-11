@@ -66,6 +66,9 @@ class Geocoder:
     DEGREE_RANGE_LOWER = 0.001
     DEGREE_RANGE_HIGHER = 0.004
 
+    # The (very rough) average length of a degree of latitude or longitude
+    DEGREE_LENGTH = 110
+
     def __init__(self, api_key=settings.MAPQUEST_API_KEY):
         self.api_key = api_key
 
@@ -114,5 +117,4 @@ def distance(point1, point2) -> float:
     """
     lat1, long1 = point1
     lat2, long2 = point2
-    degree_length = 110
-    return degree_length * math.sqrt(math.pow(lat1 - lat2, 2) + math.pow(long1 - long2, 2))
+    return Geocoder.DEGREE_LENGTH * math.sqrt(math.pow(lat1 - lat2, 2) + math.pow(long1 - long2, 2))
