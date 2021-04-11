@@ -55,6 +55,9 @@ class CommentInlineFormSet(forms.models.BaseInlineFormSet):
 # Abstract for all comment inlines
 class CommentInline(admin.TabularInline):
     extra = 0
+    ordering = (
+        'created_at',
+    )
     formset = CommentInlineFormSet
     readonly_fields = (
         'author',
