@@ -374,6 +374,26 @@ class MealRequest(ContactInfo):
             self.id, self.name, self.num_adults, self.num_children, self.city,
         )
 
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        return super().save(*args, **kwargs)
+
+    def clean(self, *args, **kwargs):
+        super().clean(*args, **kwargs)
+        if self.pickup_end and self.pickup_start and self.pickup_end <= self.pickup_start:
+            raise ValidationError("The pickup end time must be after the pickup start time")
+        if self.dropoff_end and self.dropoff_start and self.dropoff_end <= self.dropoff_start:
+            raise ValidationError("The dropoff end time must be after the dropoff start time")
+        if self.dropoff_start and self.pickup_start and self.dropoff_start <= self.pickup_start:
+            raise ValidationError("The dropoff start time must be after the pickup start time")
+        if self.dropoff_start and self.dropoff_end and self.delivery_date:
+            start = datetime.combine(self.delivery_date, self.dropoff_start)
+            end = datetime.combine(self.delivery_date, self.dropoff_end)
+            if (start + timedelta(hours=2)) < end and self.status != Status.DELIVERED:
+                raise ValidationError("The delivery window must be two hours or less.")
+        if self.deliverer and (not self.dropoff_start or not self.dropoff_end):
+            raise ValidationError("Please specify a dropoff window.")
+
 
 class MealDelivery(models.Model):
     class Meta:
@@ -418,26 +438,6 @@ class MealDelivery(models.Model):
 
     # System
     created_at = models.DateTimeField(auto_now_add=True)
-
-    def save(self, *args, **kwargs):
-        self.full_clean()
-        return super(MealDelivery, self).save(*args, **kwargs)
-
-    def clean(self, *args, **kwargs):
-        super(MealDelivery, self).clean(*args, **kwargs)
-        if self.pickup_end and self.pickup_start and self.pickup_end <= self.pickup_start:
-            raise ValidationError("The pickup end time must be after the pickup start time")
-        if self.dropoff_end and self.dropoff_start and self.dropoff_end <= self.dropoff_start:
-            raise ValidationError("The dropoff end time must be after the dropoff start time")
-        if self.dropoff_start and self.pickup_start and self.dropoff_start <= self.pickup_start:
-            raise ValidationError("The dropoff start time must be after the pickup start time")
-        if self.dropoff_start and self.dropoff_end and self.date:
-            start = datetime.combine(self.date, self.dropoff_start)
-            end = datetime.combine(self.date, self.dropoff_end)
-            if (start + timedelta(hours=2)) < end and self.status is not Status.DELIVERED:
-                raise ValidationError("The delivery window must be two hours or less.")
-        if self.deliverer and (not self.dropoff_start or not self.dropoff_end):
-            raise ValidationError("Please specify a dropoff window.")
 
     def copy(self, meal_request):
         """Clone the delivery with special business logic
