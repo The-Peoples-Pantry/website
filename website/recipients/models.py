@@ -23,6 +23,14 @@ class SendNotificationException(Exception):
         self.message = message
 
 
+class Status(models.TextChoices):
+    UNCONFIRMED = 'Unconfirmed', 'Unconfirmed'
+    CHEF_ASSIGNED = 'Chef Assigned', 'Chef Assigned'
+    DRIVER_ASSIGNED = 'Driver Assigned', 'Driver Assigned'
+    DATE_CONFIRMED = 'Delivery Date Confirmed', 'Delivery Date Confirmed'
+    DELIVERED = 'Delivered', 'Delivered'
+
+
 class MealRequest(ContactInfo):
     # Information about the recipient
     can_receive_texts = models.BooleanField(
@@ -133,6 +141,38 @@ class MealRequest(ContactInfo):
     # System
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    # Delivery
+    chef = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET(get_sentinel_user),
+        related_name="cooked_meal_requests",
+        null=True,
+        blank=True,
+    )
+    deliverer = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET(get_sentinel_user),
+        related_name="delivered_meal_requests",
+        null=True,
+        blank=True,
+    )
+    status = models.CharField(
+        "Status",
+        max_length=settings.DEFAULT_LENGTH,
+        choices=Status.choices,
+        default=Status.UNCONFIRMED
+    )
+    delivery_date = models.DateField("Delivery date", null=True, blank=True)
+    pickup_start = models.TimeField(null=True, blank=True)
+    pickup_end = models.TimeField(null=True, blank=True)
+    dropoff_start = models.TimeField(null=True, blank=True)
+    dropoff_end = models.TimeField(null=True, blank=True)
+    meal = models.TextField(
+        "Meal",
+        help_text="(Optional) Let us know what you plan on cooking!",
+        blank=True,
+    )
 
     @classmethod
     def requests_paused(cls):
@@ -331,14 +371,6 @@ class MealRequest(ContactInfo):
         return "Request #%d (%s): %d adult(s) and %d kid(s) in %s " % (
             self.id, self.name, self.num_adults, self.num_children, self.city,
         )
-
-
-class Status(models.TextChoices):
-    UNCONFIRMED = 'Unconfirmed', 'Unconfirmed'
-    CHEF_ASSIGNED = 'Chef Assigned', 'Chef Assigned'
-    DRIVER_ASSIGNED = 'Driver Assigned', 'Driver Assigned'
-    DATE_CONFIRMED = 'Delivery Date Confirmed', 'Delivery Date Confirmed'
-    DELIVERED = 'Delivered', 'Delivered'
 
 
 class MealDeliveryQuerySet(models.QuerySet):
