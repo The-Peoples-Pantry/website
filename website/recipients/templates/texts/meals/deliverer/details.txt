@@ -1,6 +1,6 @@
-Hi {{request.delivery.deliverer.volunteer.preferred_name}},
+Hi {{request.deliverer.volunteer.preferred_name}},
 This is a reminder about your delivery for The People’s Pantry today.
-Pick up the meals from {{request.delivery.chef.volunteer.preferred_name}} at {{request.delivery.chef.volunteer.address}}, phone number {{request.delivery.chef.volunteer.phone_number}}, between {{request.delivery.pickup_start|time:"h:i A"}} and {{request.delivery.pickup_end|time:"h:i A"}}.
+Pick up the meals from {{request.chef.volunteer.preferred_name}} at {{request.chef.volunteer.address}}, phone number {{request.chef.volunteer.phone_number}}, between {{request.pickup_start|time:"h:i A"}} and {{request.pickup_end|time:"h:i A"}}.
 
 The recipient, {{request.name}} ({{request.id}}) is at {{request.address}}. Notify them when you arrive at {{request.phone_number}}.
 The delivery instructions are: {{request.delivery_details}}.

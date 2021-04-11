@@ -251,8 +251,6 @@ class MealRequest(ContactInfo):
         )
 
     def send_recipient_meal_notification(self, api=None):
-        if not hasattr(self, 'delivery'):
-            raise SendNotificationException("Request does not yet have a delivery")
         if not self.can_receive_texts:
             raise SendNotificationException("Recipient cannot receive text messages at their phone number")
 
@@ -265,13 +263,11 @@ class MealRequest(ContactInfo):
         self.comments.create(comment=f"Sent a text to recipient: {text.message}")
 
     def send_recipient_reminder_notification(self, api=None):
-        if not hasattr(self, 'delivery'):
-            raise SendNotificationException("Request does not yet have a delivery")
         if not self.can_receive_texts:
             raise SendNotificationException("Recipient cannot receive text messages at their phone number")
-        if not (self.delivery.dropoff_start and self.delivery.dropoff_end):
+        if not (self.dropoff_start and self.dropoff_end):
             raise SendNotificationException("Delivery does not have a dropoff time range scheduled")
-        if self.delivery.deliverer is None:
+        if self.deliverer is None:
             raise SendNotificationException("Delivery does not have a deliverer assigned")
 
         text = TextMessage(
@@ -283,13 +279,11 @@ class MealRequest(ContactInfo):
         self.comments.create(comment=f"Sent a text to recipient: {text.message}")
 
     def send_recipient_delivery_notification(self, api=None):
-        if not hasattr(self, 'delivery'):
-            raise SendNotificationException("Request does not yet have a delivery")
         if not self.can_receive_texts:
             raise SendNotificationException("Recipient cannot receive text messages at their phone number")
-        if not (self.delivery.dropoff_start and self.delivery.dropoff_end):
+        if not (self.dropoff_start and self.dropoff_end):
             raise SendNotificationException("Delivery does not have a dropoff time range scheduled")
-        if self.delivery.deliverer is None:
+        if self.deliverer is None:
             raise SendNotificationException("Delivery does not have a deliverer assigned")
 
         text = TextMessage(
@@ -301,8 +295,6 @@ class MealRequest(ContactInfo):
         self.comments.create(comment=f"Sent a text to recipient: {text.message}")
 
     def send_recipient_feedback_request(self, api=None):
-        if not hasattr(self, 'delivery'):
-            raise SendNotificationException("Request does not yet have a delivery")
         if not self.can_receive_texts:
             raise SendNotificationException("Recipient cannot receive text messages at their phone number")
 
@@ -315,13 +307,11 @@ class MealRequest(ContactInfo):
         self.comments.create(comment=f"Sent a text to recipient: {text.message}")
 
     def send_chef_reminder_notification(self, api=None):
-        if not hasattr(self, 'delivery'):
-            raise SendNotificationException("Request does not yet have a delivery")
-        if not self.delivery.chef:
+        if not self.chef:
             raise SendNotificationException("No chef assigned to this delivery")
-        if not self.delivery.deliverer:
+        if not self.deliverer:
             raise SendNotificationException("No deliverer assigned to this delivery")
-        if not (self.delivery.pickup_start and self.delivery.pickup_end):
+        if not (self.pickup_start and self.pickup_end):
             raise SendNotificationException("Delivery does not have a pickup time range scheduled")
 
         text = TextMessage(
@@ -329,13 +319,11 @@ class MealRequest(ContactInfo):
             context={"request": self},
             api=api,
         )
-        text.send(self.delivery.chef.volunteer.phone_number)
+        text.send(self.chef.volunteer.phone_number)
         self.comments.create(comment=f"Sent a text to the chef: {text.message}")
 
     def send_deliverer_reminder_notification(self, api=None):
-        if not hasattr(self, 'delivery'):
-            raise SendNotificationException("Request does not yet have a delivery")
-        if not self.delivery.deliverer:
+        if not self.deliverer:
             raise SendNotificationException("No deliverer assigned to this delivery")
 
         text = TextMessage(
@@ -343,22 +331,20 @@ class MealRequest(ContactInfo):
             context={"request": self},
             api=api,
         )
-        text.send(self.delivery.deliverer.volunteer.phone_number)
+        text.send(self.deliverer.volunteer.phone_number)
         self.comments.create(comment=f"Sent a text to the deliverer: {text.message}")
 
     def send_detailed_deliverer_notification(self, api=None):
         """Send a detailed notification to the deliverer with content for the delivery"""
-        if not hasattr(self, 'delivery'):
-            raise SendNotificationException("Request does not yet have a delivery")
-        if not self.delivery.deliverer:
+        if not self.deliverer:
             raise SendNotificationException("No deliverer assigned to this delivery")
-        if not self.delivery.chef:
+        if not self.chef:
             raise SendNotificationException("No chef assigned to this delivery")
-        if not self.delivery.date:
+        if not self.delivery_date:
             raise SendNotificationException("Delivery does not have a date scheduled")
-        if not (self.delivery.pickup_start and self.delivery.pickup_end):
+        if not (self.pickup_start and self.pickup_end):
             raise SendNotificationException("Delivery does not have a pickup time range scheduled")
-        if not (self.delivery.dropoff_start and self.delivery.dropoff_end):
+        if not (self.dropoff_start and self.dropoff_end):
             raise SendNotificationException("Delivery does not have a dropoff time range scheduled")
 
         text = TextMessage(
@@ -366,7 +352,7 @@ class MealRequest(ContactInfo):
             context={"request": self},
             api=api,
         )
-        text.send(self.delivery.deliverer.volunteer.phone_number)
+        text.send(self.deliverer.volunteer.phone_number)
         self.comments.create(comment=f"Sent a text to the deliverer: {text.message}")
 
     def __str__(self):

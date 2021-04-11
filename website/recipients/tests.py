@@ -5,7 +5,7 @@ from unittest.mock import MagicMock
 
 from django.contrib.auth.models import User
 
-from recipients.models import MealRequest, MealDelivery, GroceryRequest
+from recipients.models import MealRequest, GroceryRequest
 
 
 class MealRequestTextTests(TestCase):
@@ -55,10 +55,7 @@ class MealRequestTextTests(TestCase):
             accept_terms=True,
             covid=False,
             delivery_details="Deliver to side door",
-        )
-        self.delivery = MealDelivery.objects.create(
-            request=self.request,
-            date=date.fromisoformat('2021-03-15'),
+            delivery_date=date.fromisoformat('2021-03-15'),
             pickup_start=time.fromisoformat('12:00'),
             pickup_end=time.fromisoformat('13:00'),
             dropoff_start=time.fromisoformat('14:00'),

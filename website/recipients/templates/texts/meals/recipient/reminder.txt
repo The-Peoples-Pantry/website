@@ -1,3 +1,3 @@
 Hi {{request.name}},
-This is a reminder about your delivery from The People’s Pantry today for request ID {{request.id}}. {{request.delivery.deliverer.volunteer.preferred_name|default:"A delivery volunteer"}} will be at your home between {{request.delivery.dropoff_start|time:"h:i A"}} and {{request.delivery.dropoff_end|time:"h:i A"}}.
+This is a reminder about your delivery from The People’s Pantry today for request ID {{request.id}}. {{request.deliverer.volunteer.preferred_name|default:"A delivery volunteer"}} will be at your home between {{request.dropoff_start|time:"h:i A"}} and {{request.dropoff_end|time:"h:i A"}}.
 Thanks, and stay safe!
