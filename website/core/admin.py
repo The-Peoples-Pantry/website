@@ -8,11 +8,3 @@ def user_link(user):
         url = reverse('admin:volunteers_volunteer_change', args=(user.id,))
         return format_html('<a href="%s">%s</a>' % (url, display_text))
     return user
-
-
-def obj_link(obj, type, **kwargs):
-    if obj:
-        link_text = kwargs.get('link_text', str(obj))
-        url = reverse('admin:recipients_%s_change' % type, args=(obj.id,))
-        return format_html('<a href="%s">%s</a>' % (url, link_text))
-    return obj
