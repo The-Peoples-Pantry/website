@@ -256,13 +256,9 @@ TEXTLINE_ACCESS_TOKEN = getenv("TEXTLINE_ACCESS_TOKEN")
 
 GROUP_PERMISSIONS = {
     'Chefs': [
-        'add_delivery',
-        'view_delivery',
         'view_mealrequest',
     ],
     'Deliverers': [
-        'add_delivery',
-        'view_delivery',
         'view_mealrequest',
     ],
     'Organizers': [
