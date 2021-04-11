@@ -44,7 +44,7 @@ def next_weekend(**kwargs):
     ]
 
 
-class MealDeliveryDateInput(forms.Select):
+class MealRequestDeliveryDateInput(forms.Select):
     def __init__(self):
         super().__init__(
             choices=next_weekend()
@@ -134,7 +134,7 @@ class OrganizerApplyForm(VolunteerApplicationForm):
 
 class ChefSignupForm(forms.Form):
     id = forms.IntegerField()
-    delivery_date = forms.DateField(widget=MealDeliveryDateInput)
+    delivery_date = forms.DateField(widget=MealRequestDeliveryDateInput)
     pickup_start = TimeField(initial='12:00')
     pickup_end = TimeField(initial='17:00')
     dropoff_start = TimeField(initial='18:00', required=False)
