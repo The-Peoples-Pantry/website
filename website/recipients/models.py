@@ -230,10 +230,6 @@ class MealRequest(ContactInfo):
         return (timezone.now() - self.created_at).days >= 7
 
     @property
-    def has_delivery(self):
-        return hasattr(self, 'delivery')
-
-    @property
     def delivered(self):
         return self.status == Status.DELIVERED
 
