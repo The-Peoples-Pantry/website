@@ -1,15 +1,12 @@
 import collections
 from django.contrib import admin, messages
 from django import forms
-from django.core.exceptions import ObjectDoesNotExist
 from django.utils.html import format_html, format_html_join
-from core.admin import user_link, obj_link
+from core.admin import user_link
 
 from .models import (
     MealRequest,
     MealRequestComment,
-    MealDelivery,
-    MealDeliveryComment,
     Status,
     SendNotificationException,
     GroceryRequest,
@@ -32,7 +29,7 @@ class CompletedFilter(admin.SimpleListFilter):
     parameter_name = 'completed'
 
     def queryset_kwargs(self):
-        raise NotImplementedError
+        return {'status': Status.DELIVERED}
 
     def lookups(self, request, model_admin):
         return (
@@ -43,33 +40,6 @@ class CompletedFilter(admin.SimpleListFilter):
         if self.value() == 'Hide Completed':
             queryset = queryset.exclude(**self.queryset_kwargs())
         return queryset
-
-
-class MealRequestCompletedFilter(CompletedFilter):
-    def queryset_kwargs(self):
-        return {'delivery__status': Status.DELIVERED}
-
-
-class MealDeliveryCompletedFilter(CompletedFilter):
-    def queryset_kwargs(self):
-        return {'status': Status.DELIVERED}
-
-
-class StatusFilter(admin.SimpleListFilter):
-    title = 'Status'
-    parameter_name = 'status'
-
-    def lookups(self, request, model_admin):
-        return Status.choices
-
-    def queryset(self, request, queryset):
-        if self.value():
-            queryset = queryset.filter(delivery__status=self.value())
-        return queryset
-
-
-class MealDeliveryInline(admin.TabularInline):
-    model = MealDelivery
 
 
 # Assign the current user as author when saving comments from a model admin
@@ -101,10 +71,6 @@ class MealRequestCommentInline(CommentInline):
     model = MealRequestComment
 
 
-class MealDeliveryCommentInline(CommentInline):
-    model = MealDeliveryComment
-
-
 class MealRequestAdmin(admin.ModelAdmin):
     list_display = (
         'edit_link',
@@ -114,22 +80,25 @@ class MealRequestAdmin(admin.ModelAdmin):
         'city',
         'created_at',
         'delivery_date',
+        'pickup_range',
+        'dropoff_range',
+        'chef_link',
+        'deliverer_link',
         'status',
         'completed',
     )
     list_filter = (
-        MealRequestCompletedFilter,
-        StatusFilter,
+        CompletedFilter,
+        'status',
         'can_receive_texts',
         'created_at',
     )
     inlines = (
-        MealDeliveryInline,
         MealRequestCommentInline,
     )
     actions = (
-        'confirm',
         'copy',
+        'mark_as_confirmed',
         'mark_as_delivered',
         'notify_recipients_delivery',
         'notify_recipients_reminder',
@@ -138,53 +107,46 @@ class MealRequestAdmin(admin.ModelAdmin):
         'notify_deliverers_reminder',
         'notify_deliverers_details',
     )
-    search_fields = ('name', 'email', 'phone_number')
+    search_fields = (
+        'name',
+        'email',
+        'phone_number',
+        'chef__volunteer__name',
+        'deliverer__volunteer__name',
+    )
     list_select_related = (
-        'delivery',
+        'chef',
+        'chef__volunteer',
+        'deliverer',
+        'deliverer__volunteer',
     )
 
     def edit_link(self, request):
         return 'Edit request %d' % request.id
     edit_link.short_description = 'Edit link'
 
-    def delivery_date(self, obj):
-        return obj.delivery.date
-    delivery_date.admin_order_field = 'delivery__date'
+    def chef_link(self, obj):
+        return user_link(obj.chef)
+    chef_link.short_description = 'Chef'
+    chef_link.admin_order_field = 'chef__volunteer__name'
 
-    def status(self, obj):
-        return obj.delivery.status
-    status.admin_order_field = 'delivery__status'
+    def deliverer_link(self, obj):
+        return user_link(obj.deliverer)
+    deliverer_link.short_description = 'Deliverer'
+    deliverer_link.admin_order_field = 'deliverer__volunteer__name'
+
+    def pickup_range(self, obj):
+        return short_time(obj.pickup_start) + ' - ' + short_time(obj.pickup_end)
+    pickup_range.short_description = 'Pickup range'
+
+    def dropoff_range(self, obj):
+        return short_time(obj.dropoff_start) + ' - ' + short_time(obj.dropoff_end)
+    dropoff_range.short_description = 'Dropoff range'
 
     def completed(self, obj):
-        try:
-            return obj.delivery.status == Status.DELIVERED
-        except ObjectDoesNotExist:
-            return False
-    completed.admin_order_field = 'delivery__status'
+        return obj.status == Status.DELIVERED
+    completed.admin_order_field = 'status'
     completed.boolean = True
-
-    def confirm(self, request, queryset):
-        confirmed_ids = [delivery.request.id for delivery in MealDelivery.objects.filter(status=Status.DATE_CONFIRMED)]
-        queryset = queryset.exclude(id__in=confirmed_ids)
-        updated = 0
-
-        # Updated all deliveries associated with given request
-        for meal_request in queryset:
-            updated += MealDelivery.objects.filter(request=meal_request).update(status=Status.DATE_CONFIRMED)
-
-        if updated:
-            self.message_user(request, ngettext(
-                "%d delivery has been confirmed with recipient",
-                "%d deliveries have been confirmed with recipient",
-                updated,
-            ) % updated, messages.SUCCESS)
-        else:
-            self.message_user(
-                request,
-                "No updates were made",
-                messages.WARNING
-            )
-    confirm.short_description = "Mark deliveries as confirmed with recipient"
 
     def copy(self, request, queryset):
         for meal_request in queryset:
@@ -195,6 +157,20 @@ class MealRequestAdmin(admin.ModelAdmin):
                 messages.SUCCESS,
             )
     copy.short_description = "Create a copy of selected meal request"
+
+    def mark_as_confirmed(self, request, queryset):
+        queryset = queryset.exclude(status=Status.DATE_CONFIRMED)
+        updated = queryset.update(status=Status.DATE_CONFIRMED)
+
+        if updated:
+            self.message_user(request, ngettext(
+                "%d meal request has been marked confirmed with recipient",
+                "%d meal requests have been marked confirmed with recipient",
+                updated,
+            ) % updated, messages.SUCCESS)
+        else:
+            self.message_user(request, "No updates were made", messages.WARNING)
+    mark_as_confirmed.short_description = "Mark as confirmed with the recipient"
 
     def mark_as_delivered(self, request, queryset):
         queryset = queryset.exclude(status=Status.DELIVERED)
@@ -208,7 +184,7 @@ class MealRequestAdmin(admin.ModelAdmin):
             ) % updated, messages.SUCCESS)
         else:
             self.message_user(request, "No updates were made", messages.WARNING)
-    mark_as_delivered.short_description = "Mark deliveries as delivered"
+    mark_as_delivered.short_description = "Mark as delivered"
 
     def send_notifications(self, request, queryset, method_name):
         """
@@ -225,11 +201,11 @@ class MealRequestAdmin(admin.ModelAdmin):
         successes, errors = [], []
 
         # Try to notify all recipients, capture any error messages that are received
-        for delivery in queryset:
+        for meal_request in queryset:
             try:
-                send_notification_method = getattr(delivery, method_name)
+                send_notification_method = getattr(meal_request, method_name)
                 send_notification_method()
-                successes.append(delivery)
+                successes.append(meal_request)
             except SendNotificationException as e:
                 errors.append(e.message)
 
@@ -238,8 +214,8 @@ class MealRequestAdmin(admin.ModelAdmin):
         total = sent + unsent
 
         prefix_message = ngettext(
-            "%d delivery was selected",
-            "%d deliveries were selected",
+            "%d meal request was selected",
+            "%d meal requests were selected",
             total,
         ) % total
         success_message = ngettext(
@@ -284,86 +260,6 @@ class MealRequestAdmin(admin.ModelAdmin):
     def notify_deliverers_details(self, request, queryset):
         self.send_notifications(request, queryset, 'send_detailed_deliverer_notification')
     notify_deliverers_details.short_description = "Send text to deliverers with details about TODAY's request"
-
-
-class MealDeliveryAdmin(admin.ModelAdmin):
-    list_display = (
-        'edit_link',
-        'request_link',
-        'request_phone',
-        'request_can_receive_texts',
-        'chef_link',
-        'deliverer_link',
-        'status',
-        'date',
-        'pickup_range',
-        'dropoff_range',
-        'completed',
-    )
-
-    list_filter = (
-        MealDeliveryCompletedFilter,
-        'status',
-        'request__can_receive_texts',
-    )
-    inlines = (
-        MealDeliveryCommentInline,
-    )
-    search_fields = (
-        'request__name',
-        'chef__email',
-        'chef__volunteer__name',
-        'deliverer__email',
-        'deliverer__volunteer__name',
-    )
-    list_select_related = (
-        'request',
-        'chef',
-        'chef__volunteer',
-        'deliverer',
-        'deliverer__volunteer',
-    )
-
-    def request_phone(self, obj):
-        return obj.request.phone_number
-    request_phone.short_description = 'Requestor phone'
-
-    def request_can_receive_texts(self, obj):
-        return obj.request.can_receive_texts
-    request_can_receive_texts.boolean = True
-    request_can_receive_texts.short_description = "Can receive texts"
-
-    def edit_link(self, delivery):
-        return 'Edit delivery'
-    edit_link.short_description = 'Edit link'
-
-    def request_link(self, delivery):
-        return obj_link(delivery.request, 'mealrequest')
-    request_link.short_description = 'Request'
-
-    def chef_link(self, delivery):
-        return user_link(delivery.chef)
-    chef_link.short_description = 'Chef'
-    chef_link.admin_order_field = 'chef__volunteer__name'
-
-    def deliverer_link(self, delivery):
-        return user_link(delivery.deliverer)
-    deliverer_link.short_description = 'Deliverer'
-    deliverer_link.admin_order_field = 'deliverer__volunteer__name'
-
-    def pickup_range(self, delivery):
-        return short_time(delivery.pickup_start) + ' - ' + short_time(delivery.pickup_end)
-    pickup_range.short_description = 'Pickup range'
-
-    def dropoff_range(self, delivery):
-        return short_time(delivery.dropoff_start) + ' - ' + short_time(delivery.dropoff_end)
-    dropoff_range.short_description = 'Dropoff range'
-
-    def completed(self, obj):
-        return obj.status == Status.DELIVERED
-    completed.admin_order_field = 'status'
-    completed.boolean = True
-
 
 
 class GroceryRequestCommentInline(CommentInline):
@@ -491,5 +387,4 @@ class GroceryRequestAdmin(admin.ModelAdmin):
 
 
 admin.site.register(MealRequest, MealRequestAdmin)
-admin.site.register(MealDelivery, MealDeliveryAdmin)
 admin.site.register(GroceryRequest, GroceryRequestAdmin)
