@@ -3,6 +3,8 @@ from textwrap import dedent
 from datetime import datetime, timedelta, date
 from django.db import models
 from django.conf import settings
+from django.db.models.signals import pre_init
+from django.dispatch import receiver
 from django.forms import model_to_dict
 from django.core.exceptions import ValidationError
 from django.urls import reverse_lazy
@@ -23,7 +25,25 @@ class SendNotificationException(Exception):
         self.message = message
 
 
+class Status(models.TextChoices):
+    UNCONFIRMED = 'Unconfirmed', 'Unconfirmed'
+    CHEF_ASSIGNED = 'Chef Assigned', 'Chef Assigned'
+    DRIVER_ASSIGNED = 'Driver Assigned', 'Driver Assigned'
+    DATE_CONFIRMED = 'Delivery Date Confirmed', 'Delivery Date Confirmed'
+    DELIVERED = 'Delivered', 'Delivered'
+
+
+class MealRequestQuerySet(models.QuerySet):
+    def delivered(self):
+        return self.filter(status=Status.DELIVERED)
+
+    def not_delivered(self):
+        return self.exclude(status=Status.DELIVERED)
+
+
 class MealRequest(ContactInfo):
+    objects = MealRequestQuerySet.as_manager()
+
     # Information about the recipient
     can_receive_texts = models.BooleanField(
         "Can receive texts",
@@ -134,6 +154,38 @@ class MealRequest(ContactInfo):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    # Delivery
+    chef = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET(get_sentinel_user),
+        related_name="cooked_meal_requests",
+        null=True,
+        blank=True,
+    )
+    deliverer = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET(get_sentinel_user),
+        related_name="delivered_meal_requests",
+        null=True,
+        blank=True,
+    )
+    status = models.CharField(
+        "Status",
+        max_length=settings.DEFAULT_LENGTH,
+        choices=Status.choices,
+        default=Status.UNCONFIRMED
+    )
+    delivery_date = models.DateField("Delivery date", null=True, blank=True)
+    pickup_start = models.TimeField(null=True, blank=True)
+    pickup_end = models.TimeField(null=True, blank=True)
+    dropoff_start = models.TimeField(null=True, blank=True)
+    dropoff_end = models.TimeField(null=True, blank=True)
+    meal = models.TextField(
+        "Meal",
+        help_text="(Optional) Let us know what you plan on cooking!",
+        blank=True,
+    )
+
     @classmethod
     def requests_paused(cls):
         """Are requests currently paused?"""
@@ -162,9 +214,7 @@ class MealRequest(ContactInfo):
 
     @classmethod
     def active_requests(cls):
-        return cls.objects.exclude(
-            delivery__status__in=(Status.DATE_CONFIRMED, Status.DELIVERED)
-        ).count()
+        return cls.objects.exclude(status__in=(Status.DATE_CONFIRMED, Status.DELIVERED))
 
     @classmethod
     def has_open_request(cls, phone: str):
@@ -172,7 +222,7 @@ class MealRequest(ContactInfo):
         return cls.objects.filter(
             phone_number=phone
         ).exclude(
-            delivery__status__in=(Status.DATE_CONFIRMED, Status.DELIVERED)
+            status__in=(Status.DATE_CONFIRMED, Status.DELIVERED)
         ).exists()
 
     @property
@@ -180,19 +230,40 @@ class MealRequest(ContactInfo):
         return (timezone.now() - self.created_at).days >= 7
 
     @property
-    def has_delivery(self):
-        return hasattr(self, 'delivery')
+    def delivered(self):
+        return self.status == Status.DELIVERED
 
     def get_absolute_url(self):
         return reverse_lazy('recipients:request_detail', args=[str(self.id)])
 
     def copy(self):
-        kwargs = model_to_dict(self, exclude=['id'])
-        new = MealRequest.objects.create(**kwargs)
-        if self.has_delivery:
-            new.delivery = self.delivery.copy(new)
-            new.save()
-        return new
+        """Clone the request with special business logic
+        - The chef should remain the same but not the delivery driver
+        - The date should be on the same day of the week, starting today or later
+        - If the original date is None, so is the new date
+        - Status should be Chef Assigned
+        """
+        kwargs = model_to_dict(self, exclude=[
+            'id',
+            'chef',
+            'deliverer',
+            'delivery_date',
+            'status',
+        ])
+
+        new_date = self.delivery_date
+        today = date.today()
+        if new_date:
+            while new_date <= today:
+                new_date += timedelta(days=7)
+
+        return MealRequest.objects.create(
+            **kwargs,
+            chef=self.chef,
+            deliverer=None,
+            delivery_date=new_date,
+            status=Status.CHEF_ASSIGNED,
+        )
 
     def send_confirmation_email(self):
         custom_send_mail(
@@ -208,33 +279,141 @@ class MealRequest(ContactInfo):
             reply_to=settings.REQUEST_COORDINATORS_EMAIL
         )
 
+    def send_recipient_meal_notification(self, api=None):
+        if not self.can_receive_texts:
+            raise SendNotificationException("Recipient cannot receive text messages at their phone number")
+
+        text = TextMessage(
+            template="texts/meals/recipient/notification.txt",
+            context={"request": self},
+            api=api,
+        )
+        text.send(self.phone_number)
+        self.comments.create(comment=f"Sent a text to recipient: {text.message}")
+
+    def send_recipient_reminder_notification(self, api=None):
+        if not self.can_receive_texts:
+            raise SendNotificationException("Recipient cannot receive text messages at their phone number")
+        if not (self.dropoff_start and self.dropoff_end):
+            raise SendNotificationException("Delivery does not have a dropoff time range scheduled")
+        if self.deliverer is None:
+            raise SendNotificationException("Delivery does not have a deliverer assigned")
+
+        text = TextMessage(
+            template="texts/meals/recipient/reminder.txt",
+            context={"request": self},
+            api=api,
+        )
+        text.send(self.phone_number)
+        self.comments.create(comment=f"Sent a text to recipient: {text.message}")
+
+    def send_recipient_delivery_notification(self, api=None):
+        if not self.can_receive_texts:
+            raise SendNotificationException("Recipient cannot receive text messages at their phone number")
+        if not (self.dropoff_start and self.dropoff_end):
+            raise SendNotificationException("Delivery does not have a dropoff time range scheduled")
+        if self.deliverer is None:
+            raise SendNotificationException("Delivery does not have a deliverer assigned")
+
+        text = TextMessage(
+            template="texts/meals/recipient/delivery.txt",
+            context={"request": self},
+            api=api,
+        )
+        text.send(self.phone_number)
+        self.comments.create(comment=f"Sent a text to recipient: {text.message}")
+
+    def send_recipient_feedback_request(self, api=None):
+        if not self.can_receive_texts:
+            raise SendNotificationException("Recipient cannot receive text messages at their phone number")
+
+        text = TextMessage(
+            template="texts/meals/recipient/feedback.txt",
+            context={"request": self},
+            api=api,
+        )
+        text.send(self.phone_number)
+        self.comments.create(comment=f"Sent a text to recipient: {text.message}")
+
+    def send_chef_reminder_notification(self, api=None):
+        if not self.chef:
+            raise SendNotificationException("No chef assigned to this delivery")
+        if not self.deliverer:
+            raise SendNotificationException("No deliverer assigned to this delivery")
+        if not (self.pickup_start and self.pickup_end):
+            raise SendNotificationException("Delivery does not have a pickup time range scheduled")
+
+        text = TextMessage(
+            template="texts/meals/chef/reminder.txt",
+            context={"request": self},
+            api=api,
+        )
+        text.send(self.chef.volunteer.phone_number)
+        self.comments.create(comment=f"Sent a text to the chef: {text.message}")
+
+    def send_deliverer_reminder_notification(self, api=None):
+        if not self.deliverer:
+            raise SendNotificationException("No deliverer assigned to this delivery")
+
+        text = TextMessage(
+            template="texts/meals/deliverer/reminder.txt",
+            context={"request": self},
+            api=api,
+        )
+        text.send(self.deliverer.volunteer.phone_number)
+        self.comments.create(comment=f"Sent a text to the deliverer: {text.message}")
+
+    def send_detailed_deliverer_notification(self, api=None):
+        """Send a detailed notification to the deliverer with content for the delivery"""
+        if not self.deliverer:
+            raise SendNotificationException("No deliverer assigned to this delivery")
+        if not self.chef:
+            raise SendNotificationException("No chef assigned to this delivery")
+        if not self.delivery_date:
+            raise SendNotificationException("Delivery does not have a date scheduled")
+        if not (self.pickup_start and self.pickup_end):
+            raise SendNotificationException("Delivery does not have a pickup time range scheduled")
+        if not (self.dropoff_start and self.dropoff_end):
+            raise SendNotificationException("Delivery does not have a dropoff time range scheduled")
+
+        text = TextMessage(
+            template="texts/meals/deliverer/details.txt",
+            context={"request": self},
+            api=api,
+        )
+        text.send(self.deliverer.volunteer.phone_number)
+        self.comments.create(comment=f"Sent a text to the deliverer: {text.message}")
+
     def __str__(self):
         return "Request #%d (%s): %d adult(s) and %d kid(s) in %s " % (
             self.id, self.name, self.num_adults, self.num_children, self.city,
         )
 
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        return super().save(*args, **kwargs)
 
-class Status(models.TextChoices):
-    UNCONFIRMED = 'Unconfirmed', 'Unconfirmed'
-    CHEF_ASSIGNED = 'Chef Assigned', 'Chef Assigned'
-    DRIVER_ASSIGNED = 'Driver Assigned', 'Driver Assigned'
-    DATE_CONFIRMED = 'Delivery Date Confirmed', 'Delivery Date Confirmed'
-    DELIVERED = 'Delivered', 'Delivered'
-
-
-class MealDeliveryQuerySet(models.QuerySet):
-    def delivered(self):
-        return self.filter(status=Status.DELIVERED)
-
-    def not_delivered(self):
-        return self.exclude(status=Status.DELIVERED)
+    def clean(self, *args, **kwargs):
+        super().clean(*args, **kwargs)
+        if self.pickup_end and self.pickup_start and self.pickup_end <= self.pickup_start:
+            raise ValidationError("The pickup end time must be after the pickup start time")
+        if self.dropoff_end and self.dropoff_start and self.dropoff_end <= self.dropoff_start:
+            raise ValidationError("The dropoff end time must be after the dropoff start time")
+        if self.dropoff_start and self.pickup_start and self.dropoff_start <= self.pickup_start:
+            raise ValidationError("The dropoff start time must be after the pickup start time")
+        if self.dropoff_start and self.dropoff_end and self.delivery_date:
+            start = datetime.combine(self.delivery_date, self.dropoff_start)
+            end = datetime.combine(self.delivery_date, self.dropoff_end)
+            if (start + timedelta(hours=2)) < end and self.status != Status.DELIVERED:
+                raise ValidationError("The delivery window must be two hours or less.")
+        if self.deliverer and (not self.dropoff_start or not self.dropoff_end):
+            raise ValidationError("Please specify a dropoff window.")
 
 
 class MealDelivery(models.Model):
     class Meta:
         verbose_name_plural = 'meal deliveries'
 
-    objects = MealDeliveryQuerySet.as_manager()
     request = models.OneToOneField(
         MealRequest,
         on_delete=models.CASCADE,
@@ -274,171 +453,6 @@ class MealDelivery(models.Model):
 
     # System
     created_at = models.DateTimeField(auto_now_add=True)
-
-    @property
-    def delivered(self):
-        return self.status == Status.DELIVERED
-
-    def save(self, *args, **kwargs):
-        self.full_clean()
-        return super(MealDelivery, self).save(*args, **kwargs)
-
-    def clean(self, *args, **kwargs):
-        super(MealDelivery, self).clean(*args, **kwargs)
-        if self.pickup_end and self.pickup_start and self.pickup_end <= self.pickup_start:
-            raise ValidationError("The pickup end time must be after the pickup start time")
-        if self.dropoff_end and self.dropoff_start and self.dropoff_end <= self.dropoff_start:
-            raise ValidationError("The dropoff end time must be after the dropoff start time")
-        if self.dropoff_start and self.pickup_start and self.dropoff_start <= self.pickup_start:
-            raise ValidationError("The dropoff start time must be after the pickup start time")
-        if self.dropoff_start and self.dropoff_end and self.date:
-            start = datetime.combine(self.date, self.dropoff_start)
-            end = datetime.combine(self.date, self.dropoff_end)
-            if (start + timedelta(hours=2)) < end and self.status is not Status.DELIVERED:
-                raise ValidationError("The delivery window must be two hours or less.")
-        if self.deliverer and (not self.dropoff_start or not self.dropoff_end):
-            raise ValidationError("Please specify a dropoff window.")
-
-    def copy(self, meal_request):
-        """Clone the delivery with special business logic
-
-        - The chef should remain the same but not the delivery driver
-        - The date should be on the same day of the week, starting today or later
-        - If the original date is None, so is the new date
-        - Must be assigned to a new meal request (can't have duplicates)
-        - Status should be Chef Assigned
-        """
-        kwargs = model_to_dict(self, fields=[
-            'pickup_start',
-            'pickup_end',
-            'dropoff_start',
-            'dropoff_end',
-        ])
-
-        new_date = self.date
-        today = date.today()
-        if new_date:
-            while new_date <= today:
-                new_date += timedelta(days=7)
-
-        return MealDelivery.objects.create(
-            **kwargs,
-            request=meal_request,
-            chef=self.chef,
-            date=new_date,
-            status=Status.CHEF_ASSIGNED,
-        )
-
-    def send_recipient_meal_notification(self, api=None):
-        if not self.request.can_receive_texts:
-            raise SendNotificationException("Recipient cannot receive text messages at their phone number")
-
-        text = TextMessage(
-            template="texts/meals/recipient/notification.txt",
-            context={"delivery": self, "request": self.request},
-            api=api,
-        )
-        text.send(self.request.phone_number)
-        self.comments.create(comment=f"Sent a text to recipient: {text.message}")
-
-    def send_recipient_reminder_notification(self, api=None):
-        if not self.request.can_receive_texts:
-            raise SendNotificationException("Recipient cannot receive text messages at their phone number")
-        if not (self.dropoff_start and self.dropoff_end):
-            raise SendNotificationException("Delivery does not have a dropoff time range scheduled")
-        if self.deliverer is None:
-            raise SendNotificationException("Delivery does not have a deliverer assigned")
-
-        text = TextMessage(
-            template="texts/meals/recipient/reminder.txt",
-            context={"delivery": self, "request": self.request},
-            api=api,
-        )
-        text.send(self.request.phone_number)
-        self.comments.create(comment=f"Sent a text to recipient: {text.message}")
-
-    def send_recipient_delivery_notification(self, api=None):
-        if not self.request.can_receive_texts:
-            raise SendNotificationException("Recipient cannot receive text messages at their phone number")
-
-        if not (self.dropoff_start and self.dropoff_end):
-            raise SendNotificationException("Delivery does not have a dropoff time range scheduled")
-
-        if self.deliverer is None:
-            raise SendNotificationException("Delivery does not have a deliverer assigned")
-
-        text = TextMessage(
-            template="texts/meals/recipient/delivery.txt",
-            context={"delivery": self, "request": self.request},
-            api=api,
-        )
-        text.send(self.request.phone_number)
-        self.comments.create(comment=f"Sent a text to recipient: {text.message}")
-
-    def send_recipient_feedback_request(self, api=None):
-        if not self.request.can_receive_texts:
-            raise SendNotificationException("Recipient cannot receive text messages at their phone number")
-
-        text = TextMessage(
-            template="texts/meals/recipient/feedback.txt",
-            context={"delivery": self, "request": self.request},
-            api=api,
-        )
-        text.send(self.request.phone_number)
-        self.comments.create(comment=f"Sent a text to recipient: {text.message}")
-
-    def send_chef_reminder_notification(self, api=None):
-        if not self.chef:
-            raise SendNotificationException("No chef assigned to this delivery")
-        if not self.deliverer:
-            raise SendNotificationException("No deliverer assigned to this delivery")
-        if not (self.pickup_start and self.pickup_end):
-            raise SendNotificationException("Delivery does not have a pickup time range scheduled")
-
-        text = TextMessage(
-            template="texts/meals/chef/reminder.txt",
-            context={"delivery": self, "request": self.request},
-            api=api,
-        )
-        text.send(self.chef.volunteer.phone_number)
-        self.comments.create(comment=f"Sent a text to the chef: {text.message}")
-
-    def send_deliverer_reminder_notification(self, api=None):
-        if not self.deliverer:
-            raise SendNotificationException("No deliverer assigned to this delivery")
-
-        text = TextMessage(
-            template="texts/meals/deliverer/reminder.txt",
-            context={"delivery": self, "request": self.request},
-            api=api,
-        )
-        text.send(self.deliverer.volunteer.phone_number)
-        self.comments.create(comment=f"Sent a text to the deliverer: {text.message}")
-
-    def send_detailed_deliverer_notification(self, api=None):
-        """Send a detailed notification to the deliverer with content for the delivery"""
-        if not self.deliverer:
-            raise SendNotificationException("No deliverer assigned to this delivery")
-
-        if not self.chef:
-            raise SendNotificationException("No chef assigned to this delivery")
-
-        if not self.date:
-            raise SendNotificationException("Delivery does not have a date scheduled")
-
-        if not (self.pickup_start and self.pickup_end):
-            raise SendNotificationException("Delivery does not have a pickup time range scheduled")
-
-        if not (self.dropoff_start and self.dropoff_end):
-            raise SendNotificationException("Delivery does not have a dropoff time range scheduled")
-
-        text = TextMessage(
-            template="texts/meals/deliverer/details.txt",
-            context={"delivery": self, "request": self.request},
-            api=api,
-        )
-        text.send(self.deliverer.volunteer.phone_number)
-        self.comments.create(comment=f"Sent a text to the deliverer: {text.message}")
 
 
 class CommentModel(models.Model):
@@ -747,3 +761,8 @@ class GroceryRequest(ContactInfo):
 
 class GroceryRequestComment(CommentModel):
     subject = models.ForeignKey(GroceryRequest, related_name="comments", on_delete=models.CASCADE)
+
+
+@receiver(pre_init, sender=MealDelivery)
+def error_deprecated_meal_delivery(sender, **kwargs):
+    raise Exception("MealDelivery is deprecated")

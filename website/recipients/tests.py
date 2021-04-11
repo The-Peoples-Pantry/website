@@ -5,10 +5,10 @@ from unittest.mock import MagicMock
 
 from django.contrib.auth.models import User
 
-from recipients.models import MealRequest, MealDelivery, GroceryRequest
+from recipients.models import MealRequest, GroceryRequest
 
 
-class MealDeliveryTextTests(TestCase):
+class MealRequestTextTests(TestCase):
     def setUp(self):
         self.api = MagicMock()
         self.deliverer = User.objects.create(
@@ -27,6 +27,7 @@ class MealDeliveryTextTests(TestCase):
         self.chef.volunteer.save()
         self.request = MealRequest.objects.create(
             name="Ryan",
+            email="ryan@example.com",
             phone_number="5555555555",
             address_1="123 Fake St",
             address_2="Unit 1",
@@ -54,11 +55,9 @@ class MealDeliveryTextTests(TestCase):
             recipient_notified=False,
             accept_terms=True,
             covid=False,
+            availability="Anytime",
             delivery_details="Deliver to side door",
-        )
-        self.delivery = MealDelivery.objects.create(
-            request=self.request,
-            date=date.fromisoformat('2021-03-15'),
+            delivery_date=date.fromisoformat('2021-03-15'),
             pickup_start=time.fromisoformat('12:00'),
             pickup_end=time.fromisoformat('13:00'),
             dropoff_start=time.fromisoformat('14:00'),
@@ -76,7 +75,7 @@ class MealDeliveryTextTests(TestCase):
             Please confirm you got this message and let us know if you can accept the delivery.
             Thank you!
         """).strip()
-        self.delivery.send_recipient_meal_notification(self.api)
+        self.request.send_recipient_meal_notification(self.api)
         self.api.send_text.assert_called_with(self.request.phone_number, expected, "default")
 
     def test_send_recipient_reminder_notification(self):
@@ -85,7 +84,7 @@ class MealDeliveryTextTests(TestCase):
             This is a reminder about your delivery from The People’s Pantry today for request ID 1. Ophelia will be at your home between 02:00 PM and 03:00 PM.
             Thanks, and stay safe!
         """).strip()
-        self.delivery.send_recipient_reminder_notification(self.api)
+        self.request.send_recipient_reminder_notification(self.api)
         self.api.send_text.assert_called_with(self.request.phone_number, expected, "default")
 
     def test_send_recipient_delivery_notification(self):
@@ -99,14 +98,14 @@ class MealDeliveryTextTests(TestCase):
 
             Reply STOP to unsubscribe
         """).strip()
-        self.delivery.send_recipient_delivery_notification(self.api)
+        self.request.send_recipient_delivery_notification(self.api)
         self.api.send_text.assert_called_with(self.request.phone_number, expected, "default")
 
     def test_send_recipient_feedback_request(self):
         expected = dedent("""
             Hello Ryan How did you like your meals this week? We appreciate any feedback you have. If you are comfortable with us sharing your anonymized feedback on social media, please let us know - it helps us raise money for the program. If not, that’s okay too.
         """).strip()
-        self.delivery.send_recipient_feedback_request(self.api)
+        self.request.send_recipient_feedback_request(self.api)
         self.api.send_text.assert_called_with(self.request.phone_number, expected, "default")
 
     def test_send_chef_reminder_notification(self):
@@ -120,7 +119,7 @@ class MealDeliveryTextTests(TestCase):
 
             Reply STOP to unsubscribe
         """).strip()
-        self.delivery.send_chef_reminder_notification(self.api)
+        self.request.send_chef_reminder_notification(self.api)
         self.api.send_text.assert_called_with(self.chef.volunteer.phone_number, expected, "default")
 
     def test_send_deliverer_reminder_notification(self):
@@ -133,7 +132,7 @@ class MealDeliveryTextTests(TestCase):
 
             Reply STOP to unsubscribe
         """).strip()
-        self.delivery.send_deliverer_reminder_notification(self.api)
+        self.request.send_deliverer_reminder_notification(self.api)
         self.api.send_text.assert_called_with(self.deliverer.volunteer.phone_number, expected, "default")
 
     def test_send_detailed_deliverer_notification(self):
@@ -148,11 +147,11 @@ class MealDeliveryTextTests(TestCase):
             Send a text if you have any problems with your delivery, and please let us know when the delivery is completed.
             Thank you for your help!
         """).strip()
-        self.delivery.send_detailed_deliverer_notification(self.api)
+        self.request.send_detailed_deliverer_notification(self.api)
         self.api.send_text.assert_called_with(self.deliverer.volunteer.phone_number, expected, "default")
 
 
-class GroceryDeliveryTextTests(TestCase):
+class GroceryRequestTextTests(TestCase):
     def setUp(self):
         self.api = MagicMock()
         self.request = GroceryRequest.objects.create(

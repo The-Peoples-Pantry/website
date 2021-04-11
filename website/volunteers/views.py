@@ -11,15 +11,14 @@ from django.urls import reverse_lazy
 from django.views.generic.edit import FormView, UpdateView
 from django.views.generic import ListView, TemplateView
 from django_filters.views import FilterView
-from django.db.models.query_utils import Q
 
 from core.models import has_group
 from core.views import GroupRequiredMixin
-from recipients.models import MealRequest, MealDelivery, Status
+from recipients.models import MealRequest, Status
 from website.maps import distance
-from .forms import MealDeliverySignupForm, ChefSignupForm, ChefApplyForm, DeliveryApplyForm, OrganizerApplyForm
+from .forms import DelivererSignupForm, ChefSignupForm, ChefApplyForm, DeliveryApplyForm, OrganizerApplyForm
 from .models import VolunteerApplication, VolunteerRoles, Volunteer
-from .filters import ChefSignupFilter, MealDeliverySignupFilter
+from .filters import ChefSignupFilter, DelivererSignupFilter
 
 
 logger = logging.getLogger(__name__)
@@ -32,9 +31,8 @@ class ChefSignupView(LoginRequiredMixin, GroupRequiredMixin, FormView, FilterVie
     permission_group = 'Chefs'
     permission_group_redirect_url = reverse_lazy('volunteers:chef_application')
     filterset_class = ChefSignupFilter
-    queryset = MealRequest.objects.exclude(delivery__status=Status.DELIVERED).filter(
-        Q(delivery__isnull=True) | Q(delivery__chef__isnull=True)
-    ).order_by('created_at')
+    queryset = MealRequest.objects.not_delivered().filter(chef__isnull=True)
+    ordering = 'created_at'
 
     @property
     def success_url(self):
@@ -59,12 +57,13 @@ class ChefSignupView(LoginRequiredMixin, GroupRequiredMixin, FormView, FilterVie
         ])
 
     def get_context_data(self, **kwargs):
-        context = super(ChefSignupView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
+        form_class = self.get_form_class()
         last_visited = self.get_and_set_last_visited()
         context["object_contexts"] = [
             {
                 "meal": meal_request,
-                "form": ChefSignupForm(initial={'id': meal_request.id}),
+                "form": form_class(initial={'id': meal_request.id}),
                 "distance": distance(meal_request.coordinates, self.request.user.volunteer.coordinates),
             }
             # self.object_list is a MealRequest queryset pre-filtered by ChefSignupFilter
@@ -91,7 +90,7 @@ class ChefSignupView(LoginRequiredMixin, GroupRequiredMixin, FormView, FilterVie
 
         try:
             # If the meal request is still available setup the delivery
-            self.create_delivery(form, meal_request)
+            self.update_meal_request(form, meal_request)
         except ValidationError as error:
             messages.error(self.request, error.messages[0])
             return redirect(self.success_url)
@@ -105,40 +104,32 @@ class ChefSignupView(LoginRequiredMixin, GroupRequiredMixin, FormView, FilterVie
         except MealRequest.DoesNotExist:
             return None
 
-    def create_delivery(self, form, meal_request):
+    def update_meal_request(self, form, meal_request):
+        meal_request.chef = self.request.user
+        meal_request.meal = form.cleaned_data['meal']
+        meal_request.status = Status.CHEF_ASSIGNED
+        meal_request.delivery_date = form.cleaned_data['delivery_date']
+        meal_request.pickup_start = form.cleaned_data['pickup_start']
+        meal_request.pickup_end = form.cleaned_data['pickup_end']
+
         if form.cleaned_data['can_deliver']:
-            MealDelivery.objects.create(
-                request=meal_request,
-                deliverer=self.request.user,
-                chef=self.request.user,
-                status=Status.DRIVER_ASSIGNED,
-                date=form.cleaned_data['delivery_date'],
-                pickup_start=form.cleaned_data['pickup_start'],
-                pickup_end=form.cleaned_data['pickup_end'],
-                dropoff_start=form.cleaned_data['dropoff_start'],
-                dropoff_end=form.cleaned_data['dropoff_end'],
-                meal=form.cleaned_data['meal'],
-            )
-        else:
-            MealDelivery.objects.create(
-                request=meal_request,
-                chef=self.request.user,
-                status=Status.CHEF_ASSIGNED,
-                date=form.cleaned_data['delivery_date'],
-                pickup_start=form.cleaned_data['pickup_start'],
-                pickup_end=form.cleaned_data['pickup_end'],
-                meal=form.cleaned_data['meal'],
-            )
+            meal_request.deliverer = self.request.user
+            meal_request.status = Status.DRIVER_ASSIGNED
+            meal_request.dropoff_start = form.cleaned_data['dropoff_start']
+            meal_request.dropoff_end = form.cleaned_data['dropoff_end']
+
+        meal_request.save()
 
 
-class MealDeliverySignupView(LoginRequiredMixin, GroupRequiredMixin, FormView, FilterView):
+class DelivererSignupView(LoginRequiredMixin, GroupRequiredMixin, FormView, FilterView):
     """View for deliverers to sign up to deliver meal requests"""
     template_name = "volunteers/delivery_signup.html"
-    form_class = MealDeliverySignupForm
+    form_class = DelivererSignupForm
     permission_group = 'Deliverers'
     permission_group_redirect_url = reverse_lazy('volunteers:delivery_application')
-    filterset_class = MealDeliverySignupFilter
-    queryset = MealDelivery.objects.exclude(status=Status.DELIVERED).filter(deliverer__isnull=True,).order_by('date')
+    filterset_class = DelivererSignupFilter
+    queryset = MealRequest.objects.not_delivered().exclude(delivery_date__isnull=True).filter(deliverer__isnull=True)
+    ordering = 'delivery_date'
 
     @property
     def success_url(self):
@@ -160,15 +151,16 @@ class MealDeliverySignupView(LoginRequiredMixin, GroupRequiredMixin, FormView, F
         ])
 
     def get_context_data(self, alerts={}, **kwargs):
-        context = super(MealDeliverySignupView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
+        form_class = self.get_form_class()
         last_visited = self.get_and_set_last_visited()
-        context["delivery_form_pairs"] = [
-            (delivery, MealDeliverySignupForm(initial={
-                'id': delivery.id,
-                'pickup_start': delivery.pickup_start,
-                'pickup_end': delivery.pickup_end
+        context["meal_request_form_pairs"] = [
+            (meal_request, form_class(initial={
+                'id': meal_request.id,
+                'pickup_start': meal_request.pickup_start,
+                'pickup_end': meal_request.pickup_end
             }))
-            for delivery in self.object_list
+            for meal_request in self.object_list
         ]
         context["new_since_last_visited"] = self.new_since(last_visited)
         context["last_visited"] = last_visited
@@ -180,18 +172,20 @@ class MealDeliverySignupView(LoginRequiredMixin, GroupRequiredMixin, FormView, F
         return redirect(self.success_url)
 
     def form_valid(self, form):
-        # First fetch the associated delivery
-        delivery = self.get_delivery_request(form)
+        # First fetch the associated MealRequest
+        meal_request = self.get_meal_request(form)
 
         # It's possible that someone else has signed up for it, so handle that
-        if delivery is None:
-            messages.error(self.request,
-                           "'Sorry, we were unable to sign you for that delivery, someone else may have already claimed it.'")
+        if meal_request is None:
+            messages.error(
+                self.request,
+                "Sorry, we were unable to sign you for that request, someone else may have already claimed it.",
+            )
             return self.form_invalid(form)
 
         try:
-            # If the meal request is still available setup the delivery
-            self.update_delivery(form, delivery)
+            # If the meal request is still available, update it from the form values
+            self.update_meal_request(form, meal_request)
         except ValidationError as error:
             messages.error(self.request, error.messages[0])
             return redirect(self.success_url)
@@ -199,18 +193,18 @@ class MealDeliverySignupView(LoginRequiredMixin, GroupRequiredMixin, FormView, F
         messages.success(self.request, 'Successfully signed up!')
         return super().form_valid(form)
 
-    def get_delivery_request(self, form):
+    def get_meal_request(self, form):
         try:
             return self.queryset.get(id=form.cleaned_data['id'])
-        except MealDelivery.DoesNotExist:
+        except MealRequest.DoesNotExist:
             return None
 
-    def update_delivery(self, form, delivery):
-        delivery.dropoff_start = form.cleaned_data['dropoff_start']
-        delivery.dropoff_end = form.cleaned_data['dropoff_end']
-        delivery.deliverer = self.request.user
-        delivery.status = Status.DRIVER_ASSIGNED
-        delivery.save()
+    def update_meal_request(self, form, meal_request):
+        meal_request.dropoff_start = form.cleaned_data['dropoff_start']
+        meal_request.dropoff_end = form.cleaned_data['dropoff_end']
+        meal_request.deliverer = self.request.user
+        meal_request.status = Status.DRIVER_ASSIGNED
+        meal_request.save()
 
 
 ####################################################################
@@ -222,9 +216,9 @@ class MealDeliverySignupView(LoginRequiredMixin, GroupRequiredMixin, FormView, F
 
 class ChefIndexView(LoginRequiredMixin, GroupRequiredMixin, ListView):
     """View for chefs to see the meals they've signed up to cook"""
-    model = MealDelivery
-    ordering = 'date'
-    context_object_name = "deliveries"
+    model = MealRequest
+    ordering = 'delivery_date'
+    context_object_name = "meal_requests"
     template_name = "volunteers/chef_list.html"
     permission_group = 'Chefs'
     permission_group_redirect_url = reverse_lazy('volunteers:chef_application')
@@ -235,31 +229,31 @@ class ChefIndexView(LoginRequiredMixin, GroupRequiredMixin, ListView):
 
 class DeliveryIndexView(LoginRequiredMixin, GroupRequiredMixin, ListView):
     """View for deliverers to see the meal requests they've signed up to deliver"""
-    model = MealDelivery
-    ordering = 'date'
+    model = MealRequest
+    ordering = 'delivery_date'
+    context_object_name = "meal_requests"
     template_name = "volunteers/delivery_list.html"
     permission_group = 'Deliverers'
     permission_group_redirect_url = reverse_lazy('volunteers:delivery_application')
-    context_object_name = "deliveries"
 
     def get_queryset(self):
         return super().get_queryset().filter(deliverer=self.request.user)
 
     def post(self, request):
-        instance = MealDelivery.objects.get(id=request.POST['delivery_id'])
+        meal_request = self.get_queryset().get(id=request.POST['meal_request_id'])
 
         # Ensure that this was submitted by the deliverer
-        # Prevents someone abusing this POST endpoint with delivery_ids that don't "belong" to them
-        if instance.deliverer != request.user:
+        # Prevents someone abusing this POST endpoint with meal_request_ids that don't "belong" to them
+        if meal_request.deliverer != request.user:
             raise PermissionDenied
 
-        if instance.date <= date.today():
-            instance.status = Status.DELIVERED
-            instance.save()
+        if meal_request.delivery_date <= date.today():
+            meal_request.status = Status.DELIVERED
+            meal_request.save()
             messages.success(
                 self.request,
                 'Marked delivery ID #%d to %s as complete! If this was a mistake please email us at %s as soon as possible.' %
-                (instance.pk, instance.request.address_1, settings.VOLUNTEER_COORDINATORS_EMAIL)
+                (meal_request.pk, meal_request.address, settings.VOLUNTEER_COORDINATORS_EMAIL)
             )
         else:
             messages.error(

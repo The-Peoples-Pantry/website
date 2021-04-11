@@ -23,22 +23,22 @@
   <div class="col-md-9 order-md-1">
 
     <p>Here are all the upcoming requests that need to be delivered and their pickup timeframes! Please sign up by selecting a dropoff time frame. You can also <a href={% url 'volunteers:delivery_list' %}>see all the deliveries you've already signed up for here</a>.</p>
-    {% for delivery, form in delivery_form_pairs %}
+    {% for meal_request, form in meal_request_form_pairs %}
       <div class="card mb-4">
         {# Card header section contains the meal request title #}
         <div class="card-header font-weight-bold">
-          {% if last_visited < delivery.created_at.timestamp %}<span class="badge badge-pill badge-primary" title="This delivery was added since you last visited this page">New</span>{% endif %}
-          Delivery for Request #{{ delivery.request.id }} - Pickup timeframe: {{ delivery.date }}, {{ delivery.pickup_start }} to {{ delivery.pickup_end }}
+          {% if last_visited < meal_request.created_at.timestamp %}<span class="badge badge-pill badge-primary" title="This delivery was added since you last visited this page">New</span>{% endif %}
+          Delivery for Request #{{ meal_request.id }} - Pickup timeframe: {{ meal_request.delivery_date }}, {{ meal_request.pickup_start }} to {{ meal_request.pickup_end }}
         </div>
         <div class="card-body">
           <div class="row">
             <div class="col h6">
               Meal
-              for {{ delivery.request.num_adults }} adult{{ delivery.request.num_adults | pluralize }}
-              and {{ delivery.request.num_children }} kid{{ delivery.request.num_children | pluralize }}
+              for {{ meal_request.num_adults }} adult{{ meal_request.num_adults | pluralize }}
+              and {{ meal_request.num_children }} kid{{ meal_request.num_children | pluralize }}
             </div>
           </div>
-          <p>{{ delivery.request.delivery_details }}</p>
+          <p>{{ meal_request.delivery_details }}</p>
           <div class="row mb-4">
             <div class="col">
               <h6>Approximate pickup location</h6>
@@ -47,7 +47,7 @@
                 width="350"
                 height="200"
                 frameborder="0" style="border:0"
-                src="{{ delivery.chef.volunteer.anonymous_map_embed }}&zoom=14" allowfullscreen>
+                src="{{ meal_request.chef.volunteer.anonymous_map_embed }}&zoom=14" allowfullscreen>
               </iframe>
             </div>
             <div class="col">
@@ -56,7 +56,7 @@
                 width="350"
                 height="200"
                 frameborder="0" style="border:0"
-                src="{{ delivery.request.anonymous_map_embed }}&zoom=14" allowfullscreen>
+                src="{{ meal_request.anonymous_map_embed }}&zoom=14" allowfullscreen>
               </iframe>
             </div>
           </div>
@@ -65,7 +65,7 @@
               <form action="" method="post" class="form">
                 {% csrf_token %}
 
-                <h6>Dropoff timerange on {{ delivery.date }}</h6>
+                <h6>Dropoff timerange on {{ meal_request.delivery_date }}</h6>
                 <div class="row">
                   <div class="col-sm">
                     {% bootstrap_field form.dropoff_start %}
@@ -78,7 +78,7 @@
                   Please provide a two hour maximum delivery window.
                 </p>
                 <p>
-                  The recipient will{% if not delivery.request.can_meet_for_delivery %} <strong>not</strong>{% endif %} be able to meet you in the lobby or door of the residence.
+                  The recipient will{% if not meal_request.can_meet_for_delivery %} <strong>not</strong>{% endif %} be able to meet you in the lobby or door of the residence.
                 </p>
 
                 {{ form.id.as_hidden }}
