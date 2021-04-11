@@ -19,7 +19,7 @@ from recipients.models import MealRequest, MealDelivery, Status
 from website.maps import distance
 from .forms import MealDeliverySignupForm, ChefSignupForm, ChefApplyForm, DeliveryApplyForm, OrganizerApplyForm
 from .models import VolunteerApplication, VolunteerRoles, Volunteer
-from .filters import ChefSignupFilter, MealDeliverySignupFilter
+from .filters import ChefSignupFilter, DelivererSignupFilter
 
 
 logger = logging.getLogger(__name__)
@@ -137,7 +137,7 @@ class MealDeliverySignupView(LoginRequiredMixin, GroupRequiredMixin, FormView, F
     form_class = MealDeliverySignupForm
     permission_group = 'Deliverers'
     permission_group_redirect_url = reverse_lazy('volunteers:delivery_application')
-    filterset_class = MealDeliverySignupFilter
+    filterset_class = DelivererSignupFilter
     queryset = MealDelivery.objects.exclude(status=Status.DELIVERED).filter(deliverer__isnull=True,).order_by('date')
 
     @property
