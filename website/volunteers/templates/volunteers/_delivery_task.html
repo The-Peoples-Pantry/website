@@ -1,14 +1,14 @@
 {% load bootstrap4 %}
 <div class="card mb-4">
   <div class="card-header font-weight-bold">
-    {{ delivery.date }}: Request #{{ delivery.request.id }} (meals for
-    {{ delivery.request.num_adults }} adult{{ delivery.request.num_adults | pluralize }}
-    and {{ delivery.request.num_children }} kid{{ delivery.request.num_children | pluralize }})
+    {{ meal_request.delivery_date }}: Request #{{ meal_request.id }} (meals for
+    {{ meal_request.num_adults }} adult{{ meal_request.num_adults | pluralize }}
+    and {{ meal_request.num_children }} kid{{ meal_request.num_children | pluralize }})
 
-    {% if not delivery.delivered %}
+    {% if not meal_request.delivered %}
       <form action="" method="post" onsubmit="return window.confirm('Are you sure you want to mark this delivery as complete? You cannot undo this!')" class="form float-right">
         {% csrf_token %}
-        <input type="hidden" name="delivery_id" value="{{ delivery.id }}" />
+        <input type="hidden" name="meal_request_id" value="{{ meal_request.id }}" />
         {% bootstrap_button 'Mark as delivered' button_class='btn-warning' %}
       </form>
     {% endif %}
@@ -18,29 +18,29 @@
       <div class="col">
         <h6>Pickup information</h6>
         <ul>
-          <li>Pick up from {{ delivery.pickup_start }} to {{ delivery.pickup_end }}</li>
-          <li>Contact {{ delivery.chef.volunteer.preferred_name }} at {{ delivery.chef.volunteer.phone_number }}</li>
-          <li>Address: <a href="{{ delivery.chef.volunteer.address_link }}" target="_blank" rel="noopener nofollow">{{ delivery.chef.volunteer.address }}</a></li>
+          <li>Pick up from {{ meal_request.pickup_start }} to {{ meal_request.pickup_end }}</li>
+          <li>Contact {{ meal_request.chef.volunteer.preferred_name }} at {{ meal_request.chef.volunteer.phone_number }}</li>
+          <li>Address: <a href="{{ meal_request.chef.volunteer.address_link }}" target="_blank" rel="noopener nofollow">{{ meal_request.chef.volunteer.address }}</a></li>
         </ul>
       </div>
       <div class="col">
         <h6>Dropoff information</h6>
         <ul>
-          <li>Drop off from {{ delivery.dropoff_start }} to {{ delivery.dropoff_end }}</li>
-          <li>Contact {{ delivery.request.name }} at {{ delivery.request.phone_number }}</li>
-          <li>Address: <a href="{{ delivery.request.address_link }}" target="_blank" rel="noopener nofollow">{{ delivery.request.address }}</a></li>
+          <li>Drop off from {{ meal_request.dropoff_start }} to {{ meal_request.dropoff_end }}</li>
+          <li>Contact {{ meal_request.name }} at {{ meal_request.phone_number }}</li>
+          <li>Address: <a href="{{ meal_request.address_link }}" target="_blank" rel="noopener nofollow">{{ meal_request.address }}</a></li>
         </ul>
       </div>
     </div>
     <p>
-      {{ delivery.request.delivery_details }}
+      {{ meal_request.delivery_details }}
     </p>
     <p>
-      The recipient will{% if not delivery.request.can_meet_for_delivery %} <strong>not</strong>{% endif %} be able to meet you in the lobby or door of the residence.
+      The recipient will{% if not meal_request.can_meet_for_delivery %} <strong>not</strong>{% endif %} be able to meet you in the lobby or door of the residence.
     </p>
 
-    {% if not delivery.delivered %}
-      <a href="mailto:{{settings.REQUEST_COORDINATORS_EMAIL}},{{settings.DELIVERY_COORDINATORS_EMAIL}}?subject=Deliverer Change Request for Delivery for Request ID {{ delivery.request.id }}" class="btn btn-primary">Request a change</a>
+    {% if not meal_request.delivered %}
+      <a href="mailto:{{settings.REQUEST_COORDINATORS_EMAIL}},{{settings.DELIVERY_COORDINATORS_EMAIL}}?subject=Deliverer Change Request for Delivery for Request ID {{ meal_request.id }}" class="btn btn-primary">Request a change</a>
     {% endif %}
   </div>
 </div>

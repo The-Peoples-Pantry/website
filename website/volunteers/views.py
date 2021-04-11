@@ -14,7 +14,7 @@ from django_filters.views import FilterView
 
 from core.models import has_group
 from core.views import GroupRequiredMixin
-from recipients.models import MealRequest, MealDelivery, Status
+from recipients.models import MealRequest, Status
 from website.maps import distance
 from .forms import DelivererSignupForm, ChefSignupForm, ChefApplyForm, DeliveryApplyForm, OrganizerApplyForm
 from .models import VolunteerApplication, VolunteerRoles, Volunteer
@@ -229,31 +229,31 @@ class ChefIndexView(LoginRequiredMixin, GroupRequiredMixin, ListView):
 
 class DeliveryIndexView(LoginRequiredMixin, GroupRequiredMixin, ListView):
     """View for deliverers to see the meal requests they've signed up to deliver"""
-    model = MealDelivery
-    ordering = 'date'
+    model = MealRequest
+    ordering = 'delivery_date'
+    context_object_name = "meal_requests"
     template_name = "volunteers/delivery_list.html"
     permission_group = 'Deliverers'
     permission_group_redirect_url = reverse_lazy('volunteers:delivery_application')
-    context_object_name = "deliveries"
 
     def get_queryset(self):
         return super().get_queryset().filter(deliverer=self.request.user)
 
     def post(self, request):
-        instance = MealDelivery.objects.get(id=request.POST['delivery_id'])
+        meal_request = self.get_queryset().get(id=request.POST['meal_request_id'])
 
         # Ensure that this was submitted by the deliverer
-        # Prevents someone abusing this POST endpoint with delivery_ids that don't "belong" to them
-        if instance.deliverer != request.user:
+        # Prevents someone abusing this POST endpoint with meal_request_ids that don't "belong" to them
+        if meal_request.deliverer != request.user:
             raise PermissionDenied
 
-        if instance.date <= date.today():
-            instance.status = Status.DELIVERED
-            instance.save()
+        if meal_request.delivery_date <= date.today():
+            meal_request.status = Status.DELIVERED
+            meal_request.save()
             messages.success(
                 self.request,
                 'Marked delivery ID #%d to %s as complete! If this was a mistake please email us at %s as soon as possible.' %
-                (instance.pk, instance.request.address_1, settings.VOLUNTEER_COORDINATORS_EMAIL)
+                (meal_request.pk, meal_request.address, settings.VOLUNTEER_COORDINATORS_EMAIL)
             )
         else:
             messages.error(
