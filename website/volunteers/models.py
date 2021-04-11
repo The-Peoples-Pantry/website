@@ -6,7 +6,7 @@ from django.db.models.signals import post_save
 from django.conf import settings
 from multiselectfield import MultiSelectField
 
-from core.models import ContactInfo
+from core.models import ContactMixin, AddressMixin, TimestampsMixin
 from website.mail import custom_send_mail
 
 
@@ -65,7 +65,7 @@ class OrganizerTeams(models.TextChoices):
     OUTREACH = ('Outreach', 'Outreach')
 
 
-class Volunteer(ContactInfo):
+class Volunteer(ContactMixin, AddressMixin, models.Model):
     user = models.OneToOneField(
         User,
         on_delete=models.CASCADE,
@@ -183,7 +183,7 @@ class Volunteer(ContactInfo):
         self.user.save()
 
 
-class VolunteerApplication(models.Model):
+class VolunteerApplication(TimestampsMixin, models.Model):
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=['user', 'role'], name='unique role per user application')
@@ -207,8 +207,6 @@ class VolunteerApplication(models.Model):
         blank=True,
     )
     approved = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     @classmethod
     def has_applied(cls, user, role: str):
