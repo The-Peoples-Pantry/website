@@ -67,16 +67,41 @@ class Cities(models.TextChoices):
     YORK = 'York', 'York'
 
 
-class ContactInfo(models.Model):
+class ContactMixin(models.Model):
     class Meta:
         abstract = True
 
-    name = models.CharField(
-        "Full name",
-        max_length=settings.NAME_LENGTH
-    )
+    name = models.CharField("Full name", max_length=settings.NAME_LENGTH)
     phone_number = TelephoneField("Phone number")
     email = models.EmailField("Email address")
+
+
+class DemographicMixin(models.Model):
+    class Meta:
+        abstract = True
+
+    bipoc = models.BooleanField("Black, Indigenous, and People of Colour (BIPOC)")
+    lgbtq = models.BooleanField("Lesbian, Gay, Bisexual, Trans, Queer (LGBTQ), gender non-conforming or non-binary")
+    has_disability = models.BooleanField("Living with disabilities")
+    immigrant_or_refugee = models.BooleanField("Newly arrived immigrant or refugee")
+    housing_issues = models.BooleanField("Precariously housed (no fixed address, living in a shelter, etc.)")
+    sex_worker = models.BooleanField("Sex worker")
+    single_parent = models.BooleanField("Single parent")
+    senior = models.BooleanField("Senior citizen")
+
+
+class TimestampsMixin(models.Model):
+    class Meta:
+        abstract = True
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
+class AddressMixin(models.Model):
+    class Meta:
+        abstract = True
+
     address_1 = models.CharField(
         "Address line 1",
         help_text="Street name and number",

@@ -14,7 +14,7 @@ import pytz
 from website.maps import GroceryDeliveryArea
 from website.mail import custom_send_mail
 from website.texts import TextMessage
-from core.models import get_sentinel_user, ContactInfo, TelephoneField
+from core.models import get_sentinel_user, ContactMixin, AddressMixin, DemographicMixin, TimestampsMixin, TelephoneField
 
 
 logger = logging.getLogger(__name__)
@@ -41,7 +41,7 @@ class MealRequestQuerySet(models.QuerySet):
         return self.exclude(status=Status.DELIVERED)
 
 
-class MealRequest(ContactInfo):
+class MealRequest(DemographicMixin, ContactMixin, AddressMixin, TimestampsMixin, models.Model):
     objects = MealRequestQuerySet.as_manager()
 
     # Information about the recipient
@@ -69,16 +69,6 @@ class MealRequest(ContactInfo):
         help_text="Please list any allergies or dietary restrictions",
         blank=True,
     )
-
-    # Information about community status
-    bipoc = models.BooleanField("Black, Indigenous, and People of Colour (BIPOC)")
-    lgbtq = models.BooleanField("Lesbian, Gay, Bisexual, Trans, Queer (LGBTQ), gender non-conforming or non-binary")
-    has_disability = models.BooleanField("Living with disabilities")
-    immigrant_or_refugee = models.BooleanField("Newly arrived immigrant or refugee")
-    housing_issues = models.BooleanField("Precariously housed (no fixed address, living in a shelter, etc.)")
-    sex_worker = models.BooleanField("Sex worker")
-    single_parent = models.BooleanField("Single parent")
-    senior = models.BooleanField("Senior citizen")
 
     # Information about the delivery
     can_meet_for_delivery = models.BooleanField(
@@ -149,10 +139,6 @@ class MealRequest(ContactInfo):
 
     # Legal
     accept_terms = models.BooleanField("Accept terms")
-
-    # System
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     # Delivery
     chef = models.ForeignKey(
@@ -497,7 +483,7 @@ class GiftCard(models.TextChoices):
     PRESIDENTS_CHOICE = "President's Choice", "President's Choice (Physical)"
 
 
-class GroceryRequest(ContactInfo):
+class GroceryRequest(DemographicMixin, ContactMixin, AddressMixin, TimestampsMixin, models.Model):
     can_receive_texts = models.BooleanField(
         "Can receive texts",
         help_text="Can the phone number provided receive text messages?",
@@ -534,16 +520,6 @@ class GroceryRequest(ContactInfo):
         help_text="Because of logistics constraints, we are unable to assemble boxes according to your needs. If you have an allergy to a food item that is included in the produce box, we won’t be able to send you the box.",
         blank=True,
     )
-
-    # Information about community status
-    bipoc = models.BooleanField("Black, Indigenous, and People of Colour (BIPOC)")
-    lgbtq = models.BooleanField("Lesbian, Gay, Bisexual, Trans, Queer (LGBTQ), gender non-conforming or non-binary")
-    has_disability = models.BooleanField("Living with disabilities")
-    immigrant_or_refugee = models.BooleanField("Newly arrived immigrant or refugee")
-    housing_issues = models.BooleanField("Precariously housed (no fixed address, living in a shelter, etc.)")
-    sex_worker = models.BooleanField("Sex worker")
-    single_parent = models.BooleanField("Single parent")
-    senior = models.BooleanField("Senior citizen")
 
     # Information about the delivery
     buzzer = models.CharField(
@@ -596,8 +572,6 @@ class GroceryRequest(ContactInfo):
         help_text="Has this request been completed?",
         default=False
     )
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     def clean(self, *args, **kwargs):
         latitude, longitude = self.fetched_coordinates
