@@ -22,7 +22,21 @@ class MealRequestForm(forms.ModelForm):
 
     class Meta:
         model = MealRequest
-        exclude = ['created_at', 'updated_at', 'anonymized_latitude', 'anonymized_longitude']
+        exclude = [
+            'created_at',
+            'updated_at',
+            'anonymized_latitude',
+            'anonymized_longitude',
+            'delivery_date',
+            'status',
+            'chef',
+            'deliverer',
+            'pickup_start',
+            'pickup_end',
+            'dropoff_start',
+            'dropoff_end',
+            'meal',
+        ]
 
 
 class GroceryRequestForm(forms.ModelForm):
