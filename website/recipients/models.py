@@ -3,6 +3,8 @@ from textwrap import dedent
 from datetime import datetime, timedelta, date
 from django.db import models
 from django.conf import settings
+from django.db.models.signals import pre_init
+from django.dispatch import receiver
 from django.forms import model_to_dict
 from django.core.exceptions import ValidationError
 from django.urls import reverse_lazy
@@ -787,3 +789,8 @@ class GroceryRequest(ContactInfo):
 
 class GroceryRequestComment(CommentModel):
     subject = models.ForeignKey(GroceryRequest, related_name="comments", on_delete=models.CASCADE)
+
+
+@receiver(pre_init, sender=MealDelivery)
+def error_deprecated_meal_delivery(sender, **kwargs):
+    raise Exception("MealDelivery is deprecated")
