@@ -12,7 +12,6 @@ from django_filters.views import FilterView
 
 from core.views import GroupRequiredMixin, LastVisitedMixin
 from recipients.models import MealRequest, Status
-from website.maps import distance
 from .forms import DelivererSignupForm, ChefSignupForm, ChefApplyForm, DeliveryApplyForm, OrganizerApplyForm
 from .models import VolunteerApplication, VolunteerRoles, Volunteer
 from .filters import ChefSignupFilter, DelivererSignupFilter
@@ -36,7 +35,6 @@ class ChefSignupListView(LoginRequiredMixin, GroupRequiredMixin, LastVisitedMixi
             {
                 "meal_request": meal_request,
                 "form": ChefSignupForm(instance=meal_request),
-                "distance": distance(meal_request.coordinates, self.request.user.volunteer.coordinates),
             }
             # self.object_list is a MealRequest queryset pre-filtered by ChefSignupFilter
             for meal_request in self.object_list
@@ -52,11 +50,6 @@ class ChefSignupView(LoginRequiredMixin, GroupRequiredMixin, UpdateView):
     template_name = "volunteers/chef_signup.html"
     context_object_name = "meal_request"
     success_url = reverse_lazy('volunteers:chef_signup_list')
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["distance"] = distance(self.object.coordinates, self.request.user.volunteer.coordinates)
-        return context
 
     def form_valid(self, form):
         self.object.chef = self.request.user

@@ -1,4 +1,7 @@
 {% load bootstrap4 %}
+{% load distance %}
+
+{% distance meal_request request.user.volunteer as distance %}
 
 {# Each request gets represented as a card #}
 <div class="card mb-4">
