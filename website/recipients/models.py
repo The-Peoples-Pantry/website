@@ -1,6 +1,6 @@
 import logging
 from textwrap import dedent
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta, time, date
 from django.db import models
 from django.conf import settings
 from django.forms import model_to_dict
@@ -160,10 +160,10 @@ class MealRequest(DemographicMixin, ContactMixin, AddressMixin, TimestampsMixin,
         default=Status.UNCONFIRMED
     )
     delivery_date = models.DateField("Delivery date", null=True, blank=True)
-    pickup_start = models.TimeField(null=True, blank=True)
-    pickup_end = models.TimeField(null=True, blank=True)
-    dropoff_start = models.TimeField(null=True, blank=True)
-    dropoff_end = models.TimeField(null=True, blank=True)
+    pickup_start = models.TimeField(default=time(12, 00))
+    pickup_end = models.TimeField(default=time(17, 00))
+    dropoff_start = models.TimeField(default=time(18, 00))
+    dropoff_end = models.TimeField(default=time(20, 00))
     meal = models.TextField(
         "Meal",
         help_text="(Optional) Let us know what you plan on cooking!",
