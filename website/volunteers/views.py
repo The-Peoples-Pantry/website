@@ -175,7 +175,7 @@ class DeliveryIndexView(LoginRequiredMixin, GroupRequiredMixin, ListView):
     ordering = 'delivery_date'
     context_object_name = "meal_requests"
     template_name = "volunteers/delivery_list.html"
-    permission_group = 'Deliverers'
+    permission_groups = ('Chefs', 'Deliverers')
     permission_group_redirect_url = reverse_lazy('volunteers:delivery_application')
 
     def get_queryset(self):
