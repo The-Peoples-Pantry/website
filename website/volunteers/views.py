@@ -33,9 +33,6 @@ class ChefSignupListView(LoginRequiredMixin, GroupRequiredMixin, FilterView):
     queryset = MealRequest.objects.not_delivered().filter(chef__isnull=True)
     ordering = 'created_at'
 
-    def can_deliver(self, user):
-        return has_group(user, 'Deliverers')
-
     def get_and_set_last_visited(self):
         """Retrieve the timestamp when this user last viewed this page, then set a new one"""
         session_key = 'last_visited_chef_signup'
@@ -64,7 +61,6 @@ class ChefSignupListView(LoginRequiredMixin, GroupRequiredMixin, FilterView):
         ]
         context["last_visited"] = last_visited
         context["new_since_last_visited"] = self.new_since(last_visited)
-        context["can_deliver"] = self.can_deliver(self.request.user)
         return context
 
 
@@ -77,12 +73,8 @@ class ChefSignupView(LoginRequiredMixin, GroupRequiredMixin, UpdateView):
     context_object_name = "meal_request"
     success_url = reverse_lazy('volunteers:chef_signup_list')
 
-    def can_deliver(self, user):
-        return has_group(user, 'Deliverers')
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["can_deliver"] = self.can_deliver(self.request.user)
         context["distance"] = distance(self.object.coordinates, self.request.user.volunteer.coordinates)
         return context
 

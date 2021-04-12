@@ -67,24 +67,22 @@
             </div>
           </div>
 
-          {% if can_deliver %}
-            {{ form.can_deliver }}
-            {{ form.can_deliver.label }}
-            <div class="dropoff-timerange">
-              <h6>Drop-off timerange</h6>
-              <div class="row">
-                <div class="col-sm">
-                  {% bootstrap_field form.dropoff_start %}
-                </div>
-                <div class="col-sm">
-                  {% bootstrap_field form.dropoff_end %}
-                </div>
+          {{ form.can_deliver }}
+          {{ form.can_deliver.label }}
+          <div class="dropoff-timerange">
+            <h6>Drop-off timerange</h6>
+            <div class="row">
+              <div class="col-sm">
+                {% bootstrap_field form.dropoff_start %}
               </div>
-              <p>
-                Please provide a two hour maximum delivery window
-              </p>
+              <div class="col-sm">
+                {% bootstrap_field form.dropoff_end %}
+              </div>
             </div>
-          {% endif %}
+            <p>
+              Please provide a two hour maximum delivery window
+            </p>
+          </div>
 
           {% bootstrap_field form.meal %}
 
