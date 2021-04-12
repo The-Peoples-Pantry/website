@@ -24,9 +24,9 @@ from .filters import ChefSignupFilter, DelivererSignupFilter
 logger = logging.getLogger(__name__)
 
 
-class ChefSignupView(LoginRequiredMixin, GroupRequiredMixin, FormView, FilterView):
+class ChefSignupListView(LoginRequiredMixin, GroupRequiredMixin, FormView, FilterView):
     """View for chefs to sign up to cook meal requests"""
-    template_name = "volunteers/chef_signup.html"
+    template_name = "volunteers/chef_signup_list.html"
     form_class = ChefSignupForm
     permission_group = 'Chefs'
     permission_group_redirect_url = reverse_lazy('volunteers:chef_application')
