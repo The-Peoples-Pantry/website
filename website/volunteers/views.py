@@ -3,7 +3,6 @@ import time
 from datetime import date
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
-from django.forms import ValidationError
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
@@ -12,7 +11,6 @@ from django.views.generic.edit import FormView, UpdateView
 from django.views.generic import ListView, TemplateView
 from django_filters.views import FilterView
 
-from core.models import has_group
 from core.views import GroupRequiredMixin
 from recipients.models import MealRequest, Status
 from website.maps import distance
