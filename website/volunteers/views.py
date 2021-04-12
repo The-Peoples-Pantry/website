@@ -1,7 +1,6 @@
 import logging
 from datetime import date
 from django.conf import settings
-from django.core.exceptions import PermissionDenied
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
@@ -123,11 +122,6 @@ class DeliveryIndexView(LoginRequiredMixin, GroupRequiredMixin, ListView):
 
     def post(self, request):
         meal_request = self.get_queryset().get(id=request.POST['meal_request_id'])
-
-        # Ensure that this was submitted by the deliverer
-        # Prevents someone abusing this POST endpoint with meal_request_ids that don't "belong" to them
-        if meal_request.deliverer != request.user:
-            raise PermissionDenied
 
         if meal_request.delivery_date <= date.today():
             meal_request.status = Status.DELIVERED
