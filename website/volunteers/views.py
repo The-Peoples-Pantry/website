@@ -55,7 +55,7 @@ class ChefSignupListView(LoginRequiredMixin, GroupRequiredMixin, FilterView):
         last_visited = self.get_and_set_last_visited()
         context["object_contexts"] = [
             {
-                "meal": meal_request,
+                "meal_request": meal_request,
                 "form": ChefSignupForm(instance=meal_request),
                 "distance": distance(meal_request.coordinates, self.request.user.volunteer.coordinates),
             }
@@ -74,7 +74,7 @@ class ChefSignupView(LoginRequiredMixin, GroupRequiredMixin, UpdateView):
     form_class = ChefSignupForm
     queryset = MealRequest.objects.not_delivered().filter(chef__isnull=True)
     template_name = "volunteers/chef_signup.html"
-    context_object_name = "meal"
+    context_object_name = "meal_request"
     success_url = reverse_lazy('volunteers:chef_signup_list')
 
     def can_deliver(self, user):

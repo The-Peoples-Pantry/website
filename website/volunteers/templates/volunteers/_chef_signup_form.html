@@ -5,17 +5,17 @@
 
   {# Card header section contains the meal request title #}
   <div class="card-header font-weight-bold">
-    {% if last_visited < meal.created_at.timestamp %}<span class="badge badge-pill badge-primary" title="This request was added since you last visited this page">New</span>{% endif %}
-    Request #{{ meal.id }}: Meal for {{ meal.num_adults }} adult{{ meal.num_adults | pluralize }}
-    and {{ meal.num_children }} kid{{ meal.num_children | pluralize }}
-    {% if meal.children_ages %}(aged {{ meal.children_ages }}){% endif %}
-    in {{ meal.city }}
+    {% if last_visited < meal_request.created_at.timestamp %}<span class="badge badge-pill badge-primary" title="This request was added since you last visited this page">New</span>{% endif %}
+    Request #{{ meal_request.id }}: Meal for {{ meal_request.num_adults }} adult{{ meal_request.num_adults | pluralize }}
+    and {{ meal_request.num_children }} kid{{ meal_request.num_children | pluralize }}
+    {% if meal_request.children_ages %}(aged {{ meal_request.children_ages }}){% endif %}
+    in {{ meal_request.city }}
   </div>
 
   {# Card body section contains the form and map #}
   <div class="card-body">
     {% bootstrap_form_errors form %}
-    {% if meal.stale %}
+    {% if meal_request.stale %}
       <div class="alert alert-info">This request was submitted more than a week ago, please prioritize this if possible.</div>
     {% endif %}
     {% if distance > settings.MAX_CHEF_DISTANCE %}
@@ -23,35 +23,35 @@
     {% endif %}
     <div class="row">
       <div class="col">
-        {% if meal.food_preferences %}
+        {% if meal_request.food_preferences %}
         <h6>Food preferences</h6>
-        <p>{{ meal.food_preferences }}</p>
+        <p>{{ meal_request.food_preferences }}</p>
         {% endif %}
 
-        {% if meal.food_allergies %}
+        {% if meal_request.food_allergies %}
           <h6>Food allergies</h6>
-          <p>{{ meal.food_allergies }}</p>
+          <p>{{ meal_request.food_allergies }}</p>
         {% endif %}
 
         <h6>Other dietary information</h6>
         <ul>
-          {% if meal.vegan %} <li>Vegan</li> {% endif %}
-          {% if meal.vegetarian %} <li>Vegetarian</li> {% endif %}
-          {% if meal.dairy_free %} <li>Dairy Free</li> {% endif %}
-          {% if meal.gluten_free %} <li>Gluten Freen</li> {% endif %}
-          {% if meal.halal %} <li>Halal</li> {% endif %}
-          {% if meal.kosher %} <li>Kosher</li> {% endif %}
-          {% if meal.low_carb %} <li>Low-carb</li> {% endif %}
-          <li>Will {% if not meal.will_accept_vegan %}<strong>not </strong>{% endif %}accept vegan meals</li>
-          <li>Will {% if not meal.will_accept_vegetarian %}<strong>not </strong>{% endif %}accept vegetarian meals</li>
+          {% if meal_request.vegan %} <li>Vegan</li> {% endif %}
+          {% if meal_request.vegetarian %} <li>Vegetarian</li> {% endif %}
+          {% if meal_request.dairy_free %} <li>Dairy Free</li> {% endif %}
+          {% if meal_request.gluten_free %} <li>Gluten Freen</li> {% endif %}
+          {% if meal_request.halal %} <li>Halal</li> {% endif %}
+          {% if meal_request.kosher %} <li>Kosher</li> {% endif %}
+          {% if meal_request.low_carb %} <li>Low-carb</li> {% endif %}
+          <li>Will {% if not meal_request.will_accept_vegan %}<strong>not </strong>{% endif %}accept vegan meals</li>
+          <li>Will {% if not meal_request.will_accept_vegetarian %}<strong>not </strong>{% endif %}accept vegetarian meals</li>
         </ul>
 
-        {% if meal.availability %}
+        {% if meal_request.availability %}
           <h6>Availability</h6>
-          <p>{{ meal.availability }}</p>
+          <p>{{ meal_request.availability }}</p>
         {% endif %}
 
-        <form action="{% url 'volunteers:chef_signup' meal.pk %}" method="post" class="form">
+        <form action="{% url 'volunteers:chef_signup' meal_request.pk %}" method="post" class="form">
           {% csrf_token %}
 
           <h6>Pickup date</h6>
@@ -99,7 +99,7 @@
           width="350"
           height="400"
           frameborder="0" style="border:0"
-          src="{{ meal.anonymous_map_embed }}&zoom=12" allowfullscreen>
+          src="{{ meal_request.anonymous_map_embed }}&zoom=12" allowfullscreen>
         </iframe>
       </div>
     </div>
