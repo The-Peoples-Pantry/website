@@ -121,9 +121,9 @@ class ChefSignupListView(LoginRequiredMixin, GroupRequiredMixin, FormView, Filte
         meal_request.save()
 
 
-class DelivererSignupView(LoginRequiredMixin, GroupRequiredMixin, FormView, FilterView):
+class DelivererSignupListView(LoginRequiredMixin, GroupRequiredMixin, FormView, FilterView):
     """View for deliverers to sign up to deliver meal requests"""
-    template_name = "volunteers/delivery_signup.html"
+    template_name = "volunteers/delivery_signup_list.html"
     form_class = DelivererSignupForm
     permission_group = 'Deliverers'
     permission_group_redirect_url = reverse_lazy('volunteers:delivery_application')
