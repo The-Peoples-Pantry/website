@@ -9,18 +9,8 @@ from .models import Volunteer
 logger = logging.getLogger(__name__)
 
 
-class TimeField(forms.TimeField):
-    """A field that renders a time picker widget"""
-
-    def __init__(self, **kwargs):
-        super().__init__(
-            input_formats=['%H:%M'],
-            widget=forms.TimeInput(
-                format='%H:%M',
-                attrs={'type': 'time'}
-            ),
-            **kwargs,
-        )
+class TimeInput(forms.TimeInput):
+    input_type = 'time'
 
 
 def date_label(date):
@@ -132,37 +122,36 @@ class OrganizerApplyForm(VolunteerApplicationForm):
         ]
 
 
-class ChefSignupForm(forms.Form):
-    id = forms.IntegerField()
-    delivery_date = forms.DateField(widget=MealRequestDeliveryDateInput)
-    pickup_start = TimeField(initial='12:00')
-    pickup_end = TimeField(initial='17:00')
-    dropoff_start = TimeField(initial='18:00', required=False)
-    dropoff_end = TimeField(initial='20:00', required=False)
+class ChefSignupForm(forms.ModelForm):
     can_deliver = forms.BooleanField(required=False)
-    meal = forms.CharField(required=False, help_text="(Optional) Let us know what you plan on cooking!")
-
-    # If the chef hasn't opted to deliver it, remove the dropoff timerange
-    def clean(self):
-        cleaned_data = super().clean()
-        can_deliver = cleaned_data['can_deliver']
-        if not can_deliver:
-            cleaned_data.pop('dropoff_start')
-            cleaned_data.pop('dropoff_end')
-        return cleaned_data
-
-
-class DelivererSignupForm(forms.ModelForm):
-    id = forms.IntegerField()
-    dropoff_start = TimeField(initial='18:00')
-    dropoff_end = TimeField(initial='20:00')
 
     class Meta:
         model = MealRequest
         fields = [
-            'id',
+            'delivery_date',
             'pickup_start',
             'pickup_end',
             'dropoff_start',
             'dropoff_end',
+            'meal',
         ]
+        widgets = {
+            'pickup_start': TimeInput,
+            'pickup_end': TimeInput,
+            'dropoff_start': TimeInput,
+            'dropoff_end': TimeInput,
+            'delivery_date': MealRequestDeliveryDateInput,
+        }
+
+
+class DelivererSignupForm(forms.ModelForm):
+    class Meta:
+        model = MealRequest
+        fields = [
+            'dropoff_start',
+            'dropoff_end',
+        ]
+        widgets = {
+            'dropoff_start': TimeInput,
+            'dropoff_end': TimeInput,
+        }
