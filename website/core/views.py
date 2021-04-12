@@ -1,10 +1,14 @@
+import functools
+import time
+
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import ImproperlyConfigured
 from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
-from django.views.generic.edit import FormView, UpdateView
+from django.views.generic.edit import FormView, UpdateView, ContextMixin
+from django.views.generic.list import MultipleObjectMixin
 
 from core.models import group_names, has_group
 from .forms import UserCreationForm, VolunteerProfileForm
@@ -68,3 +72,44 @@ class GroupRequiredMixin(UserPassesTestMixin):
 
     def handle_no_permission(self):
         return redirect(self.get_permission_group_redirect_url())
+
+
+class LastVisitedMixin(MultipleObjectMixin, ContextMixin):
+    """
+    Provides context about when the page was last visited
+
+    Stores a timestamp of last visit in the user's session and updates it each
+    time the page is loaded. Exposes this timestamp in the context as the value
+    "last visited".
+
+    Counts how many objects in the object list were created later than our
+    timestamp to determine the context value "new_since_last_visited".
+    """
+    def get_session_key(self):
+        return self.__class__.__name__
+
+    def new_since_last_visited(self):
+        """Count how many of object_list are new (created) since a given timestamp"""
+        return sum(self.last_visited < obj.created_at.timestamp() for obj in self.object_list)
+
+    @functools.cached_property
+    def last_visited(self):
+        """Timestamp of the user's last visit to this page"""
+        return self.request.session.get(self.get_session_key(), 0)
+
+    def update_last_visited(self):
+        """Update the timestamp of the user's last visit to this page"""
+        self.request.session[self.get_session_key()] = time.time()
+
+    def get_context_data(self, *args, **kwargs):
+        context = {
+            'last_visited': self.last_visited,
+            'new_since_last_visited': self.new_since_last_visited(),
+            **kwargs,
+        }
+        return super().get_context_data(**context)
+
+    def get(self, *args, **kwargs):
+        response = super().get(*args, **kwargs)
+        self.update_last_visited()
+        return response
