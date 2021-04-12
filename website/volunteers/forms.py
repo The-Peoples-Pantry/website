@@ -2,6 +2,7 @@ import logging
 from textwrap import dedent
 import datetime
 from django import forms
+from django.core.exceptions import ValidationError
 from recipients.models import MealRequest
 from .models import Volunteer
 
@@ -11,6 +12,11 @@ logger = logging.getLogger(__name__)
 
 class TimeInput(forms.TimeInput):
     input_type = 'time'
+
+
+def time_difference(t_start, t_end):
+    today = datetime.datetime.today()
+    return datetime.datetime.combine(today, t_end) - datetime.datetime.combine(today, t_start)
 
 
 def date_label(date):
@@ -142,6 +148,22 @@ class ChefSignupForm(forms.ModelForm):
             'dropoff_end': TimeInput,
             'delivery_date': MealRequestDeliveryDateInput,
         }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        pickup_start = cleaned_data.get('pickup_start')
+        pickup_end = cleaned_data.get('pickup_end')
+        dropoff_start = cleaned_data.get('dropoff_start')
+        dropoff_end = cleaned_data.get('dropoff_end')
+
+        if pickup_end <= pickup_start:
+            self.add_error('pickup_end', ValidationError("The pickup end time must come after the pickup start time"))
+        if dropoff_end <= dropoff_start:
+            self.add_error('dropoff_end', ValidationError("The dropoff end time must come after the dropoff start time"))
+        if dropoff_start < pickup_start:
+            self.add_error('dropoff_start', ValidationError("The dropoff start time cannot come before the pickup start time"))
+        if time_difference(dropoff_start, dropoff_end) > datetime.timedelta(hours=2):
+            self.add_error('dropoff_end', ValidationError("The delivery window cannot be longer than 2 hours"))
 
 
 class DelivererSignupForm(forms.ModelForm):
