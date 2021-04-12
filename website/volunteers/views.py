@@ -98,20 +98,14 @@ class ChefSignupView(LoginRequiredMixin, GroupRequiredMixin, UpdateView):
         return super().form_valid(form)
 
 
-class DelivererSignupListView(LoginRequiredMixin, GroupRequiredMixin, FormView, FilterView):
+class DelivererSignupListView(LoginRequiredMixin, GroupRequiredMixin, FilterView):
     """View for deliverers to sign up to deliver meal requests"""
     template_name = "volunteers/delivery_signup_list.html"
-    form_class = DelivererSignupForm
     permission_group = 'Deliverers'
     permission_group_redirect_url = reverse_lazy('volunteers:delivery_application')
     filterset_class = DelivererSignupFilter
     queryset = MealRequest.objects.not_delivered().exclude(delivery_date__isnull=True).filter(deliverer__isnull=True)
     ordering = 'delivery_date'
-
-    @property
-    def success_url(self):
-        """Redirect to the same page with same query params to keep the filters"""
-        return self.request.get_full_path()
 
     def get_and_set_last_visited(self):
         """Retrieve the timestamp when this user last viewed this page, then set a new one"""
@@ -129,60 +123,31 @@ class DelivererSignupListView(LoginRequiredMixin, GroupRequiredMixin, FormView, 
 
     def get_context_data(self, alerts={}, **kwargs):
         context = super().get_context_data(**kwargs)
-        form_class = self.get_form_class()
         last_visited = self.get_and_set_last_visited()
         context["meal_request_form_pairs"] = [
-            (meal_request, form_class(initial={
-                'id': meal_request.id,
-                'pickup_start': meal_request.pickup_start,
-                'pickup_end': meal_request.pickup_end
-            }))
+            (meal_request, DelivererSignupForm(instance=meal_request))
             for meal_request in self.object_list
         ]
         context["new_since_last_visited"] = self.new_since(last_visited)
         context["last_visited"] = last_visited
         return context
 
-    def form_invalid(self, form):
-        if form.non_field_errors():
-            messages.error(self.request, form.non_field_errors())
-        return redirect(self.success_url)
+
+class DelivererSignupView(LoginRequiredMixin, GroupRequiredMixin, UpdateView):
+    form_class = DelivererSignupForm
+    permission_group = 'Deliverers'
+    permission_group_redirect_url = reverse_lazy('volunteers:delivery_application')
+    queryset = MealRequest.objects.not_delivered().exclude(delivery_date__isnull=True).filter(deliverer__isnull=True)
+    template_name = "volunteers/delivery_signup.html"
+    context_object_name = "meal_request"
+    success_url = reverse_lazy('volunteers:delivery_signup_list')
 
     def form_valid(self, form):
-        # First fetch the associated MealRequest
-        meal_request = self.get_meal_request(form)
-
-        # It's possible that someone else has signed up for it, so handle that
-        if meal_request is None:
-            messages.error(
-                self.request,
-                "Sorry, we were unable to sign you for that request, someone else may have already claimed it.",
-            )
-            return self.form_invalid(form)
-
-        try:
-            # If the meal request is still available, update it from the form values
-            self.update_meal_request(form, meal_request)
-        except ValidationError as error:
-            messages.error(self.request, error.messages[0])
-            return redirect(self.success_url)
-
+        self.object.deliverer = self.request.user
+        self.object.status = Status.DRIVER_ASSIGNED
+        self.object.save()
         messages.success(self.request, 'Successfully signed up!')
         return super().form_valid(form)
-
-    def get_meal_request(self, form):
-        try:
-            return self.queryset.get(id=form.cleaned_data['id'])
-        except MealRequest.DoesNotExist:
-            return None
-
-    def update_meal_request(self, form, meal_request):
-        meal_request.dropoff_start = form.cleaned_data['dropoff_start']
-        meal_request.dropoff_end = form.cleaned_data['dropoff_end']
-        meal_request.deliverer = self.request.user
-        meal_request.status = Status.DRIVER_ASSIGNED
-        meal_request.save()
-
 
 ####################################################################
 #                                                                  #

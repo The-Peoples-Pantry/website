@@ -6,6 +6,7 @@
     Delivery for Request #{{ meal_request.id }} - Pickup timeframe: {{ meal_request.delivery_date }}, {{ meal_request.pickup_start }} to {{ meal_request.pickup_end }}
   </div>
   <div class="card-body">
+    {% bootstrap_form_errors form %}
     <div class="row">
       <div class="col h6">
         Meal
@@ -37,7 +38,7 @@
     </div>
     <div class="row">
       <div class="col">
-        <form action="" method="post" class="form">
+        <form action="{% url 'volunteers:delivery_signup' meal_request.pk %}" method="post" class="form">
           {% csrf_token %}
 
           <h6>Dropoff timerange on {{ meal_request.delivery_date }}</h6>
