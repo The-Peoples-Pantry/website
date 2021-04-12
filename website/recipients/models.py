@@ -3,8 +3,6 @@ from textwrap import dedent
 from datetime import datetime, timedelta, date
 from django.db import models
 from django.conf import settings
-from django.db.models.signals import pre_init
-from django.dispatch import receiver
 from django.forms import model_to_dict
 from django.core.exceptions import ValidationError
 from django.urls import reverse_lazy
@@ -396,51 +394,6 @@ class MealRequest(DemographicMixin, ContactMixin, AddressMixin, TimestampsMixin,
             raise ValidationError("Please specify a dropoff window.")
 
 
-class MealDelivery(models.Model):
-    class Meta:
-        verbose_name_plural = 'meal deliveries'
-
-    request = models.OneToOneField(
-        MealRequest,
-        on_delete=models.CASCADE,
-        related_name='delivery',
-    )
-    chef = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.SET(get_sentinel_user),
-        related_name="cooked_meal_deliveries",
-        null=True,
-        blank=True,
-    )
-    deliverer = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.SET(get_sentinel_user),
-        related_name="delivered_meal_deliveries",
-        null=True,
-        blank=True,
-    )
-
-    status = models.CharField(
-        "Status",
-        max_length=settings.DEFAULT_LENGTH,
-        choices=Status.choices,
-        default=Status.UNCONFIRMED
-    )
-    date = models.DateField("Delivery date", null=True, blank=True)
-    pickup_start = models.TimeField(null=True, blank=True)
-    pickup_end = models.TimeField(null=True, blank=True)
-    dropoff_start = models.TimeField(null=True, blank=True)
-    dropoff_end = models.TimeField(null=True, blank=True)
-    meal = models.TextField(
-        "Meal",
-        help_text="(Optional) Let us know what you plan on cooking!",
-        blank=True,
-    )
-
-    # System
-    created_at = models.DateTimeField(auto_now_add=True)
-
-
 class CommentModel(models.Model):
     class Meta:
         abstract = True
@@ -472,10 +425,6 @@ class CommentModel(models.Model):
 
 class MealRequestComment(CommentModel):
     subject = models.ForeignKey(MealRequest, related_name="comments", on_delete=models.CASCADE)
-
-
-class MealDeliveryComment(CommentModel):
-    subject = models.ForeignKey(MealDelivery, related_name="comments", on_delete=models.CASCADE)
 
 
 class GiftCard(models.TextChoices):
@@ -735,8 +684,3 @@ class GroceryRequest(DemographicMixin, ContactMixin, AddressMixin, TimestampsMix
 
 class GroceryRequestComment(CommentModel):
     subject = models.ForeignKey(GroceryRequest, related_name="comments", on_delete=models.CASCADE)
-
-
-@receiver(pre_init, sender=MealDelivery)
-def error_deprecated_meal_delivery(sender, **kwargs):
-    raise Exception("MealDelivery is deprecated")
