@@ -69,7 +69,7 @@
 
           {% if can_deliver %}
             <p>{{ form.can_deliver }} I can also deliver this meal myself</p>
-            <div class="dropoff-timerange d-none">
+            <div class="dropoff-timerange {% if not form.can_deliver.value %}d-none{% endif %}">
               <h6>Drop-off timerange</h6>
               <div class="row">
                 <div class="col-sm">
