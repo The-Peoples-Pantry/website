@@ -177,3 +177,13 @@ class DelivererSignupForm(forms.ModelForm):
             'dropoff_start': TimeInput,
             'dropoff_end': TimeInput,
         }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        dropoff_start = cleaned_data.get('dropoff_start')
+        dropoff_end = cleaned_data.get('dropoff_end')
+
+        if dropoff_end <= dropoff_start:
+            self.add_error('dropoff_end', ValidationError("The dropoff end time must come after the dropoff start time"))
+        if time_difference(dropoff_start, dropoff_end) > datetime.timedelta(hours=2):
+            self.add_error('dropoff_end', ValidationError("The delivery window cannot be longer than 2 hours"))
