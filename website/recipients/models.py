@@ -390,8 +390,6 @@ class MealRequest(DemographicMixin, ContactMixin, AddressMixin, TimestampsMixin,
             end = datetime.combine(self.delivery_date, self.dropoff_end)
             if (start + timedelta(hours=2)) < end and self.status != Status.DELIVERED:
                 raise ValidationError("The delivery window must be two hours or less.")
-        if self.deliverer and (not self.dropoff_start or not self.dropoff_end):
-            raise ValidationError("Please specify a dropoff window.")
 
 
 class CommentModel(models.Model):
