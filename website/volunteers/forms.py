@@ -151,6 +151,7 @@ class ChefSignupForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
+        can_deliver = cleaned_data.get('can_deliver')
         pickup_start = cleaned_data.get('pickup_start')
         pickup_end = cleaned_data.get('pickup_end')
         dropoff_start = cleaned_data.get('dropoff_start')
@@ -158,12 +159,15 @@ class ChefSignupForm(forms.ModelForm):
 
         if pickup_end <= pickup_start:
             self.add_error('pickup_end', ValidationError("The pickup end time must come after the pickup start time"))
-        if dropoff_end <= dropoff_start:
-            self.add_error('dropoff_end', ValidationError("The dropoff end time must come after the dropoff start time"))
-        if dropoff_start < pickup_start:
-            self.add_error('dropoff_start', ValidationError("The dropoff start time cannot come before the pickup start time"))
-        if time_difference(dropoff_start, dropoff_end) > datetime.timedelta(hours=2):
-            self.add_error('dropoff_end', ValidationError("The delivery window cannot be longer than 2 hours"))
+
+        # Only try to validate the dropoff window if the chef is delivering it (setting these values themselves)
+        if can_deliver:
+            if dropoff_end <= dropoff_start:
+                self.add_error('dropoff_end', ValidationError("The dropoff end time must come after the dropoff start time"))
+            if dropoff_start < pickup_start:
+                self.add_error('dropoff_start', ValidationError("The dropoff start time cannot come before the pickup start time"))
+            if time_difference(dropoff_start, dropoff_end) > datetime.timedelta(hours=2):
+                self.add_error('dropoff_end', ValidationError("The delivery window cannot be longer than 2 hours"))
 
 
 class DelivererSignupForm(forms.ModelForm):
