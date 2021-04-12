@@ -123,7 +123,7 @@ class OrganizerApplyForm(VolunteerApplicationForm):
 
 
 class ChefSignupForm(forms.ModelForm):
-    can_deliver = forms.BooleanField(required=False)
+    can_deliver = forms.BooleanField(label="I can also deliver this meal myself", required=False)
 
     class Meta:
         model = MealRequest
@@ -142,9 +142,6 @@ class ChefSignupForm(forms.ModelForm):
             'dropoff_end': TimeInput,
             'delivery_date': MealRequestDeliveryDateInput,
         }
-
-    class Media:
-        js = ['js/chef_signup_form.js']
 
 
 class DelivererSignupForm(forms.ModelForm):

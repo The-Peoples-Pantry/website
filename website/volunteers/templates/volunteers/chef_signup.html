@@ -4,8 +4,3 @@
 <h1>Sign up to cook for Request #{{ meal.id }}</h1>
 {% include "volunteers/_chef_signup_form.html" %}
 {% endblock content %}
-
-{% block custom_javascript %}
-{{ block.super }}
-{{ form.media }}
-{% endblock %}

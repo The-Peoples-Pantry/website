@@ -78,3 +78,8 @@ textarea.form-control {
   width: 1.2rem;
   height: 1.2rem;
 }
+
+/* Show/Hide the dropoff timerange fields when the can_deliver box is checked/unchecked, for ChefSignupForm */
+input[name="can_deliver"]:not(:checked) ~ div.dropoff-timerange {
+  display: none;
+}
