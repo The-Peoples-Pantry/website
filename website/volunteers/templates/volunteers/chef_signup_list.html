@@ -22,8 +22,8 @@
   <div class="col-md-9 order-md-1">
     {% include 'volunteers/essential_service_notice.html' %}
     <p>Here are all the upcoming meal requests that need a chef! Please sign up by selecting a pickup date and time frame. You can also  <a href={% url 'volunteers:chef_list' %}>see all the meals you've already signed up for here</a>.</p>
-    {% for object_context in object_context_list %}
-      {% include "volunteers/_chef_signup_form.html" with meal_request=object_context.meal_request form=object_context.form %}
+    {% for form in forms %}
+      {% include "volunteers/_chef_signup_form.html" with meal_request=form.instance form=form %}
     {% empty %}
       <div class="alert alert-info">There are no open meal requests at this time.</div>
     {% endfor %}

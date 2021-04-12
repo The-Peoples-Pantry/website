@@ -29,17 +29,11 @@ class ChefSignupListView(LoginRequiredMixin, GroupRequiredMixin, LastVisitedMixi
     queryset = MealRequest.objects.not_delivered().filter(chef__isnull=True)
     ordering = 'created_at'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["object_context_list"] = [
-            {
-                "meal_request": meal_request,
-                "form": ChefSignupForm(instance=meal_request),
-            }
-            # self.object_list is a MealRequest queryset pre-filtered by ChefSignupFilter
-            for meal_request in self.object_list
-        ]
-        return context
+    @property
+    def extra_context(self):
+        return {
+            'forms': [ChefSignupForm(instance=meal_request) for meal_request in self.object_list],
+        }
 
 
 class ChefSignupView(LoginRequiredMixin, GroupRequiredMixin, UpdateView):
@@ -72,16 +66,11 @@ class DelivererSignupListView(LoginRequiredMixin, GroupRequiredMixin, LastVisite
     queryset = MealRequest.objects.not_delivered().exclude(delivery_date__isnull=True).filter(deliverer__isnull=True)
     ordering = 'delivery_date'
 
-    def get_context_data(self, alerts={}, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["object_context_list"] = [
-            {
-                "meal_request": meal_request,
-                "form": DelivererSignupForm(instance=meal_request),
-            }
-            for meal_request in self.object_list
-        ]
-        return context
+    @property
+    def extra_context(self):
+        return {
+            'forms': [DelivererSignupForm(instance=meal_request) for meal_request in self.object_list],
+        }
 
 
 class DelivererSignupView(LoginRequiredMixin, GroupRequiredMixin, UpdateView):
