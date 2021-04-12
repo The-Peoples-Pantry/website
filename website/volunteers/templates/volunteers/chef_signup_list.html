@@ -32,16 +32,7 @@
 </div>
 {% endblock content %}
 
-{% block custom_jquery %}
-  <script>
-    $(document).ready(function() {
-      $("input[name='can_deliver']").change(function(e) {
-        var $checkbox = $(e.target);
-        var $form = $checkbox.closest('form');
-        var $timerange = $form.find(".dropoff-timerange");
-        if (e.target.checked) $timerange.removeClass("d-none")
-        else $timerange.addClass("d-none")
-      });
-    });
-  </script>
+{% block custom_javascript %}
+{{ block.super }}
+{{ object_contexts.0.form.media }}
 {% endblock %}

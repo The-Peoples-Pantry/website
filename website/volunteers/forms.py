@@ -143,6 +143,9 @@ class ChefSignupForm(forms.ModelForm):
             'delivery_date': MealRequestDeliveryDateInput,
         }
 
+    class Media:
+        js = ['js/chef_signup_form.js']
+
 
 class DelivererSignupForm(forms.ModelForm):
     class Meta:
