@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.core.exceptions import ImproperlyConfigured
 from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic.edit import FormView, UpdateView
@@ -51,7 +52,15 @@ class UserProfileView(LoginRequiredMixin, UpdateView):
 
 class GroupRequiredMixin(UserPassesTestMixin):
     def test_func(self):
-        return has_group(self.request.user, self.permission_group) or self.request.user.is_staff
+        return any(has_group(self.request.user, group) for group in self.get_permission_groups()) or self.request.user.is_staff
+
+    def get_permission_groups(self):
+        if hasattr(self, 'permission_groups'):
+            return self.permission_groups
+        elif hasattr(self, 'permission_group'):
+            return (self.permission_group,)
+        else:
+            raise ImproperlyConfigured('GroupRequiredMixin requires either permission_group or permission_groups')
 
     def get_permission_group_redirect_url(self):
         default = reverse('profile')
