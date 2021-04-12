@@ -32,7 +32,7 @@ class ChefSignupListView(LoginRequiredMixin, GroupRequiredMixin, LastVisitedMixi
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["object_contexts"] = [
+        context["object_context_list"] = [
             {
                 "meal_request": meal_request,
                 "form": ChefSignupForm(instance=meal_request),
@@ -81,8 +81,11 @@ class DelivererSignupListView(LoginRequiredMixin, GroupRequiredMixin, LastVisite
 
     def get_context_data(self, alerts={}, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["meal_request_form_pairs"] = [
-            (meal_request, DelivererSignupForm(instance=meal_request))
+        context["object_context_list"] = [
+            {
+                "meal_request": meal_request,
+                "form": DelivererSignupForm(instance=meal_request),
+            }
             for meal_request in self.object_list
         ]
         return context
