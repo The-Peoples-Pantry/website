@@ -14,6 +14,7 @@
 
   {# Card body section contains the form and map #}
   <div class="card-body">
+    {% bootstrap_form_errors form %}
     {% if meal.stale %}
       <div class="alert alert-info">This request was submitted more than a week ago, please prioritize this if possible.</div>
     {% endif %}
@@ -50,7 +51,7 @@
           <p>{{ meal.availability }}</p>
         {% endif %}
 
-        <form action="{% url 'volunteers:chef_signup' meal.pk %}" method="put" class="form">
+        <form action="{% url 'volunteers:chef_signup' meal.pk %}" method="post" class="form">
           {% csrf_token %}
 
           <h6>Pickup date</h6>
