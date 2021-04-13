@@ -54,7 +54,9 @@
         </div>
       </div>
       {% if not meal_request.delivered %}
-        <a href="mailto:{{settings.REQUEST_COORDINATORS_EMAIL}},{{settings.DELIVERY_COORDINATORS_EMAIL}}?subject=Chef Change Request for Delivery for Request ID {{ meal_request.id }}" class="btn btn-outline-danger">Request a change</a>
+        {% buttons submit="Update"%}
+          <a href="mailto:{{settings.REQUEST_COORDINATORS_EMAIL}},{{settings.DELIVERY_COORDINATORS_EMAIL}}?subject=Chef Change Request for Delivery for Request ID {{ meal_request.id }}" class="btn btn-outline-danger">Request a change</a>
+        {% endbuttons %}
       {% endif %}
     </div>
   </div>
