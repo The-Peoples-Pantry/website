@@ -158,6 +158,11 @@ class MealRequest(DemographicMixin, ContactMixin, AddressMixin, TimestampsMixin,
         choices=Status.choices,
         default=Status.UNCONFIRMED
     )
+    pickup_details = models.TextField(
+        "Pickup details",
+        help_text="List any details the deliverer might need to know for pickup",
+        blank=True,
+    )
     delivery_date = models.DateField("Delivery date", null=True, blank=True)
     pickup_start = models.TimeField(default=time(12, 00))
     pickup_end = models.TimeField(default=time(17, 00))

@@ -87,6 +87,7 @@
             </p>
           </div>
 
+          {% bootstrap_field form.pickup_details %}
           {% bootstrap_field form.meal %}
 
           {% buttons submit="Submit"%}{% endbuttons %}
@@ -108,6 +109,9 @@
 </div>
 
 <style type="text/css">
+  input[name="can_deliver"] {
+    margin-bottom: 1em;
+  }
   input[name="can_deliver"]:not(:checked) ~ div.dropoff-timerange {
     display: none;
   }

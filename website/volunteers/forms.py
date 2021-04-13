@@ -139,6 +139,7 @@ class ChefSignupForm(forms.ModelForm):
             'pickup_end',
             'dropoff_start',
             'dropoff_end',
+            'pickup_details',
             'meal',
         ]
         widgets = {
@@ -173,7 +174,7 @@ class ChefSignupForm(forms.ModelForm):
 class ChefTaskForm(forms.ModelForm):
     class Meta:
         model = MealRequest
-        fields = ['meal']
+        fields = ['pickup_details', 'meal']
 
 
 class DelivererSignupForm(forms.ModelForm):
