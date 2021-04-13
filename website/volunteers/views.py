@@ -52,7 +52,7 @@ class ChefSignupView(LoginRequiredMixin, GroupRequiredMixin, UpdateView):
         else:
             self.object.status = Status.CHEF_ASSIGNED
         self.object.save()
-        messages.success(self.request, 'Success`fu`lly signed up!')
+        messages.success(self.request, 'Successfully signed up!')
         return super().form_valid(form)
 
 
