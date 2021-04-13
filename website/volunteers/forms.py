@@ -100,7 +100,7 @@ class ChefApplyForm(VolunteerApplicationForm):
         ]
 
 
-class DeliveryApplyForm(VolunteerApplicationForm):
+class DelivererApplyForm(VolunteerApplicationForm):
     class Meta(VolunteerApplicationForm.Meta):
         fields = [
             *VolunteerApplicationForm.Meta.fields,
