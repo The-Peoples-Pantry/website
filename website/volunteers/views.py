@@ -107,6 +107,17 @@ class ChefTaskListView(LoginRequiredMixin, GroupRequiredMixin, ListView):
     def get_queryset(self):
         return super().get_queryset().filter(chef=self.request.user)
 
+    @property
+    def extra_context(self):
+        return {
+            'delivered': {
+                'forms': [ChefTaskForm(instance=meal_request) for meal_request in self.object_list.delivered()],
+            },
+            'not_delivered': {
+                'forms': [ChefTaskForm(instance=meal_request) for meal_request in self.object_list.not_delivered()],
+            }
+        }
+
 
 class ChefTaskView(LoginRequiredMixin, GroupRequiredMixin, UpdateView):
     """View for chefs to edit a meal request they've signed up for"""

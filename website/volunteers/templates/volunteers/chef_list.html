@@ -14,16 +14,16 @@
 <div class="tab-content" id="myTabContent">
   <div class="tab-pane pt-3 show active" id="current-tasks" role="tabpanel" aria-labelledby="current-tasks-tab">
     <p>Here are all the upcoming meals that you've signed up to cook. If you need to make a change to any of these meals, please send us an email using the 'Request a change' button and tell us what you need to modify.</p>
-    {% for meal_request in meal_requests.not_delivered %}
-      {% include "volunteers/_chef_task_form.html" %}
+    {% for form in not_delivered.forms %}
+      {% include "volunteers/_chef_task_form.html" with meal_request=form.instance %}
     {% empty %}
       <div class="alert alert-info">You don't have any upcoming meals! <a href={% url 'volunteers:chef_signup_list' %}>Click here</a> to see the list of meal requests that current need a cook.</div>
     {% endfor %}
   </div>
   <div class="tab-pane pt-3" id="completed-tasks" role="tabpanel" aria-labelledby="completed-tasks-tab">
     <p>Here are all the past meals that you've completed.</p>
-    {% for meal_request in meal_requests.delivered %}
-      {% include "volunteers/_chef_task_form.html" %}
+    {% for form in delivered.forms %}
+      {% include "volunteers/_chef_task_form.html" with meal_request=form.instance %}
     {% empty %}
       <div class="alert alert-info">You haven't completed any meals yet! <a href={% url 'volunteers:chef_signup_list' %}>Click here</a> to see the list of meal requests that current need a cook.</div>
     {% endfor %}
