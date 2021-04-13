@@ -1,0 +1,6 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Cooking task for Request #{{ meal_request.id }}</h1>
+{% include "volunteers/_chef_task_form.html" %}
+{% endblock content %}

@@ -170,6 +170,12 @@ class ChefSignupForm(forms.ModelForm):
                 self.add_error('dropoff_end', ValidationError("The delivery window cannot be longer than 2 hours"))
 
 
+class ChefTaskForm(forms.ModelForm):
+    class Meta:
+        model = MealRequest
+        fields = ['meal']
+
+
 class DelivererSignupForm(forms.ModelForm):
     class Meta:
         model = MealRequest

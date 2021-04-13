@@ -11,7 +11,7 @@ from django_filters.views import FilterView
 
 from core.views import GroupRequiredMixin, LastVisitedMixin
 from recipients.models import MealRequest, Status
-from .forms import DelivererSignupForm, ChefSignupForm, ChefApplyForm, DelivererApplyForm, OrganizerApplyForm
+from .forms import DelivererSignupForm, ChefSignupForm, ChefTaskForm, ChefApplyForm, DelivererApplyForm, OrganizerApplyForm
 from .models import VolunteerApplication, VolunteerRoles, Volunteer
 from .filters import ChefSignupFilter, DelivererSignupFilter
 
@@ -96,7 +96,7 @@ class DelivererSignupView(LoginRequiredMixin, GroupRequiredMixin, UpdateView):
 
 
 class ChefTaskListView(LoginRequiredMixin, GroupRequiredMixin, ListView):
-    """View for chefs to see the meals they've signed up to cook"""
+    """View for chefs to see the meals requests they've signed up for"""
     model = MealRequest
     ordering = 'delivery_date'
     context_object_name = "meal_requests"
@@ -107,9 +107,38 @@ class ChefTaskListView(LoginRequiredMixin, GroupRequiredMixin, ListView):
     def get_queryset(self):
         return super().get_queryset().filter(chef=self.request.user)
 
+    @property
+    def extra_context(self):
+        return {
+            'delivered': {
+                'forms': [ChefTaskForm(instance=meal_request) for meal_request in self.object_list.delivered()],
+            },
+            'not_delivered': {
+                'forms': [ChefTaskForm(instance=meal_request) for meal_request in self.object_list.not_delivered()],
+            }
+        }
+
+
+class ChefTaskView(LoginRequiredMixin, GroupRequiredMixin, UpdateView):
+    """View for chefs to edit a meal request they've signed up for"""
+    model = MealRequest
+    form_class = ChefTaskForm
+    permission_group = 'Chefs'
+    permission_group_redirect_url = reverse_lazy('volunteers:chef_application')
+    template_name = "volunteers/chef_task.html"
+    context_object_name = "meal_request"
+    success_url = reverse_lazy('volunteers:chef_list')
+
+    def get_queryset(self):
+        return super().get_queryset().filter(chef=self.request.user)
+
+    def form_valid(self, *args, **kwargs):
+        messages.success(self.request, f"Updated details for Request #{self.object.id}")
+        return super().form_valid(*args, **kwargs)
+
 
 class DelivererTaskListView(LoginRequiredMixin, GroupRequiredMixin, ListView):
-    """View for deliverers to see the meal requests they've signed up to deliver"""
+    """View for deliverers to see the meal requests they've signed up for"""
     model = MealRequest
     ordering = 'delivery_date'
     context_object_name = "meal_requests"

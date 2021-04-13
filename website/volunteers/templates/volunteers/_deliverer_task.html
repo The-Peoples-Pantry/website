@@ -15,7 +15,7 @@
   </div>
   <div class="card-body">
     <div class="row">
-      <div class="col">
+      <div class="col-md">
         <h6>Pickup information</h6>
         <ul>
           <li>Pick up from {{ meal_request.pickup_start }} to {{ meal_request.pickup_end }}</li>
@@ -23,7 +23,7 @@
           <li>Address: <a href="{{ meal_request.chef.volunteer.address_link }}" target="_blank" rel="noopener nofollow">{{ meal_request.chef.volunteer.address }}</a></li>
         </ul>
       </div>
-      <div class="col">
+      <div class="col-md">
         <h6>Dropoff information</h6>
         <ul>
           <li>Drop off from {{ meal_request.dropoff_start }} to {{ meal_request.dropoff_end }}</li>
@@ -33,7 +33,8 @@
       </div>
     </div>
     <p>
-      {{ meal_request.delivery_details }}
+      <h6>Delivery details</h6>
+      {{ meal_request.delivery_details|default:"No delivery details provided by the recipient." }}
     </p>
     <p>
       The recipient will{% if not meal_request.can_meet_for_delivery %} <strong>not</strong>{% endif %} be able to meet you in the lobby or door of the residence.
