@@ -2,6 +2,7 @@ import logging
 from textwrap import dedent
 import datetime
 from django import forms
+from django.core.exceptions import ValidationError
 from recipients.models import MealRequest
 from .models import Volunteer
 
@@ -9,18 +10,13 @@ from .models import Volunteer
 logger = logging.getLogger(__name__)
 
 
-class TimeField(forms.TimeField):
-    """A field that renders a time picker widget"""
+class TimeInput(forms.TimeInput):
+    input_type = 'time'
 
-    def __init__(self, **kwargs):
-        super().__init__(
-            input_formats=['%H:%M'],
-            widget=forms.TimeInput(
-                format='%H:%M',
-                attrs={'type': 'time'}
-            ),
-            **kwargs,
-        )
+
+def time_difference(t_start, t_end):
+    today = datetime.datetime.today()
+    return datetime.datetime.combine(today, t_end) - datetime.datetime.combine(today, t_start)
 
 
 def date_label(date):
@@ -132,37 +128,66 @@ class OrganizerApplyForm(VolunteerApplicationForm):
         ]
 
 
-class ChefSignupForm(forms.Form):
-    id = forms.IntegerField()
-    delivery_date = forms.DateField(widget=MealRequestDeliveryDateInput)
-    pickup_start = TimeField(initial='12:00')
-    pickup_end = TimeField(initial='17:00')
-    dropoff_start = TimeField(initial='18:00', required=False)
-    dropoff_end = TimeField(initial='20:00', required=False)
-    can_deliver = forms.BooleanField(required=False)
-    meal = forms.CharField(required=False, help_text="(Optional) Let us know what you plan on cooking!")
-
-    # If the chef hasn't opted to deliver it, remove the dropoff timerange
-    def clean(self):
-        cleaned_data = super().clean()
-        can_deliver = cleaned_data['can_deliver']
-        if not can_deliver:
-            cleaned_data.pop('dropoff_start')
-            cleaned_data.pop('dropoff_end')
-        return cleaned_data
-
-
-class DelivererSignupForm(forms.ModelForm):
-    id = forms.IntegerField()
-    dropoff_start = TimeField(initial='18:00')
-    dropoff_end = TimeField(initial='20:00')
+class ChefSignupForm(forms.ModelForm):
+    can_deliver = forms.BooleanField(label="I can also deliver this meal myself", required=False)
 
     class Meta:
         model = MealRequest
         fields = [
-            'id',
+            'delivery_date',
             'pickup_start',
             'pickup_end',
             'dropoff_start',
             'dropoff_end',
+            'meal',
         ]
+        widgets = {
+            'pickup_start': TimeInput,
+            'pickup_end': TimeInput,
+            'dropoff_start': TimeInput,
+            'dropoff_end': TimeInput,
+            'delivery_date': MealRequestDeliveryDateInput,
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        can_deliver = cleaned_data.get('can_deliver')
+        pickup_start = cleaned_data.get('pickup_start')
+        pickup_end = cleaned_data.get('pickup_end')
+        dropoff_start = cleaned_data.get('dropoff_start')
+        dropoff_end = cleaned_data.get('dropoff_end')
+
+        if pickup_end <= pickup_start:
+            self.add_error('pickup_end', ValidationError("The pickup end time must come after the pickup start time"))
+
+        # Only try to validate the dropoff window if the chef is delivering it (setting these values themselves)
+        if can_deliver:
+            if dropoff_end <= dropoff_start:
+                self.add_error('dropoff_end', ValidationError("The dropoff end time must come after the dropoff start time"))
+            if dropoff_start < pickup_start:
+                self.add_error('dropoff_start', ValidationError("The dropoff start time cannot come before the pickup start time"))
+            if time_difference(dropoff_start, dropoff_end) > datetime.timedelta(hours=2):
+                self.add_error('dropoff_end', ValidationError("The delivery window cannot be longer than 2 hours"))
+
+
+class DelivererSignupForm(forms.ModelForm):
+    class Meta:
+        model = MealRequest
+        fields = [
+            'dropoff_start',
+            'dropoff_end',
+        ]
+        widgets = {
+            'dropoff_start': TimeInput,
+            'dropoff_end': TimeInput,
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        dropoff_start = cleaned_data.get('dropoff_start')
+        dropoff_end = cleaned_data.get('dropoff_end')
+
+        if dropoff_end <= dropoff_start:
+            self.add_error('dropoff_end', ValidationError("The dropoff end time must come after the dropoff start time"))
+        if time_difference(dropoff_start, dropoff_end) > datetime.timedelta(hours=2):
+            self.add_error('dropoff_end', ValidationError("The delivery window cannot be longer than 2 hours"))

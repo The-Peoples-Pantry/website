@@ -1,6 +1,6 @@
 import logging
 from textwrap import dedent
-from datetime import datetime, timedelta, date
+from datetime import timedelta, time, date
 from django.db import models
 from django.conf import settings
 from django.forms import model_to_dict
@@ -160,10 +160,10 @@ class MealRequest(DemographicMixin, ContactMixin, AddressMixin, TimestampsMixin,
         default=Status.UNCONFIRMED
     )
     delivery_date = models.DateField("Delivery date", null=True, blank=True)
-    pickup_start = models.TimeField(null=True, blank=True)
-    pickup_end = models.TimeField(null=True, blank=True)
-    dropoff_start = models.TimeField(null=True, blank=True)
-    dropoff_end = models.TimeField(null=True, blank=True)
+    pickup_start = models.TimeField(default=time(12, 00))
+    pickup_end = models.TimeField(default=time(17, 00))
+    dropoff_start = models.TimeField(default=time(18, 00))
+    dropoff_end = models.TimeField(default=time(20, 00))
     meal = models.TextField(
         "Meal",
         help_text="(Optional) Let us know what you plan on cooking!",
@@ -372,26 +372,6 @@ class MealRequest(DemographicMixin, ContactMixin, AddressMixin, TimestampsMixin,
         return "Request #%d (%s): %d adult(s) and %d kid(s) in %s " % (
             self.id, self.name, self.num_adults, self.num_children, self.city,
         )
-
-    def save(self, *args, **kwargs):
-        self.full_clean()
-        return super().save(*args, **kwargs)
-
-    def clean(self, *args, **kwargs):
-        super().clean(*args, **kwargs)
-        if self.pickup_end and self.pickup_start and self.pickup_end <= self.pickup_start:
-            raise ValidationError("The pickup end time must be after the pickup start time")
-        if self.dropoff_end and self.dropoff_start and self.dropoff_end <= self.dropoff_start:
-            raise ValidationError("The dropoff end time must be after the dropoff start time")
-        if self.dropoff_start and self.pickup_start and self.dropoff_start <= self.pickup_start:
-            raise ValidationError("The dropoff start time must be after the pickup start time")
-        if self.dropoff_start and self.dropoff_end and self.delivery_date:
-            start = datetime.combine(self.delivery_date, self.dropoff_start)
-            end = datetime.combine(self.delivery_date, self.dropoff_end)
-            if (start + timedelta(hours=2)) < end and self.status != Status.DELIVERED:
-                raise ValidationError("The delivery window must be two hours or less.")
-        if self.deliverer and (not self.dropoff_start or not self.dropoff_end):
-            raise ValidationError("Please specify a dropoff window.")
 
 
 class CommentModel(models.Model):

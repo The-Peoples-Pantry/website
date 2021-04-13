@@ -2,7 +2,7 @@
 {% load bootstrap4 %}
 
 {% block content %}
-<h1 class="mb-3">My cooking tasks</h1>
+<h1>My cooking tasks</h1>
 <ul class="nav nav-tabs">
   <li class="nav-item">
     <a class="nav-link active" id="current-tasks-tab" data-toggle="tab" href="#current-tasks" aria-controls="current-tasks" aria-selected="true">Current</a>
@@ -17,7 +17,7 @@
     {% for meal_request in meal_requests.not_delivered %}
       {% include "volunteers/_chef_task.html" with meal_request=meal_request %}
     {% empty %}
-      <div class="alert alert-info">You don't have any upcoming meals! <a href={% url 'volunteers:chef_signup' %}>Click here</a> to see the list of meal requests that current need a cook.</div>
+      <div class="alert alert-info">You don't have any upcoming meals! <a href={% url 'volunteers:chef_signup_list' %}>Click here</a> to see the list of meal requests that current need a cook.</div>
     {% endfor %}
   </div>
   <div class="tab-pane pt-3" id="completed-tasks" role="tabpanel" aria-labelledby="completed-tasks-tab">
@@ -25,7 +25,7 @@
     {% for meal_request in meal_requests.delivered %}
       {% include "volunteers/_chef_task.html" with meal_request=meal_request %}
     {% empty %}
-      <div class="alert alert-info">You haven't completed any meals yet! <a href={% url 'volunteers:chef_signup' %}>Click here</a> to see the list of meal requests that current need a cook.</div>
+      <div class="alert alert-info">You haven't completed any meals yet! <a href={% url 'volunteers:chef_signup_list' %}>Click here</a> to see the list of meal requests that current need a cook.</div>
     {% endfor %}
   </div>
 </div>
