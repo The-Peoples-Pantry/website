@@ -17,7 +17,7 @@
         </div>
       </div>
       <div class="row">
-        <div class="col">
+        <div class="col-sm">
           <h6>Food preferences</h6>
           <p>
             {% if meal_request.food_preferences %}
@@ -38,7 +38,7 @@
           <h6>Meal</h6>
           {% bootstrap_field form.meal show_label=False %}
         </div>
-        <div class="col">
+        <div class="col-sm">
           <h6>Other dietary information</h6>
           <ul>
             {% if meal_request.vegan %} <li>Vegan</li> {% endif %}
