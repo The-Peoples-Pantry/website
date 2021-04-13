@@ -40,7 +40,18 @@
 
       <section id="content" class="container">
         {% bootstrap_messages %}
-        {% block content %}{% endblock %}
+        {# Extend either content or narrow content to get the right size #}
+        <div class="row">
+          <div class="col">
+            {% block content %}{% endblock %}
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-10 col-md-8 col-lg-6 mx-auto">
+            {% block narrow_content %}{% endblock %}
+          </div>
+        </div>
       </section>
 
       {% block footer %}{% include "footer.html" %}{% endblock %}
