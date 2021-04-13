@@ -13,6 +13,11 @@
     <div class="card-body">
       <div class="row">
         <div class="col">
+          <p class="font-weight-strong">This meal will be picked up on {{ meal_request.delivery_date }} between {{ meal_request.pickup_start }} to {{ meal_request.pickup_end }} {% if meal_request.deliverer %} by {{ meal_request.deliverer.volunteer.preferred_name }} (contact them at {{ meal_request.deliverer.volunteer.phone_number }}) {% else %} (no delivery person has been assigned yet) {% endif %}</p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
           <h6>Food preferences</h6>
           <p>
             {% if meal_request.food_preferences %}
@@ -46,11 +51,6 @@
             <li>Will {% if not meal_request.will_accept_vegan %}<strong>not </strong>{% endif %}accept vegan meals</li>
             <li>Will {% if not meal_request.will_accept_vegetarian %}<strong>not </strong>{% endif %}accept vegetarian meals</li>
           </ul>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col">
-          <p class="font-weight-strong">This meal will be picked up on {{ meal_request.delivery_date }} between {{ meal_request.pickup_start }} to {{ meal_request.pickup_end }} {% if meal_request.deliverer %} by {{ meal_request.deliverer.volunteer.preferred_name }} (contact them at {{ meal_request.deliverer.volunteer.phone_number }}) {% else %} (no delivery person has been assigned yet) {% endif %}</p>
         </div>
       </div>
       {% if not meal_request.delivered %}
