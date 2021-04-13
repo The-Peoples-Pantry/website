@@ -34,9 +34,6 @@
               None
             {% endif %}
           </p>
-
-          <h6>Meal</h6>
-          {% bootstrap_field form.meal show_label=False %}
         </div>
         <div class="col-sm">
           <h6>Other dietary information</h6>
@@ -51,6 +48,16 @@
             <li>Will {% if not meal_request.will_accept_vegan %}<strong>not </strong>{% endif %}accept vegan meals</li>
             <li>Will {% if not meal_request.will_accept_vegetarian %}<strong>not </strong>{% endif %}accept vegetarian meals</li>
           </ul>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <h6>Meal</h6>
+          {% if meal_request.delivered %}
+            {{ meal_request.meal|default:"No meal listed" }}
+          {% else %}
+            {% bootstrap_field form.meal show_label=False %}
+          {% endif %}
         </div>
       </div>
       {% if not meal_request.delivered %}
