@@ -132,6 +132,10 @@ class ChefTaskView(LoginRequiredMixin, GroupRequiredMixin, UpdateView):
     def get_queryset(self):
         return super().get_queryset().filter(chef=self.request.user)
 
+    def form_valid(self, *args, **kwargs):
+        messages.success(self.request, f"Updated details for Request #{self.object.id}")
+        return super().form_valid(*args, **kwargs)
+
 
 class DelivererTaskListView(LoginRequiredMixin, GroupRequiredMixin, ListView):
     """View for deliverers to see the meal requests they've signed up for"""
