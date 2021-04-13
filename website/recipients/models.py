@@ -5,7 +5,6 @@ from django.db import models
 from django.conf import settings
 from django.forms import model_to_dict
 from django.core.exceptions import ValidationError
-from django.urls import reverse_lazy
 from django.utils import timezone
 import pytz
 
@@ -216,9 +215,6 @@ class MealRequest(DemographicMixin, ContactMixin, AddressMixin, TimestampsMixin,
     @property
     def delivered(self):
         return self.status == Status.DELIVERED
-
-    def get_absolute_url(self):
-        return reverse_lazy('recipients:request_detail', args=[str(self.id)])
 
     def copy(self):
         """Clone the request with special business logic

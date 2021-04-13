@@ -1,9 +1,8 @@
 from textwrap import dedent
 from django.views.generic.edit import FormView
-from django.views.generic import DetailView, TemplateView
+from django.views.generic import TemplateView
 from django.shortcuts import render
 from django.urls import reverse_lazy
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 
 from .forms import MealRequestForm, GroceryRequestForm
@@ -43,11 +42,6 @@ class MealRequestView(FormView):
         instance = form.save()
         instance.send_confirmation_email()
         return super().form_valid(form)
-
-
-class MealRequestDetail(LoginRequiredMixin, DetailView):
-    model = MealRequest
-    template_name = "recipients/meal_detail.html"
 
 
 class GroceryRequestView(FormView):
