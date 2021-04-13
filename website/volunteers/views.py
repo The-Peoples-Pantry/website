@@ -95,7 +95,7 @@ class DelivererSignupView(LoginRequiredMixin, GroupRequiredMixin, UpdateView):
 ####################################################################
 
 
-class ChefIndexView(LoginRequiredMixin, GroupRequiredMixin, ListView):
+class ChefTaskListView(LoginRequiredMixin, GroupRequiredMixin, ListView):
     """View for chefs to see the meals they've signed up to cook"""
     model = MealRequest
     ordering = 'delivery_date'
@@ -108,7 +108,7 @@ class ChefIndexView(LoginRequiredMixin, GroupRequiredMixin, ListView):
         return super().get_queryset().filter(chef=self.request.user)
 
 
-class DeliveryIndexView(LoginRequiredMixin, GroupRequiredMixin, ListView):
+class DelivererTaskListView(LoginRequiredMixin, GroupRequiredMixin, ListView):
     """View for deliverers to see the meal requests they've signed up to deliver"""
     model = MealRequest
     ordering = 'delivery_date'
