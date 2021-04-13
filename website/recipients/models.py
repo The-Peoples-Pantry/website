@@ -217,9 +217,6 @@ class MealRequest(DemographicMixin, ContactMixin, AddressMixin, TimestampsMixin,
     def delivered(self):
         return self.status == Status.DELIVERED
 
-    def get_absolute_url(self):
-        return reverse_lazy('recipients:request_detail', args=[str(self.id)])
-
     def copy(self):
         """Clone the request with special business logic
         - The chef should remain the same but not the delivery driver
