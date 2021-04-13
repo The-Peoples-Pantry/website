@@ -5,7 +5,6 @@ from django.db import models
 from django.conf import settings
 from django.forms import model_to_dict
 from django.core.exceptions import ValidationError
-from django.urls import reverse_lazy
 from django.utils import timezone
 import pytz
 
