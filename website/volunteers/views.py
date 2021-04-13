@@ -11,7 +11,7 @@ from django_filters.views import FilterView
 
 from core.views import GroupRequiredMixin, LastVisitedMixin
 from recipients.models import MealRequest, Status
-from .forms import DelivererSignupForm, ChefSignupForm, ChefApplyForm, DeliveryApplyForm, OrganizerApplyForm
+from .forms import DelivererSignupForm, ChefSignupForm, ChefApplyForm, DelivererApplyForm, OrganizerApplyForm
 from .models import VolunteerApplication, VolunteerRoles, Volunteer
 from .filters import ChefSignupFilter, DelivererSignupFilter
 
@@ -58,9 +58,9 @@ class ChefSignupView(LoginRequiredMixin, GroupRequiredMixin, UpdateView):
 
 class DelivererSignupListView(LoginRequiredMixin, GroupRequiredMixin, LastVisitedMixin, FilterView):
     """View for deliverers to sign up to deliver meal requests"""
-    template_name = "volunteers/delivery_signup_list.html"
+    template_name = "volunteers/deliverer_signup_list.html"
     permission_group = 'Deliverers'
-    permission_group_redirect_url = reverse_lazy('volunteers:delivery_application')
+    permission_group_redirect_url = reverse_lazy('volunteers:deliverer_application')
     filterset_class = DelivererSignupFilter
     queryset = MealRequest.objects.not_delivered().exclude(delivery_date__isnull=True).filter(deliverer__isnull=True)
     ordering = 'delivery_date'
@@ -75,11 +75,11 @@ class DelivererSignupListView(LoginRequiredMixin, GroupRequiredMixin, LastVisite
 class DelivererSignupView(LoginRequiredMixin, GroupRequiredMixin, UpdateView):
     form_class = DelivererSignupForm
     permission_group = 'Deliverers'
-    permission_group_redirect_url = reverse_lazy('volunteers:delivery_application')
+    permission_group_redirect_url = reverse_lazy('volunteers:deliverer_application')
     queryset = MealRequest.objects.not_delivered().exclude(delivery_date__isnull=True).filter(deliverer__isnull=True)
-    template_name = "volunteers/delivery_signup.html"
+    template_name = "volunteers/deliverer_signup.html"
     context_object_name = "meal_request"
-    success_url = reverse_lazy('volunteers:delivery_signup_list')
+    success_url = reverse_lazy('volunteers:deliverer_signup_list')
 
     def form_valid(self, form):
         self.object.deliverer = self.request.user
@@ -95,7 +95,7 @@ class DelivererSignupView(LoginRequiredMixin, GroupRequiredMixin, UpdateView):
 ####################################################################
 
 
-class ChefIndexView(LoginRequiredMixin, GroupRequiredMixin, ListView):
+class ChefTaskListView(LoginRequiredMixin, GroupRequiredMixin, ListView):
     """View for chefs to see the meals they've signed up to cook"""
     model = MealRequest
     ordering = 'delivery_date'
@@ -108,14 +108,14 @@ class ChefIndexView(LoginRequiredMixin, GroupRequiredMixin, ListView):
         return super().get_queryset().filter(chef=self.request.user)
 
 
-class DeliveryIndexView(LoginRequiredMixin, GroupRequiredMixin, ListView):
+class DelivererTaskListView(LoginRequiredMixin, GroupRequiredMixin, ListView):
     """View for deliverers to see the meal requests they've signed up to deliver"""
     model = MealRequest
     ordering = 'delivery_date'
     context_object_name = "meal_requests"
-    template_name = "volunteers/delivery_list.html"
+    template_name = "volunteers/deliverer_list.html"
     permission_groups = ('Chefs', 'Deliverers')
-    permission_group_redirect_url = reverse_lazy('volunteers:delivery_application')
+    permission_group_redirect_url = reverse_lazy('volunteers:deliverer_application')
 
     def get_queryset(self):
         return super().get_queryset().filter(deliverer=self.request.user)
@@ -169,10 +169,10 @@ class VolunteerApplicationView(FormView, UpdateView):
         return super().form_valid(form)
 
 
-class DeliveryApplicationView(LoginRequiredMixin, VolunteerApplicationView):
+class DelivererApplicationView(LoginRequiredMixin, VolunteerApplicationView):
     role = VolunteerRoles.DELIVERERS
-    form_class = DeliveryApplyForm
-    template_name = "volunteers/delivery_application.html"
+    form_class = DelivererApplyForm
+    template_name = "volunteers/deliverer_application.html"
 
 
 class ChefApplicationView(LoginRequiredMixin, VolunteerApplicationView):

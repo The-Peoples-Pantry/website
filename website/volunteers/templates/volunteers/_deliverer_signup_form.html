@@ -38,7 +38,7 @@
     </div>
     <div class="row">
       <div class="col">
-        <form action="{% url 'volunteers:delivery_signup' meal_request.pk %}" method="post" class="form">
+        <form action="{% url 'volunteers:deliverer_signup' meal_request.pk %}" method="post" class="form">
           {% csrf_token %}
 
           <h6>Dropoff timerange on {{ meal_request.delivery_date }}</h6>
