@@ -17,7 +17,7 @@
     {% for meal_request in meal_requests.not_delivered %}
       {% include "volunteers/_deliverer_task.html" with meal_request=meal_request %}
     {% empty %}
-      <div class="alert alert-info">You don't have any upcoming deliveries! <a href={% url 'volunteers:deliverer_signup_list' %}>Click here</a> to see the list of requests that current need to be delivered.</div>
+      <div class="alert alert-info">You don't have any upcoming deliveries! <a href={% url 'volunteers:deliverer_signup_list' %}>Click here</a> to see the list of requests that currently need to be delivered.</div>
     {% endfor %}
   </div>
   <div class="tab-pane pt-3" id="completed-tasks" role="tabpanel" aria-labelledby="completed-tasks-tab">
@@ -25,7 +25,7 @@
     {% for meal_request in meal_requests.delivered %}
       {% include "volunteers/_deliverer_task.html" with meal_request=meal_request %}
     {% empty %}
-      <div class="alert alert-info">You haven't completed any deliveries yet! <a href={% url 'volunteers:deliverer_signup_list' %}>Click here</a> to see the list of requests that current need to be delivered.</div>
+      <div class="alert alert-info">You haven't completed any deliveries yet! <a href={% url 'volunteers:deliverer_signup_list' %}>Click here</a> to see the list of requests that currently need to be delivered.</div>
     {% endfor %}
   </div>
 </div>
