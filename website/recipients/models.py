@@ -54,9 +54,9 @@ class MealRequestQuerySet(models.QuerySet):
             chef_latitude = F('chef__volunteer__anonymized_latitude')
             chef_longitude = F('chef__volunteer__anonymized_longitude')
 
-        a_squared = Power(F('anonymized_latitude') - chef_latitude, 2)
-        b_squared = Power(F('anonymized_longitude') - chef_longitude, 2)
-        return self.annotate(delivery_distance=Sqrt(a_squared + b_squared) * Geocoder.DEGREE_LENGTH)
+        latitude_distance = (F('anonymized_latitude') - chef_latitude) * Geocoder.LATITUDE_DEGREE_LENGTH
+        longitude_distance = (F('anonymized_longitude') - chef_longitude) * Geocoder.LONGITUDE_DEGREE_LENGTH
+        return self.annotate(delivery_distance=Sqrt(Power(latitude_distance, 2) + Power(longitude_distance, 2)))
 
 
 class MealRequest(DemographicMixin, ContactMixin, AddressMixin, TimestampsMixin, models.Model):
