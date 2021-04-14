@@ -28,6 +28,9 @@ class ChefSignupListView(LoginRequiredMixin, GroupRequiredMixin, LastVisitedMixi
     queryset = MealRequest.objects.not_delivered().filter(chef__isnull=True)
     ordering = 'created_at'
 
+    def get_queryset(self):
+        return super().get_queryset().with_delivery_distance(chef=self.request.user)
+
     @property
     def extra_context(self):
         return {
@@ -43,6 +46,9 @@ class ChefSignupView(LoginRequiredMixin, GroupRequiredMixin, UpdateView):
     template_name = "volunteers/chef_signup.html"
     context_object_name = "meal_request"
     success_url = reverse_lazy('volunteers:chef_signup_list')
+
+    def get_queryset(self):
+        return super().get_queryset().with_delivery_distance(chef=self.request.user)
 
     def form_valid(self, form):
         self.object.chef = self.request.user

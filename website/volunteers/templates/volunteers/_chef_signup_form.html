@@ -1,7 +1,4 @@
 {% load bootstrap4 %}
-{% load distance %}
-
-{% distance meal_request request.user.volunteer as distance %}
 
 {# Each request gets represented as a card #}
 <div class="card mb-4">
@@ -21,7 +18,7 @@
     {% if meal_request.stale %}
       <div class="alert alert-info">This request was submitted more than a week ago, please prioritize this if possible.</div>
     {% endif %}
-    {% if distance > settings.MAX_CHEF_DISTANCE %}
+    {% if meal_request.delivery_distance > settings.MAX_CHEF_DISTANCE %}
       <div class="alert alert-warning">This request is far from your location. Please choose requests that are closer to you to reduce the strain on our delivery drivers.</div>
     {% endif %}
     <div class="row">
@@ -95,7 +92,7 @@
       </div>
       <div class="col">
         <h6>Approximate delivery location</h6>
-        <p>{{ distance|floatformat }} kilometres away</p>
+        <p>{{ meal_request.delivery_distance|floatformat }} kilometres away</p>
         <iframe
           loading="lazy"
           width="350"
