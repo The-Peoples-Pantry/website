@@ -15,11 +15,13 @@
   {# Card body section contains the form and map #}
   <div class="card-body">
     {% bootstrap_form_errors form %}
+
     {% if meal_request.delivery_distance > settings.MAX_CHEF_DISTANCE %}
-      <div class="alert alert-warning">This request is far from your location. Please consider a closer request unless you plan to deliver this yourself.</div>
+      <div class="alert alert-warning">This request is far from you, please choose a different request unless you can deliver this yourself.</div>
     {% elif meal_request.stale %}
       <div class="alert alert-info">This request was submitted more than a week ago, please prioritize this if possible.</div>
     {% endif %}
+
     <div class="row">
       <div class="col">
         {% if meal_request.food_preferences %}
