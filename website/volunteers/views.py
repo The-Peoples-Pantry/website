@@ -26,10 +26,9 @@ class ChefSignupListView(LoginRequiredMixin, GroupRequiredMixin, LastVisitedMixi
     permission_group_redirect_url = reverse_lazy('volunteers:chef_application')
     filterset_class = ChefSignupFilter
     queryset = MealRequest.objects.not_delivered().filter(chef__isnull=True)
-    ordering = 'created_at'
 
     def get_queryset(self):
-        return super().get_queryset().with_delivery_distance(chef=self.request.user)
+        return super().get_queryset().with_delivery_distance(chef=self.request.user).order_by('delivery_distance')
 
     @property
     def extra_context(self):
