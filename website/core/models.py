@@ -164,7 +164,15 @@ class AddressMixin(models.Model):
         except GeocoderException:
             logger.exception("Error when updating coordinates for %d", self.id)
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.__initial_address = self.address
+
     def save(self, *args, **kwargs):
-        # Whenever the model is updated, make sure coordinates are updated too
-        self.update_coordinates()
+        # If the address has been updated, update the coordinates too
+        if self._address_has_changed():
+            self.update_coordinates()
         super().save(*args, **kwargs)
+
+    def _address_has_changed(self):
+        return self.__initial_address != self.address
