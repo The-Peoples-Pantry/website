@@ -52,7 +52,7 @@
           <p>{{ meal_request.availability }}</p>
         {% endif %}
 
-        <form action="{% url 'volunteers:chef_signup' meal_request.pk %}" method="post" class="form">
+        <form action="{% url 'volunteers:chef_signup' meal_request.pk %}" method="post" class="form" onsubmit="return confirmChefSignup(this);">
           {% csrf_token %}
 
           <h6>Pickup date</h6>
@@ -114,3 +114,12 @@
     display: none;
   }
 </style>
+
+<script>
+  function confirmChefSignup(form) {
+    var can_deliver = form.querySelector('input[name="can_deliver"]').checked;
+    if (can_deliver) return true;
+
+    return window.confirm('Are you sure you want to sign up for this meal? Because of the distance, it might be difficult to find someone to deliver.');
+  }
+</script>
