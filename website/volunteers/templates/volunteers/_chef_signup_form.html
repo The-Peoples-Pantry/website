@@ -1,7 +1,4 @@
 {% load bootstrap4 %}
-{% load distance %}
-
-{% distance meal_request request.user.volunteer as distance %}
 
 {# Each request gets represented as a card #}
 <div class="card mb-4">
@@ -18,12 +15,13 @@
   {# Card body section contains the form and map #}
   <div class="card-body">
     {% bootstrap_form_errors form %}
-    {% if meal_request.stale %}
+
+    {% if meal_request.delivery_distance > settings.MAX_CHEF_DISTANCE %}
+      <div class="alert alert-warning">This request is far from you, please choose a different request unless you can deliver this yourself.</div>
+    {% elif meal_request.stale %}
       <div class="alert alert-info">This request was submitted more than a week ago, please prioritize this if possible.</div>
     {% endif %}
-    {% if distance > settings.MAX_CHEF_DISTANCE %}
-      <div class="alert alert-warning">This request is far from your location. Please choose requests that are closer to you to reduce the strain on our delivery drivers.</div>
-    {% endif %}
+
     <div class="row">
       <div class="col">
         {% if meal_request.food_preferences %}
@@ -54,7 +52,7 @@
           <p>{{ meal_request.availability }}</p>
         {% endif %}
 
-        <form action="{% url 'volunteers:chef_signup' meal_request.pk %}" method="post" class="form">
+        <form action="{% url 'volunteers:chef_signup' meal_request.pk %}" method="post" class="form" onsubmit="return confirmChefSignup(this);">
           {% csrf_token %}
 
           <h6>Pickup date</h6>
@@ -90,12 +88,12 @@
           {% bootstrap_field form.pickup_details %}
           {% bootstrap_field form.meal %}
 
-          {% buttons submit="Submit"%}{% endbuttons %}
+          {% buttons submit="Sign up"%}{% endbuttons %}
         </form>
       </div>
       <div class="col">
         <h6>Approximate delivery location</h6>
-        <p>{{ distance|floatformat }} kilometres away</p>
+        <p>{{ meal_request.delivery_distance|floatformat }} kilometres away</p>
         <iframe
           loading="lazy"
           width="350"
@@ -116,3 +114,12 @@
     display: none;
   }
 </style>
+
+<script>
+  function confirmChefSignup(form) {
+    var can_deliver = form.querySelector('input[name="can_deliver"]').checked;
+    if (can_deliver) return true;
+
+    return window.confirm('Are you sure you want to sign up for this meal? Because of the distance, it might be difficult to find someone to deliver.');
+  }
+</script>

@@ -66,6 +66,10 @@ class Geocoder:
     DEGREE_RANGE_LOWER = 0.001
     DEGREE_RANGE_HIGHER = 0.004
 
+    # See the docs of the distance function for an explanation of these constants
+    LATITUDE_DEGREE_LENGTH = 111
+    LONGITUDE_DEGREE_LENGTH = 81
+
     def __init__(self, api_key=settings.MAPQUEST_API_KEY):
         self.api_key = api_key
 
@@ -102,7 +106,8 @@ def distance(point1, point2) -> float:
     Roughly approximate the distance between two latitude-longitude pairs in km
 
     Roughly being the keyword here. We're doing a couple of things for simplicity:
-    - We assume a constant latitude degree length of 110km (in truth it varies 110-111)
+    - We assume a constant latitude degree length (in truth it varies 110km - 111km)
+    - We assume a constant longitude degree length (based on the 43rd parallel for Toronto distances)
     - We use Euclidean distance which is meant for planes, but will work for a spheroid over small distances
 
     A more complete solution would use the haversine formula, but we're going for simplicity
@@ -110,9 +115,11 @@ def distance(point1, point2) -> float:
 
     https://en.wikipedia.org/wiki/Euclidean_distance
     https://en.wikipedia.org/wiki/Latitude#Length_of_a_degree_of_latitude
+    https://en.wikipedia.org/wiki/Longitude#Length_of_a_degree_of_longitude
     https://en.wikipedia.org/wiki/Haversine_formula
     """
     lat1, long1 = point1
     lat2, long2 = point2
-    degree_length = 110
-    return degree_length * math.sqrt(math.pow(lat1 - lat2, 2) + math.pow(long1 - long2, 2))
+    lat_delta = Geocoder.LATITUDE_DEGREE_LENGTH * (lat1 - lat2)
+    long_delta = Geocoder.LONGITUDE_DEGREE_LENGTH * (long1 - long2)
+    return math.sqrt(math.pow(lat_delta, 2) + math.pow(long_delta, 2))
