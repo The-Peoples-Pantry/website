@@ -85,6 +85,7 @@ class MealRequestAdmin(admin.ModelAdmin):
         'delivery_date',
         'pickup_range',
         'dropoff_range',
+        'distance',
         'chef_link',
         'deliverer_link',
         'status',
@@ -123,6 +124,12 @@ class MealRequestAdmin(admin.ModelAdmin):
         'deliverer',
         'deliverer__volunteer',
     )
+
+    def get_queryset(self, *args, **kwargs):
+        return super().get_queryset(*args, **kwargs).with_delivery_distance()
+
+    def distance(self, obj):
+        return f"{obj.delivery_distance:.1f} km" if obj.delivery_distance else None
 
     def edit_link(self, request):
         return 'Edit request %d' % request.id
