@@ -40,13 +40,6 @@ def next_weekend(**kwargs):
     ]
 
 
-class MealRequestDeliveryDateInput(forms.Select):
-    def __init__(self):
-        super().__init__(
-            choices=next_weekend()
-        )
-
-
 class VolunteerApplicationForm(forms.ModelForm):
     policy_text = dedent("""
         I acknowledge that I have read and understood the volunteer requirements presented at the beginning of this form pertaining to health and travel restrictions. I certify that you meet all of the requirements to volunteer.
@@ -130,6 +123,7 @@ class OrganizerApplyForm(VolunteerApplicationForm):
 
 class ChefSignupForm(forms.ModelForm):
     can_deliver = forms.BooleanField(label="I can also deliver this meal myself", required=False)
+    delivery_date = forms.ChoiceField(choices=next_weekend, required=True)
 
     class Meta:
         model = MealRequest
@@ -147,7 +141,6 @@ class ChefSignupForm(forms.ModelForm):
             'pickup_end': TimeInput,
             'dropoff_start': TimeInput,
             'dropoff_end': TimeInput,
-            'delivery_date': MealRequestDeliveryDateInput,
         }
 
     def clean(self):
