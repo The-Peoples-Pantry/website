@@ -8,13 +8,19 @@
   <div class="card-body">
     {% bootstrap_form_errors form %}
     <div class="row">
-      <div class="col h6">
-        Meal
-        for {{ meal_request.num_adults }} adult{{ meal_request.num_adults | pluralize }}
-        and {{ meal_request.num_children }} kid{{ meal_request.num_children | pluralize }}
+      <div class="col-md">
+        <h6>
+          Meal
+          for {{ meal_request.num_adults }} adult{{ meal_request.num_adults | pluralize }}
+          and {{ meal_request.num_children }} kid{{ meal_request.num_children | pluralize }}
+        </h6>
+        <p>{{ meal_request.delivery_details }}</p>
       </div>
     </div>
-    <p>{{ meal_request.delivery_details }}</p>
+
+    <h6>Approximate distance</h6>
+    <p>{{ meal_request.delivery_distance|floatformat }} kilometres</p>
+
     <div class="row mb-4">
       <div class="col">
         <h6>Approximate pickup location</h6>

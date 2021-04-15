@@ -67,7 +67,7 @@ class DelivererSignupListView(LoginRequiredMixin, GroupRequiredMixin, LastVisite
     permission_group = 'Deliverers'
     permission_group_redirect_url = reverse_lazy('volunteers:deliverer_application')
     filterset_class = DelivererSignupFilter
-    queryset = MealRequest.objects.not_delivered().exclude(delivery_date__isnull=True).filter(deliverer__isnull=True)
+    queryset = MealRequest.objects.not_delivered().exclude(delivery_date__isnull=True).filter(deliverer__isnull=True).with_delivery_distance()
     ordering = 'delivery_date'
 
     @property
@@ -81,7 +81,7 @@ class DelivererSignupView(LoginRequiredMixin, GroupRequiredMixin, UpdateView):
     form_class = DelivererSignupForm
     permission_group = 'Deliverers'
     permission_group_redirect_url = reverse_lazy('volunteers:deliverer_application')
-    queryset = MealRequest.objects.not_delivered().exclude(delivery_date__isnull=True).filter(deliverer__isnull=True)
+    queryset = MealRequest.objects.not_delivered().exclude(delivery_date__isnull=True).filter(deliverer__isnull=True).with_delivery_distance()
     template_name = "volunteers/deliverer_signup.html"
     context_object_name = "meal_request"
     success_url = reverse_lazy('volunteers:deliverer_signup_list')
