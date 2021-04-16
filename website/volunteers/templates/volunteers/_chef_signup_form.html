@@ -19,7 +19,7 @@
     {% if meal_request.delivery_distance > settings.MAX_CHEF_DISTANCE %}
       <div class="alert alert-warning">This request is far from you, please choose a different request unless you can deliver this yourself.</div>
     {% elif meal_request.stale %}
-      <div class="alert alert-info">This request was submitted more than a week ago, please prioritize this if possible.</div>
+      <div class="alert alert-secondary">This request was submitted more than a week ago, please prioritize this if possible.</div>
     {% endif %}
 
     <div class="row">

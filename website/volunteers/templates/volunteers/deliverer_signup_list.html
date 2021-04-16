@@ -25,7 +25,7 @@
     {% for form in forms %}
       {% include "volunteers/_deliverer_signup_form.html" with meal_request=form.instance form=form %}
     {% empty %}
-      <div class="alert alert-info">There are no open delivery requests at this time.</div>
+      <div class="alert alert-secondary">There are no open delivery requests at this time.</div>
     {% endfor %}
   </div>
 </div>
