@@ -29,7 +29,7 @@
     <meta property="twitter:card" content="summary" />
     <meta property="twitter:site" content="thepeoplespantryto" />
 
-    {% bootstrap_css %}
+    {# Stylesheets #}
     <link rel="stylesheet" href="{% static 'landkit_theme/css/theme.min.css' %}">
     <link rel="stylesheet" href="{% static 'styles.css' %}">
 
@@ -59,7 +59,6 @@
       {% block footer %}{% include "footer.html" %}{% endblock %}
     </div>
 
-    {% bootstrap_javascript jquery='slim' %}
     {% include "landkit_theme/_javascript.html" %}
 
     {% block custom_javascript %}{% endblock %}
