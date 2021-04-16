@@ -1,7 +1,7 @@
-{% extends "base.html" %}
+{% extends "narrow_base.html" %}
 {% load bootstrap4 %}
 
-{% block narrow_content %}
+{% block content %}
 {% if next %}
   <div class="alert alert-warning" role="alert">
     {% if user.is_authenticated %}
