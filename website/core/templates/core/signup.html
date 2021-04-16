@@ -2,11 +2,18 @@
 {% load bootstrap4 %}
 
 {% block narrow_content %}
-<h1>Sign up to volunteer</h1>
-<p>To learn how to sign up, <a rel="noopener" target="_blank" href="https://docs.google.com/document/d/1YDQEgv7vMu_eqmjtRpvXUccRXO6CDu15U1DgHWyrrjY/">click here</a></p>
-<form action="" method="post" class="form mb-4">
+
+<h1 class="mb-0 font-weight-bold text-center">Sign up</h1>
+<p class="mb-6 text-center text-muted">
+  Provide help to those in need,
+  <a rel="noopener" target="_blank" href="https://docs.google.com/document/d/1YDQEgv7vMu_eqmjtRpvXUccRXO6CDu15U1DgHWyrrjY/">learn more</a>
+</p>
+
+<form action="" method="post" class="form mb-6">
   {% csrf_token %}
   {% bootstrap_form form %}
-  {% bootstrap_button 'Sign up' %}
+  <button class="btn btn-block btn-primary mt-5" type="submit">Sign up</button>
 </form>
+
+<p class="mb-0 font-size-sm text-center text-muted">Already have an account? <a href="{% url "login" %}">Sign in</a></p>
 {% endblock %}
