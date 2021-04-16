@@ -12,15 +12,20 @@
   </div>
 {% endif %}
 
-<h1>Sign in</h1>
+<h1 class="mb-0 font-weight-bold text-center">Sign in</h1>
+<p class="mb-6 text-center text-muted">Provide help to those in need</p>
+
 <form method="post" action="{% url 'login' %}" class="mb-4">
   {% csrf_token %}
   <input type="hidden" name="next" value="{{ next }}">
-  {% comment %} {% bootstrap_form form %} {% endcomment %}
-  {% bootstrap_field form.username %}
-  {% bootstrap_field form.password %}
-  {% buttons submit="Login"%}
-    <a class="mx-2" href="{% url 'password_reset' %}">Forgot your password?</a>
-  {% endbuttons %}
+
+  {# Django uses the field "username" but we want to clarify that it's your email we're asking for #}
+  {% bootstrap_label "Email address" %}
+  {% bootstrap_field form.username placeholder="Email address" show_label=False bound_css_class="" %}
+  {% bootstrap_field form.password bound_css_class="" %}
+  <button class="btn btn-block btn-primary mt-5" type="submit">Sign in</button>
 </form>
+
+<p class="mb-0 font-size-sm text-center text-muted">Forgot your password? <a href="{% url 'password_reset' %}">Reset it</a></p>
+<p class="mb-0 font-size-sm text-center text-muted">Don't have an account yet? <a href="{% url 'signup' %}">Sign up</a></p>
 {% endblock %}
