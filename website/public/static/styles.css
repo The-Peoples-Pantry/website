@@ -4,12 +4,6 @@ h1 {
 }
 
 /* Body/page/content changes to ensure sticky footer */
-html,
-body {
-  height: 100vh;
-  overflow-x: hidden;
-  background-color: hsl(212, 21, 21);
-}
 #page {
   display: flex;
   flex-direction: column;
