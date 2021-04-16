@@ -30,8 +30,7 @@
     <meta property="twitter:site" content="thepeoplespantryto" />
 
     {# Stylesheets #}
-    <link rel="stylesheet" href="{% static 'landkit_theme/css/theme.min.css' %}">
-    <link rel="stylesheet" href="{% static 'landkit_theme/fonts/Feather/feather.css' %}">
+    {% include "landkit_theme/_styles.html" %}
     <link rel="stylesheet" href="{% static 'styles.css' %}">
 
     <title>{% block title %}The People's Pantry{% endblock %}</title>
