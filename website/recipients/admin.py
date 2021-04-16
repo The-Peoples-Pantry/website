@@ -82,7 +82,6 @@ class MealRequestAdmin(admin.ModelAdmin):
         'phone_number',
         'texts',
         'city',
-        'created_at',
         'delivery_date',
         'pickup_range',
         'dropoff_range',
@@ -91,6 +90,7 @@ class MealRequestAdmin(admin.ModelAdmin):
         'deliverer_link',
         'status',
         'completed',
+        'created_at',
     )
     list_filter = (
         CompletedFilter,
@@ -298,9 +298,9 @@ class GroceryRequestAdmin(admin.ModelAdmin):
         'texts',
         'city',
         'gift_card',
-        'created_at',
         'delivery_date',
         'completed',
+        'created_at',
     )
     list_filter = (
         'completed',
