@@ -136,10 +136,7 @@ class AddressMixin(models.Model):
 
     @property
     def address_link(self):
-        params = urllib.parse.urlencode({
-            'api': 1,
-            'query': self.address,
-        })
+        params = urllib.parse.urlencode({'api': 1, 'query': self.address})
         return f"https://www.google.com/maps/search/?{params}"
 
     @property
@@ -156,11 +153,19 @@ class AddressMixin(models.Model):
 
     @property
     def anonymous_address_link(self):
-        return f"https://www.google.com/maps/place/{self.anonymized_latitude},{self.anonymized_longitude}"
+        params = urllib.parse.urlencode({
+            'api': 1,
+            'query': f"{self.anonymized_latitude},{self.anonymized_longitude}",
+        })
+        return f"https://www.google.com/maps/search/?{params}"
 
     @property
     def anonymous_map_embed(self):
-        return f"https://www.google.com/maps/embed/v1/place?key={ settings.GOOGLE_MAPS_PRODUCTION_KEY }&q={self.anonymized_latitude},{self.anonymized_longitude}"
+        params = urllib.parse.urlencode({
+            'key': settings.GOOGLE_MAPS_PRODUCTION_KEY,
+            'q': f"{self.anonymized_latitude},{self.anonymized_longitude}",
+        })
+        return f"https://www.google.com/maps/embed/v1/place?{params}"
 
     @property
     def coordinates(self):
