@@ -60,7 +60,7 @@
     </div>
 
     {% bootstrap_javascript jquery='slim' %}
-    <script src="{% static "landkit_theme/js/theme.min.js" %}"></script>
+    {% include "landkit_theme/_javascript.html" %}
 
     {% block custom_javascript %}{% endblock %}
   </body>
