@@ -1,0 +1,28 @@
+//
+// shadows.scss
+// Extended from Bootstrap
+//
+
+.shadow-light {
+  box-shadow: $box-shadow-light !important;
+}
+
+.shadow-light-lg {
+  box-shadow: $box-shadow-light-lg !important;
+}
+
+.shadow-dark {
+  box-shadow: $box-shadow-dark !important;
+}
+
+.shadow-dark-lg {
+  box-shadow: $box-shadow-dark-lg !important;
+}
+
+.shadow-lift {
+  box-shadow: $box-shadow-lift !important;
+}
+
+.shadow-multicolor {
+  box-shadow: -300px 100px 300px rgba(#501AE8, .2), 300px -100px 300px rgba(#24A1FC, .2);
+}
