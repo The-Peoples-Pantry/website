@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     'public',
     'volunteers',
     'recipients',
+    'landkit_theme',
 ]
 
 MIDDLEWARE = [

@@ -30,7 +30,9 @@
     <meta property="twitter:site" content="thepeoplespantryto" />
 
     {% bootstrap_css %}
+    <link rel="stylesheet" href="{% static 'landkit_theme/css/theme.min.css' %}">
     <link rel="stylesheet" href="{% static 'styles.css' %}">
+
     <title>{% block title %}The People's Pantry{% endblock %}</title>
     {% block head %}{% endblock %}
   </head>
@@ -56,7 +58,10 @@
 
       {% block footer %}{% include "footer.html" %}{% endblock %}
     </div>
+
     {% bootstrap_javascript jquery='slim' %}
+    <script src="{% static "landkit_theme/js/theme.min.js" %}"></script>
+
     {% block custom_javascript %}{% endblock %}
   </body>
 
