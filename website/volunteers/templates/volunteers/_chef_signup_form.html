@@ -1,4 +1,5 @@
 {% load bootstrap4 %}
+{% load math %}
 
 {# Each request gets represented as a card #}
 <div class="card mb-4">
@@ -93,7 +94,7 @@
       </div>
       <div class="col">
         <h6>Approximate delivery location</h6>
-        <p>{{ meal_request.delivery_distance|floatformat }} kilometres away</p>
+        <p>{% ceiling meal_request.delivery_distance %} kilometres away</p>
         <iframe
           loading="lazy"
           width="350"
