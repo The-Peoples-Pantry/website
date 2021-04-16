@@ -1,4 +1,5 @@
 import collections
+import math
 from django.contrib import admin, messages
 from django import forms
 from django.utils.html import format_html, format_html_join
@@ -135,7 +136,7 @@ class MealRequestAdmin(admin.ModelAdmin):
         return format_html(
             '<a href="{}" target="_blank" rel="noopener noreferrer">{}</a>',
             obj.directions_link,
-            f"{obj.delivery_distance:.1f} km",
+            f"{math.ceil(obj.delivery_distance)} km",
         )
 
     def edit_link(self, request):

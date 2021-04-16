@@ -1,4 +1,6 @@
 {% load bootstrap4 %}
+{% load math %}
+
 <div class="card mb-4">
   {# Card header section contains the meal request title #}
   <div class="card-header font-weight-bold">
@@ -19,7 +21,7 @@
     </div>
 
     <h6>Approximate distance</h6>
-    <p>{{ meal_request.delivery_distance|floatformat }} kilometres</p>
+    <p>{% ceiling meal_request.delivery_distance %} kilometres</p>
 
     <div class="row mb-4">
       <div class="col">
