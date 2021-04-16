@@ -2,103 +2,175 @@
 {% load static %}
 {% load bootstrap4 %}
 
-{% block content %}
-<span class="d-inline-flex align-items-baseline">
-  <h1>Volunteer Profile</h1>
-  {% if 'Chefs' in groups %}<span class="badge badge-pill badge-primary ml-2">Chef</span>{% endif %}
-  {% if 'Deliverers' in groups %}<span class="badge badge-pill badge-primary ml-2">Deliverer</span>{% endif %}
-  {% if 'Organizers' in groups %}<span class="badge badge-pill badge-primary ml-2">Organizer</span>{% endif %}
-</span>
+{% block body_class %}bg-light{% endblock %}
 
-<form action="" method="post" class="form">
-  {% csrf_token %}
-      <div class="card mb-3">
-        <div class="card-body">
-          <h5 class="card-title">Contact details</h5>
-          <div class="row">
-            <div class="col-md">{% bootstrap_field form.name %}</div>
-            <div class="col-md">{% bootstrap_field form.short_name %}</div>
-            <div class="col-md">{% bootstrap_field form.phone_number %}</div>
+{% block full_width_content %}
+<header class="bg-dark pt-9 pb-11 d-none d-md-block">
+  <div class="container-md">
+    <div class="row align-items-center">
+      <div class="col">
+        <h1 class="font-weight-bold text-white mb-2">Account Settings</h1>
+        <p class="font-size-lg text-white-75 mb-0">Settings for {{ request.user.email }}</p>
+        <span class="d-inline-flex">
+          {% if 'Chefs' in groups %}<span class="badge badge-primary mr-2">Chef</span>{% endif %}
+          {% if 'Deliverers' in groups %}<span class="badge badge-primary mr-2">Deliverer</span>{% endif %}
+          {% if 'Organizers' in groups %}<span class="badge badge-primary mr-2">Organizer</span>{% endif %}
+        </span>
+      </div>
+      <div class="col-auto">
+        <a class="btn btn-sm btn-gray-300-20" href="{% url "logout" %}">
+          Log Out
+        </a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="pb-8 pb-md-11 mt-md-n6">
+  <div class="container-md">
+    <div class="row">
+      <div class="col-12 col-md-3">
+
+        <!-- Card -->
+        <div class="card card-bleed border-bottom border-bottom-md-0 shadow-light-lg">
+
+          <!-- Collapse -->
+          <div class="collapse d-md-block" id="sidenavCollapse">
+            <div class="card-body">
+
+              <!-- Heading -->
+              <h6 class="font-weight-bold text-uppercase mb-3">
+                Account
+              </h6>
+
+              <!-- List -->
+              <ul class="card-list list text-gray-700 mb-6">
+                <li class="list-item active">
+                  <a class="list-link text-reset" href="{% url "profile" %}">
+                    General
+                  </a>
+                </li>
+              </ul>
+            </div>
           </div>
-          <div class="row">
-            <div class="col-sm">{% bootstrap_field form.address_1 %}</div>
-            <div class="col-sm">{% bootstrap_field form.address_2 %}</div>
-          </div>
-          <div class="row">
-            <div class="col-sm">{% bootstrap_field form.city %}</div>
-            <div class="col-sm">{% bootstrap_field form.postal_code %}</div>
-          </div>
-          {% bootstrap_field form.pronouns %}
-          {% bootstrap_field form.notes %}
         </div>
       </div>
 
-  {% bootstrap_button 'Update' %}
-</form>
+      <div class="col-12 col-md-9">
+        {% bootstrap_messages %}
+        
+        <form action="" method="post" class="form">
+          {% csrf_token %}
+          
+          <div class="card card-bleed shadow-light-lg mb-6">
+            <div class="card-header h4 font-weight-bold">Contact details</div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-12 col-md-6">{% bootstrap_field form.name %}</div>
+                <div class="col-12 col-md-6">{% bootstrap_field form.phone_number %}</div>
+                <div class="col-12">{% bootstrap_field form.short_name %}</div>
+                <div class="col-12 col-md-auto">
+                  <button class="btn btn-block btn-primary" type="submit">Save changes</button>
+                </div>
+              </div>
+            </div>
+          </div>
 
-<div class="card-deck mt-5">
-  {% if 'Chefs' not in groups %}
-  <div class="card shadow-lift">
-    <img class="card-img-top" src="{% static 'chef.svg'%}" alt="Card image cap" height="200">
-    <div class="card-body">
-      <h5 class="card-title">Volunteer to be a chef</h5>
-      <small>
-        <p>Chefs or cooking volunteers are responsible for signing up for meal requests, cooking for requesters, and doing brief coordination with delivery volunteers on delivery days (Fridays, Saturdays, and Sundays).</p>
-        <p>They are responsible for purchasing containers and ingredients for their meals and applying for reimbursement when needed. Time commitment varies depending on the chefs’ availability.</p>
-        <p>However, since The People’s Pantry provides four meals per person, cooking and packaging time depends on the number of people and requests to be done.</p>
-      </small>
-    </div>
-    <div class="card-footer">
-      {% if 'Chefs' in pending_groups %}
-        <button type="button" class="btn btn-primary" disabled>Your application is pending</button>
-      {% else %}
-        <a class="btn btn-primary" role="button" href="{% url 'volunteers:chef_application' %}">Apply now</a>
-      {% endif %}
+          <div class="card card-bleed shadow-light-lg mb-6">
+            <div class="card-header h4 font-weight-bold">Personal details</div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-12">{% bootstrap_field form.notes %}</div>
+                <div class="col-12">{% bootstrap_field form.pronouns %}</div>
+                <div class="col-12 col-md-auto">
+                  <button class="btn btn-block btn-primary" type="submit">Save changes</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card card-bleed shadow-light-lg mb-6">
+            <div class="card-header h4 font-weight-bold">Location details</div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-12 col-md-6">{% bootstrap_field form.address_1 %}</div>
+                <div class="col-12 col-md-6">{% bootstrap_field form.address_2 %}</div>
+                <div class="col-12 col-md-6">{% bootstrap_field form.city %}</div>
+                <div class="col-12 col-md-6">{% bootstrap_field form.postal_code %}</div>
+                <div class="col-12 col-md-auto">
+                  <button class="btn btn-block btn-primary" type="submit">Save changes</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+
+        {% if 'Chefs' not in groups %}
+        <div class="card card-bleed shadow-light-lg mb-6">
+          <img class="card-img-top" src="{% static 'chef.svg'%}" alt="Card image cap" height="200">
+          <div class="card-body">
+            <h3 class="card-title">Volunteer to be a chef</h3>
+            <small>
+              <p>Chefs or cooking volunteers are responsible for signing up for meal requests, cooking for requesters, and doing brief coordination with delivery volunteers on delivery days (Fridays, Saturdays, and Sundays).</p>
+              <p>They are responsible for purchasing containers and ingredients for their meals and applying for reimbursement when needed. Time commitment varies depending on the chefs’ availability.</p>
+              <p>However, since The People’s Pantry provides four meals per person, cooking and packaging time depends on the number of people and requests to be done.</p>
+            </small>
+          </div>
+          <div class="card-footer">
+            {% if 'Chefs' in pending_groups %}
+              <button type="button" class="btn btn-primary" disabled>Your application is pending</button>
+            {% else %}
+              <a class="btn btn-primary" role="button" href="{% url 'volunteers:chef_application' %}">Apply now</a>
+            {% endif %}
+          </div>
+        </div>
+        {% endif %}
+
+        {% if 'Deliverers' not in groups %}
+        <div class="card card-bleed shadow-light-lg mb-6">
+          <img class="card-img-top" src="{% static 'deliverer.svg'%}" alt="Card image cap" height="200">
+          <div class="card-body">
+            <h3 class="card-title">Volunteer to be a deliverer</h3>
+            <small>
+              <p>Delivery volunteers are responsible for picking up meals from a chef and delivering the food to the requesters.</p>
+              <p>They are responsible for ensuring the deliveries are done correctly and informing the logistics team of any problems that arise and when the delivery is completed. Time commitment varies depending on the volunteer’s availability.</p>
+              <p>Deliveries are done on Fridays, Saturdays, and Sundays starting noon, and the last pick up is at 5 PM. Deliveries take place within a 12.5 Km radius from the pickup point. </p>
+            </small>
+          </div>
+          <div class="card-footer">
+            {% if 'Deliverers' in pending_groups %}
+              <button type="button" class="btn btn-primary" disabled>Your application is pending</button>
+            {% else %}
+              <a class="btn btn-primary" role="button" href="{% url 'volunteers:deliverer_application' %}">Apply now</a>
+            {% endif %}
+          </div>
+        </div>
+        {% endif %}
+
+        {% if 'Organizers' not in groups %}
+        <div class="card card-bleed shadow-light-lg mb-6">
+          <img class="card-img-top" src="{% static 'organizer.svg'%}" alt="Card image cap" height="200">
+          <div class="card-body">
+            <h3 class="card-title">Volunteer to be an organizer</h3>
+            <small>
+              <p>Logistics volunteers are primarily involved in the organization and communication behind the work at TPP. </p>
+              <p>This requires organizing and scheduling deliveries, contacting and coordinating among members of different teams, reaching out to recipients, and more. Our work is highly collaborative and essential to the overall functioning of TPP.</p>
+              <p>The logistics work is divided amongst teams. Please, be mindful of the time commitment and your skills. As we are all volunteers, incorporating new members into the teams always entails effort and time that is valuable to keep TPP going.</p>
+              <p>To be a logistics volunteer, you must have consistent access to wifi and a laptop/desktop device. Although most teams have flexible schedules, volunteers must adhere to the weekly arranged shifts and a minimum time commitment of two months.</p>
+            </small>
+          </div>
+          <div class="card-footer">
+            {% if 'Organizers' in pending_groups %}
+              <button type="button" class="btn btn-primary" disabled>Your application is pending</button>
+            {% else %}
+              <a class="btn btn-primary" role="button" href="{% url 'volunteers:organizer_application' %}">Apply now</a>
+            {% endif %}
+          </div>
+        </div>
+        {% endif %}
+
+      </div>
     </div>
   </div>
-  {% endif %}
-
-  {% if 'Deliverers' not in groups %}
-  <div class="card shadow-lift">
-    <img class="card-img-top" src="{% static 'deliverer.svg'%}" alt="Card image cap" height="200">
-    <div class="card-body">
-      <h5 class="card-title">Volunteer to be a deliverer</h5>
-      <small>
-        <p>Delivery volunteers are responsible for picking up meals from a chef and delivering the food to the requesters.</p>
-        <p>They are responsible for ensuring the deliveries are done correctly and informing the logistics team of any problems that arise and when the delivery is completed. Time commitment varies depending on the volunteer’s availability.</p>
-        <p>Deliveries are done on Fridays, Saturdays, and Sundays starting noon, and the last pick up is at 5 PM. Deliveries take place within a 12.5 Km radius from the pickup point. </p>
-      </small>
-    </div>
-    <div class="card-footer">
-      {% if 'Deliverers' in pending_groups %}
-        <button type="button" class="btn btn-primary" disabled>Your application is pending</button>
-      {% else %}
-        <a class="btn btn-primary" role="button" href="{% url 'volunteers:deliverer_application' %}">Apply now</a>
-      {% endif %}
-    </div>
-  </div>
-  {% endif %}
-
-  {% if 'Organizers' not in groups %}
-  <div class="card shadow-lift">
-    <img class="card-img-top" src="{% static 'organizer.svg'%}" alt="Card image cap" height="200">
-    <div class="card-body">
-      <h5 class="card-title">Volunteer to be an organizer</h5>
-      <small>
-        <p>Logistics volunteers are primarily involved in the organization and communication behind the work at TPP. </p>
-        <p>This requires organizing and scheduling deliveries, contacting and coordinating among members of different teams, reaching out to recipients, and more. Our work is highly collaborative and essential to the overall functioning of TPP.</p>
-        <p>The logistics work is divided amongst teams. Please, be mindful of the time commitment and your skills. As we are all volunteers, incorporating new members into the teams always entails effort and time that is valuable to keep TPP going.</p>
-        <p>To be a logistics volunteer, you must have consistent access to wifi and a laptop/desktop device. Although most teams have flexible schedules, volunteers must adhere to the weekly arranged shifts and a minimum time commitment of two months.</p>
-      </small>
-    </div>
-    <div class="card-footer">
-      {% if 'Organizers' in pending_groups %}
-        <button type="button" class="btn btn-primary" disabled>Your application is pending</button>
-      {% else %}
-        <a class="btn btn-primary" role="button" href="{% url 'volunteers:organizer_application' %}">Apply now</a>
-      {% endif %}
-    </div>
-  </div>
-  {% endif %}
-</div>
+</main>
 {% endblock %}
