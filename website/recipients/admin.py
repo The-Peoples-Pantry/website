@@ -80,7 +80,7 @@ class MealRequestAdmin(admin.ModelAdmin):
         'edit_link',
         'name',
         'phone_number',
-        'can_receive_texts',
+        'texts',
         'city',
         'created_at',
         'delivery_date',
@@ -128,6 +128,12 @@ class MealRequestAdmin(admin.ModelAdmin):
 
     def get_queryset(self, *args, **kwargs):
         return super().get_queryset(*args, **kwargs).with_delivery_distance()
+
+    def texts(self, obj):
+        return obj.can_receive_texts
+    texts.boolean = True
+    texts.short_description = "Texts"
+    texts.admin_order_field = "can_receive_texts"
 
     def distance(self, obj):
         if obj.delivery_distance is None:
@@ -289,7 +295,7 @@ class GroceryRequestAdmin(admin.ModelAdmin):
         'edit_link',
         'name',
         'phone_number',
-        'can_receive_texts',
+        'texts',
         'city',
         'gift_card',
         'created_at',
@@ -322,6 +328,12 @@ class GroceryRequestAdmin(admin.ModelAdmin):
     def edit_link(self, request):
         return 'Edit request G%d' % request.id
     edit_link.short_description = 'Edit link'
+
+    def texts(self, obj):
+        return obj.can_receive_texts
+    texts.boolean = True
+    texts.short_description = "Texts"
+    texts.admin_order_field = "can_receive_texts"
 
     def send_notifications(self, request, queryset, method_name):
         """
