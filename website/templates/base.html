@@ -38,27 +38,27 @@
     {% block head %}{% endblock %}
   </head>
   <body>
-    <div id="page">
-      {% block navigation %}{% include "nav.html" %}{% endblock %}
+    {% block navigation %}{% include "nav.html" %}{% endblock %}
 
-      <section id="content" class="container">
-        {% bootstrap_messages %}
-        {# Extend either content or narrow content to get the right size #}
-        <div class="row">
-          <div class="col">
-            {% block content %}{% endblock %}
-          </div>
+    {% block full_width_content %}{% endblock %}
+
+    <section id="content" class="container">
+      {% bootstrap_messages %}
+      {# Extend either content or narrow content to get the right size #}
+      <div class="row">
+        <div class="col">
+          {% block content %}{% endblock %}
         </div>
+      </div>
 
-        <div class="row">
-          <div class="col-sm-10 col-md-8 col-lg-6 mx-auto">
-            {% block narrow_content %}{% endblock %}
-          </div>
+      <div class="row">
+        <div class="col-sm-10 col-md-8 col-lg-6 mx-auto">
+          {% block narrow_content %}{% endblock %}
         </div>
-      </section>
+      </div>
+    </section>
 
-      {% block footer %}{% include "footer.html" %}{% endblock %}
-    </div>
+    {% block footer %}{% include "footer.html" %}{% endblock %}
 
     {% include "landkit_theme/_javascript.html" %}
 
