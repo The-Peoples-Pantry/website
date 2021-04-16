@@ -19,5 +19,5 @@ def profile_image(user):
 
     email_hash = hashlib.md5(user.email.encode('utf8')).hexdigest()
     gravatar_url = f"https://www.gravatar.com/avatar/{email_hash}?d=mp"
-    html = f'<img class="profile-image" alt="Profile image" src="{gravatar_url}">'
+    html = f'<img class="avatar-img rounded-circle" alt="Profile image" src="{gravatar_url}">'
     return mark_safe(html)

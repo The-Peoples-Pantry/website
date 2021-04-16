@@ -76,15 +76,15 @@
     {# User info section, or login/signup if unauthenticated #}
     <ul class="navbar-nav">
       {% if request.user.is_authenticated %}
-        <li class="nav-item dropdown nav-profile-dropdown">
+        <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-            {% profile_image request.user %}
+            <span class="avatar">{% profile_image request.user %}</span>
           </a>
           <ul class="dropdown-menu dropdown-menu-right">
             <li>
-              <a class="dropdown-item nav-profile-dropdown-item" href="{% url 'profile' %}">
+              <a class="dropdown-item" href="{% url 'profile' %}">
                 <span class="d-flex align-items-center">
-                  {% profile_image request.user %}
+                  <span class="avatar">{% profile_image request.user %}</span>
                   <span class="d-flex ml-3 flex-column">
                     <span class="font-weight-bold">{{ request.user.volunteer.name }}</span>
                     <span class="text-secondary">View profile</span>
