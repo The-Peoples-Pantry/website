@@ -36,7 +36,7 @@
     <title>{% block title %}The People's Pantry{% endblock %}</title>
     {% block head %}{% endblock %}
   </head>
-  <body>
+  <body {% block body_attributes %}{% endblock %}>
     <div id="page">
       {% block navigation %}{% include "nav.html" %}{% endblock %}
 
