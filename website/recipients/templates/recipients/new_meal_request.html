@@ -13,7 +13,7 @@
 <form method="post" class="form">
   {% csrf_token %}
 
-  <div class="card mb-3">
+  <div class="card shadow-lift mb-3">
     <div class="card-body">
       <h5 class="card-title">Recipient details</h5>
       <div class="row">
@@ -26,7 +26,7 @@
     </div>
   </div>
 
-  <div class="card mb-3">
+  <div class="card shadow-lift mb-3">
     <div class="card-body">
       <h5 class="card-title">Requesting for someone else?</h5>
       <p class="card-text text-muted">
@@ -42,7 +42,7 @@
     </div>
   </div>
 
-  <div class="card mb-3">
+  <div class="card shadow-lift mb-3">
     <div class="card-body">
       <h5 class="card-title">Delivery details</h5>
       <div class="alert alert-secondary" role="alert">Our deliveries will be done on Fridays, Saturdays and Sundays between 12 and 8 PM.</div>
@@ -67,7 +67,7 @@
     </div>
   </div>
 
-  <div class="card mb-3">
+  <div class="card shadow-lift mb-3">
     <div class="card-body">
       <h5 class="card-title">Meal details</h5>
 
@@ -102,7 +102,7 @@
     </div>
   </div>
 
-  <div class="card mb-3">
+  <div class="card shadow-lift mb-3">
     <div class="card-body">
       <h5 class="card-title">Community (optional)</h5>
       <p class="card-text text-muted">
@@ -119,14 +119,14 @@
     </div>
   </div>
 
-  <div class="card mb-3">
+  <div class="card shadow-lift mb-3">
     <div class="card-body">
       <h5 class="card-title">Additional information</h5>
       {% bootstrap_field form.notes %}
     </div>
   </div>
 
-  <div class="card mb-3">
+  <div class="card shadow-lift mb-3">
     <div class="card-body">
       <h5 class="card-title">Terms of service</h5>
       <textarea class="form-control mb-3" readonly rows="10">{{ form.terms_of_service_text }}</textarea>

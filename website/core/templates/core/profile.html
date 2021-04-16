@@ -38,7 +38,7 @@
 
 <div class="card-deck mt-5">
   {% if 'Chefs' not in groups %}
-  <div class="card">
+  <div class="card shadow-lift">
     <img class="card-img-top" src="{% static 'chef.svg'%}" alt="Card image cap" height="200">
     <div class="card-body">
       <h5 class="card-title">Volunteer to be a chef</h5>
@@ -59,7 +59,7 @@
   {% endif %}
 
   {% if 'Deliverers' not in groups %}
-  <div class="card">
+  <div class="card shadow-lift">
     <img class="card-img-top" src="{% static 'deliverer.svg'%}" alt="Card image cap" height="200">
     <div class="card-body">
       <h5 class="card-title">Volunteer to be a deliverer</h5>
@@ -80,7 +80,7 @@
   {% endif %}
 
   {% if 'Organizers' not in groups %}
-  <div class="card">
+  <div class="card shadow-lift">
     <img class="card-img-top" src="{% static 'organizer.svg'%}" alt="Card image cap" height="200">
     <div class="card-body">
       <h5 class="card-title">Volunteer to be an organizer</h5>
