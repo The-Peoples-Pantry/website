@@ -129,7 +129,14 @@ class MealRequestAdmin(admin.ModelAdmin):
         return super().get_queryset(*args, **kwargs).with_delivery_distance()
 
     def distance(self, obj):
-        return f"{obj.delivery_distance:.1f} km" if obj.delivery_distance else None
+        if obj.delivery_distance is None:
+            return None
+
+        return format_html(
+            '<a href="{}" target="_blank" rel="noopener noreferrer">{}</a>',
+            obj.directions_link,
+            f"{obj.delivery_distance:.1f} km",
+        )
 
     def edit_link(self, request):
         return 'Edit request %d' % request.id

@@ -140,6 +140,18 @@ class AddressMixin(models.Model):
         return f"https://www.google.com/maps/place/{address}"
 
     @property
+    def directions_link(self):
+        if self.chef is None:
+            return None
+
+        params = urllib.parse.urlencode({
+            'api': 1,
+            'destination': self.chef.volunteer.address,
+            'origin': self.address,
+        })
+        return f"https://www.google.com/maps/dir/?{params}"
+
+    @property
     def anonymous_address_link(self):
         return f"https://www.google.com/maps/place/{self.anonymized_latitude},{self.anonymized_longitude}"
 
