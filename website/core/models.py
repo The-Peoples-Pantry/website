@@ -136,8 +136,11 @@ class AddressMixin(models.Model):
 
     @property
     def address_link(self):
-        address = urllib.parse.quote(self.address)
-        return f"https://www.google.com/maps/place/{address}"
+        params = urllib.parse.urlencode({
+            'api': 1,
+            'query': self.address,
+        })
+        return f"https://www.google.com/maps/search/?{params}"
 
     @property
     def directions_link(self):
