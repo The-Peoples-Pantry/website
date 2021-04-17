@@ -271,7 +271,7 @@
         
         <!-- Heading -->
         <h2>
-          Over <span data-toggle="countup" data-from="100" data-to="500" data-aos data-aos-id="countup:in">500</span> volunteers spread <br>
+          Over <span data-toggle="countup" data-from="100" data-to="{{ volunteers_lower_bound }}" data-aos data-aos-id="countup:in">{{ volunteers_lower_bound }}</span> volunteers spread <br>
           <span class="text-success">across Toronto</span>.
         </h2>
 
@@ -284,28 +284,19 @@
         <div class="d-flex">
           <div class="pr-5">
             <h3 class="text-success mb-0">
-              125
+              {{ meal_requests }}
             </h3>
             <p class="text-gray-700 mb-0">
-              Countries
+              Meals cooked
             </p>
           </div>
           <div class="border-left"></div>
           <div class="px-5">
             <h3 class="text-success mb-0">
-              312
+              {{ grocery_requests }}
             </h3>
             <p class="text-gray-700 mb-0">
-              Cities
-            </p>
-          </div>
-          <div class="border-left"></div>
-          <div class="pl-5">
-            <h3 class="text-success mb-0">
-              40,000
-            </h3>
-            <p class="text-gray-700 mb-0">
-              Desks
+              Grocery bundles
             </p>
           </div>
         </div>

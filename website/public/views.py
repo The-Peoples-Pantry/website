@@ -1,8 +1,18 @@
 from django.views.generic import TemplateView
 
+from recipients.models import MealRequest, GroceryRequest
+
 
 class IndexView(TemplateView):
     template_name = "public/index.html"
+
+    @property
+    def extra_context(self):
+        return {
+            'volunteers_lower_bound': 500,
+            'meal_requests': MealRequest.objects.count(),
+            'grocery_requests': GroceryRequest.objects.count(),
+        }
 
 
 class MediaView(TemplateView):
