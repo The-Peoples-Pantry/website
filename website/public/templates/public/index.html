@@ -14,29 +14,21 @@
         <!-- Cover image (Mobile) -->
         <div class="d-md-none img-cover">
           <div class="w-100">
-            
-            <!-- Image -->
             <img src="{% static "splash.jpg" %}" alt="..." class="img-fluid">
-
           </div>
         </div>
 
         <!-- Cover image (Desktop) -->
         <div class="position-relative h-100 vw-50 d-none d-md-block" data-aos="fade-left">
-
-          <!-- Image -->
           <div class="h-100 w-100">
             <div class="w-100 h-100 bg-cover" style="background-image: url({% static "splash.jpg" %});"></div>
           </div>
-
-          <!-- Shape -->
           <div class="shape shape-left shape-fluid-y svg-shim text-white">
             {% include "landkit_theme/shapes/angles/angle-left.svg" %}
           </div>
-
         </div>
-
       </div>
+
       <div class="col-12 col-md-5 py-8 py-md-14 order-md-1" data-aos="fade-right">
         
         <h1 class="display-3">
@@ -253,35 +245,34 @@
 ================================================== -->
 <section class="pt-8 pt-md-0 border-bottom">
   <div class="container">
+    
     <div class="row">
       <div class="col-12 col-md-6">
 
-        <!-- Map (mobile) -->
-        <div class="embed-responsive embed-responsive-1by1 d-md-none">
-          <div class="embed-responsive-item" data-toggle="map" data-options='{"center": [-118.244615, 34.052979], "zoom": 12}'></div>
+        <!-- Image (mobile) -->
+        <div class="d-md-none img-cover">
+          <div class="w-100">
+            <img src="{% static "splash-toronto.jpg" %}" alt="..." class="img-fluid">
+          </div>
         </div>
 
-        <!-- Map -->
-        <div class="position-relative h-100 vw-50 float-right d-none d-md-block
-        ">
-        
-          <!-- Map -->
-          <div class="w-100 h-100" data-toggle="map" data-options='{"center": [-118.244615, 34.052979], "zoom": 12}'></div>
-
-          <!-- Shape -->
+        <!-- Image (desktop) -->
+        <div class="position-relative h-100 vw-50 float-right d-none d-md-block">
+          <div class="w-100 h-100">
+            <div class="w-100 h-100 bg-cover" style="background-image: url({% static "splash-toronto.jpg" %});"></div>
+          </div>
           <div class="shape shape-right shape-fluid-y svg-shim text-white">
             {% include "landkit_theme/shapes/angles/angle-right.svg" %}
           </div>
-
         </div>
-
       </div>
+
       <div class="col-12 col-md-6 col-lg-5 offset-lg-1 py-8 py-md-11 py-lg-12">
         
         <!-- Heading -->
         <h2>
-          Over <span data-toggle="countup" data-from="100" data-to="400" data-aos data-aos-id="countup:in">100</span> locations spread <br>
-          <span class="text-success">across the entire planet</span>.
+          Over <span data-toggle="countup" data-from="100" data-to="500" data-aos data-aos-id="countup:in">500</span> volunteers spread <br>
+          <span class="text-success">across Toronto</span>.
         </h2>
 
         <!-- Text -->
