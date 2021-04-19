@@ -41,8 +41,18 @@ class TelephoneFormField(forms.CharField):
     widget = TelephoneInput
 
     def clean(self, value):
+        value = super().clean(value)
+        if value is None:
+            return value
+
         # Strip any extra characters from the phone number like ), (, space, or -
-        return re.sub(r'[^0-9]', '', super().clean(value))
+        value = re.sub(r'[^0-9]', '', value)
+
+        # Then, re-format as 555-555-5555, as long as the right number of digits
+        if len(value) == 10:
+            value = f"{value[0:3]}-{value[3:6]}-{value[6:10]}"
+
+        return value
 
 
 class TelephoneField(models.CharField):
