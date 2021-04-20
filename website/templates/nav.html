@@ -29,7 +29,7 @@
             <a class="dropdown-item" href="{% url 'recipients:new_meal_request' %}">Request meals</a>
             <a class="dropdown-item" href="{% url 'recipients:new_grocery_request' %}">Request groceries</a>
             <hr class="dropdown-divider">
-            <a class="dropdown-item" href="https://forms.gle/uJyEwwX8NbUZb4nX6" target="_blank" rel="noopener noreferrer">Outside Toronto</a>
+            <a class="dropdown-item" href="{% url "public:sister_initiative" %}" target="_blank" rel="noopener noreferrer">Outside Toronto</a>
           </div>
         </li>
 
@@ -43,7 +43,7 @@
             <a class="dropdown-item" href="{% url 'volunteers:chef_signup_list' %}">Sign up to cook</a>
             <a class="dropdown-item" href="{% url 'volunteers:deliverer_signup_list' %}">Sign up to deliver meals</a>
             <hr class="dropdown-divider">
-            <a class="dropdown-item" target="_blank" rel="noopener noreferrer" href="https://forms.gle/i7BscqiGwyvRL5Fr7">Outside Toronto</a>
+            <a class="dropdown-item" target="_blank" rel="noopener noreferrer" href="{% url "public:sister_initiative_volunteers" %}">Outside Toronto</a>
           </div>
         </li>
         <li class="nav-item dropdown">
@@ -60,12 +60,12 @@
             Resources
           </a>
           <div class="dropdown-menu">
-            <a class="dropdown-item" target="_blank" rel="noopener noreferrer" href="https://docs.google.com/document/d/1OCS-i_pm87MsT-POAbcDCKrv6SBA0J9tepOaETyLwmY/edit">Cooking guidelines</a>
-            <a class="dropdown-item" target="_blank" rel="noopener noreferrer" href="https://drive.google.com/file/d/1iPu8yy_GbBuF6IK2dZwM-mqxzgekqVfI/view">Cooking quick guide</a>
-            <a class="dropdown-item" target="_blank" rel="noopener noreferrer" href="https://drive.google.com/file/d/15ijQmXwx9vsJtXrUe0-K0DHaHTKMAW1k/view">Cooking onboarding</a>
-            <a class="dropdown-item" target="_blank" rel="noopener noreferrer" href="https://docs.google.com/document/d/1Kxf0Zz3dMO7vI410VMY5sTJX3PMh7Mt8dGQIgNmQwGs/edit">Delivery guidelines</a>
-            <a class="dropdown-item" target="_blank" rel="noopener noreferrer" href="https://docs.google.com/forms/d/e/1FAIpQLSfuOiqDuuvngZhPRYhy5BpzFf5IwGvpYz4QYRQ3TzA18el9kA/viewform">Submit reimbursement</a>
-            <a class="dropdown-item" target="_blank" rel="noopener noreferrer" href="https://docs.google.com/forms/d/e/1FAIpQLSemtVbJij_fGZMpxlo91nHjTZe6JH_VbG61c5q9gok2aw2UUg/viewform">Submit recipes</a>
+            <a class="dropdown-item" target="_blank" rel="noopener noreferrer" href="{% url "public:cooking_guide" %}">Cooking guidelines</a>
+            <a class="dropdown-item" target="_blank" rel="noopener noreferrer" href="{% url "public:cooking_quick_guide" %}">Cooking quick guide</a>
+            <a class="dropdown-item" target="_blank" rel="noopener noreferrer" href="{% url "public:cooking_onboarding" %}">Cooking onboarding</a>
+            <a class="dropdown-item" target="_blank" rel="noopener noreferrer" href="{% url "public:delivery_guide" %}">Delivery guidelines</a>
+            <a class="dropdown-item" target="_blank" rel="noopener noreferrer" href="{% url "public:reimbursement" %}">Submit reimbursement</a>
+            <a class="dropdown-item" target="_blank" rel="noopener noreferrer" href="{% url "public:recipes" %}">Submit recipes</a>
             <hr class="dropdown-divider">
             <a class="dropdown-item" href="{% url 'volunteers:resources' %}">All resources</a>
           </div>
@@ -98,8 +98,8 @@
                 </a>
               </div>
               <hr class="dropdown-divider">
-              <a class="dropdown-item" href="https://www.gofundme.com/f/the-people039s-pantry-covid19-emergency-meal-fund" target="_blank" rel="noopener noreferrer">Donate now</a>
-              <a class="dropdown-item" href="https://donorbox.org/thepeoplespantryto" target="_blank" rel="noopener noreferrer">Donate monthly</a>
+              <a class="dropdown-item" href="{% url "public:donate" %}" target="_blank" rel="noopener noreferrer">Donate now</a>
+              <a class="dropdown-item" href="{% url "public:sponsor" %}" target="_blank" rel="noopener noreferrer">Donate monthly</a>
               <hr class="dropdown-divider">
               <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
             </ul>
