@@ -9,11 +9,15 @@
       The People's Pantry
     </a>
 
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
 
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <div class="collapse navbar-collapse" id="navbarCollapse">
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fe fe-x"></i>
+      </button>
+
       <ul class="navbar-nav mr-auto">
 
         {# Requests section #}
@@ -21,12 +25,12 @@
           <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
             Submit a request
           </a>
-          <ul class="dropdown-menu">
-            <li class="dropdown-item"><a class="dropdown-link" href="{% url 'recipients:new_meal_request' %}">Request meals</a></li>
-            <li class="dropdown-item"><a class="dropdown-link" href="{% url 'recipients:new_grocery_request' %}">Request groceries</a></li>
-            <li class="dropdown-item"><hr class="dropdown-divider"></li>
-            <li class="dropdown-item"><a class="dropdown-link" href="https://forms.gle/uJyEwwX8NbUZb4nX6" target="_blank" rel="noopener noreferrer">Outside Toronto</a></li>
-          </ul>
+          <div class="dropdown-menu">
+            <a class="dropdown-item" href="{% url 'recipients:new_meal_request' %}">Request meals</a>
+            <a class="dropdown-item" href="{% url 'recipients:new_grocery_request' %}">Request groceries</a>
+            <hr class="dropdown-divider">
+            <a class="dropdown-item" href="https://forms.gle/uJyEwwX8NbUZb4nX6" target="_blank" rel="noopener noreferrer">Outside Toronto</a>
+          </div>
         </li>
 
         {# Volunteer section #}
@@ -35,36 +39,36 @@
           <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
             Requests
           </a>
-          <ul class="dropdown-menu">
-            <li class="dropdown-item"><a class="dropdown-link" href="{% url 'volunteers:chef_signup_list' %}">Sign up to cook</a></li>
-            <li class="dropdown-item"><a class="dropdown-link" href="{% url 'volunteers:deliverer_signup_list' %}">Sign up to deliver meals</a></li>
-            <li class="dropdown-item"><hr class="dropdown-divider"></li>
-            <li class="dropdown-item"><a class="dropdown-link" target="_blank" rel="noopener noreferrer" href="https://forms.gle/i7BscqiGwyvRL5Fr7">Outside Toronto</a></li>
-          </ul>
+          <div class="dropdown-menu">
+            <a class="dropdown-item" href="{% url 'volunteers:chef_signup_list' %}">Sign up to cook</a>
+            <a class="dropdown-item" href="{% url 'volunteers:deliverer_signup_list' %}">Sign up to deliver meals</a>
+            <hr class="dropdown-divider">
+            <a class="dropdown-item" target="_blank" rel="noopener noreferrer" href="https://forms.gle/i7BscqiGwyvRL5Fr7">Outside Toronto</a>
+          </div>
         </li>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
             Tasks
           </a>
-          <ul class="dropdown-menu">
-            <li class="dropdown-item"><a class="dropdown-link" href="{% url 'volunteers:chef_list' %}">My cooking tasks</a></li>
-            <li class="dropdown-item"><a class="dropdown-link" href="{% url 'volunteers:deliverer_list' %}">My delivery tasks</a></li>
-          </ul>
+          <div class="dropdown-menu">
+            <a class="dropdown-item" href="{% url 'volunteers:chef_list' %}">My cooking tasks</a>
+            <a class="dropdown-item" href="{% url 'volunteers:deliverer_list' %}">My delivery tasks</a>
+          </div>
         </li>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
             Resources
           </a>
-          <ul class="dropdown-menu">
-            <li class="dropdown-item"><a class="dropdown-link" target="_blank" rel="noopener noreferrer" href="https://docs.google.com/document/d/1OCS-i_pm87MsT-POAbcDCKrv6SBA0J9tepOaETyLwmY/edit">Cooking guidelines</a></li>
-            <li class="dropdown-item"><a class="dropdown-link" target="_blank" rel="noopener noreferrer" href="https://drive.google.com/file/d/1iPu8yy_GbBuF6IK2dZwM-mqxzgekqVfI/view">Cooking quick guide</a></li>
-            <li class="dropdown-item"><a class="dropdown-link" target="_blank" rel="noopener noreferrer" href="https://drive.google.com/file/d/15ijQmXwx9vsJtXrUe0-K0DHaHTKMAW1k/view">Cooking onboarding</a></li>
-            <li class="dropdown-item"><a class="dropdown-link" target="_blank" rel="noopener noreferrer" href="https://docs.google.com/document/d/1Kxf0Zz3dMO7vI410VMY5sTJX3PMh7Mt8dGQIgNmQwGs/edit">Delivery guidelines</a></li>
-            <li class="dropdown-item"><a class="dropdown-link" target="_blank" rel="noopener noreferrer" href="https://docs.google.com/forms/d/e/1FAIpQLSfuOiqDuuvngZhPRYhy5BpzFf5IwGvpYz4QYRQ3TzA18el9kA/viewform">Submit reimbursement</a></li>
-            <li class="dropdown-item"><a class="dropdown-link" target="_blank" rel="noopener noreferrer" href="https://docs.google.com/forms/d/e/1FAIpQLSemtVbJij_fGZMpxlo91nHjTZe6JH_VbG61c5q9gok2aw2UUg/viewform">Submit recipes</a></li>
-            <li class="dropdown-item"><hr class="dropdown-divider"></li>
-            <li class="dropdown-item"><a class="dropdown-link" href="{% url 'volunteers:resources' %}">All resources</a></li>
-          </ul>
+          <div class="dropdown-menu">
+            <a class="dropdown-item" target="_blank" rel="noopener noreferrer" href="https://docs.google.com/document/d/1OCS-i_pm87MsT-POAbcDCKrv6SBA0J9tepOaETyLwmY/edit">Cooking guidelines</a>
+            <a class="dropdown-item" target="_blank" rel="noopener noreferrer" href="https://drive.google.com/file/d/1iPu8yy_GbBuF6IK2dZwM-mqxzgekqVfI/view">Cooking quick guide</a>
+            <a class="dropdown-item" target="_blank" rel="noopener noreferrer" href="https://drive.google.com/file/d/15ijQmXwx9vsJtXrUe0-K0DHaHTKMAW1k/view">Cooking onboarding</a>
+            <a class="dropdown-item" target="_blank" rel="noopener noreferrer" href="https://docs.google.com/document/d/1Kxf0Zz3dMO7vI410VMY5sTJX3PMh7Mt8dGQIgNmQwGs/edit">Delivery guidelines</a>
+            <a class="dropdown-item" target="_blank" rel="noopener noreferrer" href="https://docs.google.com/forms/d/e/1FAIpQLSfuOiqDuuvngZhPRYhy5BpzFf5IwGvpYz4QYRQ3TzA18el9kA/viewform">Submit reimbursement</a>
+            <a class="dropdown-item" target="_blank" rel="noopener noreferrer" href="https://docs.google.com/forms/d/e/1FAIpQLSemtVbJij_fGZMpxlo91nHjTZe6JH_VbG61c5q9gok2aw2UUg/viewform">Submit recipes</a>
+            <hr class="dropdown-divider">
+            <a class="dropdown-item" href="{% url 'volunteers:resources' %}">All resources</a>
+          </div>
         </li>
         {% endif %}
 
@@ -81,8 +85,8 @@
             <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
               <span class="avatar">{% profile_image request.user %}</span>
             </a>
-            <ul class="dropdown-menu dropdown-menu-right">
-              <li class="dropdown-item">
+            <div class="dropdown-menu dropdown-menu-right">
+              <div class="dropdown-item">
                 <a class="dropdown-link" href="{% url 'profile' %}">
                   <span class="d-flex align-items-center">
                     <span class="avatar">{% profile_image request.user %}</span>
@@ -92,12 +96,12 @@
                     </span>
                   </span>
                 </a>
-              </li>
-              <li class="dropdown-item"><hr class="dropdown-divider"></li>
-              <li class="dropdown-item"><a class="dropdown-link" href="https://www.gofundme.com/f/the-people039s-pantry-covid19-emergency-meal-fund" target="_blank" rel="noopener noreferrer">Donate now</a></li>
-              <li class="dropdown-item"><a class="dropdown-link" href="https://donorbox.org/thepeoplespantryto" target="_blank" rel="noopener noreferrer">Donate monthly</a></li>
-              <li class="dropdown-item"><hr class="dropdown-divider"></li>
-              <li class="dropdown-item"><a class="dropdown-link" href="{% url 'logout' %}">Logout</a></li>
+              </div>
+              <hr class="dropdown-divider">
+              <a class="dropdown-item" href="https://www.gofundme.com/f/the-people039s-pantry-covid19-emergency-meal-fund" target="_blank" rel="noopener noreferrer">Donate now</a>
+              <a class="dropdown-item" href="https://donorbox.org/thepeoplespantryto" target="_blank" rel="noopener noreferrer">Donate monthly</a>
+              <hr class="dropdown-divider">
+              <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
             </ul>
           </li>
         {% else %}
