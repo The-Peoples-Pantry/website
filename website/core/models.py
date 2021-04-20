@@ -41,8 +41,18 @@ class TelephoneFormField(forms.CharField):
     widget = TelephoneInput
 
     def clean(self, value):
+        value = super().clean(value)
+        if value is None:
+            return value
+
         # Strip any extra characters from the phone number like ), (, space, or -
-        return re.sub(r'[^0-9]', '', super().clean(value))
+        value = re.sub(r'[^0-9]', '', value)
+
+        # Then, re-format as 555-555-5555, as long as the right number of digits
+        if len(value) == 10:
+            value = f"{value[0:3]}-{value[3:6]}-{value[6:10]}"
+
+        return value
 
 
 class TelephoneField(models.CharField):
@@ -136,8 +146,8 @@ class AddressMixin(models.Model):
 
     @property
     def address_link(self):
-        address = urllib.parse.quote(self.address)
-        return f"https://www.google.com/maps/place/{address}"
+        params = urllib.parse.urlencode({'api': 1, 'query': self.address})
+        return f"https://www.google.com/maps/search/?{params}"
 
     @property
     def directions_link(self):
@@ -153,11 +163,19 @@ class AddressMixin(models.Model):
 
     @property
     def anonymous_address_link(self):
-        return f"https://www.google.com/maps/place/{self.anonymized_latitude},{self.anonymized_longitude}"
+        params = urllib.parse.urlencode({
+            'api': 1,
+            'query': f"{self.anonymized_latitude},{self.anonymized_longitude}",
+        })
+        return f"https://www.google.com/maps/search/?{params}"
 
     @property
     def anonymous_map_embed(self):
-        return f"https://www.google.com/maps/embed/v1/place?key={ settings.GOOGLE_MAPS_PRODUCTION_KEY }&q={self.anonymized_latitude},{self.anonymized_longitude}"
+        params = urllib.parse.urlencode({
+            'key': settings.GOOGLE_MAPS_PRODUCTION_KEY,
+            'q': f"{self.anonymized_latitude},{self.anonymized_longitude}",
+        })
+        return f"https://www.google.com/maps/embed/v1/place?{params}"
 
     @property
     def coordinates(self):

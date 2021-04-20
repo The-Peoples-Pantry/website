@@ -1,4 +1,5 @@
 import collections
+import math
 from django.contrib import admin, messages
 from django import forms
 from django.utils.html import format_html, format_html_join
@@ -79,9 +80,8 @@ class MealRequestAdmin(admin.ModelAdmin):
         'edit_link',
         'name',
         'phone_number',
-        'can_receive_texts',
+        'texts',
         'city',
-        'created_at',
         'delivery_date',
         'pickup_range',
         'dropoff_range',
@@ -90,6 +90,7 @@ class MealRequestAdmin(admin.ModelAdmin):
         'deliverer_link',
         'status',
         'completed',
+        'created_at',
     )
     list_filter = (
         CompletedFilter,
@@ -128,6 +129,12 @@ class MealRequestAdmin(admin.ModelAdmin):
     def get_queryset(self, *args, **kwargs):
         return super().get_queryset(*args, **kwargs).with_delivery_distance()
 
+    def texts(self, obj):
+        return obj.can_receive_texts
+    texts.boolean = True
+    texts.short_description = "Texts"
+    texts.admin_order_field = "can_receive_texts"
+
     def distance(self, obj):
         if obj.delivery_distance is None:
             return None
@@ -135,7 +142,7 @@ class MealRequestAdmin(admin.ModelAdmin):
         return format_html(
             '<a href="{}" target="_blank" rel="noopener noreferrer">{}</a>',
             obj.directions_link,
-            f"{obj.delivery_distance:.1f} km",
+            f"{math.ceil(obj.delivery_distance)} km",
         )
 
     def edit_link(self, request):
@@ -288,12 +295,12 @@ class GroceryRequestAdmin(admin.ModelAdmin):
         'edit_link',
         'name',
         'phone_number',
-        'can_receive_texts',
+        'texts',
         'city',
         'gift_card',
-        'created_at',
         'delivery_date',
         'completed',
+        'created_at',
     )
     list_filter = (
         'completed',
@@ -321,6 +328,12 @@ class GroceryRequestAdmin(admin.ModelAdmin):
     def edit_link(self, request):
         return 'Edit request G%d' % request.id
     edit_link.short_description = 'Edit link'
+
+    def texts(self, obj):
+        return obj.can_receive_texts
+    texts.boolean = True
+    texts.short_description = "Texts"
+    texts.admin_order_field = "can_receive_texts"
 
     def send_notifications(self, request, queryset, method_name):
         """

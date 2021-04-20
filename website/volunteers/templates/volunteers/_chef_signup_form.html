@@ -1,4 +1,5 @@
 {% load bootstrap4 %}
+{% load math %}
 
 {# Each request gets represented as a card #}
 <div class="card shadow-lift mb-4">
@@ -52,7 +53,7 @@
           <p>{{ meal_request.availability }}</p>
         {% endif %}
 
-        <form action="{% url 'volunteers:chef_signup' meal_request.pk %}" method="post" class="form" onsubmit="return confirmChefSignup(this);">
+        <form action="{% url 'volunteers:chef_signup' meal_request.pk %}" method="post" class="form" {% if meal_request.delivery_distance > settings.MAX_CHEF_DISTANCE %}onsubmit="return confirmChefSignup(this);"{% endif %}>
           {% csrf_token %}
 
           <h6>Pickup date</h6>
@@ -93,7 +94,7 @@
       </div>
       <div class="col">
         <h6>Approximate delivery location</h6>
-        <p>{{ meal_request.delivery_distance|floatformat }} kilometres away</p>
+        <p>{% ceiling meal_request.delivery_distance %} kilometres away</p>
         <iframe
           loading="lazy"
           width="350"

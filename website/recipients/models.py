@@ -30,6 +30,7 @@ class Status(models.TextChoices):
     DRIVER_ASSIGNED = 'Driver Assigned', 'Driver Assigned'
     DATE_CONFIRMED = 'Delivery Date Confirmed', 'Delivery Date Confirmed'
     DELIVERED = 'Delivered', 'Delivered'
+    UNSUCCESSFUL = 'Unsuccessful', 'Unsuccessful'
 
 
 class MealRequestQuerySet(models.QuerySet):
