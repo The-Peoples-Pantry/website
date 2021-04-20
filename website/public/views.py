@@ -19,7 +19,7 @@ class IndexView(TemplateView):
 class MediaView(TemplateView):
     template_name = "public/media.html"
     extra_context = {
-        "stories": [
+        "stories": sorted([
             {
                 'title': 'Food Justice, Sovereignty, & Security',
                 'author': "The People's Pantry",
@@ -116,5 +116,5 @@ class MediaView(TemplateView):
                 'image': 'media/sis.jpg',
                 'outlet': 'SIS Salon'
             },
-        ]
+        ], key=lambda story: story['date'], reverse=True)
     }
