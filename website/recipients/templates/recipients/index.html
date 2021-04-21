@@ -1,23 +1,69 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-<h1>Submit a request</h1>
+<section class="pt-4 pt-md-6">
+  <div class="container">
+    <div class="row align-items-center mb-5">
+      <div class="col-12 col-md">
+        <h1 class="mb-0">Submit a request</h1>
+        <p class="mb-0 text-muted">
+          Choose from the following based on your needs
+        </p>
+      </div>
+    </div>
 
-<h2 class="h4">Toronto</h2>
-<div class="justify-center">
-  <a class="btn btn-info py-2 px-4 m-1" href="{% url 'recipients:new_meal_request' %}">
-    <span class="h4">Request meals</span>
-  </a>
-  <a class="btn btn-info py-2 px-4 m-1" href="{% url 'recipients:new_grocery_request' %}">
-    <span class="h4">Request groceries</span>
-  </a>
-</div>
+    <div class="row">
+      <div class="col-12 col-md-4">
+        <div class="card shadow-light-lg mb-6 mb-md-0 lift lift-lg">
+          <img src="{% static "cooking-splash.jpg" %}" alt="A cook pot and other cooking tools on a table" class="card-img-top">
+          <div class="position-relative">
+            <div class="shape shape-bottom shape-fluid-x svg-shim text-white">
+              {% include "landkit_theme/shapes/curves/curve-1.svg" %}
+            </div>
+          </div>
+          <div class="card-body position-relative">
+            <h3>Meals</h3>
+            <p class="text-muted">
+              Home cooked meals prepared by our volunteer chefs
+            </p>
+            <a href="{% url "recipients:new_meal_request" %}" class="font-weight-bold text-success text-decoration-none">
+              Request meals&nbsp;<i class="fe fe-arrow-right ml-3"></i>
+            </a>
+          </div>
+        </div>
+      </div>
 
-<h2 class="h4 mt-4">Halton plus Hamilton, Mississauga, Guelph, and Kitchener</h2>
-<div class="justify-center">
-  <a class="btn btn-success py-2 px-4 m-1" href="{% url "public:sister_initiative" %}"  target="_blank" rel="noopener noreferrer">
-    <span class="h5">Request free meal or grocery package</span>
-  </a>
-</div>
+      <div class="col-12 col-md-4">
+        <div class="card shadow-light-lg mb-6 mb-md-0 lift lift-lg">
+          <img src="{% static "delivery-splash.jpg" %}" alt="A cook pot and other cooking tools on a table" class="card-img-top">
+          <div class="position-relative">
+            <div class="shape shape-bottom shape-fluid-x svg-shim text-white">
+              {% include "landkit_theme/shapes/curves/curve-1.svg" %}
+            </div>
+          </div>
+          <div class="card-body position-relative">
+            <h3>Grocery bundles</h3>
+            <p class="text-muted">
+              Grocery bundles prepared and delivered by FoodShare
+            </p>
+            <a href="{% url "recipients:new_grocery_request" %}" class="font-weight-bold text-success text-decoration-none">
+              Request groceries&nbsp;<i class="fe fe-arrow-right ml-3"></i>
+            </a>
+          </div>
+        </div>
+      </div>
 
+      <div class="col-12 col-md-4 d-flex flex-column justify-content-center">
+        <h3>Outside of Toronto?</h3>
+        <p class="text-muted">
+          Contact our sister initiative for help in Hamilton, Halton, Mississauga, Guelph, or Kitchener
+        </p>
+        <a href="{% url "public:sister_initiative" %}" class="font-weight-bold text-success text-decoration-none">
+          Request help&nbsp;<i class="fe fe-arrow-right ml-3"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
 {% endblock %}
