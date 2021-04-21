@@ -285,10 +285,10 @@
                 <div class="collapse show" id="featuresOne" data-parent="#featuresAccordion">
                   <div class="py-5 py-mb-6">
                     <p>
-                      Each week our volunteer chefs prepare hundreds of meals. Each meal is customized based on the number of people in your household, your preferences, and any dietary restrictions. Our volunteers then deliver these meals directly to you for a non-contact drop-off.
+                      Our volunteer chefs have prepared hundreds of meals. Each meal is customized based on the number of people in your household, your preferences, and any dietary restrictions. Our volunteers then deliver these meals directly to you for a non-contact drop-off.
                       If you're in need of a meal, we encourage you to apply through our request form. Our request form opens up for new requests every Sunday at noon, and we typically reach our capacity by 12:15pm.
                     </p>
-                    <a href="#!" class="font-weight-bold text-decoration-none">
+                    <a href="{% url "recipients:new_meal_request" %}" class="font-weight-bold text-decoration-none">
                       Request meals <i class="fe fe-arrow-right ml-3"></i>
                     </a>
                   </div>
@@ -315,7 +315,7 @@
                       We've partnered with <a href="https://foodshare.net/" target="_blank" rel="noopener noreferrer">FoodShare</a> to provide boxes of fresh produce all across Toronto. These boxes are delivered directly to you for a non-contact drop-off.
                       If you're in need of groceries, we encourage you to apply through our request form. Our request form opens up for new requests every Sunday at noon, and we typically reach our capacity by 12:15pm.
                     </p>
-                    <a href="#!" class="font-weight-bold text-decoration-none">
+                    <a href="{% url "recipients:new_grocery_request" %}" class="font-weight-bold text-decoration-none">
                       Request groceries <i class="fe fe-arrow-right ml-3"></i>
                     </a>
                   </div>
@@ -341,7 +341,7 @@
                     <p>
                       Our sister initiative operates in Hamilton, Mississauga, Guelph, and Kitchener. If you're in one of these regions, they can help you find access to food.
                     </p>
-                    <a href="#!" class="font-weight-bold text-decoration-none">
+                    <a href="{% url "public:sister_initiative" %}" class="font-weight-bold text-decoration-none">
                       Request help <i class="fe fe-arrow-right ml-3"></i>
                     </a>
                   </div>
