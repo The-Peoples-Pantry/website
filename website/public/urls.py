@@ -6,6 +6,7 @@ app_name = 'public'
 urlpatterns = [
     path('', views.IndexView.as_view(), name='index'),
     path('media', views.MediaView.as_view(), name='media'),
+    path('about', views.AboutView.as_view(), name='about'),
 
     # External link redirects
     path('links/facebook', RedirectView.as_view(url='https://www.facebook.com/groups/675649626532144/'), name='facebook'),
@@ -25,4 +26,5 @@ urlpatterns = [
     path('links/code-of-conduct', RedirectView.as_view(url='https://docs.google.com/document/d/1jJUnD8ZUWxM0Tkx6C-V2K-S2aYioY1LlIp3T9Yt-C5M/edit'), name='code_of_conduct'),
     path('links/essential-service-letter', RedirectView.as_view(url='https://docs.google.com/document/d/1uu7pl_ID4XIQScVOyH8i2Xx0E7v8mV9mi14XLnPC2jo/edit'), name='essential_service_letter'),
     path('links/logistics-teams-descriptions', RedirectView.as_view(url='https://docs.google.com/document/d/1V3R2bVRPOAaytM4h7UP7jXL7jHz-2MkLnN-9bhkPipk/edit'), name='logistics_teams_descriptions'),
+    path('links/caremongering-to', RedirectView.as_view(url='https://www.facebook.com/groups/TO.Community.Response.COVID19/'), name='caremongering_to'),
 ]

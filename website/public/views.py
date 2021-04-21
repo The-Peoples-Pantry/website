@@ -118,3 +118,7 @@ class MediaView(TemplateView):
             },
         ], key=lambda story: story['date'], reverse=True)
     }
+
+
+class AboutView(TemplateView):
+    template_name = "public/about.html"
