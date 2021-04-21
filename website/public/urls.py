@@ -25,9 +25,4 @@ urlpatterns = [
     path('links/code-of-conduct', RedirectView.as_view(url='https://docs.google.com/document/d/1jJUnD8ZUWxM0Tkx6C-V2K-S2aYioY1LlIp3T9Yt-C5M/edit'), name='code_of_conduct'),
     path('links/essential-service-letter', RedirectView.as_view(url='https://docs.google.com/document/d/1uu7pl_ID4XIQScVOyH8i2Xx0E7v8mV9mi14XLnPC2jo/edit'), name='essential_service_letter'),
     path('links/logistics-teams-descriptions', RedirectView.as_view(url='https://docs.google.com/document/d/1V3R2bVRPOAaytM4h7UP7jXL7jHz-2MkLnN-9bhkPipk/edit'), name='logistics_teams_descriptions'),
-
-    path('links/tiktok', RedirectView.as_view(url=''), name='tiktok'),
-    path('links/tiktok', RedirectView.as_view(url=''), name='tiktok'),
-    path('links/tiktok', RedirectView.as_view(url=''), name='tiktok'),
-
 ]
