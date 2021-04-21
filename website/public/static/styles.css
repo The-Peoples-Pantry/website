@@ -21,3 +21,7 @@ textarea,
 textarea.form-control {
   height: 5em;
 }
+
+textarea.terms-of-service {
+  height: 15em;
+}
