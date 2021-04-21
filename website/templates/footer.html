@@ -67,17 +67,17 @@
         <!-- List -->
         <ul class="list-unstyled text-muted mb-6 mb-md-8 mb-lg-0">
           <li class="mb-3">
-            <a href="#!" class="text-reset">
+            <a href="{% url "signup" %}?next={% url "volunteers:chef_application" %}" class="text-reset">
               Cook
             </a>
           </li>
           <li class="mb-3">
-            <a href="#!" class="text-reset">
+            <a href="{% url "signup" %}?next={% url "volunteers:deliverer_application" %}" class="text-reset">
               Deliver
             </a>
           </li>
           <li class="mb-3">
-            <a href="#!" class="text-reset">
+            <a href="{% url "signup" %}?next={% url "volunteers:organizer_application" %}" class="text-reset">
               Organize
             </a>
           </li>

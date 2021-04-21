@@ -39,7 +39,7 @@
           We provide home cooked meals and groceries to those who have been hit hardest by COVID-19
         </p>
 
-        <a href="#!" class="btn btn-primary btn-block lift">
+        <a href="{% url "signup" %}" class="btn btn-primary btn-block lift">
           Join us <i class="fe fe-arrow-right ml-2"></i>
         </a>
         <a href="{% url "public:about" %}" class="btn btn-primary-soft btn-block lift">
@@ -83,7 +83,7 @@
             <p class="text-muted">
               Prepare home cooked meals for others on your own schedule, we'll handle delivery.
             </p>
-            <a href="#!" class="font-weight-bold text-success text-decoration-none">
+            <a href="{% url "signup" %}?next={% url "volunteers:chef_application" %}" class="font-weight-bold text-success text-decoration-none">
               Start cooking&nbsp;<i class="fe fe-arrow-right ml-3"></i>
             </a>
           </div>
@@ -103,7 +103,7 @@
             <p class="text-muted">
               Deliver meals by foot, by bike, by car, whatever works best for you.
             </p>
-            <a href="#!" class="font-weight-bold text-success text-decoration-none">
+            <a href="{% url "signup" %}?next={% url "volunteers:deliverer_application" %}" class="font-weight-bold text-success text-decoration-none">
               Start delivering&nbsp;<i class="fe fe-arrow-right ml-3"></i>
             </a>
           </div>
@@ -123,7 +123,7 @@
             <p class="text-muted">
               Coordinate meal and grocery deliveries, and help us tell our story to the world.
             </p>
-            <a href="#!" class="font-weight-bold text-success text-decoration-none">
+            <a href="{% url "signup" %}?next={% url "volunteers:organizer_application" %}" class="font-weight-bold text-success text-decoration-none">
               Start organizing&nbsp;<i class="fe fe-arrow-right ml-3"></i>
             </a>
           </div>
