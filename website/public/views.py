@@ -1,8 +1,6 @@
 from datetime import date
 from django.views.generic import TemplateView
 
-from recipients.models import MealRequest, GroceryRequest
-
 
 class IndexView(TemplateView):
     template_name = "public/index.html"
@@ -11,8 +9,8 @@ class IndexView(TemplateView):
     def extra_context(self):
         return {
             'volunteers_lower_bound': 500,
-            'meal_requests': MealRequest.objects.count(),
-            'grocery_requests': GroceryRequest.objects.count(),
+            'meal_requests_lower_bound': 10_000,
+            'grocery_requests_lower_bound': 500,
         }
 
 
