@@ -9,8 +9,8 @@ class IndexView(TemplateView):
     def extra_context(self):
         return {
             'volunteers_lower_bound': 500,
-            'meal_requests_lower_bound': 10_000,
-            'grocery_requests_lower_bound': 500,
+            'meal_requests_lower_bound': 15_000,
+            'grocery_requests_lower_bound': 11_000,
         }
 
 
