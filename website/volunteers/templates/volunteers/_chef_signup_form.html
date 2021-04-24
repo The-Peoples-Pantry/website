@@ -53,6 +53,11 @@
           <p>{{ meal_request.availability }}</p>
         {% endif %}
 
+        {% if meal_request.notes %}
+          <h6>Additional notes</h6>
+          <p>{{ meal_request.notes }}</p>
+        {% endif %}
+
         <form action="{% url 'volunteers:chef_signup' meal_request.pk %}" method="post" class="form" {% if meal_request.delivery_distance > settings.MAX_CHEF_DISTANCE %}onsubmit="return confirmChefSignup(this);"{% endif %}>
           {% csrf_token %}
 
