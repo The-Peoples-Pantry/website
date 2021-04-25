@@ -1,5 +1,3 @@
-import glob
-import os
 from datetime import date
 from django.views.generic import TemplateView
 
