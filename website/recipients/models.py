@@ -195,6 +195,11 @@ class MealRequest(DemographicMixin, ContactMixin, AddressMixin, TimestampsMixin,
         help_text="(Optional) Let us know what you plan on cooking!",
         blank=True,
     )
+    containers = models.TextField(
+        "Containers",
+        help_text="Expected number and size of containers that you'll use to package this meal",
+        blank=True,
+    )
 
     @classmethod
     def requests_paused(cls):
