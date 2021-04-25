@@ -1,3 +1,5 @@
+import glob
+import os
 from datetime import date
 from django.views.generic import TemplateView
 
@@ -120,3 +122,14 @@ class MediaView(TemplateView):
 
 class AboutView(TemplateView):
     template_name = "public/about.html"
+
+    @property
+    def extra_context(self):
+        return {
+            'testimonials': [
+                'testimonials/crystal.png',
+                'testimonials/jan.png',
+                'testimonials/liz.png',
+                'testimonials/wanyi.png',
+            ]
+        }
