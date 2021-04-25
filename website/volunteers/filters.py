@@ -1,10 +1,7 @@
 from django import forms
 from django_filters import FilterSet
+from core.filters import DateFilter
 from recipients.models import MealRequest
-
-
-class DateInput(forms.DateInput):
-    input_type = 'date'
 
 
 class HiddenValidationForm(forms.Form):
@@ -39,11 +36,14 @@ class ChefSignupFilter(FilterSet):
 
 
 class DelivererSignupFilter(FilterSet):
+    delivery_date = DateFilter()
+
     class Meta:
         form = HiddenValidationForm
         model = MealRequest
         fields = {
             'city': ['exact'],
+            'delivery_date': ['exact'],
             'num_adults': ['lt'],
             'num_children': ['lt'],
         }
