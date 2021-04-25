@@ -103,7 +103,7 @@ class MealRequestTextTests(TestCase):
 
     def test_send_recipient_feedback_request(self):
         expected = dedent("""
-            Hello Ryan How did you like your meals this week? We appreciate any feedback you have. If you are comfortable with us sharing your anonymized feedback on social media, please let us know - it helps us raise money for the program. If not, that’s okay too.
+            Hello Ryan How did you like your meals (1) this week? We appreciate any feedback you have. If you are comfortable with us sharing your anonymized feedback on social media, please let us know - it helps us raise money for the program. If not, that’s okay too.
         """).strip()
         self.request.send_recipient_feedback_request(self.api)
         self.api.send_text.assert_called_with(self.request.phone_number, expected, "default")
