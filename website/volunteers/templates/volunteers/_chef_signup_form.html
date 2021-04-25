@@ -37,7 +37,7 @@
             src="{{ meal_request.anonymous_map_embed }}&zoom=12" allowfullscreen>
           </iframe>
         </div>
-        <div class="col-lg-6">
+        <div class="col-lg-6 order-lg-1">
           {% if meal_request.food_preferences %}
           <h6>Food preferences</h6>
           <p>{{ meal_request.food_preferences }}</p>
@@ -100,7 +100,8 @@
               Please provide a two hour maximum delivery window
             </p>
           </div>
-
+        </div>
+        <div class="col-12 order-lg-3">
           {% bootstrap_field form.pickup_details %}
           {% bootstrap_field form.meal %}
 
