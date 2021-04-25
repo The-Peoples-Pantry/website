@@ -239,7 +239,7 @@ LONG_TEXT_LENGTH = 1024
 # So we want the limit to be 2 lower than the FoodShare limit so that we
 # don't exceed the limit in the case where we're already at 48 or 49 boxes
 # and then someone submits a request that requires 3 or 2 boxes.
-GROCERIES_LIMIT = 54 - 2
+GROCERIES_LIMIT = 50 - 2
 DISABLE_GROCERIES_LIMIT = getenv_bool("DISABLE_GROCERIES_LIMIT", False)
 DISABLE_GROCERIES_PERIOD = getenv_bool("DISABLE_GROCERIES_PERIOD", False)
 
