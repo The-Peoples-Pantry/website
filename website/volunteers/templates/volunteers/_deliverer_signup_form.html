@@ -11,12 +11,27 @@
     {% bootstrap_form_errors form %}
     <div class="row">
       <div class="col-md">
-        <h6>
+        <h6>Recipient details</h6>
+        <p>
           Meal
           for {{ meal_request.num_adults }} adult{{ meal_request.num_adults | pluralize }}
           and {{ meal_request.num_children }} kid{{ meal_request.num_children | pluralize }}
-        </h6>
-        <p>{{ meal_request.delivery_details }}</p>
+        </p>
+
+        {% if meal_request.containers %}
+          <h6>Containers</h6>
+          <p>{{ meal_request.containers }}</p>
+        {% endif %}
+
+        {% if meal_request.pickup_details %}
+          <h6>Pickup instructions</h6>
+          <p>{{ meal_request.pickup_details }}</p>
+        {% endif %}
+
+        {% if meal_request.delivery_details %}
+          <h6>Dropoff instructions</h6>
+          <p>{{ meal_request.delivery_details }}</p>
+        {% endif %}
       </div>
     </div>
 
