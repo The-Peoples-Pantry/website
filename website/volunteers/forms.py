@@ -168,7 +168,7 @@ class ChefSignupForm(forms.ModelForm):
 class ChefTaskForm(forms.ModelForm):
     class Meta:
         model = MealRequest
-        fields = ['pickup_details', 'meal']
+        fields = ['pickup_details', 'meal', 'containers']
 
 
 class DelivererSignupForm(forms.ModelForm):

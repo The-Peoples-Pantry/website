@@ -50,24 +50,28 @@
           </ul>
         </div>
       </div>
-      <div class="row">
-        <div class="col-md">
-          <h6>Pickup details</h6>
-          {% if meal_request.delivered %}
-            {{ meal_request.pickup_details|default:"No pickup details listed" }}
-          {% else %}
-            {% bootstrap_field form.pickup_details show_label=False %}
-          {% endif %}
-        </div>
-        <div class="col-md">
-          <h6>Meal</h6>
-          {% if meal_request.delivered %}
-            {{ meal_request.meal|default:"No meal listed" }}
-          {% else %}
-            {% bootstrap_field form.meal show_label=False %}
-          {% endif %}
-        </div>
-      </div>
+
+      <h6>Pickup details</h6>
+      {% if meal_request.delivered %}
+        {{ meal_request.pickup_details|default:"No pickup details listed" }}
+      {% else %}
+        {% bootstrap_field form.pickup_details show_label=False %}
+      {% endif %}
+
+      <h6>Meal</h6>
+      {% if meal_request.delivered %}
+        {{ meal_request.meal|default:"No meal listed" }}
+      {% else %}
+        {% bootstrap_field form.meal show_label=False %}
+      {% endif %}
+
+      <h6>Containers</h6>
+      {% if meal_request.delivered %}
+        {{ meal_request.containers|default:"No containers listed" }}
+      {% else %}
+        {% bootstrap_field form.containers show_label=False %}
+      {% endif %}
+      
       {% if not meal_request.delivered %}
         {% buttons submit="Update"%}
           <a href="mailto:{{settings.REQUEST_COORDINATORS_EMAIL}},{{settings.DELIVERY_COORDINATORS_EMAIL}}?subject=Chef Change Request for Delivery for Request ID {{ meal_request.id }}" class="btn btn-outline-danger">Request a change</a>
