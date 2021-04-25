@@ -103,7 +103,7 @@ class MealRequestTextTests(TestCase):
 
     def test_send_recipient_feedback_request(self):
         expected = dedent("""
-            Hello Ryan How did you like your meals this week? We appreciate any feedback you have. If you are comfortable with us sharing your anonymized feedback on social media, please let us know - it helps us raise money for the program. If not, that’s okay too.
+            Hello Ryan How did you like your meals (1) this week? We appreciate any feedback you have. If you are comfortable with us sharing your anonymized feedback on social media, please let us know - it helps us raise money for the program. If not, that’s okay too.
         """).strip()
         self.request.send_recipient_feedback_request(self.api)
         self.api.send_text.assert_called_with(self.request.phone_number, expected, "default")
@@ -138,10 +138,10 @@ class MealRequestTextTests(TestCase):
     def test_send_detailed_deliverer_notification(self):
         expected = dedent("""
             Hi Ophelia,
-            This is a reminder about your delivery for The People’s Pantry today.
+            This is a reminder about your delivery (1) for The People’s Pantry today.
             Pick up the meals from Philip at   Toronto Ontario , phone number 5555551111, between 12:00 PM and 01:00 PM.
 
-            The recipient, Ryan (1) is at 123 Fake St Unit 1 Toronto Ontario H0H 0H0. Notify them when you arrive at 5555555555.
+            The recipient, Ryan is at 123 Fake St Unit 1 Toronto Ontario H0H 0H0. Notify them when you arrive at 5555555555, between 02:00 PM and 03:00 PM.
             The delivery instructions are: Deliver to side door.
 
             Send a text if you have any problems with your delivery, and please let us know when the delivery is completed.
