@@ -135,6 +135,7 @@ class ChefSignupForm(forms.ModelForm):
             'dropoff_end',
             'pickup_details',
             'meal',
+            'containers',
         ]
         widgets = {
             'pickup_start': TimeInput,
