@@ -89,3 +89,11 @@ class VolunteerProfileForm(forms.ModelForm):
     class Meta:
         model = Volunteer
         fields = ['name', 'short_name', 'phone_number', 'address_1', 'address_2', 'pronouns', 'notes', 'postal_code', 'city']
+
+
+class DateInput(forms.DateInput):
+    input_type = 'date'
+
+
+class DateField(forms.DateField):
+    widget = DateInput
