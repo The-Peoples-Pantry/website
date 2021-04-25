@@ -15,51 +15,61 @@
 
   {# Card body section contains the form and map #}
   <div class="card-body">
-    {% bootstrap_form_errors form %}
+    <form action="{% url 'volunteers:chef_signup' meal_request.pk %}" method="post" class="form" {% if meal_request.delivery_distance > settings.MAX_CHEF_DISTANCE %}onsubmit="return confirmChefSignup(this);"{% endif %}>
+      {% csrf_token %}
+      {% bootstrap_form_errors form %}
 
-    {% if meal_request.delivery_distance > settings.MAX_CHEF_DISTANCE %}
-      <div class="alert alert-warning">This request is far from you, please choose a different request unless you can deliver this yourself.</div>
-    {% elif meal_request.stale %}
-      <div class="alert alert-info">This request was submitted more than a week ago, please prioritize this if possible.</div>
-    {% endif %}
+      {% if meal_request.delivery_distance > settings.MAX_CHEF_DISTANCE %}
+        <div class="alert alert-warning">This request is far from you, please choose a different request unless you can deliver this yourself.</div>
+      {% elif meal_request.stale %}
+        <div class="alert alert-info">This request was submitted more than a week ago, please prioritize this if possible.</div>
+      {% endif %}
 
-    <div class="row">
-      <div class="col">
-        {% if meal_request.food_preferences %}
-        <h6>Food preferences</h6>
-        <p>{{ meal_request.food_preferences }}</p>
-        {% endif %}
+      <div class="row">
+        <div class="col-lg-6 order-lg-2 mb-4">
+          <h6>Approximate delivery location</h6>
+          <p>{% ceiling meal_request.delivery_distance %} kilometres away</p>
+          <iframe
+            loading="lazy"
+            width="350"
+            height="400"
+            frameborder="0" style="border:0"
+            src="{{ meal_request.anonymous_map_embed }}&zoom=12" allowfullscreen>
+          </iframe>
+        </div>
+        <div class="col-lg-6 order-lg-1">
+          {% if meal_request.food_preferences %}
+          <h6>Food preferences</h6>
+          <p>{{ meal_request.food_preferences }}</p>
+          {% endif %}
 
-        {% if meal_request.food_allergies %}
-          <h6>Food allergies</h6>
-          <p>{{ meal_request.food_allergies }}</p>
-        {% endif %}
+          {% if meal_request.food_allergies %}
+            <h6>Food allergies</h6>
+            <p>{{ meal_request.food_allergies }}</p>
+          {% endif %}
 
-        <h6>Other dietary information</h6>
-        <ul>
-          {% if meal_request.vegan %} <li>Vegan</li> {% endif %}
-          {% if meal_request.vegetarian %} <li>Vegetarian</li> {% endif %}
-          {% if meal_request.dairy_free %} <li>Dairy Free</li> {% endif %}
-          {% if meal_request.gluten_free %} <li>Gluten Freen</li> {% endif %}
-          {% if meal_request.halal %} <li>Halal</li> {% endif %}
-          {% if meal_request.kosher %} <li>Kosher</li> {% endif %}
-          {% if meal_request.low_carb %} <li>Low-carb</li> {% endif %}
-          <li>Will {% if not meal_request.will_accept_vegan %}<strong>not </strong>{% endif %}accept vegan meals</li>
-          <li>Will {% if not meal_request.will_accept_vegetarian %}<strong>not </strong>{% endif %}accept vegetarian meals</li>
-        </ul>
+          <h6>Other dietary information</h6>
+          <ul>
+            {% if meal_request.vegan %} <li>Vegan</li> {% endif %}
+            {% if meal_request.vegetarian %} <li>Vegetarian</li> {% endif %}
+            {% if meal_request.dairy_free %} <li>Dairy Free</li> {% endif %}
+            {% if meal_request.gluten_free %} <li>Gluten Freen</li> {% endif %}
+            {% if meal_request.halal %} <li>Halal</li> {% endif %}
+            {% if meal_request.kosher %} <li>Kosher</li> {% endif %}
+            {% if meal_request.low_carb %} <li>Low-carb</li> {% endif %}
+            <li>Will {% if not meal_request.will_accept_vegan %}<strong>not </strong>{% endif %}accept vegan meals</li>
+            <li>Will {% if not meal_request.will_accept_vegetarian %}<strong>not </strong>{% endif %}accept vegetarian meals</li>
+          </ul>
 
-        {% if meal_request.availability %}
-          <h6>Availability</h6>
-          <p>{{ meal_request.availability }}</p>
-        {% endif %}
+          {% if meal_request.availability %}
+            <h6>Availability</h6>
+            <p>{{ meal_request.availability }}</p>
+          {% endif %}
 
-        {% if meal_request.notes %}
-          <h6>Additional notes</h6>
-          <p>{{ meal_request.notes }}</p>
-        {% endif %}
-
-        <form action="{% url 'volunteers:chef_signup' meal_request.pk %}" method="post" class="form" {% if meal_request.delivery_distance > settings.MAX_CHEF_DISTANCE %}onsubmit="return confirmChefSignup(this);"{% endif %}>
-          {% csrf_token %}
+          {% if meal_request.notes %}
+            <h6>Additional notes</h6>
+            <p>{{ meal_request.notes }}</p>
+          {% endif %}
 
           <h6>Pickup date</h6>
           {% bootstrap_field form.delivery_date show_label=False %}
@@ -90,25 +100,16 @@
               Please provide a two hour maximum delivery window
             </p>
           </div>
-
+        </div>
+        <div class="col-12 order-lg-3">
           {% bootstrap_field form.pickup_details %}
           {% bootstrap_field form.meal %}
+          {% bootstrap_field form.containers placeholder="example: 4 14oz containers of soup" %}
 
           {% buttons submit="Sign up"%}{% endbuttons %}
-        </form>
+        </div>
       </div>
-      <div class="col">
-        <h6>Approximate delivery location</h6>
-        <p>{% ceiling meal_request.delivery_distance %} kilometres away</p>
-        <iframe
-          loading="lazy"
-          width="350"
-          height="400"
-          frameborder="0" style="border:0"
-          src="{{ meal_request.anonymous_map_embed }}&zoom=12" allowfullscreen>
-        </iframe>
-      </div>
-    </div>
+    </form>
   </div>
 </div>
 
