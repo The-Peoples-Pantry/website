@@ -24,7 +24,18 @@
     {% endif %}
 
     <div class="row">
-      <div class="col">
+      <div class="col-lg-6 order-lg-2 mb-4">
+        <h6>Approximate delivery location</h6>
+        <p>{% ceiling meal_request.delivery_distance %} kilometres away</p>
+        <iframe
+          loading="lazy"
+          width="350"
+          height="400"
+          frameborder="0" style="border:0"
+          src="{{ meal_request.anonymous_map_embed }}&zoom=12" allowfullscreen>
+        </iframe>
+      </div>
+      <div class="col-lg-6">
         {% if meal_request.food_preferences %}
         <h6>Food preferences</h6>
         <p>{{ meal_request.food_preferences }}</p>
@@ -96,17 +107,6 @@
 
           {% buttons submit="Sign up"%}{% endbuttons %}
         </form>
-      </div>
-      <div class="col">
-        <h6>Approximate delivery location</h6>
-        <p>{% ceiling meal_request.delivery_distance %} kilometres away</p>
-        <iframe
-          loading="lazy"
-          width="350"
-          height="400"
-          frameborder="0" style="border:0"
-          src="{{ meal_request.anonymous_map_embed }}&zoom=12" allowfullscreen>
-        </iframe>
       </div>
     </div>
   </div>
