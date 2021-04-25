@@ -21,6 +21,9 @@ class MealRequestView(FormView):
     template_name = 'recipients/new_meal_request.html'
     success_url = reverse_lazy('recipients:success')
     form_class = MealRequestForm
+    initial = {
+        'num_children': 0,
+    }
 
     def dispatch(self, request):
         if MealRequest.requests_paused():
@@ -48,6 +51,9 @@ class GroceryRequestView(FormView):
     template_name = 'recipients/new_grocery_request.html'
     success_url = reverse_lazy('recipients:success')
     form_class = GroceryRequestForm
+    initial = {
+        'num_children': 0,
+    }
 
     def dispatch(self, request):
         if GroceryRequest.requests_paused():
