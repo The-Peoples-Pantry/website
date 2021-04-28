@@ -5,7 +5,7 @@
 <!-- WELCOME
 ================================================== -->
 <section class="py-8 py-md-11">
-  <div class="container">
+  <div class="container-fluid">
     <div class="row justify-content-center">
       <div class="col-12 col-md-10 col-lg-8 text-center">
         <h1 class="display-2">A bit about us</h1>
@@ -15,19 +15,10 @@
 
       </div>
     </div>
-    <div class="row">
-      <div class="col-3 px-1">
-        <img src="{% static "photos/jade.jpg" %}"   class="img-fluid rounded shadow-lg" alt="...">
-      </div>
-      <div class="col-3 px-1">
-        <img src="{% static "photos/andrea.png" %}"   class="img-fluid rounded shadow-lg" alt="...">
-      </div>
-      <div class="col-3 px-1">
-        <img src="{% static "photos/yann-eli.jpg" %}"   class="img-fluid rounded shadow-lg" alt="...">
-      </div>
-      <div class="col-3 px-1">
-        <img src="{% static "photos/michelle.jpg" %}"   class="img-fluid rounded shadow-lg" alt="...">
-      </div>
+    <div class="flickity-button-white flickity-button-inset" data-flickity='{"imagesLoaded": true, "wrapAround": true, "pageDots": true}'>
+      {% for photo in photos %}
+        <img src="{% static photo %}" class="rounded mx-4" alt="Randomly selected image of volunteers and/or meals" style="height: 300px;">
+      {% endfor %}
     </div>
   </div>
 </section>
@@ -174,10 +165,10 @@
   <div class="container">
     <div class="card card-row shadow-light-lg">
       <div class="row no-gutters">
-        <div class="col-12 col-md-6 bg-cover card-img-left" style="background-image: url({% static "photos/yann-eli.jpg" %});">
+        <div class="col-12 col-md-6 bg-cover card-img-left" style="background-image: url({% static "photos/organizers/yann-eli.jpg" %});">
 
           <!-- Image (placeholder) -->
-          <img src="{% static "photos/yann-eli.jpg" %}" alt="..." class="img-fluid d-md-none invisible">
+          <img src="{% static "photos/organizers/yann-eli.jpg" %}" alt="..." class="img-fluid d-md-none invisible">
 
           <!-- Shape -->
           <div class="shape shape-right shape-fluid-y svg-shim text-white d-none d-md-block">
