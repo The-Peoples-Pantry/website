@@ -61,6 +61,7 @@ class MealRequestQuerySet(models.QuerySet):
 
 
 class MealRequest(DemographicMixin, ContactMixin, AddressMixin, TimestampsMixin, models.Model):
+    STALE_AFTER_DAYS = 7
     objects = MealRequestQuerySet.as_manager()
 
     # Information about the recipient
@@ -242,7 +243,7 @@ class MealRequest(DemographicMixin, ContactMixin, AddressMixin, TimestampsMixin,
 
     @property
     def stale(self):
-        return (timezone.now() - self.created_at).days >= 7
+        return (timezone.now() - self.created_at).days >= self.STALE_AFTER_DAYS
 
     @property
     def delivered(self):
