@@ -3,6 +3,8 @@ from datetime import date
 from django.views.generic import TemplateView
 from django.contrib.staticfiles.storage import staticfiles_storage
 
+from recipients.models import MealRequest, GroceryRequest
+
 
 def random_images(directory, count=None):
     """Choose $count random images from $directory, return the paths to be used with static"""
@@ -14,13 +16,15 @@ def random_images(directory, count=None):
 
 class IndexView(TemplateView):
     template_name = "public/index.html"
+    MEAL_REQUESTS_COUNT_PRIOR_TO_WEBSITE = 15_000
+    GROCERY_REQUESTS_COUNT_PRIOR_TO_WEBSITE = 11_000
 
     @property
     def extra_context(self):
         return {
             'volunteers_lower_bound': 500,
-            'meal_requests_lower_bound': 15_000,
-            'grocery_requests_lower_bound': 11_000,
+            'meal_requests_count': self.MEAL_REQUESTS_COUNT_PRIOR_TO_WEBSITE + MealRequest.objects.count(),
+            'grocery_requests_count': self.GROCERY_REQUESTS_COUNT_PRIOR_TO_WEBSITE + GroceryRequest.objects.count(),
         }
 
 
