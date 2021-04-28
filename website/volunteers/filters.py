@@ -1,5 +1,8 @@
+from datetime import timedelta
 from django import forms
-from django_filters import FilterSet
+from django_filters import FilterSet, BooleanFilter
+from django.utils import timezone
+
 from core.filters import DateFilter
 from recipients.models import MealRequest
 
@@ -18,6 +21,15 @@ class HiddenValidationForm(forms.Form):
 
 
 class ChefSignupFilter(FilterSet):
+    urgent_only = BooleanFilter(label='Urgent only', field_name='created_at', method='filter_stale')
+
+    def filter_stale(self, queryset, name, value):
+        stale_at = timezone.now() - timedelta(days=MealRequest.STALE_AFTER_DAYS)
+        if value:
+            return queryset.filter(created_at__lte=stale_at)
+        else:
+            return queryset.filter(created_at__gt=stale_at)
+
     class Meta:
         form = HiddenValidationForm
         model = MealRequest
