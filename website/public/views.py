@@ -131,3 +131,7 @@ class AboutView(TemplateView):
                 'testimonials/wanyi.png',
             ]
         }
+
+
+class RecipesView(TemplateView):
+    template_name = "public/recipes.html"
