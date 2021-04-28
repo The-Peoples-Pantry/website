@@ -13,7 +13,7 @@
 <form method="post" class="form">
   {% csrf_token %}
 
-  <div class="card mb-3">
+  <div class="card shadow-lift mb-3">
     <div class="card-body">
       <h5 class="card-title">Recipient details</h5>
       <div class="row">
@@ -26,7 +26,7 @@
     </div>
   </div>
 
-  <div class="card mb-3">
+  <div class="card shadow-lift mb-3">
     <div class="card-body">
       <h5 class="card-title">Requesting for someone else?</h5>
       <p class="card-text text-muted">
@@ -42,10 +42,10 @@
     </div>
   </div>
 
-  <div class="card mb-3">
+  <div class="card shadow-lift mb-3">
     <div class="card-body">
       <h5 class="card-title">Delivery details</h5>
-      <div class="alert alert-info" role="alert">Our deliveries will be done on Fridays, Saturdays and Sundays between 12 and 8 PM.</div>
+      <div class="alert alert-secondary" role="alert">Our deliveries will be done on Fridays, Saturdays and Sundays between 12 and 8 PM.</div>
       <div class="row">
         <div class="col-sm-8">{% bootstrap_field form.address_1 %}</div>
         <div class="col-sm-4">{% bootstrap_field form.address_2 %}</div>
@@ -58,7 +58,7 @@
         <small>
           <strong>Don't see your city listed?</strong><br />
           If you are located in in Halton, Hamilton, Mississauga, Guelph, or Kitchener our sister initiative may be able to help you
-          by filling out <a target="_blank" rel="noopener" href="https://docs.google.com/forms/d/e/1FAIpQLSfO8Z0fHQCH5stBMfw-ONbSh8mbBL124jiC6I8NUSpN0VrUrQ/viewform">this request form</a>.
+          by filling out <a target="_blank" rel="noopener" href="{% url "public:sister_initiative" %}">this request form</a>.
         </small>
       </div>
       {% bootstrap_field form.can_meet_for_delivery %}
@@ -67,7 +67,7 @@
     </div>
   </div>
 
-  <div class="card mb-3">
+  <div class="card shadow-lift mb-3">
     <div class="card-body">
       <h5 class="card-title">Meal details</h5>
 
@@ -102,7 +102,7 @@
     </div>
   </div>
 
-  <div class="card mb-3">
+  <div class="card shadow-lift mb-3">
     <div class="card-body">
       <h5 class="card-title">Community (optional)</h5>
       <p class="card-text text-muted">
@@ -119,17 +119,17 @@
     </div>
   </div>
 
-  <div class="card mb-3">
+  <div class="card shadow-lift mb-3">
     <div class="card-body">
       <h5 class="card-title">Additional information</h5>
       {% bootstrap_field form.notes %}
     </div>
   </div>
 
-  <div class="card mb-3">
+  <div class="card shadow-lift mb-3">
     <div class="card-body">
       <h5 class="card-title">Terms of service</h5>
-      <textarea class="form-control mb-3" readonly rows="10">{{ form.terms_of_service_text }}</textarea>
+      <textarea class="form-control mb-3 terms-of-service" readonly rows="10">{{ form.terms_of_service_text }}</textarea>
       {% bootstrap_field form.accept_terms %}
     </div>
   </div>

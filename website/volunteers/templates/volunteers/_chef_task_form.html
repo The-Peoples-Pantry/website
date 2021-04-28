@@ -2,7 +2,7 @@
 
 <form action="{% url 'volunteers:chef_task' meal_request.pk %}" method="post" class="form">
   {% csrf_token %}
-  <div class="card mb-4">
+  <div class="card shadow-lift mb-4">
     <div class="card-header font-weight-bold">
       Request #{{ meal_request.id }}: Meal for {{ meal_request.num_adults }} adult{{ meal_request.num_adults | pluralize }}
             and {{ meal_request.num_children }} kid{{ meal_request.num_children | pluralize }}

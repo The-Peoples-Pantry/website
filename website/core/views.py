@@ -2,11 +2,13 @@ import functools
 import time
 
 from django.contrib import messages
-from django.contrib.auth import login
+from django.contrib.auth import login, REDIRECT_FIELD_NAME
+from django.contrib.auth.views import SuccessURLAllowedHostsMixin
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import ImproperlyConfigured
 from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.generic.edit import FormView, UpdateView, ContextMixin
 from django.views.generic.list import MultipleObjectMixin
 
@@ -15,9 +17,10 @@ from .forms import UserCreationForm, VolunteerProfileForm
 from volunteers.models import Volunteer
 
 
-class UserCreationView(FormView):
+class UserCreationView(SuccessURLAllowedHostsMixin, FormView):
     form_class = UserCreationForm
     template_name = "core/signup.html"
+    redirect_field_name = REDIRECT_FIELD_NAME
     success_url = reverse_lazy('profile')
 
     def form_valid(self, form):
@@ -26,6 +29,19 @@ class UserCreationView(FormView):
         user = form.save()
         login(self.request, user)
         return super().form_valid(form)
+
+    def get_success_url(self):
+        return self.get_redirect_url() or self.success_url
+
+    def get_redirect_url(self):
+        """Return the user-originating redirect URL if it's safe."""
+        redirect_to = self.request.GET.get(self.redirect_field_name, '')
+        url_is_safe = url_has_allowed_host_and_scheme(
+            url=redirect_to,
+            allowed_hosts=self.get_success_url_allowed_hosts(),
+            require_https=self.request.is_secure(),
+        )
+        return redirect_to if url_is_safe else ''
 
 
 class UserProfileView(LoginRequiredMixin, UpdateView):

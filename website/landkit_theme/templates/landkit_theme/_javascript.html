@@ -1,0 +1,36 @@
+{% load static %}
+
+{# Libs JS #}
+<script src="{% static "landkit_theme/libs/jquery/dist/jquery.min.js" %}"></script>
+<script src="{% static "landkit_theme/libs/bootstrap/dist/js/bootstrap.bundle.min.js" %}"></script>
+<script src="{% static "landkit_theme/libs/aos/dist/aos.js" %}"></script>
+<script src="{% static "landkit_theme/libs/countup.js/dist/countUp.min.js" %}"></script>
+<script src="{% static "landkit_theme/libs/imagesloaded/imagesloaded.pkgd.min.js" %}"></script>
+<script src="{% static "landkit_theme/libs/flickity/dist/flickity.pkgd.min.js" %}"></script>
+
+{% comment %}
+The Landkit theme includes a number of other libraries that we aren't using so they've been removed
+This is to reduce the amount of code we ship to the end user
+They can be added back by copying them out of our `landkit-bootstrap-theme` repo's `dist` folder
+Removed libraries include (but may not be limited to):
+- @fancyapps
+- choices.js
+- dropzone
+- highlightjs
+- isotope-layout
+- quill
+- smooth-scroll
+- typed.js
+- jarallax
+
+Refer also to _styles.html file and compare it against the styles that Landkit defines
+In some cases, adding a JS library will require a corresponding CSS file to work corretly
+{% endcomment %}
+
+{# Map #}
+{# Uncomment as needed #}
+{# <script src='https://api.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.js'></script> #}
+
+{# Theme JS #}
+<script src="{% static "landkit_theme/js/theme.min.js" %}"></script>
+

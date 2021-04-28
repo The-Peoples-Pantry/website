@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% load bootstrap4 %}
+
+{% block layout_content %}
+<main id="content" class="container">
+  {% bootstrap_messages %}
+
+  <div class="row align-items-center justify-content-center no-gutters min-vh-80 mb-14">
+    <div class="col-12 col-md-8 col-lg-6 py-8 py-md-11">
+      {% block content %}{% endblock %}
+    </div>
+  </div>  
+</main>
+{% endblock %}

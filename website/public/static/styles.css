@@ -1,96 +1,27 @@
+/* Ensure headers always have a bit of space */
 h1 {
   margin-top: 2rem;
 }
 
-html,
-body {
-  height: 100vh;
-  overflow-x: hidden;
-  background-color: hsl(212, 21, 21);
-}
-
-textarea,
-textarea.form-control {
-  /* Set height of all text boxes, to override Django's default of 10 lines
-     When you account for padding and line height, 5em is approximately 3 lines
-  */
-  height: 5em;
-}
-
+/* Body/page/content changes to ensure sticky footer */
 #page {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
 }
-
 #content {
   flex: 1;
 }
 
-.asc::before {
-  content: "\25B2";
+/* 
+  Set height of all text boxes, to override Django's default of 10 lines
+  When you account for padding and line height, 5em is approximately 3 lines
+*/
+textarea,
+textarea.form-control {
+  height: 5em;
 }
 
-.desc::before {
-  content: "\25BC";
-}
-
-/* Navbar */
-.navbar-light .navbar-nav .nav-link {
-  color: rgba(0, 0, 0, 0.8);
-}
-
-.profile-image {
-  border-radius: 50%;
-  box-shadow: inset 0 2px 4px 0 hsla(0, 0%, 0%, 0.2);
-  height: 36px;
-  width: 36px;
-}
-
-.nav-profile-dropdown > .dropdown-toggle::after {
-  content: none;
-}
-
-.nav-profile-dropdown-item {
-  line-height: 1.3rem;
-}
-
-/* -----------------------------------
-      HOME PAGES
------------------------------------- */
-.home--splash {
-  background: linear-gradient(
-      rgba(255, 255, 255, 1),
-      25%,
-      rgba(255, 255, 255, 0)
-    ),
-    url("./splash.jpg") center bottom;
-  background-size: cover;
-  background-position: center;
-  height: 350px;
-}
-
-.home--full-width {
-  width: 100vw;
-  margin-left: calc(50% - 50vw);
-  margin-right: calc(50% - 50vw);
-}
-
-.home--social-icons {
-  width: 80px;
-  height: 80px;
-}
-
-.home--social-links {
-  margin: 1rem;
-  display: inline-block;
-}
-
-.icon--footer:hover {
-  text-decoration: none;
-}
-
-.icon--footer > img {
-  width: 1.2rem;
-  height: 1.2rem;
+textarea.terms-of-service {
+  height: 15em;
 }

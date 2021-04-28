@@ -15,7 +15,7 @@
 
   {% bootstrap_form_errors form %}
 
-  <div class="card mb-3">
+  <div class="card shadow-lift mb-3">
     <div class="card-body">
       <h5 class="card-title">Recipient details</h5>
       <div class="row">
@@ -28,7 +28,7 @@
     </div>
   </div>
 
-  <div class="card mb-3">
+  <div class="card shadow-lift mb-3">
     <div class="card-body">
       <h5 class="card-title">Requesting for someone else?</h5>
       <p class="card-text text-muted">
@@ -44,10 +44,10 @@
     </div>
   </div>
 
-  <div class="card mb-3">
+  <div class="card shadow-lift mb-3">
     <div class="card-body">
       <h5 class="card-title">Delivery details</h5>
-      <div class="alert alert-info" role="alert">
+      <div class="alert alert-secondary" role="alert">
         <p>The produce boxes will be delivered by FoodShare’s delivery system. Your box will be scheduled for delivery the week following the day you signed up.</p>
         <p>The day of your delivery depends on FoodShare’s delivery schedule, which is organized by postal codes (see map below). The boxes will be delivered between 10 AM and 9 PM at your door and/or following your delivery instructions.</p>
         <p>NOTE: delivery dates may vary to balance daily orders or if the driver did not get to the delivery by 9 PM (drivers deliver a lot of boxes in a day). We will let you know when your delivery is scheduled. However, if there are any changes, we will do our best to communicate with you ahead of time.</p>
@@ -71,7 +71,7 @@
         <small>
           <strong>Don't see your city listed?</strong><br />
           If you are located in in Halton, Hamilton, Mississauga, Guelph, or Kitchener our sister initiative may be able to help you
-          by filling out <a target="_blank" rel="noopener" href="https://docs.google.com/forms/d/e/1FAIpQLSfO8Z0fHQCH5stBMfw-ONbSh8mbBL124jiC6I8NUSpN0VrUrQ/viewform">this request form</a>.
+          by filling out <a target="_blank" rel="noopener" href="{% url "public:sister_initiative" %}">this request form</a>.
         </small>
       </div>
       {% bootstrap_field form.can_meet_for_delivery %}
@@ -79,7 +79,7 @@
     </div>
   </div>
 
-  <div class="card mb-3">
+  <div class="card shadow-lift mb-3">
     <div class="card-body">
       <h5 class="card-title">Grocery details</h5>
 
@@ -93,7 +93,7 @@
     </div>
   </div>
 
-  <div class="card mb-3">
+  <div class="card shadow-lift mb-3">
     <div class="card-body">
       <h5 class="card-title">Community (optional)</h5>
       <p class="card-text text-muted">
@@ -110,17 +110,17 @@
     </div>
   </div>
 
-  <div class="card mb-3">
+  <div class="card shadow-lift mb-3">
     <div class="card-body">
       <h5 class="card-title">Additional information</h5>
       {% bootstrap_field form.notes %}
     </div>
   </div>
 
-  <div class="card mb-3">
+  <div class="card shadow-lift mb-3">
     <div class="card-body">
       <h5 class="card-title">Terms of service</h5>
-      <textarea class="form-control mb-3" readonly rows="10">{{ form.terms_of_service_text }}</textarea>
+      <textarea class="form-control mb-3 terms-of-service" readonly rows="10">{{ form.terms_of_service_text }}</textarea>
       {% bootstrap_field form.accept_terms %}
     </div>
   </div>

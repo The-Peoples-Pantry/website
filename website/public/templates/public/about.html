@@ -1,0 +1,210 @@
+{% extends "full_width_base.html" %}
+{% load static %}
+
+{% block content %}
+<!-- WELCOME
+================================================== -->
+<section class="py-8 py-md-11">
+  <div class="container-fluid">
+    <div class="row justify-content-center">
+      <div class="col-12 col-md-10 col-lg-8 text-center">
+        <h1 class="display-2">A bit about us</h1>
+        <p class="lead text-muted mb-7 mb-md-9">
+          We'd like to tell you a bit about ourselves, and what we're doing to uplift those in need in Toronto.
+        </p>
+
+      </div>
+    </div>
+    <div class="flickity-button-white flickity-button-inset" data-flickity='{"imagesLoaded": true, "wrapAround": true, "pageDots": true}'>
+      {% for photo in photos %}
+        <img src="{% static photo %}" class="rounded mx-4" alt="Randomly selected image of volunteers and/or meals" style="height: 300px;">
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="border-bottom bg-light">
+  <div class="container">
+    <div class="row">
+      <div class="col-12 col-md-6 col-lg-6 py-8 py-md-11 py-lg-12">
+        <h2>A simple beginning</h2>
+        <p class="font-size-lg text-gray-700 mb-6">
+          The People’s Pantry was founded by predominately <abbr title="Women, Queer, Trans*, Black, and People of Colour">WQTBPOC</abbr> folx, graduate students at UofT and YorkU, and community organizers. We started as a series of Facebook posts offering to provide free homecooked meals to people in need in <a class="text-reset font-weight-bold" target="_blank" rel="noopener noreferrrer" href="{% url "public:caremongering_to" %}">CareMongeringTO</a> and other CareMongering groups across the GTA.
+          <br />
+          <br />
+          From a small beginning of 6 people, we've grown to a team of hundreds of volunteers and have collectively delivered tens of thousands of meals and grocery care packages to food-insecure families in Toronto, the Greater Toronto-Hamilton Area, and beyond.
+        </p>
+      </div>
+
+      <div class="col-12 col-md-5 offset-lg-1">
+        <!-- Image (mobile) -->
+        <div class="d-md-none img-cover">
+          <div class="w-100">
+            <img src="{% static "splash-toronto.jpg" %}" alt="..." class="img-fluid">
+          </div>
+        </div>
+        <!-- Image (desktop) -->
+        <div class="position-relative h-100 vw-50 float-left d-none d-md-block">
+          <div class="w-100 h-100">
+            <div class="w-100 h-100 bg-cover" style="background-image: url({% static "splash-toronto.jpg" %});"></div>
+          </div>
+          <div class="shape shape-left shape-fluid-y svg-shim text-light">
+            {% include "landkit_theme/shapes/angles/angle-left.svg" %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container py-8 py-md-11 py-lg-12">
+    <div class="row mb-6">
+      <div class="col-12 col-md-6 mb-6 mb-md-0">
+        <h2 class="mb-0">Our mission</h2>
+        <p class="font-size-lg text-gray-700">
+          We believe that food justice is social justice.
+        </p>
+        <p class="text-muted">
+          We provide food free of charge, no questions asked, no fixed addressed required, because everyone deserves access to high quality, culturally appropriate, and nutritional food. 
+          <br />
+          <br />
+          We focus on particularly hard-hit communities, including <abbr title="Queer, Trans*, Black, Indigenous, and People of Colour">QTBIPOC</abbr>, single parents, sex workers, precariously housed persons, those with medical conditions or disabilities, newly-arrived immigrants, and the elderly.
+        </p>
+      </div>
+      <div class="col-12 col-md-6">
+        <img src="{% static "community-illustration.svg" %}" alt="..." class="img-fluid mb-6 mb-md-0">
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-12 col-md-4">
+        <div class="row">
+          <div class="col-auto col-md-12">
+            <div class="row no-gutters align-items-center mb-md-5">
+              <div class="col-auto">
+                <div class="btn btn-sm btn-rounded-circle btn-gray-400 disabled opacity-1">
+                  <span>1</span>
+                </div>
+              </div>
+              <div class="col">
+                <hr class="d-none d-md-block mr-n7">
+              </div>
+            </div>
+          </div>
+          <div class="col col-md-12 ml-n5 ml-md-0">
+            <h3>Someone asks for support</h3>
+            <p class="text-muted mb-6 mb-md-0">
+              Every week we open our website form where those in need can request meals for themselves and their families.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-md-4">
+        <div class="row">
+          <div class="col-auto col-md-12">
+            <div class="row no-gutters align-items-center mb-md-5">
+              <div class="btn btn-sm btn-rounded-circle btn-gray-400 disabled opacity-1">
+                <span>2</span>
+              </div>
+              <div class="col">
+                <hr class="d-none d-md-block mr-n7">
+              </div>
+            </div>
+          </div>
+          <div class="col col-md-12 ml-n5 ml-md-0">
+            <h3>Home chefs prepare meals</h3>
+            <p class="text-muted mb-6 mb-md-0">
+              Our team of volunteer chefs prepare home cooked meals to feed those in need and meet their dietary requirements.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-md-4">
+        <div class="row">
+          <div class="col-auto col-md-12">
+            <div class="row no-gutters align-items-center mb-md-5">
+              <div class="btn btn-sm btn-rounded-circle btn-gray-400 disabled opacity-1">
+                <span>3</span>
+              </div>
+              <div class="col">
+                <hr class="d-none d-md-block mr-n7">
+              </div>
+            </div>
+          </div>
+          <div class="col col-md-12 ml-n5 ml-md-0">
+            <h3>Meals are delivered</h3>
+            <p class="text-muted mb-6 mb-md-0">
+              Finally, our team of volunteer deliverers bring these meals directly to those in need and drop them off in a safe and secure manner.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INSTAGRAM
+================================================== -->
+<section class="pt-6 pt-md-8">
+  <div class="flickity-button-white flickity-button-inset" data-flickity='{"imagesLoaded": true, "wrapAround": true, "pageDots": true}'>
+    {% for testimonial in testimonials %}
+    <div class="w-100 w-md-75 w-lg-50 py-4 px-8">
+      <img src="{% static testimonial %}" class="img-fluid rounded" alt="...">
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+
+<!-- QUOTE
+================================================== -->
+<section class="pt-8 pt-md-11">
+  <div class="container">
+    <div class="card card-row shadow-light-lg">
+      <div class="row no-gutters">
+        <div class="col-12 col-md-6 bg-cover card-img-left" style="background-image: url({% static "photos/organizers/yann-eli.jpg" %});">
+
+          <!-- Image (placeholder) -->
+          <img src="{% static "photos/organizers/yann-eli.jpg" %}" alt="..." class="img-fluid d-md-none invisible">
+
+          <!-- Shape -->
+          <div class="shape shape-right shape-fluid-y svg-shim text-white d-none d-md-block">
+            {% include "landkit_theme/shapes/curves/curve-4.svg" %}
+          </div>
+
+        </div>
+        <div class="col-12 col-md-6 order-md-1">
+          <div class="card-body">
+            <blockquote class="blockquote mb-0 text-center">
+              <p class="mb-5 mb-md-7">
+                “If someone asks for food, it’s because they need it.”
+              </p>
+              <footer class="blockquote-footer">
+                <span class="h6 text-uppercase">Yann Gracia, Co-Founder</span>
+              </footer>
+            </blockquote>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div> <!-- / .container -->
+</section>
+
+<!-- SHAPE
+================================================== -->
+<section>
+  <div class="position-relative mt-n12">
+    <div class="shape shape-bottom shape-fluid-x svg-shim text-dark">
+      {% include "landkit_theme/shapes/curves/curve-1.svg" %}
+    </div>
+  </div>
+  <div class="pt-12 bg-dark"></div> <!-- Spacer -->
+</section>
+{% endblock %}
+
+{% block footer %}
+{% include "footer.html" with bgcolor="bg-dark" border="border-dark"%}
+{% endblock %}

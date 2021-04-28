@@ -1,31 +1,156 @@
-{% extends 'base.html' %}
+{% extends 'full_width_base.html' %}
 {% load static %}
 
 {% block content %}
-<h1>People's Pantry in the Media</h1>
-<div class="row">
-	<div class="col mb-5">
-		<iframe class="mr-auto ml-auto d-block" src="https://player.vimeo.com/video/461246686" width="640" height="360" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>
-	</div>
-</div>
-<div class="row row-cols-1 row-cols-md-3">
-	{% for story in stories %}
-	<div class="col mb-4">
-		<div class="card text-center h-100">
-			<div class="card-header">
-				<img class="card-img-top" src="{% static story.image %}">
-			</div>
-			<div class="card-body">
-				<a href="{{ story.link }}" target="_blank" rel="noopener noreferrer">
-					<h5 class="card-title">{{ story.title }}</h5>
-				</a>
-				<div class="font-weight-bold">{{ story.author }}</div>
-				<div class="font-italic">{{ story.date }}</div>
-				<div>{{ story.outlet }}</div>
-			</div>
-		</div>
-	</div>
-	{% endfor %}
+
+<!-- WELCOME
+================================================== -->
+<section class="py-10 py-md-14 overlay overlay-black overlay-60 bg-cover" style="background-image: url({% static "landkit_theme/img/covers/cover-13.jpg" %});">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-12 col-md-10 col-lg-7 text-center">
+        <h1 class="display-2 font-weight-bold text-white">
+          TPP in the Media
+        </h1>
+        <p class="lead mb-0 text-white-75">
+          Keep up to date with the latest coverage on The People's Pantry and our community efforts.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SHAPE
+================================================== -->
+<div class="position-relative">
+  <div class="shape shape-bottom shape-fluid-x svg-shim text-light">
+    {% include "landkit_theme/shapes/curves/curve-1.svg" %}
+  </div>
 </div>
 
+
+<!-- ARTICLES
+================================================== -->
+<section class="pt-7 pt-md-10">
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <div class="card card-row card-bleed shadow-light-lg mb-6 lift lift-lg">
+          <div class="row no-gutters">
+            <div class="col-12 col-lg-6 order-lg-2 card-img-right d-flex justify-content-center justify-content-lg-end align-items-lg-center overflow-hidden">
+              <iframe src="https://player.vimeo.com/video/461246686" width="480" height="270" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>
+            </div>
+            <div class="col-12 col-lg-6 order-lg-1">
+              <div class="card-body">
+                <h3>
+                  Mini documentary on our mission
+                </h3>
+                <p class="mb-0 text-muted">
+                  Learn more about The People's Pantry's mission and the wonderful people behind the project.
+                </p>
+              </div>
+
+              <div class="card-meta">
+                <hr class="card-meta-divider">
+                <div class="avatar avatar-sm mr-2">
+                  <span class="avatar-title rounded-circle">ES</span>
+                </div>
+                <h6 class="text-uppercase text-muted mr-2 mb-0">
+                  Eli Speigel
+                </h6>
+                <p class="h6 text-uppercase text-muted mb-0 ml-auto">
+                  <time datetime="2020-09-23">September 23, 2020</time>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ARTICLES
+================================================== -->
+<section class="py-7 pt-md-10">
+  <div class="container">
+    <div class="row align-items-center mb-5">
+      <div class="col-12 col-md">
+        <h3 class="mb-0">Latest Stories</h3>
+        <p class="mb-0 text-muted">
+          Here’s what we've been up to recently.
+        </p>
+      </div>
+    </div>
+
+    <div class="row">
+      {% for story in stories %}
+      <div class="col-12 col-md-6 col-lg-4 d-flex mb-6">
+        <div class="card shadow-light-lg lift lift-lg">
+          <a class="card-img-top" href="{{ story.link }}">
+            <img src="{% static story.image %}" alt="..." class="card-img-top bg-cover img-fluid">
+            <div class="position-relative">
+              <div class="shape shape-bottom shape-fluid-x svg-shim text-white">
+                {% include "landkit_theme/shapes/curves/curve-3.svg" %}
+              </div>
+            </div>
+          </a>
+
+          <a class="card-body" href="{{ story.link }}">
+            <h3>{{ story.title }}</h3>
+            <p class="mb-0 text-muted">{{ story.outlet }}</p>
+          </a>
+
+          <a class="card-meta mt-auto" href="{{ story.link }}">
+            <hr class="card-meta-divider">
+            <h6 class="text-uppercase text-muted mr-2 text-truncate">{{ story.author }}</h6>
+            <p class="h6 text-uppercase text-muted ml-auto">
+              <time datetime="{{ story.date|date:"Y-m-d" }}">{{ story.date }}</time>
+            </p>
+          </a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- SHAPE
+================================================== -->
+<div class="position-relative">
+  <div class="shape shape-bottom shape-fluid-x svg-shim text-gray-200">
+    {% include "landkit_theme/shapes/curves/curve-1.svg" %}
+  </div>
+</div>
+
+<!-- CTA
+================================================== -->
+<section class="pt-6 pt-md-8 bg-gray-200">
+  <div class="container pb-6 pb-md-8 border-bottom border-gray-300">
+    <div class="row">
+      <div class="col">
+
+        <!-- Heading -->
+        <h3 class="mb-1 font-weight-bold">
+          Be a part of our story
+        </h3>
+
+        <!-- Text -->
+        <p class="font-size-lg text-muted mb-6 mb-md-0">
+          Help us deliver food to those in need.
+        </p>
+
+      </div>
+      <div class="col text-right">
+        <a href="{% url "signup" %}" class="btn btn-primary">
+          Join us <i class="fe fe-arrow-right ml-3"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block footer %}
+{% include "footer.html" with bgcolor="bg-gray-200" %}
 {% endblock %}

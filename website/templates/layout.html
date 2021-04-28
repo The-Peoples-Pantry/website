@@ -1,0 +1,51 @@
+{% load static %}
+{% load bootstrap4 %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="shortcut icon" href="{% static 'favicon.ico' %}" />
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicon-16x16.png' %}">
+    <link rel="manifest" href="{% static 'site.webmanifest' %}">
+    <link rel="mask-icon" href="{% static 'safari-pinned-tab.svg' %}" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#2b5797">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="theme-color" content="#ffffff">
+    <meta
+      name="description"
+      content="A mutual aid project providing free hot meals to anyone impacted by COVID-19 across Toronto"
+    />
+    
+    {# Open graph content for proper display on social media #}
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="The People's Pantry Toronto" />
+    <meta property="og:description" content="A mutual aid project providing free hot meals to anyone impacted by COVID-19 across Toronto" />
+    <meta property="og:image" content="{% static "splash.jpg" %}" />
+    <meta property="og:url" content="https://www.thepeoplespantryto.com" />
+    <meta property="twitter:card" content="summary" />
+    <meta property="twitter:site" content="thepeoplespantryto" />
+
+    {# Stylesheets #}
+    {% include "landkit_theme/_styles.html" %}
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+
+    <title>{% block title %}The People's Pantry{% endblock %}</title>
+    {% block head %}{% endblock %}
+  </head>
+  <body class="{% block body_class %}{% endblock %}" {% block body_attributes %}{% endblock %}>
+    <div id="page">
+      {% block navigation %}{% include "nav.html" %}{% endblock %}
+      {% block layout_content %}{% endblock %}
+      {% block footer %}{% include "footer.html" %}{% endblock %}
+    </div>
+
+    {% include "landkit_theme/_javascript.html" %}
+
+    {% block custom_javascript %}{% endblock %}
+  </body>
+
+</html>

@@ -1,30 +1,162 @@
 {% load static %}
 
-<footer>
-  <hr class="mb-0" />
-  <div class="container text-center text-dark py-3">
-    <div class="d-flex justify-content-between">
-      <div>
-        &copy; {% now "Y" %} The People&apos;s Pantry
-        <span class="mx-2">&bull;</span>
-        <a class="text-reset" href="mailto:{{settings.PUBLIC_RELATIONS_EMAIL}}">Contact us</a>
-        <span class="mx-2">&bull;</span>
-        <a class="text-reset" target="_blank" rel="noopener noreferrer" href="https://docs.google.com/document/d/1jJUnD8ZUWxM0Tkx6C-V2K-S2aYioY1LlIp3T9Yt-C5M/edit">Code of Conduct</a>
+<footer class="py-8 py-md-11 {{ bgcolor }} border-top {{ border }}">
+  <div class="container">
+    <div class="row">
+      <div class="col-12 col-md-4 col-lg-3">
+  
+        <!-- Brand -->
+        <img src="{% static "logo-muted.png" %}" alt="..." class="footer-brand mw-50 img-fluid mb-2">
+
+        <!-- Text -->
+        <p class="text-muted mb-2">
+          Food for those in need.
+        </p>
+
+        <!-- Social -->
+        <ul class="list-unstyled list-inline list-social mb-6 mb-md-0">
+          <li class="list-inline-item list-social-item mr-3">
+            <a class="fe fe-facebook text-muted text-decoration-none" href="{% url "public:facebook" %}" target="_blank" rel="noopener noreferrer"></a>
+          </li>
+          <li class="list-inline-item list-social-item mr-3">
+            <a class="fe fe-instagram text-muted text-decoration-none" href="{% url "public:instagram" %}" target="_blank" rel="noopener noreferrer"></a>
+          </li>
+          <li class="list-inline-item list-social-item mr-3">
+            <a class="fe fe-twitter text-muted text-decoration-none" href="{% url "public:twitter" %}" target="_blank" rel="noopener noreferrer"></a>
+          </li>
+          <li class="list-inline-item list-social-item mr-3">
+            <a class="fe fe-music text-muted text-decoration-none" href="{% url "public:tiktok" %}" target="_blank" rel="noopener noreferrer"></a>
+          </li>
+        </ul>
       </div>
-      <div>
-        <a class="icon--footer mx-2" href="https://www.facebook.com/groups/675649626532144/" target="_blank" rel="noopener noreferrer">
-          <img alt="Facebook" src="{% static 'icons/facebook-mono.svg' %}" />
-        </a>
-        <a class="icon--footer mx-2" href="https://www.instagram.com/peoplespantryto/" target="_blank" rel="noopener noreferrer">
-          <img alt="Instagram" src="{% static 'icons/instagram-mono.svg' %}" />
-        </a>
-        <a class="icon--footer mx-2" href="https://twitter.com/peoplespantryTO" target="_blank" rel="noopener noreferrer">
-          <img alt="Twitter" src="{% static 'icons/twitter-mono.svg' %}" />
-        </a>
-        <a class="icon--footer mx-2" href="https://www.tiktok.com/@thepeoplespantry" target="_blank" rel="noopener noreferrer">
-          <img alt="TikTok" src="{% static 'icons/tiktok-mono.svg' %}" />
-        </a>
+
+      <div class="col-6 col-md-4 col-lg-2">
+  
+        <!-- Heading -->
+        <h6 class="font-weight-bold text-uppercase text-gray-700">
+          Access help
+        </h6>
+
+        <!-- List -->
+        <ul class="list-unstyled text-muted mb-6 mb-md-8 mb-lg-0">
+          <li class="mb-3">
+            <a href="{% url "recipients:new_meal_request" %}" class="text-reset">
+              Meals
+            </a>
+          </li>
+          <li class="mb-3">
+            <a href="{% url "recipients:new_grocery_request" %}" class="text-reset">
+              Groceries
+            </a>
+          </li>
+          <li class="mb-3">
+            <a target="_blank" rel="noopener noreferrer" href="{% url "public:sister_initiative" %}" class="text-reset">
+              Beyond Toronto
+            </a>
+          </li>
+        </ul>
+
       </div>
-    </div>
-  </div>
+      <div class="col-6 col-md-4 col-lg-2">
+  
+        <!-- Heading -->
+        <h6 class="font-weight-bold text-uppercase text-gray-700">
+          Support us
+        </h6>
+
+        <!-- List -->
+        <ul class="list-unstyled text-muted mb-6 mb-md-8 mb-lg-0">
+          <li class="mb-3">
+            <a href="{% url "signup" %}?next={% url "volunteers:chef_application" %}" class="text-reset">
+              Cook
+            </a>
+          </li>
+          <li class="mb-3">
+            <a href="{% url "signup" %}?next={% url "volunteers:deliverer_application" %}" class="text-reset">
+              Deliver
+            </a>
+          </li>
+          <li class="mb-3">
+            <a href="{% url "signup" %}?next={% url "volunteers:organizer_application" %}" class="text-reset">
+              Organize
+            </a>
+          </li>
+          <li class="mb-3">
+            <a target="_blank" rel="noopener noreferrer" href="{% url "public:donate" %}" class="text-reset">
+              Donate
+            </a>
+          </li>
+          <li class="mb-3">
+            <a target="_blank" rel="noopener noreferrer" href="{% url "public:sponsor" %}" class="text-reset">
+              Sponsor
+            </a>
+          </li>
+        </ul>
+
+      </div>
+      <div class="col-6 col-md-4 offset-md-4 col-lg-2 offset-lg-0">
+  
+        <!-- Heading -->
+        <h6 class="font-weight-bold text-uppercase text-gray-700">
+          Resources
+        </h6>
+
+        <!-- List -->
+        <ul class="list-unstyled text-muted mb-0">
+          <li class="mb-3">
+            <a target="_blank" rel="noopener noreferrer" href="{% url "public:cooking_guide" %}" class="text-reset">
+              Cooking guide
+            </a>
+          </li>
+          <li class="mb-3">
+            <a target="_blank" rel="noopener noreferrer" href="{% url "public:delivery_guide" %}" class="text-reset">
+              Delivery guide
+            </a>
+          </li>
+          <li class="mb-3">
+            <a target="_blank" rel="noopener noreferrer" href="{% url "public:reimbursement" %}" class="text-reset">
+              Reimbursement
+            </a>
+          </li>
+          <li class="mb-3">
+            <a target="_blank" rel="noopener noreferrer" href="{% url "public:recipes" %}" class="text-reset">
+              Recipes
+            </a>
+          </li>
+        </ul>
+
+      </div>
+      <div class="col-6 col-md-4 col-lg-2">
+  
+        <!-- Heading -->
+        <h6 class="font-weight-bold text-uppercase text-gray-700">
+          About
+        </h6>
+
+        <!-- List -->
+        <ul class="list-unstyled text-muted mb-0">
+          <li class="mb-3">
+            <a href="{% url "public:about" %}" class="text-reset">
+              Our mission
+            </a>
+          </li>
+          <li class="mb-3">
+            <a href="{% url "public:media" %}" class="text-reset">
+              Media
+            </a>
+          </li>
+          <li class="mb-3">
+            <a class="text-reset" target="_blank" rel="noopener noreferrer" href="{% url "public:code_of_conduct" %}">
+              Code of Conduct
+            </a>
+          </li>
+          <li>
+            <a href="mailto:{{settings.PUBLIC_RELATIONS_EMAIL}}" class="text-reset">
+              Contact us
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div> <!-- / .row -->
+  </div> <!-- / .container -->
 </footer>
