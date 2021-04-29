@@ -27,8 +27,8 @@
 
       <div class="row">
         <div class="col-lg-6 order-lg-2 mb-4">
-          <h6>Approximate delivery location</h6>
-          <p>{% ceiling meal_request.delivery_distance %} kilometres away</p>
+          <label class="font-weight-bold">Approximate delivery location</label>
+          <p>{% ceiling meal_request.delivery_distance %}km away</p>
           <iframe
             loading="lazy"
             width="350"
@@ -38,17 +38,13 @@
           </iframe>
         </div>
         <div class="col-lg-6 order-lg-1">
-          {% if meal_request.food_preferences %}
-          <h6>Food preferences</h6>
-          <p>{{ meal_request.food_preferences }}</p>
-          {% endif %}
+          <label class="font-weight-bold">Food preferences</label>
+          <p>{{ meal_request.food_preferences|default:"None" }}</p>
 
-          {% if meal_request.food_allergies %}
-            <h6>Food allergies</h6>
-            <p>{{ meal_request.food_allergies }}</p>
-          {% endif %}
+          <label class="font-weight-bold">Food allergies</label>
+          <p>{{ meal_request.food_allergies|default:"None" }}</p>
 
-          <h6>Other dietary information</h6>
+          <label class="font-weight-bold">Other dietary information</label>
           <ul>
             {% if meal_request.vegan %} <li>Vegan</li> {% endif %}
             {% if meal_request.vegetarian %} <li>Vegetarian</li> {% endif %}
@@ -61,50 +57,45 @@
             <li>Will {% if not meal_request.will_accept_vegetarian %}<strong>not </strong>{% endif %}accept vegetarian meals</li>
           </ul>
 
-          {% if meal_request.availability %}
-            <h6>Availability</h6>
-            <p>{{ meal_request.availability }}</p>
-          {% endif %}
+          <label class="font-weight-bold">Availability</label>
+          <p>{{ meal_request.availability }}</p>
 
-          {% if meal_request.notes %}
-            <h6>Additional notes</h6>
-            <p>{{ meal_request.notes }}</p>
-          {% endif %}
+          <label class="font-weight-bold">Additional notes</label>
+          <p>{{ meal_request.notes|default:"None" }}</p>
 
-          <h6>Pickup date</h6>
-          {% bootstrap_field form.delivery_date show_label=False %}
+          {% bootstrap_field form.delivery_date label_class="font-weight-bold" %}
 
-          <h6>Pickup timerange</h6>
+          <label class="font-weight-bold">Pickup timerange</label>
           <div class="row">
             <div class="col-sm">
-              {% bootstrap_field form.pickup_start %}
+              {% bootstrap_field form.pickup_start label_class="font-weight-bold" %}
             </div>
             <div class="col-sm">
-              {% bootstrap_field form.pickup_end %}
+              {% bootstrap_field form.pickup_end label_class="font-weight-bold" %}
             </div>
           </div>
 
           {{ form.can_deliver }}
           {{ form.can_deliver.label }}
-          <div class="dropoff-timerange">
-            <h6>Drop-off timerange</h6>
+          <div class="dropoff-timerange form-group">
+            <label class="font-weight-bold">Drop-off timerange</label>
             <div class="row">
               <div class="col-sm">
-                {% bootstrap_field form.dropoff_start %}
+                {% bootstrap_field form.dropoff_start label_class="font-weight-bold" %}
               </div>
               <div class="col-sm">
-                {% bootstrap_field form.dropoff_end %}
+                {% bootstrap_field form.dropoff_end label_class="font-weight-bold" %}
               </div>
             </div>
-            <p>
+            <small class="text-muted">
               Please provide a two hour maximum delivery window
-            </p>
+            </small>
           </div>
         </div>
         <div class="col-12 order-lg-3">
-          {% bootstrap_field form.pickup_details %}
-          {% bootstrap_field form.meal %}
-          {% bootstrap_field form.containers placeholder="example: 4 14oz containers of soup" %}
+          {% bootstrap_field form.pickup_details label_class="font-weight-bold" %}
+          {% bootstrap_field form.meal label_class="font-weight-bold" %}
+          {% bootstrap_field form.containers placeholder="example: 4 14oz containers of soup" label_class="font-weight-bold" %}
 
           {% buttons submit="Sign up"%}{% endbuttons %}
         </div>
