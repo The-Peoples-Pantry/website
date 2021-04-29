@@ -38,6 +38,7 @@ class MediaView(TemplateView):
                 'date': date.fromisoformat('2021-03-05'),
                 'link': 'https://www.youtube.com/watch?v=DR6SMDL4jYo',
                 'image': 'media/food-justice-panel.png',
+                'alt_text': 'Several people on a video conference call.',
                 'outlet': 'YouTube'
             },
             {
@@ -46,6 +47,7 @@ class MediaView(TemplateView):
                 'date': date.fromisoformat('2021-01-11'),
                 'link': 'https://www.blogto.com/eat_drink/2021/01/peoples-pantry-toronto-provides-free-home-cooked-meals-those-need/',
                 'image': 'media/blogto.png',
+                'alt_text': 'A delivery volunteer pointing to a trunk full of meal deliveries.',
                 'outlet': 'BlogTO'
             },
             {
@@ -54,6 +56,7 @@ class MediaView(TemplateView):
                 'date': date.fromisoformat('2020-07-28'),
                 'link': 'https://toronto.citynews.ca/video/2020/07/28/peoples-pantry-helping-combat-food-insecurity/#:~:text=combat%20food%20insecurity',
                 'image': 'media/citynews-1.jpg',
+                'alt_text': 'A knife dicing onions on a cutting board.',
                 'outlet': 'CityNews Toronto'
             },
             {
@@ -62,6 +65,7 @@ class MediaView(TemplateView):
                 'date': date.fromisoformat('2020-10-14'),
                 'link': 'https://toronto.ctvnews.ca/food-is-love-volunteers-look-to-continue-feeding-toronto-with-the-people-s-pantry-1.5145374',
                 'image': 'media/citynews-2.jpg',
+                'alt_text': 'A news anchor standing in front of the CTV logo.',
                 'outlet': 'CityNews Toronto'
             },
             {
@@ -70,6 +74,7 @@ class MediaView(TemplateView):
                 'date': date.fromisoformat('2020-10-14'),
                 'link': 'https://spectrejournal.com/the-exception-as-the-rule/',
                 'image': 'media/spectre.jpg',
+                'alt_text': 'A photo of a public protest.',
                 'outlet': 'Spectre'
             },
             {
@@ -78,6 +83,7 @@ class MediaView(TemplateView):
                 'date': date.fromisoformat('2020-11-03'),
                 'link': 'https://www.ryerson.ca/content/dam/centre-for-immigration-and-settlement/RCIS/publications/spotlightonmigration/2020_3_Formanowicz_Dominik_People\'s_Pantry_and_creating_inclusive_spaces_for_migrants_during_the_pandemic.pdf',
                 'image': 'media/ryerson.jpg',
+                'alt_text': 'An abstract image of the world.',
                 'outlet': 'Ryerson’s spotlight on migration'
             },
             {
@@ -86,6 +92,7 @@ class MediaView(TemplateView):
                 'date': date.fromisoformat('2020-04-24'),
                 'link': 'https://sociology.utoronto.ca/sociology-students-build-grassroots-volunteer-run-initiative-to-help-those-in-need-during-covid-19-pandemic/',
                 'image': 'media/utoronto.jpg',
+                'alt_text': 'A variety of pantry foods like flour, oats, and spices.',
                 'outlet': 'University of Toronto'
             },
             {
@@ -94,6 +101,7 @@ class MediaView(TemplateView):
                 'date': date.fromisoformat('2020-06-03'),
                 'link': 'http://www.huffingtonpost.ca/entry/peoples-pantry-free-food-toronto_ca_5ed163a2c5b64d62dd502851',
                 'image': 'media/huffpo.jpg',
+                'alt_text': 'Two volunteers sitting with the meal they have cooked and packaged.',
                 'outlet': 'HuffPo Canada'
             },
             {
@@ -102,6 +110,7 @@ class MediaView(TemplateView):
                 'date': date.fromisoformat('2020-08-13'),
                 'link': 'https://yfile.news.yorku.ca/2020/08/13/laps-student-addresses-food-insecurity-in-ontario-with-grassroots-community-initiative-note-use-they-their-pronouns/',
                 'image': 'media/yfile.jpg',
+                'alt_text': 'Two of our co-founders sitting in front of a trunk full of grocery bundles.',
                 'outlet': 'York University yFile'
             },
             {
@@ -110,6 +119,7 @@ class MediaView(TemplateView):
                 'date': date.fromisoformat('2020-10-20'),
                 'link': 'https://torontolife.com/city/reasons-to-love-toronto/no-1-because-our-home-chefs-are-feeding-the-hungry/',
                 'image': 'media/torontolife.jpg',
+                'alt_text': 'One of our co-founders sitting in their kitchen and smiling.',
                 'outlet': 'Toronto Life'
             },
             {
@@ -118,6 +128,7 @@ class MediaView(TemplateView):
                 'date': date.fromisoformat('2020-05-19'),
                 'link': 'https://www.facebook.com/110190900641866/videos/2779922052293971',
                 'image': 'media/mutualaid.jpg',
+                'alt_text': 'Four faces in a video conference call.',
                 'outlet': 'Toronto/Tkaronto Mutual Aid'
             },
             {
@@ -126,6 +137,7 @@ class MediaView(TemplateView):
                 'date': date.fromisoformat('2020-06-23'),
                 'link': 'https://www.youtube.com/watch?v=s2uw5GWrTKI',
                 'image': 'media/sis.jpg',
+                'alt_text': 'Several faces in a video conference call.',
                 'outlet': 'SIS Salon'
             },
         ], key=lambda story: story['date'], reverse=True)
@@ -135,10 +147,22 @@ class MediaView(TemplateView):
 class AboutView(TemplateView):
     template_name = "public/about.html"
     TESTIMONIAL_PHOTOS = [
-        "testimonials/crystal.png",
-        "testimonials/jan.png",
-        "testimonials/liz.png",
-        "testimonials/wanyi.png",
+        {
+            "source": "testimonials/crystal.png",
+            "alt_text": "Testimonial from Crystal: The work at TPP is centred on showing solidarity with our community and combatting food insecurity, a concern that has become even more pressing with the ongoing pandemic. Please consider donating, or volunteering with one of our teams to support the Pantry and join our mission!",
+        },
+        {
+            "source": "testimonials/jan.png",
+            "alt_text": "Testimonial from Jan: For the past several months, I was involved with coordinating grocery care packages and currently am assisting with developing a community cookbook filled with delicious and affordable recipes created by our volunteers. VOlunteering with the People's Pantry Toronto has been one of the most inspiring and fulfilling experiences, and I am grateful for having the opportunity to work with such an inclusive and diverse organization! If you are looking for ways to help our mission, please consider donating or volunteering with us, and spreading awareness on food security!",
+        },
+        {
+            "source": "testimonials/liz.png",
+            "alt_text": "Testimonial from Liz: I volunteer with the People's Pantry to use the resources that I have to support the people in my community. I know that if I needed it, the People's Pantry would be there for me too.",
+        },
+        {
+            "source": "testimonials/wanyi.png",
+            "alt_text": "Testimonial from Wanyi: THe pandemic has exacerbated food insecurity in our communities, and volunteering with TPP is the direct way to help people in need. We help because we care. Come join or donate today so we can secure our communities and deal with the crisis together.",
+        },
     ]
     VOLUNTEER_PHOTOS = [
         "photos/chef_volunteers/img-20210402-wa0000.jpg",

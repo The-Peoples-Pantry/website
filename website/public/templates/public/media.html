@@ -88,7 +88,7 @@
       <div class="col-12 col-md-6 col-lg-4 d-flex mb-6">
         <div class="card shadow-light-lg lift lift-lg">
           <a class="card-img-top" href="{{ story.link }}">
-            <img src="{% static story.image %}" alt="..." class="card-img-top bg-cover img-fluid">
+            <img src="{% static story.image %}" alt="{{ story.alt_text }}" class="card-img-top bg-cover img-fluid">
             <div class="position-relative">
               <div class="shape shape-bottom shape-fluid-x svg-shim text-white">
                 {% include "landkit_theme/shapes/curves/curve-3.svg" %}
