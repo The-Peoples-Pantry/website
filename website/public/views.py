@@ -1,17 +1,8 @@
 import random
 from datetime import date
 from django.views.generic import TemplateView
-from django.contrib.staticfiles.storage import staticfiles_storage
 
 from recipients.models import MealRequest, GroceryRequest
-
-
-def random_images(directory, count=None):
-    """Choose $count random images from $directory, return the paths to be used with static"""
-    _subdirectories, filenames = staticfiles_storage.listdir(directory)
-    paths = [f"{directory}/{filename}" for filename in filenames]
-    random.shuffle(paths)
-    return random.sample(paths, k=count) if count else paths
 
 
 class IndexView(TemplateView):
