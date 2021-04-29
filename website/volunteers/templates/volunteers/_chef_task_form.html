@@ -18,35 +18,20 @@
       </div>
       <div class="row">
         <div class="col-md">
-          <h6>Food preferences</h6>
-          <p>
-            {% if meal_request.food_preferences %}
-              {{ meal_request.food_preferences }}
-            {% else %}
-              None
-            {% endif %}
-          </p>
+          <label class="font-weight-bold">Food preferences</label>
+          <p>{{ meal_request.food_preferences|default:"None" }}</p>
 
-          <h6>Food allergies</h6>
-          <p>
-            {% if meal_request.food_allergies %}
-              {{ meal_request.food_allergies }}
-            {% else %}
-              None
-            {% endif %}
-          </p>
+          <label class="font-weight-bold">Food allergies</label>
+          <p>{{ meal_request.food_allergies|default:"None" }}</p>
 
-          <h6>Additional notes</h6>
-          <p>
-            {% if meal_request.notes %}
-              {{ meal_request.notes }}
-            {% else %}
-              None
-            {% endif %}
-          </p>
+          <label class="font-weight-bold">Additional notes</label>
+          <p>{{ meal_request.notes|default:"None" }}</p>
+
+          <label class="font-weight-bold">Availability</label>
+          <p>{{ meal_request.availability }}</p>
         </div>
         <div class="col-md">
-          <h6>Other dietary information</h6>
+          <label class="font-weight-bold">Other dietary information</label>
           <ul>
             {% if meal_request.vegan %} <li>Vegan</li> {% endif %}
             {% if meal_request.vegetarian %} <li>Vegetarian</li> {% endif %}
@@ -61,23 +46,23 @@
         </div>
       </div>
 
-      <h6>Pickup details</h6>
+      <label class="font-weight-bold">Pickup details</label>
       {% if meal_request.delivered %}
-        {{ meal_request.pickup_details|default:"No pickup details listed" }}
+        {{ meal_request.pickup_details|default:"None" }}
       {% else %}
         {% bootstrap_field form.pickup_details show_label=False %}
       {% endif %}
 
-      <h6>Meal</h6>
+      <label class="font-weight-bold">Meal</label>
       {% if meal_request.delivered %}
-        {{ meal_request.meal|default:"No meal listed" }}
+        {{ meal_request.meal|default:"None" }}
       {% else %}
         {% bootstrap_field form.meal show_label=False %}
       {% endif %}
 
-      <h6>Containers</h6>
+      <label class="font-weight-bold">Containers</label>
       {% if meal_request.delivered %}
-        {{ meal_request.containers|default:"No containers listed" }}
+        {{ meal_request.containers|default:"None" }}
       {% else %}
         {% bootstrap_field form.containers show_label=False %}
       {% endif %}
