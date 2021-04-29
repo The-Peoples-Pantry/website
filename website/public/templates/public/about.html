@@ -151,9 +151,7 @@
 <section class="pt-6 pt-md-8">
   <div class="flickity-button-white flickity-button-inset" data-flickity='{"imagesLoaded": true, "wrapAround": true, "pageDots": true}'>
     {% for testimonial in testimonials %}
-    <div class="w-100 w-md-75 w-lg-50 py-4 px-8">
-      <img src="{% static testimonial %}" class="img-fluid rounded" alt="...">
-    </div>
+      <img src="{% static testimonial %}" class="img-fluid rounded mx-6" style="height: 400px" alt="...">
     {% endfor %}
   </div>
 </section>

@@ -134,6 +134,12 @@ class MediaView(TemplateView):
 
 class AboutView(TemplateView):
     template_name = "public/about.html"
+    TESTIMONIAL_PHOTOS = [
+        "testimonials/crystal.png",
+        "testimonials/jan.png",
+        "testimonials/liz.png",
+        "testimonials/wanyi.png",
+    ]
     VOLUNTEER_PHOTOS = [
         "photos/chef_volunteers/img-20210402-wa0000.jpg",
         "photos/chef_volunteers/img_2398.jpg",
@@ -215,6 +221,7 @@ class AboutView(TemplateView):
     @property
     def extra_context(self):
         return {
+            'testimonials': self.TESTIMONIAL_PHOTOS,
             'photos': random.sample(self.VOLUNTEER_PHOTOS, k=12),
         }
 
