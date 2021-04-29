@@ -122,7 +122,8 @@
   }
 </style>
 
-<script>
+{# CSP Nonce required for inline scripts, see https://django-csp.readthedocs.io/en/latest/nonce.html #}
+<script nonce="{{request.csp_nonce}}">
   function confirmChefSignup(form) {
     var can_deliver = form.querySelector('input[name="can_deliver"]').checked;
     if (can_deliver) return true;

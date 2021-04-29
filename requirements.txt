@@ -31,6 +31,9 @@ django-filter==2.4.0
 # Allows us to do easy multiple-choice fields for TextChoices
 django-multiselectfield==0.1.12
 
+# Allows us to set Content-Security-Policy headers
+django-csp==3.7
+
 # Allows us to track errors using Sentry (https://sentry.io)
 sentry-sdk==0.19.3
 

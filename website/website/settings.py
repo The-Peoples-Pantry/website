@@ -76,6 +76,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'csp.middleware.CSPMiddleware',
 ]
 
 ROOT_URLCONF = 'website.urls'
@@ -175,6 +176,16 @@ VOLUNTEER_COORDINATORS_EMAIL = 'thepeoplespantrytovolunteers@gmail.com'
 # https://docs.djangoproject.com/en/3.1/topics/auth/default/
 
 LOGOUT_REDIRECT_URL = '/'
+
+
+# Content-Security-Policy (CSP)
+# https://django-csp.readthedocs.io/en/latest/configuration.html
+# https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP
+
+CSP_DEFAULT_SRC = ("'self'", )
+CSP_IMG_SRC = CSP_DEFAULT_SRC + ("*.gravatar.com", )
+CSP_STYLE_SRC = CSP_DEFAULT_SRC + ("'unsafe-inline'", )
+CSP_FRAME_SRC = CSP_DEFAULT_SRC + ("*.google.com", "player.vimeo.com", )
 
 
 # SSL/HTTPS
