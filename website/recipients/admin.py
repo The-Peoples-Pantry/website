@@ -318,6 +318,7 @@ class GroceryRequestAdmin(admin.ModelAdmin):
     )
     actions = (
         'mark_complete',
+        'copy',
         'notify_recipients_scheduled',
         'notify_recipients_allergies',
         'notify_recipients_reminder',
@@ -414,6 +415,16 @@ class GroceryRequestAdmin(admin.ModelAdmin):
             updated,
         ) % updated, messages.SUCCESS)
     mark_complete.short_description = "Mark selected grocery requests as complete"
+
+    def copy(self, request, queryset):
+        for grocery_request in queryset:
+            new_grocery_request = grocery_request.copy()
+            self.message_user(
+                request,
+                f"A copy of grocery request {grocery_request.id} has been created with new id {new_grocery_request.id}",
+                messages.SUCCESS,
+            )
+    copy.short_description = "Create a copy of selected grocery request"
 
 
 admin.site.register(MealRequest, MealRequestAdmin)

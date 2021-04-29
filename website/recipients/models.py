@@ -604,6 +604,11 @@ class GroceryRequest(DemographicMixin, ContactMixin, AddressMixin, TimestampsMix
         """Does the user with the given phone number already have open requests?"""
         return cls.objects.filter(phone_number=phone, delivery_date=None, completed=False).exists()
 
+    def copy(self):
+        """Clone the request"""
+        kwargs = model_to_dict(self, exclude=['id', 'delivery_date', 'completed'])
+        return GroceryRequest.objects.create(**kwargs)
+
     def send_confirmation_email(self):
         custom_send_mail(
             "Confirming your The People's Pantry request",
