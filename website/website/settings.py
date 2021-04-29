@@ -186,6 +186,7 @@ CSP_DEFAULT_SRC = ("'self'", )
 CSP_IMG_SRC = CSP_DEFAULT_SRC + ("*.gravatar.com", )
 CSP_STYLE_SRC = CSP_DEFAULT_SRC + ("'unsafe-inline'", )
 CSP_FRAME_SRC = CSP_DEFAULT_SRC + ("*.google.com", "player.vimeo.com", )
+CSP_EXCLUDE_URL_PREFIXES = ("/explorer/", "/admin/", )
 
 
 # SSL/HTTPS
