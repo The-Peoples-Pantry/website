@@ -183,7 +183,7 @@ LOGOUT_REDIRECT_URL = '/'
 # https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP
 
 CSP_DEFAULT_SRC = ("'self'", )
-CSP_IMG_SRC = CSP_DEFAULT_SRC + ("*.gravatar.com", )
+CSP_IMG_SRC = CSP_DEFAULT_SRC + ("*.gravatar.com", "data:", )
 CSP_STYLE_SRC = CSP_DEFAULT_SRC + ("'unsafe-inline'", )
 CSP_FRAME_SRC = CSP_DEFAULT_SRC + ("*.google.com", "player.vimeo.com", )
 CSP_EXCLUDE_URL_PREFIXES = ("/explorer/", "/admin/", )
