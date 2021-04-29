@@ -38,7 +38,7 @@
         <div class="card card-row card-bleed shadow-light-lg mb-6 lift lift-lg">
           <div class="row no-gutters">
             <div class="col-12 col-lg-6 order-lg-2 card-img-right d-flex justify-content-center justify-content-lg-end align-items-lg-center overflow-hidden">
-              <iframe src="https://player.vimeo.com/video/461246686" width="480" height="270" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>
+              <iframe title="Documentary video about our organization" src="https://player.vimeo.com/video/461246686" width="480" height="270" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>
             </div>
             <div class="col-12 col-lg-6 order-lg-1">
               <div class="card-body">
@@ -88,7 +88,7 @@
       <div class="col-12 col-md-6 col-lg-4 d-flex mb-6">
         <div class="card shadow-light-lg lift lift-lg">
           <a class="card-img-top" href="{{ story.link }}">
-            <img src="{% static story.image %}" alt="..." class="card-img-top bg-cover img-fluid">
+            <img src="{% static story.image %}" alt="{{ story.alt_text }}" class="card-img-top bg-cover img-fluid">
             <div class="position-relative">
               <div class="shape shape-bottom shape-fluid-x svg-shim text-white">
                 {% include "landkit_theme/shapes/curves/curve-3.svg" %}

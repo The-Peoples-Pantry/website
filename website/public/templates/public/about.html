@@ -40,7 +40,7 @@
         <!-- Image (mobile) -->
         <div class="d-md-none img-cover">
           <div class="w-100">
-            <img src="{% static "splash-toronto.jpg" %}" alt="..." class="img-fluid">
+            <img src="{% static "splash-toronto.jpg" %}" alt="Photo of the Toronto skyline." class="img-fluid">
           </div>
         </div>
         <!-- Image (desktop) -->
@@ -73,7 +73,7 @@
         </p>
       </div>
       <div class="col-12 col-md-6">
-        <img src="{% static "community-illustration.svg" %}" alt="..." class="img-fluid mb-6 mb-md-0">
+        <img src="{% static "community-illustration.svg" %}" alt="Illustration of three people." class="img-fluid mb-6 mb-md-0">
       </div>
     </div>
 
@@ -151,7 +151,7 @@
 <section class="pt-6 pt-md-8">
   <div class="flickity-button-white flickity-button-inset" data-flickity='{"imagesLoaded": true, "wrapAround": true, "pageDots": true}'>
     {% for testimonial in testimonials %}
-      <img src="{% static testimonial %}" class="img-fluid rounded mx-6" style="height: 400px" alt="...">
+      <img src="{% static testimonial.source %}" alt="{{ testimonial.alt_text }}" class="img-fluid rounded mx-6" style="height: 400px">
     {% endfor %}
   </div>
 </section>
@@ -166,7 +166,7 @@
         <div class="col-12 col-md-6 bg-cover card-img-left" style="background-image: url({% static "photos/organizers/yann-eli.jpg" %});">
 
           <!-- Image (placeholder) -->
-          <img src="{% static "photos/organizers/yann-eli.jpg" %}" alt="..." class="img-fluid d-md-none invisible">
+          <img src="{% static "photos/organizers/yann-eli.jpg" %}" alt="Two of our co-founders sitting in front of a van packed with grocery bundles." class="img-fluid d-md-none invisible">
 
           <!-- Shape -->
           <div class="shape shape-right shape-fluid-y svg-shim text-white d-none d-md-block">
