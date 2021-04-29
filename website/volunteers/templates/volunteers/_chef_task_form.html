@@ -28,8 +28,18 @@
           </p>
 
           <h6>Food allergies</h6>
+          <p>
             {% if meal_request.food_allergies %}
               {{ meal_request.food_allergies }}
+            {% else %}
+              None
+            {% endif %}
+          </p>
+
+          <h6>Additional notes</h6>
+          <p>
+            {% if meal_request.notes %}
+              {{ meal_request.notes }}
             {% else %}
               None
             {% endif %}
