@@ -21,7 +21,7 @@ class HiddenValidationForm(forms.Form):
 
 
 class ChefSignupFilter(FilterSet):
-    urgent_only = BooleanFilter(label='Urgent only', field_name='created_at', method='filter_stale')
+    urgent = BooleanFilter(label='Urgent', field_name='created_at', method='filter_stale')
 
     def filter_stale(self, queryset, name, value):
         stale_at = timezone.now() - timedelta(days=MealRequest.STALE_AFTER_DAYS)
