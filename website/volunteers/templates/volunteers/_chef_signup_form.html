@@ -29,13 +29,15 @@
         <div class="col-lg-6 order-lg-2 mb-4">
           <label class="font-weight-bold">Approximate delivery location</label>
           <p>{% ceiling meal_request.delivery_distance %}km away</p>
-          <iframe
-            loading="lazy"
-            width="350"
-            height="400"
-            frameborder="0" style="border:0"
-            src="{{ meal_request.anonymous_map_embed }}&zoom=12" allowfullscreen>
-          </iframe>
+          <div class="responsive-map">
+            <iframe
+              loading="lazy"
+              width="350"
+              height="400"
+              frameborder="0" style="border:0"
+              src="{{ meal_request.anonymous_map_embed }}&zoom=12" allowfullscreen>
+            </iframe>
+          </div>
         </div>
         <div class="col-lg-6 order-lg-1">
           <label class="font-weight-bold">Food preferences</label>

@@ -33,24 +33,28 @@
     <p>{% ceiling meal_request.delivery_distance %}km</p>
 
     <div class="row mb-4">
-      <div class="col">
+      <div class="col-lg">
         <label class="font-weight-bold d-block">Approximate pickup location</label>
-        <iframe
-          loading="lazy"
-          width="300"
-          height="200"
-          frameborder="0" style="border:0"
-          src="{{ meal_request.chef.volunteer.anonymous_map_embed }}&zoom=14" allowfullscreen>
-        </iframe>
+        <div class="responsive-map">
+          <iframe
+            loading="lazy"
+            width="300"
+            height="200"
+            frameborder="0" style="border:0"
+            src="{{ meal_request.chef.volunteer.anonymous_map_embed }}&zoom=14" allowfullscreen>
+          </iframe>
+        </div>
       </div>
-      <div class="col">
+      <div class="col-lg">
         <label class="font-weight-bold d-block">Approximate delivery location</label>
-        <iframe
-          width="300"
-          height="200"
-          frameborder="0" style="border:0"
-          src="{{ meal_request.anonymous_map_embed }}&zoom=14" allowfullscreen>
-        </iframe>
+        <div class="responsive-map">
+          <iframe
+            width="300"
+            height="200"
+            frameborder="0" style="border:0"
+            src="{{ meal_request.anonymous_map_embed }}&zoom=14" allowfullscreen>
+          </iframe>
+        </div>
       </div>
     </div>
     <div class="row">

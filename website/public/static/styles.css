@@ -25,3 +25,18 @@ textarea.form-control {
 textarea.terms-of-service {
   height: 15em;
 }
+
+.responsive-map {
+  overflow: hidden;
+  padding-bottom: 75%; /* Ratio of height to width */
+  position: relative;
+  height: 0;
+}
+
+.responsive-map iframe {
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  position: absolute;
+}
