@@ -11,48 +11,42 @@
     {% bootstrap_form_errors form %}
     <div class="row">
       <div class="col-md">
-        <h6>Recipient details</h6>
+        <label class="font-weight-bold">Recipient details</label>
         <p>
           Meal
           for {{ meal_request.num_adults }} adult{{ meal_request.num_adults | pluralize }}
           and {{ meal_request.num_children }} kid{{ meal_request.num_children | pluralize }}
         </p>
 
-        {% if meal_request.containers %}
-          <h6>Containers</h6>
-          <p>{{ meal_request.containers }}</p>
-        {% endif %}
+        <label class="font-weight-bold">Containers</label>
+        <p>{{ meal_request.containers|default:"No details specified" }}</p>
 
-        {% if meal_request.pickup_details %}
-          <h6>Pickup instructions</h6>
-          <p>{{ meal_request.pickup_details }}</p>
-        {% endif %}
+        <label class="font-weight-bold">Pickup instructions</label>
+        <p>{{ meal_request.pickup_details|default:"None" }}</p>
 
-        {% if meal_request.delivery_details %}
-          <h6>Dropoff instructions</h6>
-          <p>{{ meal_request.delivery_details }}</p>
-        {% endif %}
+        <label class="font-weight-bold">Dropoff instructions</label>
+        <p>{{ meal_request.delivery_details|default:"None" }}</p>
       </div>
     </div>
 
-    <h6>Approximate distance</h6>
-    <p>{% ceiling meal_request.delivery_distance %} kilometres</p>
+    <label class="font-weight-bold">Approximate distance</label>
+    <p>{% ceiling meal_request.delivery_distance %}km</p>
 
     <div class="row mb-4">
       <div class="col">
-        <h6>Approximate pickup location</h6>
+        <label class="font-weight-bold d-block">Approximate pickup location</label>
         <iframe
           loading="lazy"
-          width="350"
+          width="300"
           height="200"
           frameborder="0" style="border:0"
           src="{{ meal_request.chef.volunteer.anonymous_map_embed }}&zoom=14" allowfullscreen>
         </iframe>
       </div>
       <div class="col">
-        <h6>Approximate delivery location</h6>
+        <label class="font-weight-bold d-block">Approximate delivery location</label>
         <iframe
-          width="350"
+          width="300"
           height="200"
           frameborder="0" style="border:0"
           src="{{ meal_request.anonymous_map_embed }}&zoom=14" allowfullscreen>
@@ -64,21 +58,19 @@
         <form action="{% url 'volunteers:deliverer_signup' meal_request.pk %}" method="post" class="form">
           {% csrf_token %}
 
-          <h6>Dropoff timerange on {{ meal_request.delivery_date }}</h6>
-          <div class="row">
-            <div class="col-sm">
-              {% bootstrap_field form.dropoff_start %}
+          <label class="font-weight-bold">Dropoff timerange on {{ meal_request.delivery_date }}</label>
+          <div class="form-group">
+            <div class="row">
+              <div class="col-sm">
+                {% bootstrap_field form.dropoff_start label_class="font-weight-bold" %}
+              </div>
+              <div class="col-sm">
+                {% bootstrap_field form.dropoff_end label_class="font-weight-bold" %}
+              </div>
             </div>
-            <div class="col-sm">
-              {% bootstrap_field form.dropoff_end %}
-            </div>
+            <small class="text-muted">Please provide a two hour maximum delivery window.</small>
           </div>
-          <p>
-            Please provide a two hour maximum delivery window.
-          </p>
-          <p>
-            The recipient will{% if not meal_request.can_meet_for_delivery %} <strong>not</strong>{% endif %} be able to meet you in the lobby or door of the residence.
-          </p>
+          <p>The recipient will{% if not meal_request.can_meet_for_delivery %} <strong>not</strong>{% endif %} be able to meet you in the lobby or door of the residence.</p>
 
           {{ form.id.as_hidden }}
           {{ form.pickup_start.as_hidden }}
