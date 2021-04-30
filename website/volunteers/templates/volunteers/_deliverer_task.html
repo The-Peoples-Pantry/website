@@ -7,32 +7,30 @@
   </div>
   <div class="card-body">
     <div class="row">
-      <div class="col-md">
-        <h6>Pickup information</h6>
+      <div class="col-lg">
+        <label class="font-weight-bold">Pickup information</label>
         <ul>
           <li>Pick up from {{ meal_request.pickup_start }} to {{ meal_request.pickup_end }}</li>
           <li>Contact {{ meal_request.chef.volunteer.preferred_name }} at {{ meal_request.chef.volunteer.phone_number }}</li>
           <li>Address: <a href="{{ meal_request.chef.volunteer.address_link }}" target="_blank" rel="noopener nofollow">{{ meal_request.chef.volunteer.address }}</a></li>
         </ul>
 
-        <h6>Pickup details</h6>
-        <p>{{ meal_request.pickup_details|default:"No pickup details provided by the chef." }}</p>
+        <label class="font-weight-bold">Pickup details</label>
+        <p>{{ meal_request.pickup_details|default:"None" }}</p>
       </div>
-      <div class="col-md">
-        <h6>Dropoff information</h6>
+      <div class="col-lg">
+        <label class="font-weight-bold">Dropoff information</label>
         <ul>
           <li>Drop off from {{ meal_request.dropoff_start }} to {{ meal_request.dropoff_end }}</li>
           <li>Contact {{ meal_request.name }} at {{ meal_request.phone_number }}</li>
           <li>Address: <a href="{{ meal_request.address_link }}" target="_blank" rel="noopener nofollow">{{ meal_request.address }}</a></li>
         </ul>
 
-        <h6>Delivery details</h6>
-        <p>{{ meal_request.delivery_details|default:"No delivery details provided by the recipient." }}</p>
+        <label class="font-weight-bold">Delivery details</label>
+        <p>{{ meal_request.delivery_details|default:"None" }}</p>
       </div>
     </div>
-    <p>
-      The recipient will{% if not meal_request.can_meet_for_delivery %} <strong>not</strong>{% endif %} be able to meet you in the lobby or door of the residence.
-    </p>
+    <p>The recipient will{% if not meal_request.can_meet_for_delivery %} <strong>not</strong>{% endif %} be able to meet you in the lobby or door of the residence.</p>
 
     {% if not meal_request.delivered %}
       <form action="" method="post" onsubmit="return window.confirm('Are you sure you want to mark this delivery as complete? You cannot undo this!')" class="form">
