@@ -17,6 +17,8 @@ class MealRequestForm(forms.ModelForm):
 
         I acknowledge that I AM NOT TO CONTACT THE DELIVERY VOLUNTEER OUTSIDE OF THE CONTEXT OF THE DELIVERY. I am not to disclose their name, phone number, or any other personal information to others.
 
+        I understand that meals are delivered by contact-free dropoff and that if I make alternative arrangements with the deliverer that I am required to wear a mask and follow appropriate social distancing guidelines during the delivery.
+
         I understand that IF I DO NOT CONFIRM READINESS TO ACCEPT A DELIVERY IN A TIMELY FASHION or ACT AGGRESSIVELY AGAINST A VOLUNTEER, MY DELIVERY WILL NOT BE SCHEDULED.
     """)
 
