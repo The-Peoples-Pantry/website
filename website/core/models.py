@@ -4,6 +4,7 @@ import re
 import urllib.parse
 from django import forms
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.conf import settings
 from website.maps import Geocoder, GeocoderException
@@ -23,6 +24,15 @@ def has_group(user, group_name: str):
 def group_names(user):
     """Returns a list of group names for the user"""
     return list(user.groups.all().values_list('name', flat=True))
+
+
+def validate_toronto_postal_code(value):
+    """Toronto postal codes start with an 'M'"""
+    if value is None:
+        return
+
+    if not value.upper().startswith('M'):
+        raise ValidationError('This postal code falls outside of the regions that we support')
 
 
 class TelephoneInput(forms.TextInput):
@@ -206,3 +216,14 @@ class AddressMixin(models.Model):
 
     def _address_has_changed(self):
         return self.__initial_address != self.address
+
+
+class TorontoAddressMixin(AddressMixin):
+    class Meta:
+        abstract = True
+
+    postal_code = models.CharField(
+        "Postal code",
+        validators=[validate_toronto_postal_code],
+        max_length=settings.POSTAL_CODE_LENGTH
+    )
