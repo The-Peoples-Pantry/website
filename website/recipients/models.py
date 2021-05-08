@@ -13,7 +13,7 @@ import pytz
 from website.maps import GroceryDeliveryArea, Geocoder
 from website.mail import custom_send_mail
 from website.texts import TextMessage
-from core.models import get_sentinel_user, ContactMixin, AddressMixin, DemographicMixin, TimestampsMixin, TelephoneField
+from core.models import get_sentinel_user, ContactMixin, TorontoAddressMixin, DemographicMixin, TimestampsMixin, TelephoneField
 
 
 logger = logging.getLogger(__name__)
@@ -60,7 +60,7 @@ class MealRequestQuerySet(models.QuerySet):
         return self.annotate(delivery_distance=Sqrt(Power(latitude_distance, 2) + Power(longitude_distance, 2)))
 
 
-class MealRequest(DemographicMixin, ContactMixin, AddressMixin, TimestampsMixin, models.Model):
+class MealRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, TimestampsMixin, models.Model):
     STALE_AFTER_DAYS = 7
     objects = MealRequestQuerySet.as_manager()
 
@@ -443,7 +443,7 @@ class GiftCard(models.TextChoices):
     PRESIDENTS_CHOICE = "President's Choice", "President's Choice (Physical)"
 
 
-class GroceryRequest(DemographicMixin, ContactMixin, AddressMixin, TimestampsMixin, models.Model):
+class GroceryRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, TimestampsMixin, models.Model):
     can_receive_texts = models.BooleanField(
         "Can receive texts",
         help_text="Can the phone number provided receive text messages?",
