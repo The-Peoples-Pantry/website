@@ -1,5 +1,4 @@
 from django.conf import settings
-from django.contrib.auth.models import User
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 
@@ -21,9 +20,6 @@ class Email:
     def text_template(self):
         return f"{self.template}.txt"
 
-    def get_user(self, recipient):
-        return User.objects.get(email=recipient)
-
     def get_context_data(self, **kwargs):
         if self.context is not None:
             kwargs.update(self.context)
@@ -36,8 +32,7 @@ class Email:
         return render_to_string(self.html_template, context)
 
     def send(self, recipient):
-        user = self.resolve_user(recipient)
-        context = self.get_context_data(subject=self.subject, user=user)
+        context = self.get_context_data(subject=self.subject)
         text_content = self.render_text_content(context)
         html_content = self.render_html_content(context)
         mail = EmailMultiAlternatives(

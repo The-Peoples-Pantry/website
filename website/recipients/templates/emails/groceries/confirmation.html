@@ -1,7 +1,7 @@
 {% extends "emails/base.html" %}
 
 {% block content %}
-Hi {{ user.volunteer.name }},
+Hi {{ request.name }},
 Just confirming that we received your request for The People's Pantry.
 Your request ID is G{{ request.id }}
 
