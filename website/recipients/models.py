@@ -12,6 +12,7 @@ import pytz
 
 from website.maps import GroceryDeliveryArea, Geocoder
 from website.mail import custom_send_mail
+from website.emails import Email
 from website.texts import TextMessage
 from core.models import get_sentinel_user, ContactMixin, TorontoAddressMixin, DemographicMixin, TimestampsMixin, TelephoneField
 
@@ -610,18 +611,12 @@ class GroceryRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timest
         return GroceryRequest.objects.create(**kwargs)
 
     def send_confirmation_email(self):
-        custom_send_mail(
-            "Confirming your The People's Pantry request",
-            dedent(f"""
-                Hi {self.name},
-                Just confirming that we received your request for The People's Pantry.
-                Your request ID is G{self.id}
-
-                Grocery deliveries take one week to process before arranging a delivery date. Your delivery will be scheduled for the week after next. You will hear from us in 7 days about the date your request is scheduled for.
-            """).strip(),
-            [self.email],
-            reply_to=settings.REQUEST_COORDINATORS_EMAIL
-        )
+        Email(
+            subject="Confirming your The People's Pantry request",
+            template="emails/groceries/confirmation",
+            context={"request": self},
+            reply_to=settings.REQUEST_COORDINATORS_EMAIL,
+        ).send(self.email)
 
     def send_recipient_scheduled_notification(self, api=None):
         if not self.can_receive_texts:
