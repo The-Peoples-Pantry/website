@@ -4,36 +4,38 @@ from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 
 
+def html_to_text(html_content):
+    text_formatter = html2text.HTML2Text()
+    text_formatter.ignore_tables = True
+    return text_formatter.handle(html_content)
+
+
 class Email:
-    def __init__(self, subject, template, context, reply_to, include_unsubscribe_link=True, connection=None):
-        self.subject = subject
-        self.template = template
-        self.context = context
-        self.reply_to = reply_to
-        self.include_unsubscribe_link = include_unsubscribe_link
-        self.from_email = settings.DEFAULT_FROM_EMAIL
+    """Mimics Django's TemplateView but for defining emails based on templates"""
+    template = None
+    subject = None
+    reply_to = None
+    from_email = settings.DEFAULT_FROM_EMAIL
+    include_unsubscribe_link = True
+
+    def __init__(self, connection=None):
         self.connection = connection
 
     def get_context_data(self, **kwargs):
-        return {
+        base_context_data = {
             'subject': self.subject,
             'include_unsubscribe_link': self.include_unsubscribe_link,
-            **self.context,
-            **kwargs,
         }
+        return {**base_context_data, **kwargs}
 
-    def render_text_content(self, content):
-        formatter = html2text.HTML2Text()
-        formatter.ignore_tables = True
-        return formatter.handle(content)
+    def render_content(self, context):
+        html_content = render_to_string(self.template, context)
+        text_content = html_to_text(html_content)
+        return html_content, text_content
 
-    def render_html_content(self, context):
-        return render_to_string(self.template, context)
-
-    def send(self, recipient):
-        context = self.get_context_data()
-        html_content = self.render_html_content(context)
-        text_content = self.render_text_content(html_content)
+    def send(self, recipient, recipient_context={}):
+        context = self.get_context_data(**recipient_context)
+        html_content, text_content = self.render_content(context)
         mail = EmailMultiAlternatives(
             self.subject,
             text_content,

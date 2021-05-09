@@ -10,9 +10,9 @@ from django.utils import timezone
 import pytz
 
 from website.maps import GroceryDeliveryArea, Geocoder
-from website.emails import Email
 from website.texts import TextMessage
 from core.models import get_sentinel_user, ContactMixin, TorontoAddressMixin, DemographicMixin, TimestampsMixin, TelephoneField
+from .emails import MealRequestConfirmationEmail, GroceryRequestConfirmationEmail
 
 
 logger = logging.getLogger(__name__)
@@ -278,13 +278,7 @@ class MealRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timestamp
         )
 
     def send_confirmation_email(self):
-        Email(
-            subject="Confirming your The People's Pantry request",
-            template="emails/meals/confirmation.html",
-            context={"request": self},
-            reply_to=settings.REQUEST_COORDINATORS_EMAIL,
-            include_unsubscribe_link=False,
-        ).send(self.email)
+        MealRequestConfirmationEmail().send(self.email, {"request": self})
 
     def send_recipient_meal_notification(self, api=None):
         if not self.can_receive_texts:
@@ -602,13 +596,7 @@ class GroceryRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timest
         return GroceryRequest.objects.create(**kwargs)
 
     def send_confirmation_email(self):
-        Email(
-            subject="Confirming your The People's Pantry request",
-            template="emails/groceries/confirmation.html",
-            context={"request": self},
-            reply_to=settings.REQUEST_COORDINATORS_EMAIL,
-            include_unsubscribe_link=False,
-        ).send(self.email)
+        GroceryRequestConfirmationEmail().send(self.email, {"request": self})
 
     def send_recipient_scheduled_notification(self, api=None):
         if not self.can_receive_texts:
