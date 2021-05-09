@@ -8,6 +8,7 @@ from multiselectfield import MultiSelectField
 
 from core.models import ContactMixin, AddressMixin, TimestampsMixin
 from website.mail import custom_send_mail
+from .emails import VolunteerApplicationConfirmationEmail
 
 
 class CookingTypes(models.TextChoices):
@@ -226,15 +227,7 @@ class VolunteerApplication(TimestampsMixin, models.Model):
         return True
 
     def send_confirmation_email(self):
-        custom_send_mail(
-            "Confirming your The People's Pantry volunteer application",
-            dedent(f"""
-                Just confirming that we received your request to join the {self.role} volunteer team for The People's Pantry.
-                We will be in touch with further training materials
-            """),
-            [self.user.email],
-            reply_to=settings.VOLUNTEER_COORDINATORS_EMAIL,
-        )
+        VolunteerApplicationConfirmationEmail().send(self.user.email, {"application": self})
 
     def send_approved_email(self):
         if self.role == VolunteerRoles.CHEFS:
