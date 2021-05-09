@@ -280,20 +280,12 @@ class MealRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timestamp
         )
 
     def send_confirmation_email(self):
-        custom_send_mail(
-            "Confirming your The People's Pantry request",
-            dedent(f"""
-                Hi {self.name},
-                Just confirming that we received your request for The People's Pantry.
-                Your request ID is {self.id}
-
-                We depend on volunteers to sign up for our deliveries, and so your delivery will be scheduled once a chef and delivery volunteer sign up for your request (typically within 7-14 days). You will hear from us to confirm your delivery date once volunteers sign up.
-                Our deliveries are non-contact. If you live in an apartment building, please plan to meet the delivery volunteer outside the building, if you are able to. Please follow recommended guidelines to reduce viral transmission.
-                Thank you!
-            """).strip(),
-            [self.email],
-            reply_to=settings.REQUEST_COORDINATORS_EMAIL
-        )
+        Email(
+            subject="Confirming your The People's Pantry request",
+            template="emails/meals/confirmation.html",
+            context={"request": self},
+            reply_to=settings.REQUEST_COORDINATORS_EMAIL,
+        ).send(self.email)
 
     def send_recipient_meal_notification(self, api=None):
         if not self.can_receive_texts:
