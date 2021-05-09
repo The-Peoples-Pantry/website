@@ -285,6 +285,7 @@ class MealRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timestamp
             template="emails/meals/confirmation.html",
             context={"request": self},
             reply_to=settings.REQUEST_COORDINATORS_EMAIL,
+            include_unsubscribe_link=False,
         ).send(self.email)
 
     def send_recipient_meal_notification(self, api=None):
@@ -608,6 +609,7 @@ class GroceryRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timest
             template="emails/groceries/confirmation.html",
             context={"request": self},
             reply_to=settings.REQUEST_COORDINATORS_EMAIL,
+            include_unsubscribe_link=False,
         ).send(self.email)
 
     def send_recipient_scheduled_notification(self, api=None):
