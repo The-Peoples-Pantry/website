@@ -1,4 +1,3 @@
-from textwrap import dedent
 from django.db import models
 from django.contrib.auth.models import Group, User
 from django.dispatch import receiver
@@ -7,7 +6,6 @@ from django.conf import settings
 from multiselectfield import MultiSelectField
 
 from core.models import ContactMixin, AddressMixin, TimestampsMixin
-from website.mail import custom_send_mail
 from .emails import VolunteerApplicationConfirmationEmail, VolunteerApplicationApprovalEmail
 
 
