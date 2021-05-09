@@ -613,7 +613,7 @@ class GroceryRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timest
     def send_confirmation_email(self):
         Email(
             subject="Confirming your The People's Pantry request",
-            template="emails/groceries/confirmation",
+            template="emails/groceries/confirmation.html",
             context={"request": self},
             reply_to=settings.REQUEST_COORDINATORS_EMAIL,
         ).send(self.email)
