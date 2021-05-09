@@ -1,5 +1,4 @@
 import logging
-from textwrap import dedent
 from datetime import timedelta, time, date
 from django.db import models
 from django.db.models import F
@@ -11,7 +10,6 @@ from django.utils import timezone
 import pytz
 
 from website.maps import GroceryDeliveryArea, Geocoder
-from website.mail import custom_send_mail
 from website.emails import Email
 from website.texts import TextMessage
 from core.models import get_sentinel_user, ContactMixin, TorontoAddressMixin, DemographicMixin, TimestampsMixin, TelephoneField
