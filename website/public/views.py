@@ -8,7 +8,7 @@ from recipients.models import MealRequest, GroceryRequest
 class IndexView(TemplateView):
     template_name = "public/index.html"
     MEAL_REQUESTS_COUNT_PRIOR_TO_WEBSITE = 15_000
-    GROCERY_REQUESTS_COUNT_PRIOR_TO_WEBSITE = 11_000
+    GROCERY_REQUESTS_COUNT_PRIOR_TO_WEBSITE = 1_988
 
     @property
     def extra_context(self):
