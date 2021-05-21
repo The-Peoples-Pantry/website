@@ -18,6 +18,7 @@ urlpatterns = [
     path('links/sister-initiative-volunteers', RedirectView.as_view(url='https://forms.gle/i7BscqiGwyvRL5Fr7'), name='sister_initiative_volunteers'),
     path('links/donate', RedirectView.as_view(url='https://www.gofundme.com/f/the-people039s-pantry-covid19-emergency-meal-fund'), name='donate'),
     path('links/sponsor', RedirectView.as_view(url='https://donorbox.org/thepeoplespantryto'), name='sponsor'),
+    path('links/shop', RedirectView.as_view(url='http://shop.thepeoplespantryto.com/'), name='shop'),
     path('links/cooking-guide', RedirectView.as_view(url='https://docs.google.com/document/d/1OCS-i_pm87MsT-POAbcDCKrv6SBA0J9tepOaETyLwmY/edit'), name='cooking_guide'),
     path('links/cooking-quick-guide', RedirectView.as_view(url='https://drive.google.com/file/d/1iPu8yy_GbBuF6IK2dZwM-mqxzgekqVfI/view'), name='cooking_quick_guide'),
     path('links/cooking-onboarding', RedirectView.as_view(url='https://drive.google.com/file/d/15ijQmXwx9vsJtXrUe0-K0DHaHTKMAW1k/view'), name='cooking_onboarding'),
