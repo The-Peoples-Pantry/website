@@ -4,7 +4,6 @@ from django.urls import reverse
 from website.emails import Email
 
 
-
 class VolunteerApplicationConfirmationEmail(Email):
     subject = "Confirming your The People's Pantry volunteer application"
     template = "emails/volunteer_applications/confirmation.html"
