@@ -173,6 +173,10 @@ class Volunteer(ContactMixin, AddressMixin, models.Model):
         blank=True,
     )
 
+    @classmethod
+    def group_for_role(cls, role):
+        return Group.objects.get(name=role)
+
     @property
     def preferred_name(self):
         return self.short_name or self.name
@@ -217,7 +221,7 @@ class VolunteerApplication(TimestampsMixin, models.Model):
         """
         if self.approved:
             return False
-        group = Group.objects.get(name=self.role)
+        group = Volunteer.group_for_role(self.role)
         self.user.groups.add(group)
         self.approved = True
         self.save()

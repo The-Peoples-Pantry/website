@@ -1,6 +1,8 @@
 from django.conf import settings
 from django.urls import reverse
+
 from website.emails import Email
+
 
 
 class VolunteerApplicationConfirmationEmail(Email):
@@ -28,3 +30,15 @@ class VolunteerOutreachChefSignupsEmail(Email):
         return {
             'call_to_action_url': f"https://www.thepeoplespantryto.com{reverse('volunteers:chef_signup_list')}",
         }
+
+    def mass_send(self):
+        # Avoid circular imports
+        from recipients.models import MealRequest
+        from volunteers.models import Volunteer, VolunteerRoles
+
+        num_requests = MealRequest.active_requests()
+        chefs = Volunteer.group_for_role(VolunteerRoles.CHEFS).user_set.all()
+        return [
+            self.send(chef.email, {"user": chef, "num_requests": num_requests})
+            for chef in chefs
+        ]
