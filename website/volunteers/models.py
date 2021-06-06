@@ -225,10 +225,10 @@ class VolunteerApplication(TimestampsMixin, models.Model):
         return True
 
     def send_confirmation_email(self):
-        VolunteerApplicationConfirmationEmail().send(self.user.email, {"application": self})
+        return VolunteerApplicationConfirmationEmail().send(self.user.email, {"application": self})
 
     def send_approved_email(self):
-        VolunteerApplicationApprovalEmail().send(self.user.email, {"application": self})
+        return VolunteerApplicationApprovalEmail().send(self.user.email, {"application": self})
 
 
 # When user is created or saved, also save volunteer

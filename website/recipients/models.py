@@ -278,7 +278,7 @@ class MealRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timestamp
         )
 
     def send_confirmation_email(self):
-        MealRequestConfirmationEmail().send(self.email, {"request": self})
+        return MealRequestConfirmationEmail().send(self.email, {"request": self})
 
     def send_recipient_meal_notification(self, api=None):
         if not self.can_receive_texts:
@@ -596,7 +596,7 @@ class GroceryRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timest
         return GroceryRequest.objects.create(**kwargs)
 
     def send_confirmation_email(self):
-        GroceryRequestConfirmationEmail().send(self.email, {"request": self})
+        return GroceryRequestConfirmationEmail().send(self.email, {"request": self})
 
     def send_recipient_scheduled_notification(self, api=None):
         if not self.can_receive_texts:
