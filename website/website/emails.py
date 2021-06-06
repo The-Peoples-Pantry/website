@@ -26,7 +26,8 @@ class Email:
             'subject': self.subject,
             'include_unsubscribe_link': self.include_unsubscribe_link,
         }
-        return {**base_context_data, **kwargs}
+        extra_context = getattr(self, 'extra_context', {})
+        return {**base_context_data, **extra_context, **kwargs}
 
     def render_content(self, context):
         html_content = render_to_string(self.template, context)
