@@ -45,4 +45,5 @@ class Email:
             connection=self.connection,
         )
         mail.attach_alternative(html_content, 'text/html')
-        return mail.send()
+        mail.send()
+        return mail
