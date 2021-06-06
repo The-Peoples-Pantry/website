@@ -1,0 +1,12 @@
+{% extends "emails/base.html" %}
+
+{% block content %}
+<p style="{{ p_style }}">Hi {{ request.name }},</p>
+<p style="{{ p_style }}">
+  Just confirming that we received your request for The People's Pantry.
+  Your request ID is {{ request.id }}
+</p>
+<p style="{{ p_style }}">We depend on volunteers to sign up for our deliveries, and so your delivery will be scheduled once a chef and delivery volunteer sign up for your request (typically within 7-14 days). You will hear from us to confirm your delivery date once volunteers sign up.</p>
+<p style="{{ p_style }}">Our deliveries are non-contact. If you live in an apartment building, please plan to meet the delivery volunteer outside the building, if you are able to. Please follow recommended guidelines to reduce viral transmission.</p>
+<p style="{{ p_style }}">Thank you!</p>
+{% endblock %}

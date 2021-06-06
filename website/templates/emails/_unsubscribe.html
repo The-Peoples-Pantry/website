@@ -1,0 +1,5 @@
+{% comment %}
+By including the magic string %unsubscribe_url% Mailgun (our Email Service Provider) will automatically inject an unsubscribe link and handle all the unsubscribe/resubscribe flow
+If we ever move off of Mailgun, we'll have to update this and copy the existing unsubscribes out of their service.
+{% endcomment %}
+Don't like these emails? <a href="%unsubscribe_url%" style="text-decoration: underline; color: #999999; font-size: 12px; text-align: center;">Unsubscribe</a>.

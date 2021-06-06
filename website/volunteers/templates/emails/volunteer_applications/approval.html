@@ -1,0 +1,17 @@
+{% extends "emails/base.html" %}
+
+{% block content %}
+<p style="{{ p_style }}">Hi {{ application.user.volunteer.name }},</p>
+<p style="{{ p_style }}">Thank you for signing up to volunteer with The People’s Pantry! We are a volunteer initiative dedicated to safely providing cooked meals to people who have been disproportionately affected by the COVID-19 pandemic.</p>
+<p style="{{ p_style }}">
+  {% if application.role == "Chefs" %}
+    You have been approved to become a chef with us. We are so glad to have you on board. Please, make sure to check our <a href="https://docs.google.com/document/d/1OCS-i_pm87MsT-POAbcDCKrv6SBA0J9tepOaETyLwmY/edit">Cooking Volunteers Guidelines</a> before signing up to cook for a requester.
+  {% elif application.role == "Deliverers" %}
+    You have been approved as a delivery volunteer. We are so glad to have you on board. Please, make sure to check our <a href="https://docs.google.com/document/d/1Kxf0Zz3dMO7vI410VMY5sTJX3PMh7Mt8dGQIgNmQwGs/edit">Delivery Guidelines</a> before signing up to do any deliveries.
+  {% elif application.role == "Organizers" %}
+    You have been approved as a logistics volunteer. We are so glad to have you on board. Please, make sure to check our <a href="https://docs.google.com/document/d/1gHHEogvxxtFx1jRd6UoX1K87XoW7weigcTp7GUWrq1c/edit">Logistics Volunteers Guidelines</a> before proceeding to do anything else.
+  {% endif %}
+</p>
+<p style="{{ p_style }}">You’ll also be invited to join the People’s Pantry Workspace on Slack. Slack is the primary way in which we communicate with each other. If you have any questions or issues with cooking or delivery, you can contact the Central Volunteers Intake Team at {{ settings.VOLUNTEER_COORDINATORS_EMAIL }}</p>
+<p style="{{ p_style }}">The People’s Pantry thanks you sincerely for becoming a part of our community of volunteers. Our initiative depends on volunteers like you, and we simply cannot overstate our appreciation! Stay safe and healthy!</p>
+{% endblock %}

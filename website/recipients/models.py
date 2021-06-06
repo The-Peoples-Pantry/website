@@ -1,5 +1,4 @@
 import logging
-from textwrap import dedent
 from datetime import timedelta, time, date
 from django.db import models
 from django.db.models import F
@@ -11,9 +10,9 @@ from django.utils import timezone
 import pytz
 
 from website.maps import GroceryDeliveryArea, Geocoder
-from website.mail import custom_send_mail
 from website.texts import TextMessage
 from core.models import get_sentinel_user, ContactMixin, TorontoAddressMixin, DemographicMixin, TimestampsMixin, TelephoneField
+from .emails import MealRequestConfirmationEmail, GroceryRequestConfirmationEmail
 
 
 logger = logging.getLogger(__name__)
@@ -279,20 +278,7 @@ class MealRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timestamp
         )
 
     def send_confirmation_email(self):
-        custom_send_mail(
-            "Confirming your The People's Pantry request",
-            dedent(f"""
-                Hi {self.name},
-                Just confirming that we received your request for The People's Pantry.
-                Your request ID is {self.id}
-
-                We depend on volunteers to sign up for our deliveries, and so your delivery will be scheduled once a chef and delivery volunteer sign up for your request (typically within 7-14 days). You will hear from us to confirm your delivery date once volunteers sign up.
-                Our deliveries are non-contact. If you live in an apartment building, please plan to meet the delivery volunteer outside the building, if you are able to. Please follow recommended guidelines to reduce viral transmission.
-                Thank you!
-            """).strip(),
-            [self.email],
-            reply_to=settings.REQUEST_COORDINATORS_EMAIL
-        )
+        return MealRequestConfirmationEmail().send(self.email, {"request": self})
 
     def send_recipient_meal_notification(self, api=None):
         if not self.can_receive_texts:
@@ -610,18 +596,7 @@ class GroceryRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timest
         return GroceryRequest.objects.create(**kwargs)
 
     def send_confirmation_email(self):
-        custom_send_mail(
-            "Confirming your The People's Pantry request",
-            dedent(f"""
-                Hi {self.name},
-                Just confirming that we received your request for The People's Pantry.
-                Your request ID is G{self.id}
-
-                Grocery deliveries take one week to process before arranging a delivery date. Your delivery will be scheduled for the week after next. You will hear from us in 7 days about the date your request is scheduled for.
-            """).strip(),
-            [self.email],
-            reply_to=settings.REQUEST_COORDINATORS_EMAIL
-        )
+        return GroceryRequestConfirmationEmail().send(self.email, {"request": self})
 
     def send_recipient_scheduled_notification(self, api=None):
         if not self.can_receive_texts:

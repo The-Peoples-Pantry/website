@@ -1,0 +1,11 @@
+{% extends "emails/base.html" %}
+
+{% block content %}
+<p style="{{ p_style }}">Hi {{ request.name }},</p>
+<p style="{{ p_style }}">
+  Just confirming that we received your request for The People's Pantry.
+  Your request ID is G{{ request.id }}
+</p>
+<p style="{{ p_style }}">Grocery deliveries take one week to process before arranging a delivery date. Your delivery will be scheduled for the week after next. You will hear from us in 7 days about the date your request is scheduled for.</p>
+<p style="{{ p_style }}">Thank you!</p>
+{% endblock %}
