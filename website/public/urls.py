@@ -32,4 +32,5 @@ urlpatterns = [
     path('links/essential-service-letter', RedirectView.as_view(url='https://docs.google.com/document/d/1uu7pl_ID4XIQScVOyH8i2Xx0E7v8mV9mi14XLnPC2jo/edit'), name='essential_service_letter'),
     path('links/logistics-teams-descriptions', RedirectView.as_view(url='https://docs.google.com/document/d/1V3R2bVRPOAaytM4h7UP7jXL7jHz-2MkLnN-9bhkPipk/edit'), name='logistics_teams_descriptions'),
     path('links/caremongering-to', RedirectView.as_view(url='https://www.facebook.com/groups/TO.Community.Response.COVID19/'), name='caremongering_to'),
+    path('links/halal-resource', RedirectView.as_view(url='https://drive.google.com/file/d/1f3YewToGzFM9kpebBGKl3kddcoKwXlRv/view'), name='halal_resource'),
 ]
