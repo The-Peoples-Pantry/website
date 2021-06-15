@@ -1,67 +1,36 @@
-from datetime import date, time
+from datetime import date
 from django.test import TestCase
 from textwrap import dedent
 from unittest.mock import MagicMock
 
-from django.contrib.auth.models import User
-
-from recipients.models import MealRequest
+from recipients.factories import UserFactory, MealRequestFactory
 
 
 class MealRequestTextTests(TestCase):
     def setUp(self):
         self.api = MagicMock()
-        self.deliverer = User.objects.create(
+        self.deliverer = UserFactory(
             username="deliverer@example.com",
             email="deliverer@example.com",
+            volunteer__phone_number="5555550000",
+            volunteer__name="Ophelia",
         )
-        self.deliverer.volunteer.phone_number = "5555550000"
-        self.deliverer.volunteer.name = "Ophelia"
-        self.deliverer.volunteer.save()
-        self.chef = User.objects.create(
+        self.chef = UserFactory(
             username="chef@example.com",
             email="chef@example.com",
+            volunteer__phone_number="5555551111",
+            volunteer__name="Philip",
         )
-        self.chef.volunteer.phone_number = "5555551111"
-        self.chef.volunteer.name = "Philip"
-        self.chef.volunteer.save()
-        self.request = MealRequest.objects.create(
+        self.request = MealRequestFactory(
             name="Ryan",
-            email="ryan@example.com",
-            phone_number="5555555555",
             address_1="123 Fake St",
             address_2="Unit 1",
             city="Toronto",
             postal_code="H0H 0H0",
+            phone_number="5555555555",
             can_receive_texts=True,
-            bipoc=False,
-            lgbtq=False,
-            has_disability=False,
-            immigrant_or_refugee=False,
-            housing_issues=False,
-            sex_worker=False,
-            single_parent=False,
-            senior=False,
-            num_adults=1,
-            num_children=0,
-            dairy_free=False,
-            gluten_free=False,
-            halal=False,
-            kosher=False,
-            low_carb=False,
-            vegan=False,
-            vegetarian=False,
-            on_behalf_of=False,
-            recipient_notified=False,
-            accept_terms=True,
-            covid=False,
-            availability="Anytime",
             delivery_details="Deliver to side door",
-            delivery_date=date.fromisoformat('2021-03-15'),
-            pickup_start=time.fromisoformat('12:00'),
-            pickup_end=time.fromisoformat('13:00'),
-            dropoff_start=time.fromisoformat('14:00'),
-            dropoff_end=time.fromisoformat('15:00'),
+            delivery_date=date.fromisoformat("2021-03-15"),
             deliverer=self.deliverer,
             chef=self.chef,
         )

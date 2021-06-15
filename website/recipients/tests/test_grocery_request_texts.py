@@ -3,36 +3,16 @@ from django.test import TestCase
 from textwrap import dedent
 from unittest.mock import MagicMock
 
-from recipients.models import GroceryRequest
+from recipients.factories import GroceryRequestFactory
 
 
 class GroceryRequestTextTests(TestCase):
     def setUp(self):
         self.api = MagicMock()
-        self.request = GroceryRequest.objects.create(
+        self.request = GroceryRequestFactory(
             name="Ryan",
-            phone_number="5555555555",
-            address_1="123 Fake St",
-            address_2="Unit 1",
-            city="Toronto",
-            postal_code="H0H 0H0",
             can_receive_texts=True,
-            bipoc=False,
-            lgbtq=False,
-            has_disability=False,
-            immigrant_or_refugee=False,
-            housing_issues=False,
-            sex_worker=False,
-            single_parent=False,
-            senior=False,
-            num_adults=1,
-            num_children=0,
-            on_behalf_of=False,
-            recipient_notified=False,
-            accept_terms=True,
-            covid=False,
-            delivery_date=date.fromisoformat('2021-03-15'),
-            delivery_details="Deliver to side door",
+            delivery_date=date.fromisoformat("2021-03-15"),
         )
 
     def test_send_recipient_scheduled_notification(self):
