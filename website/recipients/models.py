@@ -24,12 +24,14 @@ class SendNotificationException(Exception):
 
 
 class Status(models.TextChoices):
-    UNCONFIRMED = 'Unconfirmed', 'Unconfirmed'
+    SUBMITTED = 'Submitted', 'Submitted'
+    SELECTED = 'Unconfirmed', 'Selected'  # Previously called UNCONFIRMED
     CHEF_ASSIGNED = 'Chef Assigned', 'Chef Assigned'
     DRIVER_ASSIGNED = 'Driver Assigned', 'Driver Assigned'
     DATE_CONFIRMED = 'Delivery Date Confirmed', 'Delivery Date Confirmed'
     DELIVERED = 'Delivered', 'Delivered'
     UNSUCCESSFUL = 'Unsuccessful', 'Unsuccessful'
+    NOT_SELECTED = 'Not Selected', 'Not Selected'
 
 
 class MealRequestQuerySet(models.QuerySet):
@@ -178,7 +180,7 @@ class MealRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timestamp
         "Status",
         max_length=settings.DEFAULT_LENGTH,
         choices=Status.choices,
-        default=Status.UNCONFIRMED
+        default=Status.SUBMITTED
     )
     pickup_details = models.TextField(
         "Pickup details",
