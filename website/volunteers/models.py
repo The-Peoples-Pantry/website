@@ -238,6 +238,6 @@ class VolunteerApplication(TimestampsMixin, models.Model):
 # When user is created or saved, also save volunteer
 @receiver(post_save, sender=User)
 def save_volunteer(sender, instance, created, **kwargs):
-    if created:
+    if created and not hasattr(instance, 'volunteer'):
         Volunteer.objects.create(user=instance)
     instance.volunteer.save()
