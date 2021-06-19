@@ -65,24 +65,22 @@ class LotteryTests(TestCase):
         meal_requests = demographic_meal_requests + non_demographic_meal_requests
         lottery = Lottery(meal_requests, 10)
 
-        self.assertMoreLikely(demographic_meal_requests, non_demographic_meal_requests, lottery)
+        self.assertLikelyToSelect(demographic_meal_requests, lottery)
 
-    def assertMoreLikely(self, group_a, group_b, lottery):
-        """Asserts that it is more likely to select from group_a than group_b"""
+    def assertLikelyToSelect(self, subpopulation, lottery):
+        """Asserts that it is more likely to select from group a than not"""
         NUM_TEST_RUNS_FOR_STATISTICAL_SIGNIFICANCE = 30  # Arbitrary
-        group_a_results = []
-        group_b_results = []
+        SELECTION_PERCENTAGE_FOR_STATISTICAL_SIGNIFICANCE = 60  # Arbitrary
+        percents_selected = []
+        subpopulation_set = set(subpopulation)
         for x in range(NUM_TEST_RUNS_FOR_STATISTICAL_SIGNIFICANCE):
             selected, _ = lottery.select()
-            group_a_selected = set(selected).intersection(set(group_a))
-            group_a_results.append(len(group_a_selected))
-            group_b_selected = set(selected).intersection(set(group_b))
-            group_b_results.append(len(group_b_selected))
+            subpopulation_selected = set(selected).intersection(subpopulation_set)
+            subpopulation_percent_selected = len(subpopulation_selected) / len(selected) * 100
+            percents_selected.append(subpopulation_percent_selected)
 
-        group_a_mean_selections = statistics.mean(group_a_results)
-        group_b_mean_selections = statistics.mean(group_b_results)
         self.assertGreater(
-            group_a_mean_selections,
-            group_b_mean_selections,
-            "Expected it to be more likely to select from group A than group B but it wasn't"
+            statistics.mean(percents_selected),
+            SELECTION_PERCENTAGE_FOR_STATISTICAL_SIGNIFICANCE,
+            f"Expected subpopulation to make up at least {SELECTION_PERCENTAGE_FOR_STATISTICAL_SIGNIFICANCE}% of selections but it didn't"
         )
