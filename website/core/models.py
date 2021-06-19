@@ -100,6 +100,21 @@ class DemographicMixin(models.Model):
     class Meta:
         abstract = True
 
+    DEMOGRAPHIC_ATTRIBUTES = (
+        "bipoc",
+        "lgbtq",
+        "has_disability",
+        "immigrant_or_refugee",
+        "housing_issues",
+        "sex_worker",
+        "single_parent",
+        "senior",
+    )
+
+    def in_any_demographic(self):
+        """Are they a member of any of our tracked demographics?"""
+        return any(getattr(self, attribute) for attribute in self.DEMOGRAPHIC_ATTRIBUTES)
+
     bipoc = models.BooleanField("Black, Indigenous, and People of Colour (BIPOC)")
     lgbtq = models.BooleanField("Lesbian, Gay, Bisexual, Trans, Queer (LGBTQ), gender non-conforming or non-binary")
     has_disability = models.BooleanField("Living with disabilities")
