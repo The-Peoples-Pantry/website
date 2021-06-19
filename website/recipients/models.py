@@ -387,6 +387,12 @@ class MealRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timestamp
         text.send(self.deliverer.volunteer.phone_number)
         self.comments.create(comment=f"Sent a text to the deliverer: {text.message}")
 
+    def get_lottery_weight(self):
+        weight = 1
+        if self.in_any_demographic():
+            weight += 1
+        return weight
+
     def __str__(self):
         return "Request #%d (%s): %d adult(s) and %d kid(s) in %s " % (
             self.id, self.name, self.num_adults, self.num_children, self.city,
