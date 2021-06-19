@@ -10,7 +10,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.8.3'
+          python-version: '3.9.5'
 
       - name: Set up Python / Pip cache
         uses: actions/cache@v2
