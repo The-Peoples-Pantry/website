@@ -68,7 +68,7 @@ class LotteryTests(TestCase):
         # Calculate the average percentage of demographic to non-demographic selections
         # If we're adding weight to the demographic requests, it should be greater than 50%
         results = []
-        for x in range(100):
+        for x in range(30):
             selected, _ = lottery.select()
             num_selected_with_demographic = len(set(selected).intersection(demographic_meal_requests))
             percent_selected_with_demographic = num_selected_with_demographic / len(selected)
