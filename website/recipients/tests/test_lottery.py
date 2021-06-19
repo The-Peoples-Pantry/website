@@ -1,5 +1,7 @@
+import datetime
 import statistics
 from django.test import TestCase
+from django.utils import timezone
 
 from recipients.factories import MealRequestFactory
 from recipients.lottery import Lottery
@@ -66,6 +68,23 @@ class LotteryTests(TestCase):
         lottery = Lottery(meal_requests, 10)
 
         self.assertLikelyToSelect(demographic_meal_requests, lottery)
+
+    def test_gives_additional_weight_to_previously_not_selected(self):
+        """Requests from folks that were previously not selected should have additional weight"""
+        has_previous_unselected_requests = [MealRequestFactory(phone_number=f"555555555{i}") for i in range(10)]
+        no_previous_unselected_requests = [MealRequestFactory(phone_number=f"444444444{i}") for i in range(10)]
+
+        # Add previously unselected requests
+        for request in has_previous_unselected_requests:
+            for i in range(5):
+                new_request = MealRequestFactory(phone_number=request.phone_number, status=Status.NOT_SELECTED)
+                new_request.created_at = timezone.now() - datetime.timedelta(days=1)
+                new_request.save()
+
+        meal_requests = has_previous_unselected_requests + no_previous_unselected_requests
+        lottery = Lottery(meal_requests, 10)
+
+        self.assertLikelyToSelect(has_previous_unselected_requests, lottery)
 
     def assertLikelyToSelect(self, subpopulation, lottery):
         """Asserts that it is more likely to select from group a than not"""
