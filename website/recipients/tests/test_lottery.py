@@ -65,13 +65,24 @@ class LotteryTests(TestCase):
         meal_requests = list(demographic_meal_requests + non_demographic_meal_requests)
         lottery = Lottery(meal_requests, 10)
 
-        # Calculate the average percentage of demographic to non-demographic selections
-        # If we're adding weight to the demographic requests, it should be greater than 50%
-        results = []
-        for x in range(30):
-            selected, _ = lottery.select()
-            num_selected_with_demographic = len(set(selected).intersection(demographic_meal_requests))
-            percent_selected_with_demographic = num_selected_with_demographic / len(selected)
-            results.append(percent_selected_with_demographic)
+        self.assertMoreLikely(demographic_meal_requests, non_demographic_meal_requests, lottery)
 
-        self.assertGreater(statistics.mean(results), 0.5)
+    def assertMoreLikely(self, group_a, group_b, lottery):
+        """Asserts that it is more likely to select from group_a than group_b"""
+        NUM_TEST_RUNS_FOR_STATISTICAL_SIGNIFICANCE = 30  # Arbitrary
+        group_a_results = []
+        group_b_results = []
+        for x in range(NUM_TEST_RUNS_FOR_STATISTICAL_SIGNIFICANCE):
+            selected, _ = lottery.select()
+            group_a_selected = set(selected).intersection(set(group_a))
+            group_a_results.append(len(group_a_selected))
+            group_b_selected = set(selected).intersection(set(group_b))
+            group_b_results.append(len(group_b_selected))
+
+        group_a_mean_selections = statistics.mean(group_a_results)
+        group_b_mean_selections = statistics.mean(group_b_results)
+        self.assertGreater(
+            group_a_mean_selections,
+            group_b_mean_selections,
+            "Expected it to be more likely to select from group A than group B but it wasn't"
+        )
