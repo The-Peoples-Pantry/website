@@ -62,7 +62,7 @@ class LotteryTests(TestCase):
             25,
             **{demographic: False for demographic in MealRequest.DEMOGRAPHIC_ATTRIBUTES},
         )
-        meal_requests = list(demographic_meal_requests + non_demographic_meal_requests)
+        meal_requests = demographic_meal_requests + non_demographic_meal_requests
         lottery = Lottery(meal_requests, 10)
 
         self.assertMoreLikely(demographic_meal_requests, non_demographic_meal_requests, lottery)
