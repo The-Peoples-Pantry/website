@@ -1,5 +1,7 @@
 import datetime
 import statistics
+import textwrap
+from django.core import mail
 from django.test import TestCase
 from django.utils import timezone
 
@@ -9,16 +11,44 @@ from recipients.models import MealRequest, Status
 
 
 class LotteryTests(TestCase):
-    def test_results_marked_selected_and_not_selected(self):
+    def test_result_selects_correct_number(self):
         meal_requests = MealRequestFactory.create_batch(50, status=Status.SUBMITTED)
         selected, not_selected = Lottery(meal_requests, 10).select()
 
         self.assertEqual(len(selected), 10)
         self.assertEqual(len(not_selected), 40)
+
+    def test_results_marked_selected_and_not_selected(self):
+        meal_requests = MealRequestFactory.create_batch(50, status=Status.SUBMITTED)
+        selected, not_selected = Lottery(meal_requests, 10).select()
+
         for request in selected:
             self.assertEqual(request.status, Status.SELECTED)
         for request in not_selected:
             self.assertEqual(request.status, Status.NOT_SELECTED)
+
+    def test_results_send_emails_to_correct_recipients(self):
+        meal_requests = MealRequestFactory.create_batch(50, status=Status.SUBMITTED)
+        selected, not_selected = Lottery(meal_requests, 10).select()
+
+        for request in selected:
+            self.assertEmailSent(
+                "Your meal request for The People's Pantry has been selected",
+                request.email
+            )
+            self.assertEmailNotSent(
+                "Your meal request for The People's Pantry was not selected",
+                request.email
+            )
+        for request in not_selected:
+            self.assertEmailSent(
+                "Your meal request for The People's Pantry was not selected",
+                request.email
+            )
+            self.assertEmailNotSent(
+                "Your meal request for The People's Pantry has been selected",
+                request.email
+            )
 
     def test_results_are_randomized(self):
         meal_requests = MealRequestFactory.create_batch(50, status=Status.SUBMITTED)
@@ -102,4 +132,32 @@ class LotteryTests(TestCase):
             statistics.mean(percents_selected),
             SELECTION_PERCENTAGE_FOR_STATISTICAL_SIGNIFICANCE,
             f"Expected subpopulation to make up at least {SELECTION_PERCENTAGE_FOR_STATISTICAL_SIGNIFICANCE}% of selections but it didn't"
+        )
+
+    def assertEmailSent(self, subject, recipient):
+        """Asserts that email was sent to the recipient with the given subject"""
+        has_match = any(
+            (email.subject == subject) and (recipient in email.to)
+            for email in mail.outbox
+        )
+        self.assertTrue(has_match, textwrap.dedent(
+            f"""
+            Expected an email to have been sent to `{recipient}` with subject: `{subject}`
+            No emails in the outbox matched
+            There were {len(mail.outbox)} emails in the outbox
+            """)
+        )
+
+    def assertEmailNotSent(self, subject, recipient):
+        """Asserts that email was not sent to the recipient with the given subject"""
+        has_match = any(
+            (email.subject == subject) and (recipient in email.to)
+            for email in mail.outbox
+        )
+        self.assertFalse(has_match, textwrap.dedent(
+            f"""
+            Expected an email not to have been sent to `{recipient}` with subject: `{subject}`
+            A matching email was found in the outbox
+            There were {len(mail.outbox)} emails in the outbox
+            """)
         )

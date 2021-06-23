@@ -49,10 +49,12 @@ class Lottery:
 
         for request in selected:
             request.status = Status.SELECTED
+            request.send_lottery_selected_email()
             request.save()
 
         for request in not_selected:
             request.status = Status.NOT_SELECTED
+            request.send_lottery_not_selected_email()
             request.save()
 
         return selected, not_selected

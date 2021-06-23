@@ -12,7 +12,12 @@ import pytz
 from website.maps import GroceryDeliveryArea, Geocoder
 from website.texts import TextMessage
 from core.models import get_sentinel_user, ContactMixin, TorontoAddressMixin, DemographicMixin, TimestampsMixin, TelephoneField
-from .emails import MealRequestConfirmationEmail, GroceryRequestConfirmationEmail
+from .emails import (
+    MealRequestConfirmationEmail,
+    GroceryRequestConfirmationEmail,
+    MealRequestLotterySelectedEmail,
+    MealRequestLotteryNotSelectedEmail,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -281,6 +286,12 @@ class MealRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timestamp
 
     def send_confirmation_email(self):
         return MealRequestConfirmationEmail().send(self.email, {"request": self})
+
+    def send_lottery_selected_email(self):
+        return MealRequestLotterySelectedEmail().send(self.email, {"request": self})
+
+    def send_lottery_not_selected_email(self):
+        return MealRequestLotteryNotSelectedEmail().send(self.email, {"request": self})
 
     def send_recipient_meal_notification(self, api=None):
         if not self.can_receive_texts:
