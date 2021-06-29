@@ -32,7 +32,7 @@ class GroceryRequestTextTests(TestCase):
         expected = dedent("""
             Hi Ryan,
             This is a message from The People's Pantry.
-            Because the FoodShare boxes this week included a food which you listed as an allergy, instead of the produce box, you will receive an extra gift card equal to the box’s value.
+            The FoodShare boxes this week included a food which you listed as an allergy, please let us know if you would like to cancel the box.
             Please feel free to be in touch with any questions, comments, or concerns.
         """).strip()
         self.request.send_recipient_allergy_notification(api=self.api)
