@@ -21,7 +21,6 @@ class GroceryRequestTextTests(TestCase):
             This is a message from The People's Pantry.
             Your delivery has been scheduled for Monday March 15. FoodShare will be delivering your box between 10 AM and 9 PM at your door and/or following your delivery instructions. Please make sure to check your phone regularly so the delivery driver can communicate with you easily.
             Delivery dates may vary to balance daily orders or if the driver did not get to the delivery by 9 PM. If there are any changes, we will do our best to communicate with you ahead of time.
-            The gift card will be sent to you on the same day of the delivery.
             Thank you and stay safe!
 
             Reply STOP to unsubscribe
@@ -45,7 +44,6 @@ class GroceryRequestTextTests(TestCase):
             This is a message from The People's Pantry.
             Your FoodShare produce box is scheduled to be delivered today. Just a reminder that boxes are delivered until 9 PM.  Please let us know once you receive your grocery box.
             If you don’t receive your box by that time today, please let us know by replying to this message. When delivery drivers didn’t get to do the delivery because they ran out of time, they will schedule your delivery for the following day.
-            Gift cards are delivered separately, either by mail (for physical gift cards, timing will depend on Canada post) or via email (be sure to check your spam folder!).
             Thanks, and stay safe!
         """).strip()
         self.request.send_recipient_reminder_notification(api=self.api)
