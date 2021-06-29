@@ -424,11 +424,6 @@ class MealRequestComment(CommentModel):
     subject = models.ForeignKey(MealRequest, related_name="comments", on_delete=models.CASCADE)
 
 
-class GiftCard(models.TextChoices):
-    WALMART = 'Walmart', 'Walmart (Digital)'
-    PRESIDENTS_CHOICE = "President's Choice", "President's Choice (Physical)"
-
-
 class GroceryRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, TimestampsMixin, models.Model):
     can_receive_texts = models.BooleanField(
         "Can receive texts",
@@ -438,12 +433,6 @@ class GroceryRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timest
         "Additional information",
         help_text="Is there anything else we should know about you or the person you are requesting support for that will help us complete the request better?",
         blank=True,
-    )
-    gift_card = models.CharField(
-        "Gift card",
-        help_text="We offer both physical (mailed to you) and digital (emailed to you) gift cards. What type of gift card would you want?",
-        max_length=settings.DEFAULT_LENGTH,
-        choices=GiftCard.choices,
     )
 
     # Information about the request itself
