@@ -297,7 +297,6 @@ class GroceryRequestAdmin(admin.ModelAdmin):
         'phone_number',
         'texts',
         'city',
-        'gift_card',
         'delivery_date',
         'completed',
         'created_at',
@@ -306,7 +305,6 @@ class GroceryRequestAdmin(admin.ModelAdmin):
         'completed',
         'can_receive_texts',
         'created_at',
-        'gift_card',
     )
     inlines = (
         GroceryRequestCommentInline,
