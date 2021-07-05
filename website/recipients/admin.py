@@ -297,11 +297,12 @@ class GroceryRequestAdmin(admin.ModelAdmin):
         'texts',
         'city',
         'delivery_date',
+        'status',
         'completed',
         'created_at',
     )
     list_filter = (
-        'completed',
+        CompletedFilter,
         'can_receive_texts',
         'created_at',
     )
@@ -332,6 +333,11 @@ class GroceryRequestAdmin(admin.ModelAdmin):
     texts.boolean = True
     texts.short_description = "Texts"
     texts.admin_order_field = "can_receive_texts"
+
+    def completed(self, obj):
+        return obj.status == GroceryRequest.Status.DELIVERED
+    completed.admin_order_field = 'status'
+    completed.boolean = True
 
     def send_notifications(self, request, queryset, method_name):
         """
@@ -405,7 +411,7 @@ class GroceryRequestAdmin(admin.ModelAdmin):
     notify_recipients_confirm_received.short_description = "Send text to recipients to confirm they received their delivery"
 
     def mark_complete(self, request, queryset):
-        updated = queryset.update(completed=True)
+        updated = queryset.update(status=GroceryRequest.Status.DELIVERED)
         self.message_user(request, ngettext(
             "%d grocery request has been marked complete",
             "%d grocery requests have been marked complete",

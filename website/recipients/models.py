@@ -457,6 +457,13 @@ class MealRequestComment(CommentModel):
 
 
 class GroceryRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, TimestampsMixin, models.Model):
+    class Status(models.TextChoices):
+        SUBMITTED = 'Submitted', 'Submitted'
+        SELECTED = 'Selected', 'Selected'
+        DELIVERED = 'Delivered', 'Delivered'
+        UNSUCCESSFUL = 'Unsuccessful', 'Unsuccessful'
+        NOT_SELECTED = 'Not Selected', 'Not Selected'
+
     can_receive_texts = models.BooleanField(
         "Can receive texts",
         help_text="Can the phone number provided receive text messages?",
@@ -534,10 +541,11 @@ class GroceryRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timest
     accept_terms = models.BooleanField("Accept terms")
 
     # System
-    completed = models.BooleanField(
-        "Completed",
-        help_text="Has this request been completed?",
-        default=False
+    status = models.CharField(
+        "Status",
+        max_length=settings.DEFAULT_LENGTH,
+        choices=Status.choices,
+        default=Status.SUBMITTED
     )
 
     def clean(self, *args, **kwargs):
@@ -572,7 +580,12 @@ class GroceryRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timest
     @classmethod
     def has_open_request(cls, phone: str):
         """Does the user with the given phone number already have open requests?"""
-        return cls.objects.filter(phone_number=phone, delivery_date=None, completed=False).exists()
+        return cls.objects.filter(
+            phone_number=phone,
+            delivery_date=None,
+        ).exclude(
+            status__in=(cls.Status.DELIVERED, cls.Status.UNSUCCESSFUL)
+        ).exists()
 
     @property
     def boxes(self):
@@ -585,7 +598,7 @@ class GroceryRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timest
 
     def copy(self):
         """Clone the request"""
-        kwargs = model_to_dict(self, exclude=['id', 'delivery_date', 'completed'])
+        kwargs = model_to_dict(self, exclude=['id', 'delivery_date', 'status'])
         return GroceryRequest.objects.create(**kwargs)
 
     def send_confirmation_email(self):
