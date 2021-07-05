@@ -672,6 +672,29 @@ class GroceryRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timest
         text.send(self.phone_number)
         self.comments.create(comment=f"Sent a text to recipient: {text.message}")
 
+    def get_previous_requests(self):
+        return self.__class__.objects.filter(
+            phone_number=self.phone_number,
+            created_at__lt=self.created_at,
+        ).order_by('-created_at')
+
+    def count_consecutive_previously_unselected(self):
+        """How many times did the same recipient consecutively submit and get NOT_SELECTED?"""
+        count = 0
+        for request in self.get_previous_requests():
+            if request.status == MealRequest.Status.NOT_SELECTED:
+                count += 1
+            else:
+                break
+        return count
+
+    def get_lottery_weight(self):
+        weight = 1
+        weight += self.count_consecutive_previously_unselected()
+        if self.in_any_demographic():
+            weight += 1
+        return weight
+
     def __str__(self):
         return "Request #G%d (%s): %d adult(s) and %d kid(s) in %s " % (
             self.id, self.name, self.num_adults, self.num_children, self.city,
