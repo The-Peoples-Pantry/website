@@ -18,14 +18,8 @@ class Command(BaseCommand):
         self.stdout.write(f"Already Selected MealRequests: {lottery.already_selected().count()}")
         self.stdout.write(f"Will select: {lottery.num_to_select()}")
 
-        lottery.select()
-        # for poll_id in options['poll_ids']:
-        #     try:
-        #         poll = Poll.objects.get(pk=poll_id)
-        #     except Poll.DoesNotExist:
-        #         raise CommandError('Poll "%s" does not exist' % poll_id)
-
-        #     poll.opened = False
-        #     poll.save()
-
-        #     self.stdout.write(self.style.SUCCESS('Successfully closed poll "%s"' % poll_id))
+        selected, not_selected = lottery.select()
+        selected_ids = tuple(sorted(request.id for request in selected))
+        not_selected_ids = tuple(sorted(request.id for request in not_selected))
+        self.stdout.write(f"Selected: {selected_ids}")
+        self.stdout.write(f"Not selected: {not_selected_ids}")
