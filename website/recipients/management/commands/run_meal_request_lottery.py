@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
-from recipients.lottery import Lottery
+from recipients.lottery import MealRequestLottery
 from recipients.models import MealRequest
 
 
@@ -12,16 +12,13 @@ class Command(BaseCommand):
     #     parser.add_argument('poll_ids', nargs='+', type=int)
 
     def handle(self, *args, **options):
+        lottery = MealRequestLottery()
         total_meal_requests = MealRequest.objects.all()
-        eligible_meal_requests = MealRequest.objects.filter(status=MealRequest.Status.SUBMITTED)
-        already_selected_meal_requests = MealRequest.objects.filter(status=MealRequest.Status.SELECTED)
-        num_to_choose = settings.MEALS_LIMIT - already_selected_meal_requests.count()
         self.stdout.write(f"Total MealRequests: {total_meal_requests.count()}")
-        self.stdout.write(f"Eligible MealRequests: {eligible_meal_requests.count()}")
-        self.stdout.write(f"Already Selected MealRequests: {already_selected_meal_requests.count()}")
-        self.stdout.write(f"Will select: {num_to_choose}")
+        self.stdout.write(f"Eligible MealRequests: {lottery.eligible_requests().count()}")
+        self.stdout.write(f"Already Selected MealRequests: {lottery.already_selected().count()}")
+        self.stdout.write(f"Will select: {lottery.num_to_select()}")
 
-        lottery = Lottery(eligible_meal_requests, num_to_choose)
         lottery.select()
         # for poll_id in options['poll_ids']:
         #     try:

@@ -1,26 +1,26 @@
 import datetime
-import statistics
 import textwrap
 from django.core import mail
 from django.test import TestCase
+from django.test.utils import override_settings
 from django.utils import timezone
 
 from recipients.factories import MealRequestFactory
-from recipients.lottery import Lottery
+from recipients.lottery import MealRequestLottery
 from recipients.models import MealRequest
 
 
-class LotteryTests(TestCase):
+class MealRequestLotteryTests(TestCase):
     def test_result_selects_correct_number(self):
-        meal_requests = MealRequestFactory.create_batch(50, status=MealRequest.Status.SUBMITTED)
-        selected, not_selected = Lottery(meal_requests, 10).select()
+        MealRequestFactory.create_batch(50, status=MealRequest.Status.SUBMITTED)
+        selected, not_selected = MealRequestLottery(10).select()
 
         self.assertEqual(len(selected), 10)
         self.assertEqual(len(not_selected), 40)
 
     def test_results_marked_selected_and_not_selected(self):
-        meal_requests = MealRequestFactory.create_batch(50, status=MealRequest.Status.SUBMITTED)
-        selected, not_selected = Lottery(meal_requests, 10).select()
+        MealRequestFactory.create_batch(50, status=MealRequest.Status.SUBMITTED)
+        selected, not_selected = MealRequestLottery(10).select()
 
         for request in selected:
             self.assertEqual(request.status, MealRequest.Status.SELECTED)
@@ -28,8 +28,8 @@ class LotteryTests(TestCase):
             self.assertEqual(request.status, MealRequest.Status.NOT_SELECTED)
 
     def test_results_send_emails_to_correct_recipients(self):
-        meal_requests = MealRequestFactory.create_batch(50, status=MealRequest.Status.SUBMITTED)
-        selected, not_selected = Lottery(meal_requests, 10).select()
+        MealRequestFactory.create_batch(50, status=MealRequest.Status.SUBMITTED)
+        selected, not_selected = MealRequestLottery(10).select()
 
         for request in selected:
             self.assertEmailSent(
@@ -51,21 +51,21 @@ class LotteryTests(TestCase):
             )
 
     def test_results_are_randomized(self):
-        meal_requests = MealRequestFactory.create_batch(50, status=MealRequest.Status.SUBMITTED)
-        lottery = Lottery(meal_requests, 10)
-
         # Run the lottery several times and make sure we get more than 1 order of results
         # Not a true test of randomness, but works well enough for our purpose here
         results = set()
         for x in range(10):
+            MealRequestFactory.create_batch(50, status=MealRequest.Status.SUBMITTED)
+            lottery = MealRequestLottery(10)
             selected, _ = lottery.select()
             selected_ids = tuple(sorted(request.id for request in selected))
             results.add(selected_ids)
+            MealRequest.objects.all().delete()
         self.assertGreater(len(results), 1)
 
     def test_results_do_not_repeat(self):
-        meal_requests = MealRequestFactory.create_batch(50, status=MealRequest.Status.SUBMITTED)
-        selected, not_selected = Lottery(meal_requests, 10).select()
+        MealRequestFactory.create_batch(50, status=MealRequest.Status.SUBMITTED)
+        selected, not_selected = MealRequestLottery(10).select()
         selected_ids = set(request.id for request in selected)
         not_selected_ids = set(request.id for request in not_selected)
 
@@ -73,65 +73,52 @@ class LotteryTests(TestCase):
         self.assertEqual(len(not_selected_ids), 40)
 
     def test_results_cant_be_both_selected_and_not_selected(self):
-        meal_requests = MealRequestFactory.create_batch(50, status=MealRequest.Status.SUBMITTED)
-        selected, not_selected = Lottery(meal_requests, 10).select()
+        MealRequestFactory.create_batch(50, status=MealRequest.Status.SUBMITTED)
+        selected, not_selected = MealRequestLottery(10).select()
         selected_ids = set(request.id for request in selected)
         not_selected_ids = set(request.id for request in not_selected)
 
         self.assertTrue(selected_ids.isdisjoint(not_selected_ids))
 
     def test_selects_all_if_selection_size_is_larger_than_requests(self):
-        meal_requests = MealRequestFactory.create_batch(50, status=MealRequest.Status.SUBMITTED)
-        selected, not_selected = Lottery(meal_requests, 60).select()
+        MealRequestFactory.create_batch(50, status=MealRequest.Status.SUBMITTED)
+        selected, not_selected = MealRequestLottery(60).select()
 
         self.assertEqual(len(selected), 50)
         self.assertEqual(len(not_selected), 0)
 
     def test_gives_additional_weight_to_demographics(self):
         """Requests any of our supported demographics should have additional weight"""
-        demographic_meal_requests = MealRequestFactory.create_batch(25, bipoc=True)  # Or any other demographic
+        demographic_meal_requests = MealRequestFactory.create_batch(100, bipoc=True)  # Or any other demographic
         non_demographic_meal_requests = MealRequestFactory.create_batch(
-            25,
+            100,
             **{demographic: False for demographic in MealRequest.DEMOGRAPHIC_ATTRIBUTES},
         )
-        meal_requests = demographic_meal_requests + non_demographic_meal_requests
-        lottery = Lottery(meal_requests, 10)
+        selected, _ = MealRequestLottery(100).select()
 
-        self.assertLikelyToSelect(demographic_meal_requests, lottery)
+        self.assertMoreLikely(demographic_meal_requests, non_demographic_meal_requests, selected)
 
     def test_gives_additional_weight_to_previously_not_selected(self):
         """Requests from folks that were previously not selected should have additional weight"""
-        has_previous_unselected_requests = [MealRequestFactory(phone_number=f"555555555{i}") for i in range(10)]
-        no_previous_unselected_requests = [MealRequestFactory(phone_number=f"444444444{i}") for i in range(10)]
+        has_previous_unselected_requests = [MealRequestFactory(phone_number=f"555555555{i}") for i in range(100)]
+        no_previous_unselected_requests = [MealRequestFactory(phone_number=f"444444444{i}") for i in range(100)]
 
         # Add previously unselected requests
         for request in has_previous_unselected_requests:
-            for i in range(5):
-                new_request = MealRequestFactory(phone_number=request.phone_number, status=MealRequest.Status.NOT_SELECTED)
-                new_request.created_at = timezone.now() - datetime.timedelta(days=1)
-                new_request.save()
+            for previous_request in MealRequestFactory.create_batch(5, phone_number=request.phone_number, status=MealRequest.Status.NOT_SELECTED):
+                previous_request.created_at = timezone.now() - datetime.timedelta(days=1)
+                previous_request.save()
 
-        meal_requests = has_previous_unselected_requests + no_previous_unselected_requests
-        lottery = Lottery(meal_requests, 10)
+        selected, _ = MealRequestLottery(100).select()
 
-        self.assertLikelyToSelect(has_previous_unselected_requests, lottery)
+        self.assertMoreLikely(has_previous_unselected_requests, no_previous_unselected_requests, selected)
 
-    def assertLikelyToSelect(self, subpopulation, lottery):
-        """Asserts that it is more likely to select from group a than not"""
-        NUM_TEST_RUNS_FOR_STATISTICAL_SIGNIFICANCE = 30  # Arbitrary
-        SELECTION_PERCENTAGE_FOR_STATISTICAL_SIGNIFICANCE = 60  # Arbitrary
-        percents_selected = []
-        subpopulation_set = set(subpopulation)
-        for x in range(NUM_TEST_RUNS_FOR_STATISTICAL_SIGNIFICANCE):
-            selected, _ = lottery.select()
-            subpopulation_selected = set(selected).intersection(subpopulation_set)
-            subpopulation_percent_selected = len(subpopulation_selected) / len(selected) * 100
-            percents_selected.append(subpopulation_percent_selected)
-
+    def assertMoreLikely(self, a, b, selected):
+        """Asserts that it is more likely to select from group a than group b"""
         self.assertGreater(
-            statistics.mean(percents_selected),
-            SELECTION_PERCENTAGE_FOR_STATISTICAL_SIGNIFICANCE,
-            f"Expected subpopulation to make up at least {SELECTION_PERCENTAGE_FOR_STATISTICAL_SIGNIFICANCE}% of selections but it didn't"
+            len(set(a).intersection(set(selected))),
+            len(set(b).intersection(set(selected))),
+            "Expected to select more values from group a than group b but it did not",
         )
 
     def assertEmailSent(self, subject, recipient):

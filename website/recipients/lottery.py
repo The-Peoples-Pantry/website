@@ -1,5 +1,7 @@
 import collections
 import random
+from django.conf import settings
+
 from recipients.models import MealRequest
 
 
@@ -32,29 +34,45 @@ def random_sample_with_weight(population_weights, k):
     return selected, not_selected
 
 
-class Lottery:
-    """Select/reject submitted requests for fulfillment by our volunteers"""
+class MealRequestLottery:
+    """Select/reject meal requests for fulfillment by our volunteers"""
 
-    def __init__(self, requests, k):
-        self.requests = requests
-        self.k = min(k, len(self.requests))
+    def __init__(self, k=None):
+        self.k = k or settings.MEALS_LIMIT
+
+    def already_selected(self):
+        return MealRequest.objects.filter(status=MealRequest.Status.SELECTED)
+
+    def eligible_requests(self):
+        return MealRequest.objects.filter(status=MealRequest.Status.SUBMITTED)
+
+    def num_to_select(self):
+        return min(
+            self.k - self.already_selected().count(),
+            self.eligible_requests().count()
+        )
+
+    def candidates(self):
+        return {
+            request: request.get_lottery_weight()
+            for request in self.eligible_requests()
+        }
 
     def select(self):
         """Select k requests, reject the others, and mark each accordingly"""
-        population_weights = {
-            request: request.get_lottery_weight()
-            for request in self.requests
-        }
-        selected, not_selected = random_sample_with_weight(population_weights, self.k)
+        selected, not_selected = random_sample_with_weight(self.candidates(), self.num_to_select())
+        self.__process_selected(selected)
+        self.__process_not_selected(not_selected)
+        return selected, not_selected
 
+    def __process_selected(self, selected):
         for request in selected:
             request.status = MealRequest.Status.SELECTED
             request.send_lottery_selected_email()
             request.save()
 
+    def __process_not_selected(self, not_selected):
         for request in not_selected:
             request.status = MealRequest.Status.NOT_SELECTED
             request.send_lottery_not_selected_email()
             request.save()
-
-        return selected, not_selected
