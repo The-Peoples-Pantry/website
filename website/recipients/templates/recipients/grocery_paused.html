@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
+{% include "recipients/_lottery_notice.html" %}
 <h1>Grocery sign-ups paused</h1>
 <p>Our grocery sign-ups are temporarily paused while we work to deliver the requests we've already received. This form will re-open for grocery requests each Friday at 9am and is open until Sunday 2pm.</p>
 <p>We are only able to fulfill {{settings.GROCERIES_LIMIT}} grocery requests per week, and we will draw {{settings.GROCERIES_LIMIT}} request submissions on Sunday at 2pm. We will contact you to let you know whether your request was selected.</p>
