@@ -1,6 +1,6 @@
 import collections
 import random
-from recipients.models import Status
+from recipients.models import MealRequest
 
 
 def random_sample_with_weight(population_weights, k):
@@ -48,12 +48,12 @@ class Lottery:
         selected, not_selected = random_sample_with_weight(population_weights, self.k)
 
         for request in selected:
-            request.status = Status.SELECTED
+            request.status = MealRequest.Status.SELECTED
             request.send_lottery_selected_email()
             request.save()
 
         for request in not_selected:
-            request.status = Status.NOT_SELECTED
+            request.status = MealRequest.Status.NOT_SELECTED
             request.send_lottery_not_selected_email()
             request.save()
 

@@ -28,23 +28,12 @@ class SendNotificationException(Exception):
         self.message = message
 
 
-class Status(models.TextChoices):
-    SUBMITTED = 'Submitted', 'Submitted'
-    SELECTED = 'Unconfirmed', 'Selected'  # Previously called UNCONFIRMED
-    CHEF_ASSIGNED = 'Chef Assigned', 'Chef Assigned'
-    DRIVER_ASSIGNED = 'Driver Assigned', 'Driver Assigned'
-    DATE_CONFIRMED = 'Delivery Date Confirmed', 'Delivery Date Confirmed'
-    DELIVERED = 'Delivered', 'Delivered'
-    UNSUCCESSFUL = 'Unsuccessful', 'Unsuccessful'
-    NOT_SELECTED = 'Not Selected', 'Not Selected'
-
-
 class MealRequestQuerySet(models.QuerySet):
     def delivered(self):
-        return self.filter(status=Status.DELIVERED)
+        return self.filter(status=MealRequest.Status.DELIVERED)
 
     def not_delivered(self):
-        return self.exclude(status=Status.DELIVERED)
+        return self.exclude(status=MealRequest.Status.DELIVERED)
 
     def with_delivery_distance(self, chef=None):
         """
@@ -69,6 +58,16 @@ class MealRequestQuerySet(models.QuerySet):
 class MealRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, TimestampsMixin, models.Model):
     STALE_AFTER_DAYS = 7
     objects = MealRequestQuerySet.as_manager()
+
+    class Status(models.TextChoices):
+        SUBMITTED = 'Submitted', 'Submitted'
+        SELECTED = 'Unconfirmed', 'Selected'  # Previously called UNCONFIRMED
+        CHEF_ASSIGNED = 'Chef Assigned', 'Chef Assigned'
+        DRIVER_ASSIGNED = 'Driver Assigned', 'Driver Assigned'
+        DATE_CONFIRMED = 'Delivery Date Confirmed', 'Delivery Date Confirmed'
+        DELIVERED = 'Delivered', 'Delivered'
+        UNSUCCESSFUL = 'Unsuccessful', 'Unsuccessful'
+        NOT_SELECTED = 'Not Selected', 'Not Selected'
 
     # Information about the recipient
     can_receive_texts = models.BooleanField(
@@ -233,7 +232,7 @@ class MealRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timestamp
 
     @classmethod
     def active_requests(cls):
-        return cls.objects.exclude(status__in=(Status.DATE_CONFIRMED, Status.DELIVERED)).count()
+        return cls.objects.exclude(status__in=(cls.Status.DATE_CONFIRMED, cls.Status.DELIVERED)).count()
 
     @classmethod
     def has_open_request(cls, phone: str):
@@ -241,7 +240,7 @@ class MealRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timestamp
         return cls.objects.filter(
             phone_number=phone
         ).exclude(
-            status__in=(Status.DATE_CONFIRMED, Status.DELIVERED)
+            status__in=(cls.Status.DATE_CONFIRMED, cls.Status.DELIVERED)
         ).exists()
 
     @property
@@ -250,7 +249,7 @@ class MealRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timestamp
 
     @property
     def delivered(self):
-        return self.status == Status.DELIVERED
+        return self.status == MealRequest.Status.DELIVERED
 
     def copy(self):
         """Clone the request with special business logic
@@ -278,7 +277,7 @@ class MealRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timestamp
             chef=self.chef,
             deliverer=None,
             delivery_date=new_date,
-            status=Status.CHEF_ASSIGNED,
+            status=MealRequest.Status.CHEF_ASSIGNED,
         )
 
     def send_confirmation_email(self):
@@ -405,7 +404,7 @@ class MealRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timestamp
         """How many times did the same recipient consecutively submit and get NOT_SELECTED?"""
         count = 0
         for request in self.get_previous_requests():
-            if request.status == Status.NOT_SELECTED:
+            if request.status == MealRequest.Status.NOT_SELECTED:
                 count += 1
             else:
                 break

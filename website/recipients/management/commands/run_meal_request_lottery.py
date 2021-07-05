@@ -2,7 +2,7 @@ from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
 from recipients.lottery import Lottery
-from recipients.models import MealRequest, Status
+from recipients.models import MealRequest
 
 
 class Command(BaseCommand):
@@ -13,8 +13,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         total_meal_requests = MealRequest.objects.all()
-        eligible_meal_requests = MealRequest.objects.filter(status=Status.SUBMITTED)
-        already_selected_meal_requests = MealRequest.objects.filter(status=Status.SELECTED)
+        eligible_meal_requests = MealRequest.objects.filter(status=MealRequest.Status.SUBMITTED)
+        already_selected_meal_requests = MealRequest.objects.filter(status=MealRequest.Status.SELECTED)
         num_to_choose = settings.MEALS_LIMIT - already_selected_meal_requests.count()
         self.stdout.write(f"Total MealRequests: {total_meal_requests.count()}")
         self.stdout.write(f"Eligible MealRequests: {eligible_meal_requests.count()}")

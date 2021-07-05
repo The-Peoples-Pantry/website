@@ -10,7 +10,7 @@ from django.views.generic import ListView, TemplateView
 from django_filters.views import FilterView
 
 from core.views import GroupRequiredMixin, LastVisitedMixin
-from recipients.models import MealRequest, Status
+from recipients.models import MealRequest
 from .forms import DelivererSignupForm, ChefSignupForm, ChefTaskForm, ChefApplyForm, DelivererApplyForm, OrganizerApplyForm
 from .models import VolunteerApplication, VolunteerRoles, Volunteer
 from .filters import ChefSignupFilter, DelivererSignupFilter
@@ -53,9 +53,9 @@ class ChefSignupView(LoginRequiredMixin, GroupRequiredMixin, UpdateView):
         self.object.chef = self.request.user
         if form.cleaned_data['can_deliver']:
             self.object.deliverer = self.request.user
-            self.object.status = Status.DRIVER_ASSIGNED
+            self.object.status = MealRequest.Status.DRIVER_ASSIGNED
         else:
-            self.object.status = Status.CHEF_ASSIGNED
+            self.object.status = MealRequest.Status.CHEF_ASSIGNED
         self.object.save()
         messages.success(self.request, 'Successfully signed up!')
         return super().form_valid(form)
@@ -88,7 +88,7 @@ class DelivererSignupView(LoginRequiredMixin, GroupRequiredMixin, UpdateView):
 
     def form_valid(self, form):
         self.object.deliverer = self.request.user
-        self.object.status = Status.DRIVER_ASSIGNED
+        self.object.status = MealRequest.Status.DRIVER_ASSIGNED
         self.object.save()
         messages.success(self.request, 'Successfully signed up!')
         return super().form_valid(form)
@@ -158,7 +158,7 @@ class DelivererTaskListView(LoginRequiredMixin, GroupRequiredMixin, ListView):
         meal_request = self.get_queryset().get(id=request.POST['meal_request_id'])
 
         if meal_request.delivery_date <= date.today():
-            meal_request.status = Status.DELIVERED
+            meal_request.status = MealRequest.Status.DELIVERED
             meal_request.save()
             messages.success(
                 self.request,

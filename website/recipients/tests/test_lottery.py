@@ -7,28 +7,28 @@ from django.utils import timezone
 
 from recipients.factories import MealRequestFactory
 from recipients.lottery import Lottery
-from recipients.models import MealRequest, Status
+from recipients.models import MealRequest
 
 
 class LotteryTests(TestCase):
     def test_result_selects_correct_number(self):
-        meal_requests = MealRequestFactory.create_batch(50, status=Status.SUBMITTED)
+        meal_requests = MealRequestFactory.create_batch(50, status=MealRequest.Status.SUBMITTED)
         selected, not_selected = Lottery(meal_requests, 10).select()
 
         self.assertEqual(len(selected), 10)
         self.assertEqual(len(not_selected), 40)
 
     def test_results_marked_selected_and_not_selected(self):
-        meal_requests = MealRequestFactory.create_batch(50, status=Status.SUBMITTED)
+        meal_requests = MealRequestFactory.create_batch(50, status=MealRequest.Status.SUBMITTED)
         selected, not_selected = Lottery(meal_requests, 10).select()
 
         for request in selected:
-            self.assertEqual(request.status, Status.SELECTED)
+            self.assertEqual(request.status, MealRequest.Status.SELECTED)
         for request in not_selected:
-            self.assertEqual(request.status, Status.NOT_SELECTED)
+            self.assertEqual(request.status, MealRequest.Status.NOT_SELECTED)
 
     def test_results_send_emails_to_correct_recipients(self):
-        meal_requests = MealRequestFactory.create_batch(50, status=Status.SUBMITTED)
+        meal_requests = MealRequestFactory.create_batch(50, status=MealRequest.Status.SUBMITTED)
         selected, not_selected = Lottery(meal_requests, 10).select()
 
         for request in selected:
@@ -51,7 +51,7 @@ class LotteryTests(TestCase):
             )
 
     def test_results_are_randomized(self):
-        meal_requests = MealRequestFactory.create_batch(50, status=Status.SUBMITTED)
+        meal_requests = MealRequestFactory.create_batch(50, status=MealRequest.Status.SUBMITTED)
         lottery = Lottery(meal_requests, 10)
 
         # Run the lottery several times and make sure we get more than 1 order of results
@@ -64,7 +64,7 @@ class LotteryTests(TestCase):
         self.assertGreater(len(results), 1)
 
     def test_results_do_not_repeat(self):
-        meal_requests = MealRequestFactory.create_batch(50, status=Status.SUBMITTED)
+        meal_requests = MealRequestFactory.create_batch(50, status=MealRequest.Status.SUBMITTED)
         selected, not_selected = Lottery(meal_requests, 10).select()
         selected_ids = set(request.id for request in selected)
         not_selected_ids = set(request.id for request in not_selected)
@@ -73,7 +73,7 @@ class LotteryTests(TestCase):
         self.assertEqual(len(not_selected_ids), 40)
 
     def test_results_cant_be_both_selected_and_not_selected(self):
-        meal_requests = MealRequestFactory.create_batch(50, status=Status.SUBMITTED)
+        meal_requests = MealRequestFactory.create_batch(50, status=MealRequest.Status.SUBMITTED)
         selected, not_selected = Lottery(meal_requests, 10).select()
         selected_ids = set(request.id for request in selected)
         not_selected_ids = set(request.id for request in not_selected)
@@ -81,7 +81,7 @@ class LotteryTests(TestCase):
         self.assertTrue(selected_ids.isdisjoint(not_selected_ids))
 
     def test_selects_all_if_selection_size_is_larger_than_requests(self):
-        meal_requests = MealRequestFactory.create_batch(50, status=Status.SUBMITTED)
+        meal_requests = MealRequestFactory.create_batch(50, status=MealRequest.Status.SUBMITTED)
         selected, not_selected = Lottery(meal_requests, 60).select()
 
         self.assertEqual(len(selected), 50)
@@ -107,7 +107,7 @@ class LotteryTests(TestCase):
         # Add previously unselected requests
         for request in has_previous_unselected_requests:
             for i in range(5):
-                new_request = MealRequestFactory(phone_number=request.phone_number, status=Status.NOT_SELECTED)
+                new_request = MealRequestFactory(phone_number=request.phone_number, status=MealRequest.Status.NOT_SELECTED)
                 new_request.created_at = timezone.now() - datetime.timedelta(days=1)
                 new_request.save()
 

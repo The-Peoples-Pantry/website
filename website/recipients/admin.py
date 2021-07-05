@@ -8,7 +8,6 @@ from core.admin import user_link
 from .models import (
     MealRequest,
     MealRequestComment,
-    Status,
     SendNotificationException,
     GroceryRequest,
     GroceryRequestComment,
@@ -30,7 +29,7 @@ class CompletedFilter(admin.SimpleListFilter):
     parameter_name = 'completed'
 
     def queryset_kwargs(self):
-        return {'status': Status.DELIVERED}
+        return {'status': MealRequest.Status.DELIVERED}
 
     def lookups(self, request, model_admin):
         return (
@@ -168,7 +167,7 @@ class MealRequestAdmin(admin.ModelAdmin):
     dropoff_range.short_description = 'Dropoff range'
 
     def completed(self, obj):
-        return obj.status == Status.DELIVERED
+        return obj.status == MealRequest.Status.DELIVERED
     completed.admin_order_field = 'status'
     completed.boolean = True
 
@@ -183,8 +182,8 @@ class MealRequestAdmin(admin.ModelAdmin):
     copy.short_description = "Create a copy of selected meal request"
 
     def mark_as_confirmed(self, request, queryset):
-        queryset = queryset.exclude(status=Status.DATE_CONFIRMED)
-        updated = queryset.update(status=Status.DATE_CONFIRMED)
+        queryset = queryset.exclude(status=MealRequest.Status.DATE_CONFIRMED)
+        updated = queryset.update(status=MealRequest.Status.DATE_CONFIRMED)
 
         if updated:
             self.message_user(request, ngettext(
@@ -197,8 +196,8 @@ class MealRequestAdmin(admin.ModelAdmin):
     mark_as_confirmed.short_description = "Mark as confirmed with the recipient"
 
     def mark_as_delivered(self, request, queryset):
-        queryset = queryset.exclude(status=Status.DELIVERED)
-        updated = queryset.update(status=Status.DELIVERED)
+        queryset = queryset.exclude(status=MealRequest.Status.DELIVERED)
+        updated = queryset.update(status=MealRequest.Status.DELIVERED)
 
         if updated:
             self.message_user(request, ngettext(
