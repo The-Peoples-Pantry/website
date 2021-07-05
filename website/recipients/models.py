@@ -211,21 +211,9 @@ class MealRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timestamp
     @classmethod
     def requests_paused(cls):
         """Are requests currently paused?"""
-        return cls.requests_paused_by_limit() or cls.requests_paused_by_period()
-
-    @classmethod
-    def requests_paused_by_period(cls):
         if settings.DISABLE_MEALS_PERIOD:
             return False
-
         return not cls.within_signup_period()
-
-    @classmethod
-    def requests_paused_by_limit(cls):
-        if settings.DISABLE_MEALS_LIMIT:
-            return False
-
-        return cls.active_requests() >= settings.MEALS_LIMIT
 
     @classmethod
     def within_signup_period(cls):
@@ -562,21 +550,9 @@ class GroceryRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timest
     @classmethod
     def requests_paused(cls):
         """Are requests currently paused?"""
-        return cls.requests_paused_by_limit() or cls.requests_paused_by_period()
-
-    @classmethod
-    def requests_paused_by_period(cls):
         if settings.DISABLE_GROCERIES_PERIOD:
             return False
-
         return not cls.within_signup_period()
-
-    @classmethod
-    def requests_paused_by_limit(cls):
-        if settings.DISABLE_GROCERIES_LIMIT:
-            return False
-
-        return cls.active_box_requests() >= settings.GROCERIES_LIMIT
 
     @classmethod
     def within_signup_period(cls):
@@ -595,43 +571,18 @@ class GroceryRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timest
         )
 
     @classmethod
-    def active_box_requests(cls):
-        """Calculate the number of box requests that are currently "active"
-
-        Requests are considered active if they don't have a delivery assigned, and aren't
-        marked as completed. A request could potentially be marked complete but not have
-        a delivery date as a way of cancelling it (if the organizers wanted to keep it) in
-        the system for some reason, but not have it count towards the limit.
-
-        A box request is not the same as a grocery request. Each grocery request specifies
-        a number of adults and children and we use that information to calculate how many
-        boxes they should receive.
-
-        The formula is:
-        - 1 box if there's less than 4 adults
-        - 2 boxes if there's between (inclusive) 4 and 6 adults
-        - 3 boxes if there's 7 or more adults
-
-        We use Django's annotation/aggregation features to compute this value
-        """
-        active_requests = cls.objects.filter(delivery_date=None, completed=False)
-        boxes = active_requests.annotate(
-            boxes=models.Case(
-                models.When(num_adults__lt=4, then=models.Value(1)),
-                models.When(num_adults__lt=7, then=models.Value(2)),
-                default=models.Value(3),
-                output_field=models.IntegerField()
-            )
-        ).aggregate(
-            total_boxes=models.Sum('boxes')
-        )['total_boxes'] or 0
-
-        return boxes
-
-    @classmethod
     def has_open_request(cls, phone: str):
         """Does the user with the given phone number already have open requests?"""
         return cls.objects.filter(phone_number=phone, delivery_date=None, completed=False).exists()
+
+    @property
+    def boxes(self):
+        if self.num_adults < 4:
+            return 1
+        elif self.num_adults < 7:
+            return 2
+        else:
+            return 3
 
     def copy(self):
         """Clone the request"""
