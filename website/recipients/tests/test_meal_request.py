@@ -3,12 +3,11 @@ from django.test import TestCase
 from django.utils import timezone
 from freezegun import freeze_time
 
-from recipients.factories import MealRequestFactory
 from recipients.models import MealRequest
 
 
 class MealRequestTests(TestCase):
-    def test_signups_open_sunday_morning_till_noon(self):
+    def test_signups_open_friday_at_9am_until_sunday_at_2pm(self):
         # Monday
         with freeze_time(timezone.make_aware(datetime(2021, 7, 5))):
             self.assertTrue(MealRequest.requests_paused())
@@ -25,18 +24,22 @@ class MealRequestTests(TestCase):
         with freeze_time(timezone.make_aware(datetime(2021, 7, 8))):
             self.assertTrue(MealRequest.requests_paused())
 
-        # Friday
+        # Friday (Early morning)
         with freeze_time(timezone.make_aware(datetime(2021, 7, 9))):
             self.assertTrue(MealRequest.requests_paused())
 
+        # Friday (at 9am)
+        with freeze_time(timezone.make_aware(datetime(2021, 7, 9, hour=9))):
+            self.assertFalse(MealRequest.requests_paused())
+
         # Saturday
         with freeze_time(timezone.make_aware(datetime(2021, 7, 10))):
-            self.assertTrue(MealRequest.requests_paused())
+            self.assertFalse(MealRequest.requests_paused())
 
         # Sunday (Morning)
-        with freeze_time(timezone.make_aware(datetime(2021, 7, 11, 8))):
-            self.assertTrue(MealRequest.requests_paused())
-
-        # Sunday (at Noon)
-        with freeze_time(timezone.make_aware(datetime(2021, 7, 11, 12))):
+        with freeze_time(timezone.make_aware(datetime(2021, 7, 11, hour=8))):
             self.assertFalse(MealRequest.requests_paused())
+
+        # Sunday (at 2pm)
+        with freeze_time(timezone.make_aware(datetime(2021, 7, 11, hour=14))):
+            self.assertTrue(MealRequest.requests_paused())
