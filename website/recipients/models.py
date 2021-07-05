@@ -16,6 +16,8 @@ from .emails import (
     GroceryRequestConfirmationEmail,
     MealRequestLotterySelectedEmail,
     MealRequestLotteryNotSelectedEmail,
+    GroceryRequestLotterySelectedEmail,
+    GroceryRequestLotteryNotSelectedEmail,
 )
 
 
@@ -602,6 +604,12 @@ class GroceryRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timest
 
     def send_confirmation_email(self):
         return GroceryRequestConfirmationEmail().send(self.email, {"request": self})
+
+    def send_lottery_selected_email(self):
+        return GroceryRequestLotterySelectedEmail().send(self.email, {"request": self})
+
+    def send_lottery_not_selected_email(self):
+        return GroceryRequestLotteryNotSelectedEmail().send(self.email, {"request": self})
 
     def send_recipient_scheduled_notification(self, api=None):
         if not self.can_receive_texts:

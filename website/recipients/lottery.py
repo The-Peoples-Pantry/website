@@ -149,11 +149,11 @@ class GroceryRequestLottery:
     def __process_selected(self, selected):
         for request in selected:
             request.status = GroceryRequest.Status.SELECTED
-            # request.send_lottery_selected_email()
+            request.send_lottery_selected_email()
             request.save()
 
     def __process_not_selected(self, not_selected):
         for request in not_selected:
             request.status = GroceryRequest.Status.NOT_SELECTED
-            # request.send_lottery_not_selected_email()
+            request.send_lottery_not_selected_email()
             request.save()

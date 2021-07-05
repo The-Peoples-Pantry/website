@@ -169,6 +169,29 @@ class GroceryRequestLotteryTests(AssertionMixin, TestCase):
         for request in not_selected:
             self.assertEqual(request.status, GroceryRequest.Status.NOT_SELECTED)
 
+    def test_results_send_emails_to_correct_recipients(self):
+        GroceryRequestFactory.create_batch(50, status=GroceryRequest.Status.SUBMITTED)
+        selected, not_selected = GroceryRequestLottery(10).select()
+
+        for request in selected:
+            self.assertEmailSent(
+                "Your grocery request for The People's Pantry has been selected",
+                request.email
+            )
+            self.assertEmailNotSent(
+                "Your grocery request for The People's Pantry was not selected",
+                request.email
+            )
+        for request in not_selected:
+            self.assertEmailSent(
+                "Your grocery request for The People's Pantry was not selected",
+                request.email
+            )
+            self.assertEmailNotSent(
+                "Your grocery request for The People's Pantry has been selected",
+                request.email
+            )
+
     def test_result_selects_correct_number_when_they_do_not_add_up_to_exact_limit(self):
         # When all requests are for a number of boxes that the limit isn't evenly divisible by we can't select the exact limit
         # eg. if we're selecting 10 boxes but every request is for 3 boxes. 10 isn't evenly divisible by 3, so we'd select 9 instead

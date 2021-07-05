@@ -29,3 +29,17 @@ class MealRequestLotteryNotSelectedEmail(Email):
     template = "emails/meals/lottery/not_selected.html"
     reply_to = settings.REQUEST_COORDINATORS_EMAIL
     include_unsubscribe_link = False
+
+
+class GroceryRequestLotterySelectedEmail(Email):
+    subject = "Your grocery request for The People's Pantry has been selected"
+    template = "emails/groceries/lottery/selected.html"
+    reply_to = settings.REQUEST_COORDINATORS_EMAIL
+    include_unsubscribe_link = False
+
+
+class GroceryRequestLotteryNotSelectedEmail(Email):
+    subject = "Your grocery request for The People's Pantry was not selected"
+    template = "emails/meals/lottery/not_selected.html"
+    reply_to = settings.REQUEST_COORDINATORS_EMAIL
+    include_unsubscribe_link = False
