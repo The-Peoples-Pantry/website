@@ -229,7 +229,7 @@ class MealRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timestamp
 
     @classmethod
     def within_signup_period(cls):
-        now = timezone.now().astimezone(pytz.timezone('America/Toronto'))
+        now = timezone.localtime()
         is_sunday = now.strftime('%A') == 'Sunday'
         is_after_noon = now.hour >= 12
         return is_sunday and is_after_noon
