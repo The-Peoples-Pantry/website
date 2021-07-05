@@ -8,10 +8,10 @@ from recipients.factories import MealRequestFactory
 
 @override_settings(MEALS_LIMIT=10)
 class RunMealRequestCommandTests(TestCase):
-    def call_run_meal_request_lottery(self):
+    def call_run_meal_request_lottery(self, **kwargs):
         """Invoke the command and return the output"""
         out = StringIO()
-        call_command("run_meal_request_lottery", stdout=out)
+        call_command("run_meal_request_lottery", stdout=out, **kwargs)
         return out.getvalue()
 
     def test_runs_command(self):
@@ -62,3 +62,11 @@ class RunMealRequestCommandTests(TestCase):
             if request.status == MealRequest.Status.SELECTED:
                 newly_selected.append(request)
         self.assertEqual(2, len(newly_selected))
+
+    def test_doesnt_perform_change_on_dry_run(self):
+        requests = MealRequestFactory.create_batch(20, status=MealRequest.Status.SUBMITTED)
+        self.call_run_meal_request_lottery(dry_run=True)
+
+        for request in requests:
+            request.refresh_from_db()
+            self.assertEqual(request.status, MealRequest.Status.SUBMITTED)

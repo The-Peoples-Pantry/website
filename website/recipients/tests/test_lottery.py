@@ -88,6 +88,13 @@ class MealRequestLotteryTests(AssertionMixin, TestCase):
                 request.email
             )
 
+    def test_dry_run_does_change_status_or_send_emails(self):
+        MealRequestFactory.create_batch(50, status=MealRequest.Status.SUBMITTED)
+        MealRequestLottery(10).select(dry_run=True)
+        self.assertEqual(MealRequest.objects.filter(status=MealRequest.Status.SELECTED).count(), 0)
+        self.assertEqual(MealRequest.objects.filter(status=MealRequest.Status.NOT_SELECTED).count(), 0)
+        self.assertEqual(len(mail.outbox), 0)
+
     def test_results_are_randomized(self):
         # Run the lottery several times and make sure we get more than 1 order of results
         # Not a true test of randomness, but works well enough for our purpose here
@@ -191,6 +198,13 @@ class GroceryRequestLotteryTests(AssertionMixin, TestCase):
                 "Your grocery request for The People's Pantry has been selected",
                 request.email
             )
+
+    def test_dry_run_does_change_status_or_send_emails(self):
+        GroceryRequestFactory.create_batch(50, status=GroceryRequest.Status.SUBMITTED)
+        GroceryRequestLottery(10).select(dry_run=True)
+        self.assertEqual(MealRequest.objects.filter(status=GroceryRequest.Status.SELECTED).count(), 0)
+        self.assertEqual(MealRequest.objects.filter(status=GroceryRequest.Status.NOT_SELECTED).count(), 0)
+        self.assertEqual(len(mail.outbox), 0)
 
     def test_result_selects_correct_number_when_they_do_not_add_up_to_exact_limit(self):
         # When all requests are for a number of boxes that the limit isn't evenly divisible by we can't select the exact limit

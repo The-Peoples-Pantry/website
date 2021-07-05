@@ -8,10 +8,10 @@ from recipients.factories import GroceryRequestFactory
 
 @override_settings(GROCERIES_LIMIT=10)
 class RunGroceryRequestCommandTests(TestCase):
-    def call_run_grocery_request_lottery(self):
+    def call_run_grocery_request_lottery(self, **kwargs):
         """Invoke the command and return the output"""
         out = StringIO()
-        call_command("run_grocery_request_lottery", stdout=out)
+        call_command("run_grocery_request_lottery", stdout=out, **kwargs)
         return out.getvalue()
 
     def test_runs_command(self):
@@ -60,3 +60,11 @@ class RunGroceryRequestCommandTests(TestCase):
             if request.status == GroceryRequest.Status.SELECTED:
                 newly_selected.append(request)
         self.assertEqual(2, len(newly_selected))
+
+    def test_doesnt_perform_change_on_dry_run(self):
+        requests = GroceryRequestFactory.create_batch(20, status=GroceryRequest.Status.SUBMITTED)
+        self.call_run_grocery_request_lottery(dry_run=True)
+
+        for request in requests:
+            request.refresh_from_db()
+            self.assertEqual(request.status, GroceryRequest.Status.SUBMITTED)

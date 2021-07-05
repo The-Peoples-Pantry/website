@@ -89,11 +89,12 @@ class MealRequestLottery:
             for request in self.eligible_requests()
         }
 
-    def select(self):
+    def select(self, dry_run=False):
         """Select k requests, reject the others, and mark each accordingly"""
         selected, not_selected = random_sample_with_weight(self.candidates(), self.num_to_select())
-        self.__process_selected(selected)
-        self.__process_not_selected(not_selected)
+        if not dry_run:
+            self.__process_selected(selected)
+            self.__process_not_selected(not_selected)
         return selected, not_selected
 
     def __process_selected(self, selected):
@@ -133,14 +134,15 @@ class GroceryRequestLottery:
     def get_cost(self, request):
         return request.boxes
 
-    def select(self):
+    def select(self, dry_run=False):
         """Select k requests, reject the others, and mark each accordingly"""
         population = list(self.eligible_requests())
         weights = [self.get_weight(request) for request in population]
         costs = [self.get_cost(request) for request in population]
         selected, not_selected = random_sample_with_weight_and_cost(population, weights, costs, self.num_to_select())
-        self.__process_selected(selected)
-        self.__process_not_selected(not_selected)
+        if not dry_run:
+            self.__process_selected(selected)
+            self.__process_not_selected(not_selected)
         return selected, not_selected
 
     def __boxes_sum(self, requests):
