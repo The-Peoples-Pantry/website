@@ -580,10 +580,19 @@ class GroceryRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timest
 
     @classmethod
     def within_signup_period(cls):
-        now = timezone.now().astimezone(pytz.timezone('America/Toronto'))
-        is_sunday = now.strftime('%A') == 'Sunday'
-        is_after_noon = now.hour >= 12
-        return is_sunday and is_after_noon
+        """Requests are open from Friday at 9am until Sunday at 2pm"""
+        now = timezone.localtime()
+        weekday = now.strftime('%A')
+        is_friday = weekday == 'Friday'
+        is_saturday = weekday == 'Saturday'
+        is_sunday = weekday == 'Sunday'
+        is_after_9am = now.hour >= 9
+        is_before_2pm = now.hour < 14
+        return (
+            (is_friday and is_after_9am)
+            or is_saturday
+            or (is_sunday and is_before_2pm)
+        )
 
     @classmethod
     def active_box_requests(cls):
