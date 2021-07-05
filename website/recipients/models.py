@@ -7,7 +7,6 @@ from django.conf import settings
 from django.forms import model_to_dict
 from django.core.exceptions import ValidationError
 from django.utils import timezone
-import pytz
 
 from website.maps import GroceryDeliveryArea, Geocoder
 from website.texts import TextMessage
