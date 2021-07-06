@@ -303,6 +303,7 @@ class GroceryRequestAdmin(admin.ModelAdmin):
     )
     list_filter = (
         CompletedFilter,
+        'status',
         'can_receive_texts',
         'created_at',
     )
