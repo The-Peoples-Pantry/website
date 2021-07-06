@@ -10,7 +10,7 @@ from django.views.generic import ListView, TemplateView
 from django_filters.views import FilterView
 
 from core.views import GroupRequiredMixin, LastVisitedMixin
-from recipients.models import MealRequest, Status
+from recipients.models import MealRequest
 from .forms import DelivererSignupForm, ChefSignupForm, ChefTaskForm, ChefApplyForm, DelivererApplyForm, OrganizerApplyForm
 from .models import VolunteerApplication, VolunteerRoles, Volunteer
 from .filters import ChefSignupFilter, DelivererSignupFilter
@@ -25,7 +25,7 @@ class ChefSignupListView(LoginRequiredMixin, GroupRequiredMixin, LastVisitedMixi
     permission_group = 'Chefs'
     permission_group_redirect_url = reverse_lazy('volunteers:chef_application')
     filterset_class = ChefSignupFilter
-    queryset = MealRequest.objects.not_delivered().filter(chef__isnull=True)
+    queryset = MealRequest.objects.available_for_chef_signup()
 
     def get_queryset(self):
         return super().get_queryset().with_delivery_distance(chef=self.request.user).order_by('delivery_distance')
@@ -41,7 +41,7 @@ class ChefSignupView(LoginRequiredMixin, GroupRequiredMixin, UpdateView):
     permission_group = 'Chefs'
     permission_group_redirect_url = reverse_lazy('volunteers:chef_application')
     form_class = ChefSignupForm
-    queryset = MealRequest.objects.not_delivered().filter(chef__isnull=True)
+    queryset = MealRequest.objects.available_for_chef_signup()
     template_name = "volunteers/chef_signup.html"
     context_object_name = "meal_request"
     success_url = reverse_lazy('volunteers:chef_signup_list')
@@ -53,9 +53,9 @@ class ChefSignupView(LoginRequiredMixin, GroupRequiredMixin, UpdateView):
         self.object.chef = self.request.user
         if form.cleaned_data['can_deliver']:
             self.object.deliverer = self.request.user
-            self.object.status = Status.DRIVER_ASSIGNED
+            self.object.status = MealRequest.Status.DRIVER_ASSIGNED
         else:
-            self.object.status = Status.CHEF_ASSIGNED
+            self.object.status = MealRequest.Status.CHEF_ASSIGNED
         self.object.save()
         messages.success(self.request, 'Successfully signed up!')
         return super().form_valid(form)
@@ -67,7 +67,7 @@ class DelivererSignupListView(LoginRequiredMixin, GroupRequiredMixin, LastVisite
     permission_group = 'Deliverers'
     permission_group_redirect_url = reverse_lazy('volunteers:deliverer_application')
     filterset_class = DelivererSignupFilter
-    queryset = MealRequest.objects.not_delivered().exclude(delivery_date__isnull=True).filter(deliverer__isnull=True).with_delivery_distance()
+    queryset = MealRequest.objects.available_for_deliverer_signup().with_delivery_distance()
     ordering = 'delivery_date'
 
     @property
@@ -81,14 +81,14 @@ class DelivererSignupView(LoginRequiredMixin, GroupRequiredMixin, UpdateView):
     form_class = DelivererSignupForm
     permission_group = 'Deliverers'
     permission_group_redirect_url = reverse_lazy('volunteers:deliverer_application')
-    queryset = MealRequest.objects.not_delivered().exclude(delivery_date__isnull=True).filter(deliverer__isnull=True).with_delivery_distance()
+    queryset = MealRequest.objects.available_for_deliverer_signup().with_delivery_distance()
     template_name = "volunteers/deliverer_signup.html"
     context_object_name = "meal_request"
     success_url = reverse_lazy('volunteers:deliverer_signup_list')
 
     def form_valid(self, form):
         self.object.deliverer = self.request.user
-        self.object.status = Status.DRIVER_ASSIGNED
+        self.object.status = MealRequest.Status.DRIVER_ASSIGNED
         self.object.save()
         messages.success(self.request, 'Successfully signed up!')
         return super().form_valid(form)
@@ -158,7 +158,7 @@ class DelivererTaskListView(LoginRequiredMixin, GroupRequiredMixin, ListView):
         meal_request = self.get_queryset().get(id=request.POST['meal_request_id'])
 
         if meal_request.delivery_date <= date.today():
-            meal_request.status = Status.DELIVERED
+            meal_request.status = MealRequest.Status.DELIVERED
             meal_request.save()
             messages.success(
                 self.request,

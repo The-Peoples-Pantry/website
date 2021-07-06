@@ -8,7 +8,6 @@ from core.admin import user_link
 from .models import (
     MealRequest,
     MealRequestComment,
-    Status,
     SendNotificationException,
     GroceryRequest,
     GroceryRequestComment,
@@ -29,9 +28,6 @@ class CompletedFilter(admin.SimpleListFilter):
     title = 'Completed'
     parameter_name = 'completed'
 
-    def queryset_kwargs(self):
-        return {'status': Status.DELIVERED}
-
     def lookups(self, request, model_admin):
         return (
             ('Hide Completed', 'Hide Completed'),
@@ -39,7 +35,10 @@ class CompletedFilter(admin.SimpleListFilter):
 
     def queryset(self, request, queryset):
         if self.value() == 'Hide Completed':
-            queryset = queryset.exclude(**self.queryset_kwargs())
+            queryset = queryset.exclude(status__in=(
+                *MealRequest.COMPLETED_STATUSES,
+                *GroceryRequest.COMPLETED_STATUSES,
+            ))
         return queryset
 
 
@@ -168,7 +167,7 @@ class MealRequestAdmin(admin.ModelAdmin):
     dropoff_range.short_description = 'Dropoff range'
 
     def completed(self, obj):
-        return obj.status == Status.DELIVERED
+        return obj.status in MealRequest.COMPLETED_STATUSES
     completed.admin_order_field = 'status'
     completed.boolean = True
 
@@ -183,8 +182,8 @@ class MealRequestAdmin(admin.ModelAdmin):
     copy.short_description = "Create a copy of selected meal request"
 
     def mark_as_confirmed(self, request, queryset):
-        queryset = queryset.exclude(status=Status.DATE_CONFIRMED)
-        updated = queryset.update(status=Status.DATE_CONFIRMED)
+        queryset = queryset.exclude(status=MealRequest.Status.DATE_CONFIRMED)
+        updated = queryset.update(status=MealRequest.Status.DATE_CONFIRMED)
 
         if updated:
             self.message_user(request, ngettext(
@@ -197,8 +196,8 @@ class MealRequestAdmin(admin.ModelAdmin):
     mark_as_confirmed.short_description = "Mark as confirmed with the recipient"
 
     def mark_as_delivered(self, request, queryset):
-        queryset = queryset.exclude(status=Status.DELIVERED)
-        updated = queryset.update(status=Status.DELIVERED)
+        queryset = queryset.exclude(status=MealRequest.Status.DELIVERED)
+        updated = queryset.update(status=MealRequest.Status.DELIVERED)
 
         if updated:
             self.message_user(request, ngettext(
@@ -298,11 +297,12 @@ class GroceryRequestAdmin(admin.ModelAdmin):
         'texts',
         'city',
         'delivery_date',
+        'status',
         'completed',
         'created_at',
     )
     list_filter = (
-        'completed',
+        CompletedFilter,
         'can_receive_texts',
         'created_at',
     )
@@ -333,6 +333,11 @@ class GroceryRequestAdmin(admin.ModelAdmin):
     texts.boolean = True
     texts.short_description = "Texts"
     texts.admin_order_field = "can_receive_texts"
+
+    def completed(self, obj):
+        return obj.status in GroceryRequest.COMPLETED_STATUSES
+    completed.admin_order_field = 'status'
+    completed.boolean = True
 
     def send_notifications(self, request, queryset, method_name):
         """
@@ -406,7 +411,7 @@ class GroceryRequestAdmin(admin.ModelAdmin):
     notify_recipients_confirm_received.short_description = "Send text to recipients to confirm they received their delivery"
 
     def mark_complete(self, request, queryset):
-        updated = queryset.update(completed=True)
+        updated = queryset.update(status=GroceryRequest.Status.DELIVERED)
         self.message_user(request, ngettext(
             "%d grocery request has been marked complete",
             "%d grocery requests have been marked complete",

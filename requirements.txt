@@ -43,6 +43,9 @@ flake8== 3.8.4
 # Allows us to easily generate fake testing data
 factory_boy==3.2.0
 
+# Allows us to mock out the current date when testing
+freezegun==1.1.0
+
 # Allows admins to browse interactive queries
 django-sql-explorer==2.1.2
 

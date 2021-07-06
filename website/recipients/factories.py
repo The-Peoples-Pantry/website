@@ -20,7 +20,7 @@ class UserFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = User
 
-    email = factory.Faker("email")
+    email = factory.Sequence(lambda n: f"email{n}@example.com")
     username = factory.SelfAttribute("email")
     volunteer = factory.SubFactory(VolunteerFactory)
 

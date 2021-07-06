@@ -7,12 +7,18 @@ from django.conf import settings
 from django.forms import model_to_dict
 from django.core.exceptions import ValidationError
 from django.utils import timezone
-import pytz
 
 from website.maps import GroceryDeliveryArea, Geocoder
 from website.texts import TextMessage
 from core.models import get_sentinel_user, ContactMixin, TorontoAddressMixin, DemographicMixin, TimestampsMixin, TelephoneField
-from .emails import MealRequestConfirmationEmail, GroceryRequestConfirmationEmail
+from .emails import (
+    MealRequestConfirmationEmail,
+    GroceryRequestConfirmationEmail,
+    MealRequestLotterySelectedEmail,
+    MealRequestLotteryNotSelectedEmail,
+    GroceryRequestLotterySelectedEmail,
+    GroceryRequestLotteryNotSelectedEmail,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -23,21 +29,28 @@ class SendNotificationException(Exception):
         self.message = message
 
 
-class Status(models.TextChoices):
-    UNCONFIRMED = 'Unconfirmed', 'Unconfirmed'
-    CHEF_ASSIGNED = 'Chef Assigned', 'Chef Assigned'
-    DRIVER_ASSIGNED = 'Driver Assigned', 'Driver Assigned'
-    DATE_CONFIRMED = 'Delivery Date Confirmed', 'Delivery Date Confirmed'
-    DELIVERED = 'Delivered', 'Delivered'
-    UNSUCCESSFUL = 'Unsuccessful', 'Unsuccessful'
-
-
 class MealRequestQuerySet(models.QuerySet):
+    def available_for_chef_signup(self):
+        return self.filter(
+            chef__isnull=True,
+        ).exclude(
+            status__in=(MealRequest.Status.SUBMITTED, *MealRequest.COMPLETED_STATUSES),
+        )
+
+    def available_for_deliverer_signup(self):
+        return self.filter(
+            deliverer__isnull=True,
+        ).exclude(
+            delivery_date__isnull=True
+        ).exclude(
+            status__in=(MealRequest.Status.SUBMITTED, *MealRequest.COMPLETED_STATUSES),
+        )
+
     def delivered(self):
-        return self.filter(status=Status.DELIVERED)
+        return self.filter(status=MealRequest.Status.DELIVERED)
 
     def not_delivered(self):
-        return self.exclude(status=Status.DELIVERED)
+        return self.exclude(status=MealRequest.Status.DELIVERED)
 
     def with_delivery_distance(self, chef=None):
         """
@@ -62,6 +75,18 @@ class MealRequestQuerySet(models.QuerySet):
 class MealRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, TimestampsMixin, models.Model):
     STALE_AFTER_DAYS = 7
     objects = MealRequestQuerySet.as_manager()
+
+    class Status(models.TextChoices):
+        SUBMITTED = 'Submitted', 'Submitted'
+        SELECTED = 'Unconfirmed', 'Selected'  # Previously called UNCONFIRMED
+        CHEF_ASSIGNED = 'Chef Assigned', 'Chef Assigned'
+        DRIVER_ASSIGNED = 'Driver Assigned', 'Driver Assigned'
+        DATE_CONFIRMED = 'Delivery Date Confirmed', 'Delivery Date Confirmed'
+        DELIVERED = 'Delivered', 'Delivered'
+        UNSUCCESSFUL = 'Unsuccessful', 'Unsuccessful'
+        NOT_SELECTED = 'Not Selected', 'Not Selected'
+
+    COMPLETED_STATUSES = (Status.DELIVERED, Status.UNSUCCESSFUL, Status.NOT_SELECTED)
 
     # Information about the recipient
     can_receive_texts = models.BooleanField(
@@ -178,7 +203,7 @@ class MealRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timestamp
         "Status",
         max_length=settings.DEFAULT_LENGTH,
         choices=Status.choices,
-        default=Status.UNCONFIRMED
+        default=Status.SUBMITTED
     )
     pickup_details = models.TextField(
         "Pickup details",
@@ -204,32 +229,29 @@ class MealRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timestamp
     @classmethod
     def requests_paused(cls):
         """Are requests currently paused?"""
-        return cls.requests_paused_by_limit() or cls.requests_paused_by_period()
-
-    @classmethod
-    def requests_paused_by_period(cls):
         if settings.DISABLE_MEALS_PERIOD:
             return False
-
         return not cls.within_signup_period()
 
     @classmethod
-    def requests_paused_by_limit(cls):
-        if settings.DISABLE_MEALS_LIMIT:
-            return False
-
-        return cls.active_requests() >= settings.MEALS_LIMIT
-
-    @classmethod
     def within_signup_period(cls):
-        now = timezone.now().astimezone(pytz.timezone('America/Toronto'))
-        is_sunday = now.strftime('%A') == 'Sunday'
-        is_after_noon = now.hour >= 12
-        return is_sunday and is_after_noon
+        """Requests are open from Friday at 9am until Sunday at 2pm"""
+        now = timezone.localtime()
+        weekday = now.strftime('%A')
+        is_friday = weekday == 'Friday'
+        is_saturday = weekday == 'Saturday'
+        is_sunday = weekday == 'Sunday'
+        is_after_9am = now.hour >= 9
+        is_before_2pm = now.hour < 14
+        return (
+            (is_friday and is_after_9am)
+            or is_saturday
+            or (is_sunday and is_before_2pm)
+        )
 
     @classmethod
     def active_requests(cls):
-        return cls.objects.exclude(status__in=(Status.DATE_CONFIRMED, Status.DELIVERED)).count()
+        return cls.objects.exclude(status__in=(cls.Status.DATE_CONFIRMED, *cls.COMPLETED_STATUSES)).count()
 
     @classmethod
     def has_open_request(cls, phone: str):
@@ -237,7 +259,7 @@ class MealRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timestamp
         return cls.objects.filter(
             phone_number=phone
         ).exclude(
-            status__in=(Status.DATE_CONFIRMED, Status.DELIVERED)
+            status__in=(cls.Status.DATE_CONFIRMED, *cls.COMPLETED_STATUSES)
         ).exists()
 
     @property
@@ -246,7 +268,7 @@ class MealRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timestamp
 
     @property
     def delivered(self):
-        return self.status == Status.DELIVERED
+        return self.status == MealRequest.Status.DELIVERED
 
     def copy(self):
         """Clone the request with special business logic
@@ -274,11 +296,17 @@ class MealRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timestamp
             chef=self.chef,
             deliverer=None,
             delivery_date=new_date,
-            status=Status.CHEF_ASSIGNED,
+            status=MealRequest.Status.CHEF_ASSIGNED,
         )
 
     def send_confirmation_email(self):
         return MealRequestConfirmationEmail().send(self.email, {"request": self})
+
+    def send_lottery_selected_email(self):
+        return MealRequestLotterySelectedEmail().send(self.email, {"request": self})
+
+    def send_lottery_not_selected_email(self):
+        return MealRequestLotteryNotSelectedEmail().send(self.email, {"request": self})
 
     def send_recipient_meal_notification(self, api=None):
         if not self.can_receive_texts:
@@ -385,6 +413,29 @@ class MealRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timestamp
         text.send(self.deliverer.volunteer.phone_number)
         self.comments.create(comment=f"Sent a text to the deliverer: {text.message}")
 
+    def get_previous_requests(self):
+        return self.__class__.objects.filter(
+            phone_number=self.phone_number,
+            created_at__lt=self.created_at,
+        ).order_by('-created_at')
+
+    def count_consecutive_previously_unselected(self):
+        """How many times did the same recipient consecutively submit and get NOT_SELECTED?"""
+        count = 0
+        for request in self.get_previous_requests():
+            if request.status == MealRequest.Status.NOT_SELECTED:
+                count += 1
+            else:
+                break
+        return count
+
+    def get_lottery_weight(self):
+        weight = 1
+        weight += self.count_consecutive_previously_unselected()
+        if self.in_any_demographic():
+            weight += 1
+        return weight
+
     def __str__(self):
         return "Request #%d (%s): %d adult(s) and %d kid(s) in %s " % (
             self.id, self.name, self.num_adults, self.num_children, self.city,
@@ -425,6 +476,15 @@ class MealRequestComment(CommentModel):
 
 
 class GroceryRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, TimestampsMixin, models.Model):
+    class Status(models.TextChoices):
+        SUBMITTED = 'Submitted', 'Submitted'
+        SELECTED = 'Selected', 'Selected'
+        DELIVERED = 'Delivered', 'Delivered'
+        UNSUCCESSFUL = 'Unsuccessful', 'Unsuccessful'
+        NOT_SELECTED = 'Not Selected', 'Not Selected'
+
+    COMPLETED_STATUSES = (Status.DELIVERED, Status.UNSUCCESSFUL, Status.NOT_SELECTED)
+
     can_receive_texts = models.BooleanField(
         "Can receive texts",
         help_text="Can the phone number provided receive text messages?",
@@ -502,10 +562,11 @@ class GroceryRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timest
     accept_terms = models.BooleanField("Accept terms")
 
     # System
-    completed = models.BooleanField(
-        "Completed",
-        help_text="Has this request been completed?",
-        default=False
+    status = models.CharField(
+        "Status",
+        max_length=settings.DEFAULT_LENGTH,
+        choices=Status.choices,
+        default=Status.SUBMITTED
     )
 
     def clean(self, *args, **kwargs):
@@ -517,75 +578,58 @@ class GroceryRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timest
     @classmethod
     def requests_paused(cls):
         """Are requests currently paused?"""
-        return cls.requests_paused_by_limit() or cls.requests_paused_by_period()
-
-    @classmethod
-    def requests_paused_by_period(cls):
         if settings.DISABLE_GROCERIES_PERIOD:
             return False
-
         return not cls.within_signup_period()
 
     @classmethod
-    def requests_paused_by_limit(cls):
-        if settings.DISABLE_GROCERIES_LIMIT:
-            return False
-
-        return cls.active_box_requests() >= settings.GROCERIES_LIMIT
-
-    @classmethod
     def within_signup_period(cls):
-        now = timezone.now().astimezone(pytz.timezone('America/Toronto'))
-        is_sunday = now.strftime('%A') == 'Sunday'
-        is_after_noon = now.hour >= 12
-        return is_sunday and is_after_noon
-
-    @classmethod
-    def active_box_requests(cls):
-        """Calculate the number of box requests that are currently "active"
-
-        Requests are considered active if they don't have a delivery assigned, and aren't
-        marked as completed. A request could potentially be marked complete but not have
-        a delivery date as a way of cancelling it (if the organizers wanted to keep it) in
-        the system for some reason, but not have it count towards the limit.
-
-        A box request is not the same as a grocery request. Each grocery request specifies
-        a number of adults and children and we use that information to calculate how many
-        boxes they should receive.
-
-        The formula is:
-        - 1 box if there's less than 4 adults
-        - 2 boxes if there's between (inclusive) 4 and 6 adults
-        - 3 boxes if there's 7 or more adults
-
-        We use Django's annotation/aggregation features to compute this value
-        """
-        active_requests = cls.objects.filter(delivery_date=None, completed=False)
-        boxes = active_requests.annotate(
-            boxes=models.Case(
-                models.When(num_adults__lt=4, then=models.Value(1)),
-                models.When(num_adults__lt=7, then=models.Value(2)),
-                default=models.Value(3),
-                output_field=models.IntegerField()
-            )
-        ).aggregate(
-            total_boxes=models.Sum('boxes')
-        )['total_boxes'] or 0
-
-        return boxes
+        """Requests are open from Friday at 9am until Sunday at 2pm"""
+        now = timezone.localtime()
+        weekday = now.strftime('%A')
+        is_friday = weekday == 'Friday'
+        is_saturday = weekday == 'Saturday'
+        is_sunday = weekday == 'Sunday'
+        is_after_9am = now.hour >= 9
+        is_before_2pm = now.hour < 14
+        return (
+            (is_friday and is_after_9am)
+            or is_saturday
+            or (is_sunday and is_before_2pm)
+        )
 
     @classmethod
     def has_open_request(cls, phone: str):
         """Does the user with the given phone number already have open requests?"""
-        return cls.objects.filter(phone_number=phone, delivery_date=None, completed=False).exists()
+        return cls.objects.filter(
+            phone_number=phone,
+            delivery_date=None,
+        ).exclude(
+            status__in=cls.COMPLETED_STATUSES
+        ).exists()
+
+    @property
+    def boxes(self):
+        if self.num_adults < 4:
+            return 1
+        elif self.num_adults < 7:
+            return 2
+        else:
+            return 3
 
     def copy(self):
         """Clone the request"""
-        kwargs = model_to_dict(self, exclude=['id', 'delivery_date', 'completed'])
+        kwargs = model_to_dict(self, exclude=['id', 'delivery_date', 'status'])
         return GroceryRequest.objects.create(**kwargs)
 
     def send_confirmation_email(self):
         return GroceryRequestConfirmationEmail().send(self.email, {"request": self})
+
+    def send_lottery_selected_email(self):
+        return GroceryRequestLotterySelectedEmail().send(self.email, {"request": self})
+
+    def send_lottery_not_selected_email(self):
+        return GroceryRequestLotteryNotSelectedEmail().send(self.email, {"request": self})
 
     def send_recipient_scheduled_notification(self, api=None):
         if not self.can_receive_texts:
@@ -655,6 +699,29 @@ class GroceryRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timest
         )
         text.send(self.phone_number)
         self.comments.create(comment=f"Sent a text to recipient: {text.message}")
+
+    def get_previous_requests(self):
+        return self.__class__.objects.filter(
+            phone_number=self.phone_number,
+            created_at__lt=self.created_at,
+        ).order_by('-created_at')
+
+    def count_consecutive_previously_unselected(self):
+        """How many times did the same recipient consecutively submit and get NOT_SELECTED?"""
+        count = 0
+        for request in self.get_previous_requests():
+            if request.status == GroceryRequest.Status.NOT_SELECTED:
+                count += 1
+            else:
+                break
+        return count
+
+    def get_lottery_weight(self):
+        weight = 1
+        weight += self.count_consecutive_previously_unselected()
+        if self.in_any_demographic():
+            weight += 1
+        return weight
 
     def __str__(self):
         return "Request #G%d (%s): %d adult(s) and %d kid(s) in %s " % (

@@ -66,4 +66,4 @@ class GroceryRequestForm(forms.ModelForm):
 
     class Meta:
         model = GroceryRequest
-        exclude = ['created_at', 'updated_at', 'anonymized_latitude', 'anonymized_longitude', 'delivery_date', 'completed']
+        exclude = ['created_at', 'updated_at', 'anonymized_latitude', 'anonymized_longitude', 'delivery_date', 'status']
