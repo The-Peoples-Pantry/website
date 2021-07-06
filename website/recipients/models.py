@@ -1,5 +1,5 @@
 import logging
-from datetime import timedelta, time, date
+from datetime import time
 from django.db import models
 from django.db.models import F
 from django.db.models.functions import Power, Sqrt
@@ -271,33 +271,19 @@ class MealRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timestamp
         return self.status == MealRequest.Status.DELIVERED
 
     def copy(self):
-        """Clone the request with special business logic
-        - The chef should remain the same but not the delivery driver
-        - The date should be on the same day of the week, starting today or later
-        - If the original date is None, so is the new date
-        - Status should be Chef Assigned
-        """
+        """Clone the request and treat it like a new submission"""
         kwargs = model_to_dict(self, exclude=[
             'id',
             'chef',
             'deliverer',
             'delivery_date',
-            'status',
+            'pickup_start',
+            'pickup_end',
+            'dropoff_start',
+            'dropoff_end',
+            'status'
         ])
-
-        new_date = self.delivery_date
-        today = date.today()
-        if new_date:
-            while new_date <= today:
-                new_date += timedelta(days=7)
-
-        return MealRequest.objects.create(
-            **kwargs,
-            chef=self.chef,
-            deliverer=None,
-            delivery_date=new_date,
-            status=MealRequest.Status.CHEF_ASSIGNED,
-        )
+        return MealRequest.objects.create(**kwargs)
 
     def send_confirmation_email(self):
         return MealRequestConfirmationEmail().send(self.email, {"request": self})
@@ -618,7 +604,7 @@ class GroceryRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timest
             return 3
 
     def copy(self):
-        """Clone the request"""
+        """Clone the request and treat it like a new submission"""
         kwargs = model_to_dict(self, exclude=['id', 'delivery_date', 'status'])
         return GroceryRequest.objects.create(**kwargs)
 
