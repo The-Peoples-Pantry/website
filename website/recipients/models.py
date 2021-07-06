@@ -690,7 +690,7 @@ class GroceryRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timest
         """How many times did the same recipient consecutively submit and get NOT_SELECTED?"""
         count = 0
         for request in self.get_previous_requests():
-            if request.status == MealRequest.Status.NOT_SELECTED:
+            if request.status == GroceryRequest.Status.NOT_SELECTED:
                 count += 1
             else:
                 break
