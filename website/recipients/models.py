@@ -30,6 +30,22 @@ class SendNotificationException(Exception):
 
 
 class MealRequestQuerySet(models.QuerySet):
+    def available_for_chef_signup(self):
+        return self.filter(
+            chef__isnull=True,
+        ).exclude(
+            status__in=(MealRequest.Status.SUBMITTED, *MealRequest.COMPLETED_STATUSES),
+        )
+
+    def available_for_deliverer_signup(self):
+        return self.filter(
+            deliverer__isnull=True,
+        ).exclude(
+            delivery_date__isnull=True
+        ).exclude(
+            status__in=(MealRequest.Status.SUBMITTED, *MealRequest.COMPLETED_STATUSES),
+        )
+
     def delivered(self):
         return self.filter(status=MealRequest.Status.DELIVERED)
 
@@ -69,6 +85,8 @@ class MealRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timestamp
         DELIVERED = 'Delivered', 'Delivered'
         UNSUCCESSFUL = 'Unsuccessful', 'Unsuccessful'
         NOT_SELECTED = 'Not Selected', 'Not Selected'
+
+    COMPLETED_STATUSES = (Status.DELIVERED, Status.UNSUCCESSFUL, Status.NOT_SELECTED)
 
     # Information about the recipient
     can_receive_texts = models.BooleanField(
@@ -233,7 +251,7 @@ class MealRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timestamp
 
     @classmethod
     def active_requests(cls):
-        return cls.objects.exclude(status__in=(cls.Status.DATE_CONFIRMED, cls.Status.DELIVERED)).count()
+        return cls.objects.exclude(status__in=(cls.Status.DATE_CONFIRMED, *cls.COMPLETED_STATUSES)).count()
 
     @classmethod
     def has_open_request(cls, phone: str):
@@ -241,7 +259,7 @@ class MealRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timestamp
         return cls.objects.filter(
             phone_number=phone
         ).exclude(
-            status__in=(cls.Status.DATE_CONFIRMED, cls.Status.DELIVERED)
+            status__in=(cls.Status.DATE_CONFIRMED, *cls.COMPLETED_STATUSES)
         ).exists()
 
     @property
@@ -465,6 +483,8 @@ class GroceryRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timest
         UNSUCCESSFUL = 'Unsuccessful', 'Unsuccessful'
         NOT_SELECTED = 'Not Selected', 'Not Selected'
 
+    COMPLETED_STATUSES = (Status.DELIVERED, Status.UNSUCCESSFUL, Status.NOT_SELECTED)
+
     can_receive_texts = models.BooleanField(
         "Can receive texts",
         help_text="Can the phone number provided receive text messages?",
@@ -585,7 +605,7 @@ class GroceryRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timest
             phone_number=phone,
             delivery_date=None,
         ).exclude(
-            status__in=(cls.Status.DELIVERED, cls.Status.UNSUCCESSFUL)
+            status__in=cls.COMPLETED_STATUSES
         ).exists()
 
     @property

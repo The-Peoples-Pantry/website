@@ -28,9 +28,6 @@ class CompletedFilter(admin.SimpleListFilter):
     title = 'Completed'
     parameter_name = 'completed'
 
-    def queryset_kwargs(self):
-        return {'status': MealRequest.Status.DELIVERED}
-
     def lookups(self, request, model_admin):
         return (
             ('Hide Completed', 'Hide Completed'),
@@ -38,7 +35,10 @@ class CompletedFilter(admin.SimpleListFilter):
 
     def queryset(self, request, queryset):
         if self.value() == 'Hide Completed':
-            queryset = queryset.exclude(**self.queryset_kwargs())
+            queryset = queryset.exclude(status__in=(
+                *MealRequest.COMPLETED_STATUSES,
+                *GroceryRequest.COMPLETED_STATUSES,
+            ))
         return queryset
 
 
@@ -167,7 +167,7 @@ class MealRequestAdmin(admin.ModelAdmin):
     dropoff_range.short_description = 'Dropoff range'
 
     def completed(self, obj):
-        return obj.status == MealRequest.Status.DELIVERED
+        return obj.status in MealRequest.COMPLETED_STATUSES
     completed.admin_order_field = 'status'
     completed.boolean = True
 
@@ -335,7 +335,7 @@ class GroceryRequestAdmin(admin.ModelAdmin):
     texts.admin_order_field = "can_receive_texts"
 
     def completed(self, obj):
-        return obj.status == GroceryRequest.Status.DELIVERED
+        return obj.status in GroceryRequest.COMPLETED_STATUSES
     completed.admin_order_field = 'status'
     completed.boolean = True
 

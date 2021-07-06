@@ -25,7 +25,7 @@ class ChefSignupListView(LoginRequiredMixin, GroupRequiredMixin, LastVisitedMixi
     permission_group = 'Chefs'
     permission_group_redirect_url = reverse_lazy('volunteers:chef_application')
     filterset_class = ChefSignupFilter
-    queryset = MealRequest.objects.not_delivered().filter(chef__isnull=True)
+    queryset = MealRequest.objects.available_for_chef_signup()
 
     def get_queryset(self):
         return super().get_queryset().with_delivery_distance(chef=self.request.user).order_by('delivery_distance')
@@ -41,7 +41,7 @@ class ChefSignupView(LoginRequiredMixin, GroupRequiredMixin, UpdateView):
     permission_group = 'Chefs'
     permission_group_redirect_url = reverse_lazy('volunteers:chef_application')
     form_class = ChefSignupForm
-    queryset = MealRequest.objects.not_delivered().filter(chef__isnull=True)
+    queryset = MealRequest.objects.available_for_chef_signup()
     template_name = "volunteers/chef_signup.html"
     context_object_name = "meal_request"
     success_url = reverse_lazy('volunteers:chef_signup_list')
@@ -67,7 +67,7 @@ class DelivererSignupListView(LoginRequiredMixin, GroupRequiredMixin, LastVisite
     permission_group = 'Deliverers'
     permission_group_redirect_url = reverse_lazy('volunteers:deliverer_application')
     filterset_class = DelivererSignupFilter
-    queryset = MealRequest.objects.not_delivered().exclude(delivery_date__isnull=True).filter(deliverer__isnull=True).with_delivery_distance()
+    queryset = MealRequest.objects.available_for_deliverer_signup().with_delivery_distance()
     ordering = 'delivery_date'
 
     @property
@@ -81,7 +81,7 @@ class DelivererSignupView(LoginRequiredMixin, GroupRequiredMixin, UpdateView):
     form_class = DelivererSignupForm
     permission_group = 'Deliverers'
     permission_group_redirect_url = reverse_lazy('volunteers:deliverer_application')
-    queryset = MealRequest.objects.not_delivered().exclude(delivery_date__isnull=True).filter(deliverer__isnull=True).with_delivery_distance()
+    queryset = MealRequest.objects.available_for_deliverer_signup().with_delivery_distance()
     template_name = "volunteers/deliverer_signup.html"
     context_object_name = "meal_request"
     success_url = reverse_lazy('volunteers:deliverer_signup_list')
