@@ -1,2 +1,0 @@
-#!/usr/bin/env bash
-python website/manage.py sendtestemail ryanwilsonperkin@gmail.com
