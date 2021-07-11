@@ -46,21 +46,6 @@ class RunGroceryRequestCommandTests(TestCase):
             self.assertIn(request, eligible)
             self.assertNotIn(request, ineligible)
 
-    def test_selects_only_up_to_limit(self):
-        """If we have a limit of 10 and 8 are already selected, select 2"""
-        eligible = GroceryRequestFactory.create_batch(20, num_adults=1, status=GroceryRequest.Status.SUBMITTED)
-        GroceryRequestFactory.create_batch(8, num_adults=1, status=GroceryRequest.Status.SELECTED)
-        output = self.call_run_grocery_request_lottery()
-        self.assertIn("Already Selected GroceryRequests: 8", output)
-        self.assertIn("Will select: 2", output)
-
-        newly_selected = []
-        for request in eligible:
-            request.refresh_from_db()
-            if request.status == GroceryRequest.Status.SELECTED:
-                newly_selected.append(request)
-        self.assertEqual(2, len(newly_selected))
-
     def test_doesnt_perform_change_on_dry_run(self):
         requests = GroceryRequestFactory.create_batch(20, status=GroceryRequest.Status.SUBMITTED)
         self.call_run_grocery_request_lottery(dry_run=True)

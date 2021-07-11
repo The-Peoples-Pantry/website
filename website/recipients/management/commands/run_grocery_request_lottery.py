@@ -15,7 +15,6 @@ class Command(BaseCommand):
         total_grocery_requests = GroceryRequest.objects.all()
         self.stdout.write(f"Total GroceryRequests: {total_grocery_requests.count()}")
         self.stdout.write(f"Eligible GroceryRequests: {lottery.eligible_requests().count()}")
-        self.stdout.write(f"Already Selected GroceryRequests: {lottery.already_selected().count()}")
         self.stdout.write(f"Will select: {lottery.num_to_select()}")
 
         selected, not_selected = lottery.select(dry_run=options['dry_run'])
