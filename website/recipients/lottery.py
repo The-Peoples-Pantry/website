@@ -116,17 +116,11 @@ class GroceryRequestLottery:
     def __init__(self, k=None):
         self.k = k or settings.GROCERIES_LIMIT
 
-    def already_selected(self):
-        return GroceryRequest.objects.filter(status=GroceryRequest.Status.SELECTED)
-
     def eligible_requests(self):
         return GroceryRequest.objects.filter(status=GroceryRequest.Status.SUBMITTED)
 
     def num_to_select(self):
-        return min(
-            self.k - self.__boxes_sum(self.already_selected()),
-            self.__boxes_sum(self.eligible_requests())
-        )
+        return min(self.k, self.__boxes_sum(self.eligible_requests()))
 
     def get_weight(self, request):
         return request.get_lottery_weight()
