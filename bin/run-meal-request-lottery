@@ -10,9 +10,6 @@ if [ "${WEEKDAY}" != "Sunday" ]; then
 	exit 0
 fi
 
-echo "Not running the lottery, remove this code to execute"
-exit 0
-
 # Run the lottery and send me an email to see if it succeeded or failed
 echo "Running Meal Request Lottery"
 if python website/manage.py run_meal_request_lottery; then
