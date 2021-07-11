@@ -40,6 +40,6 @@ class GroceryRequestLotterySelectedEmail(Email):
 
 class GroceryRequestLotteryNotSelectedEmail(Email):
     subject = "Your grocery request for The People's Pantry was not selected"
-    template = "emails/meals/lottery/not_selected.html"
+    template = "emails/groceries/lottery/not_selected.html"
     reply_to = settings.REQUEST_COORDINATORS_EMAIL
     include_unsubscribe_link = False
