@@ -111,9 +111,11 @@
   input[name="can_deliver"] {
     margin-bottom: 2em;
   }
+  /* Only show the dropoff timerange selectors if the user is delivering it themselves */
   input[name="can_deliver"]:not(:checked) ~ .row .details-section .dropoff-timerange {
     display: none;
   }
+  /* If the form requires self-delivery, hide the submit section unless they're delivering it themselves */
   .form.require-self-delivery input[name=can_deliver]:not(:checked) ~ .row .submit-section {
     display: none;
   }
