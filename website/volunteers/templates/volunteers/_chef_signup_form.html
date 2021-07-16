@@ -2,15 +2,21 @@
 {% load math %}
 
 {# Each request gets represented as a card #}
-<div id="request-{{ meal_request.id }}" class="card shadow-lift mb-4">
+<div id="request-{{ meal_request.id }}" class="card shadow-lift mb-4 chef-signup-form">
 
   {# Card header section contains the meal request title #}
-  <div class="card-header font-weight-bold" data-toggle="collapse" data-target="#request-body-{{ meal_request.id }}" aria-expanded="false" aria-controls="request-{{ meal_request.id }}" style="cursor: pointer;">
-    {% if last_visited < meal_request.created_at.timestamp %}<span class="badge badge-pill badge-primary" title="This request was added since you last visited this page">New</span>{% endif %}
-    Request #{{ meal_request.id }}: Meal for {{ meal_request.num_adults }} adult{{ meal_request.num_adults | pluralize }}
-    and {{ meal_request.num_children }} kid{{ meal_request.num_children | pluralize }}
-    {% if meal_request.children_ages %}(aged {{ meal_request.children_ages }}){% endif %}
-    in {{ meal_request.city }}
+  <div class="card-header font-weight-bold" data-toggle="collapse" data-target="#request-body-{{ meal_request.id }}" aria-expanded="false" aria-controls="request-{{ meal_request.id }}">
+    <div class="d-flex justify-content-between">
+      <div>
+        {% if last_visited < meal_request.created_at.timestamp %}<span class="badge badge-pill badge-primary" title="This request was added since you last visited this page">New</span>{% endif %}
+        Request #{{ meal_request.id }}: Meal for {{ meal_request.num_adults }} adult{{ meal_request.num_adults | pluralize }}
+        and {{ meal_request.num_children }} kid{{ meal_request.num_children | pluralize }}
+        {% if meal_request.children_ages %}(aged {{ meal_request.children_ages }}){% endif %}
+        in {{ meal_request.city }}
+      </div>
+      <i class="fe fe-lg fe-chevron-down"></i>
+      <i class="fe fe-lg fe-chevron-up"></i>
+    </div>
   </div>
 
   {# Card body section contains the form and map #}
@@ -117,6 +123,19 @@
   }
   /* If the form requires self-delivery, hide the submit section unless they're delivering it themselves */
   .form.require-self-delivery input[name=can_deliver]:not(:checked) ~ .row .submit-section {
+    display: none;
+  }
+
+  /* Indicate that the card headers can be clicked to expand/collapse */
+  .chef-signup-form .card-header {
+    cursor: pointer;
+  }
+
+  /* Show the proper chevron up/down based on when the card is expanded/collapsed */
+  .chef-signup-form .card-header[aria-expanded="true"] .fe-chevron-down {
+    display: none;
+  }
+  .chef-signup-form .card-header[aria-expanded="false"] .fe-chevron-up {
     display: none;
   }
 </style>
