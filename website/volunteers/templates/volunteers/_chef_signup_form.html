@@ -25,6 +25,9 @@
         <div class="alert alert-secondary">This request was submitted more than a week ago, please prioritize this if possible.</div>
       {% endif %}
 
+      {{ form.can_deliver }}
+      {{ form.can_deliver.label }}
+
       <div class="row">
         <div class="col-lg-6 order-lg-2 mb-4">
           <label class="font-weight-bold">Approximate delivery location</label>
@@ -39,7 +42,7 @@
             </iframe>
           </div>
         </div>
-        <div class="col-lg-6 order-lg-1">
+        <div class="details-section col-lg-6 order-lg-1">
           <label class="font-weight-bold">Food preferences</label>
           <p>{{ meal_request.food_preferences|default:"None" }}</p>
 
@@ -77,8 +80,6 @@
             </div>
           </div>
 
-          {{ form.can_deliver }}
-          {{ form.can_deliver.label }}
           <div class="dropoff-timerange form-group">
             <label class="font-weight-bold">Drop-off timerange</label>
             <div class="row">
@@ -108,9 +109,9 @@
 
 <style type="text/css">
   input[name="can_deliver"] {
-    margin-bottom: 1em;
+    margin-bottom: 2em;
   }
-  input[name="can_deliver"]:not(:checked) ~ div.dropoff-timerange {
+  input[name="can_deliver"]:not(:checked) ~ .row .details-section .dropoff-timerange {
     display: none;
   }
 </style>
