@@ -15,7 +15,7 @@
 
   {# Card body section contains the form and map #}
   <div class="card-body">
-    <form action="{% url 'volunteers:chef_signup' meal_request.pk %}" method="post" class="form" {% if meal_request.delivery_distance > settings.MAX_CHEF_DISTANCE %}onsubmit="return confirmChefSignup(this);"{% endif %}>
+    <form action="{% url 'volunteers:chef_signup' meal_request.pk %}" method="post" class="form">
       {% csrf_token %}
       {% bootstrap_form_errors form %}
 
@@ -114,13 +114,3 @@
     display: none;
   }
 </style>
-
-{# CSP Nonce required for inline scripts, see https://django-csp.readthedocs.io/en/latest/nonce.html #}
-<script nonce="{{request.csp_nonce}}">
-  function confirmChefSignup(form) {
-    var can_deliver = form.querySelector('input[name="can_deliver"]').checked;
-    if (can_deliver) return true;
-
-    return window.confirm('Are you sure you want to sign up for this meal? Because of the distance, it might be difficult to find someone to deliver.');
-  }
-</script>
