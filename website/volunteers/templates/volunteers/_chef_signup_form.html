@@ -15,7 +15,7 @@
 
   {# Card body section contains the form and map #}
   <div class="card-body">
-    <form action="{% url 'volunteers:chef_signup' meal_request.pk %}" method="post" class="form">
+    <form action="{% url 'volunteers:chef_signup' meal_request.pk %}" method="post" class="form {% if meal_request.delivery_distance > settings.MAX_CHEF_DISTANCE %}require-self-delivery{% endif %}">
       {% csrf_token %}
       {% bootstrap_form_errors form %}
 
@@ -95,7 +95,7 @@
             </small>
           </div>
         </div>
-        <div class="col-12 order-lg-3">
+        <div class="submit-section col-12 order-lg-3">
           {% bootstrap_field form.pickup_details label_class="font-weight-bold" %}
           {% bootstrap_field form.meal label_class="font-weight-bold" %}
           {% bootstrap_field form.containers placeholder="example: 4 14oz containers of soup" label_class="font-weight-bold" %}
@@ -112,6 +112,9 @@
     margin-bottom: 2em;
   }
   input[name="can_deliver"]:not(:checked) ~ .row .details-section .dropoff-timerange {
+    display: none;
+  }
+  .form.require-self-delivery input[name=can_deliver]:not(:checked) ~ .row .submit-section {
     display: none;
   }
 </style>
