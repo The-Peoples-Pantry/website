@@ -2,5 +2,5 @@
 
 {% block content %}
 <h1>Sign up to cook for Request #{{ meal_request.id }}</h1>
-{% include "volunteers/_chef_signup_form.html" %}
+{% include "volunteers/_chef_signup_form.html" with expanded="true" %}
 {% endblock content %}
