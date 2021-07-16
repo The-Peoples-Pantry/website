@@ -15,15 +15,18 @@
 
   {# Card body section contains the form and map #}
   <div class="card-body">
-    <form action="{% url 'volunteers:chef_signup' meal_request.pk %}" method="post" class="form" {% if meal_request.delivery_distance > settings.MAX_CHEF_DISTANCE %}onsubmit="return confirmChefSignup(this);"{% endif %}>
+    <form action="{% url 'volunteers:chef_signup' meal_request.pk %}" method="post" class="form {% if meal_request.delivery_distance > settings.MAX_CHEF_DISTANCE %}require-self-delivery{% endif %}">
       {% csrf_token %}
       {% bootstrap_form_errors form %}
 
       {% if meal_request.delivery_distance > settings.MAX_CHEF_DISTANCE %}
-        <div class="alert alert-warning">This request is far from you, please choose a different request unless you can deliver this yourself.</div>
+        <div class="alert alert-warning">This request is far from you, if you choose to cook for it you must also be able to deliver it yourself. Check the box below to enable the signup button.</div>
       {% elif meal_request.stale %}
         <div class="alert alert-secondary">This request was submitted more than a week ago, please prioritize this if possible.</div>
       {% endif %}
+
+      {{ form.can_deliver }}
+      {{ form.can_deliver.label }}
 
       <div class="row">
         <div class="col-lg-6 order-lg-2 mb-4">
@@ -39,7 +42,7 @@
             </iframe>
           </div>
         </div>
-        <div class="col-lg-6 order-lg-1">
+        <div class="details-section col-lg-6 order-lg-1">
           <label class="font-weight-bold">Food preferences</label>
           <p>{{ meal_request.food_preferences|default:"None" }}</p>
 
@@ -77,8 +80,6 @@
             </div>
           </div>
 
-          {{ form.can_deliver }}
-          {{ form.can_deliver.label }}
           <div class="dropoff-timerange form-group">
             <label class="font-weight-bold">Drop-off timerange</label>
             <div class="row">
@@ -94,7 +95,7 @@
             </small>
           </div>
         </div>
-        <div class="col-12 order-lg-3">
+        <div class="submit-section col-12 order-lg-3">
           {% bootstrap_field form.pickup_details label_class="font-weight-bold" %}
           {% bootstrap_field form.meal label_class="font-weight-bold" %}
           {% bootstrap_field form.containers placeholder="example: 4 14oz containers of soup" label_class="font-weight-bold" %}
@@ -108,19 +109,14 @@
 
 <style type="text/css">
   input[name="can_deliver"] {
-    margin-bottom: 1em;
+    margin-bottom: 2em;
   }
-  input[name="can_deliver"]:not(:checked) ~ div.dropoff-timerange {
+  /* Only show the dropoff timerange selectors if the user is delivering it themselves */
+  input[name="can_deliver"]:not(:checked) ~ .row .details-section .dropoff-timerange {
+    display: none;
+  }
+  /* If the form requires self-delivery, hide the submit section unless they're delivering it themselves */
+  .form.require-self-delivery input[name=can_deliver]:not(:checked) ~ .row .submit-section {
     display: none;
   }
 </style>
-
-{# CSP Nonce required for inline scripts, see https://django-csp.readthedocs.io/en/latest/nonce.html #}
-<script nonce="{{request.csp_nonce}}">
-  function confirmChefSignup(form) {
-    var can_deliver = form.querySelector('input[name="can_deliver"]').checked;
-    if (can_deliver) return true;
-
-    return window.confirm('Are you sure you want to sign up for this meal? Because of the distance, it might be difficult to find someone to deliver.');
-  }
-</script>
