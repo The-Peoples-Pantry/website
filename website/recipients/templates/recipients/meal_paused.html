@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
 
 {% block content %}
-{% include "recipients/_lottery_notice.html" %}
 <h1>Meal sign-ups paused</h1>
 <p>Our meal sign-ups are temporarily paused while we work to deliver the requests we've already received. This form will re-open for meal requests each Friday at 9am and is open until Sunday 2pm.</p>
 <p>We are only able to fulfill {{settings.MEALS_LIMIT}} meal requests per week, and we will draw {{settings.MEALS_LIMIT}} request submissions on Sunday at 2pm. We will contact you to let you know whether your request was selected. Requests that are selected will be available for our volunteer chefs to sign up, <strong>please note that scheduling meal deliveries is still dependent on chefs signing up, you will be contacted once a volunteer chef signs up for your request and your delivery is scheduled</strong>. Deliveries will be scheduled for Fridays, Saturdays, and Sundays.</p>
