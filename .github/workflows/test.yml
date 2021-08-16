@@ -1,3 +1,8 @@
+# Run tests against a Pull Request using GitHub Actions
+# This workflow will run when a new Pull Request is opened
+# It has a variety of tests that ensure that the code will work correctly
+# https://docs.github.com/en/actions
+
 name: Test
 on: [push]
 
@@ -7,11 +12,14 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      # Pick the python version to use
+      # This should be kept up-to-date with .python-version and runtime.txt
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.9.5'
+          python-version: "3.9.5"
 
+      # Cache gets invalidated when our python dependencies change
       - name: Set up Python / Pip cache
         uses: actions/cache@v2
         with:
@@ -23,14 +31,23 @@ jobs:
           python -m pip install --upgrade pip wheel setuptools
           pip install -r requirements.txt
 
+      # We use flake8 to lint our code so that developers working
+      # together on the project can write in a consistent style
+      # https://flake8.pycqa.org/en/latest/
       - name: Lint code with flake8
         working-directory: ./website
         run: flake8 .
 
+      # We use Django's built-in test runner
+      # https://docs.djangoproject.com/en/stable/topics/testing/overview/
       - name: Run tests
         working-directory: ./website
         run: python manage.py test
 
+      # Double-check that migrations have been created
+      # After making a change to a model, the developer should
+      # generate a new migration with `manage.py makemigrations`
+      # This test will fail if that hasn't been done yet
       - name: Check that migrations are up-to-date
         working-directory: ./website
         run: python manage.py makemigrations --dry-run --check
