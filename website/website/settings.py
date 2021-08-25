@@ -279,7 +279,6 @@ GROUP_PERMISSIONS = {
     'Organizers': [
         'add_mealrequest',
         'change_mealrequest',
-        'delete_mealrequest',
         'view_mealrequest',
         'add_mealrequestcomment',
         'view_mealrequestcomment',
@@ -289,7 +288,6 @@ GROUP_PERMISSIONS = {
 
         'add_groceryrequest',
         'change_groceryrequest',
-        'delete_groceryrequest',
         'view_groceryrequest',
         'add_groceryrequestcomment',
         'view_groceryrequestcomment',
