@@ -1,0 +1,4 @@
+#!/bin/bash
+
+python -m venv /tmp/venv
+flake8 website && echo "OK" || echo "Failure"
