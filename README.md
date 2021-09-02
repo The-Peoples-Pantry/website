@@ -1,50 +1,39 @@
 # The People's Pantry Website
 
-Code repo that is running [thepeoplespantryto.com](https://www.thepeoplespantryto.com/)
+<p style="text-align:center">
+  <a href="https://www.thepeoplespantryto.com">
+    <img src="https://www.thepeoplespantryto.com/static/logo-black.png" width="20%">
+  </a>
+</p>
 
-## Technoologies Used
+This repo hosts the code that runs [thepeoplespantryto.com](https://www.thepeoplespantryto.com)
 
-- Django
+The People's Pantry is a grassroots volunteer initiative dedicated to safely providing and delivering cooked meals and grocery packages to folks who have been disproportionately affected by the COVID-19 pandemic.
 
-- Heroku
+This website is a small-ish Python/Django application that serves up a form for recipients to request groceries and home-cooked meals, for chefs and deliverers to signup for those requests, and we use the Django admin to allow volunteer organizers to manage it all.
 
-## Getting Started
-0. Clone the project locally
+## Technology
 
-    `git clone git@github.com:The-Peoples-Pantry/website.git` 
+Our driving technology principles are:
 
-or if using https rather than ssh keys
+1. Accessibility
+1. Simplicity
+1. Collaboration
 
-    `git clone https://github.com/The-Peoples-Pantry/website.git`
+This application is used by a wide variety of people and it must be designed to be [accessible](https://www.a11yproject.com/checklist/) to their needs.
 
-### Using Docker
+We strive to strike a balance between new features and code simplicity in order to make this application easy for new volunteers to onboard to.
 
-1. Build the image:
+We have deliberately chosen a "boring" tech stack that will be easy to debug, easy to deploy, and easy to learn. We use Python & [Django][django] to serve pages, [Gunicorn][gunicorn] as the web server, [Heroku][heroku] as our hosting provider, and [Postgres][postgres] as our backing relational database. We have avoided adding Javascript frameworks or client-side functionality to reduce the complexity of the application and keep accessibility levels high.
 
-    `docker build -t tpp:latest .`
+One area in which we have traded off some complexity for convenience is the use of a [bootstrap theme called landkit][landkit]. Those of us involved in the project don't have a deep background in design and wanted something that worked well and looked good without having to build our own design system.
 
-2. Run it:
+## Contributing
 
-    `docker run -dp 8000:8000 tpp:latest`
+We welcome contributions to this project! See our [Contributing guide](/contributing.md) and our [list of open issues](https://github.com/The-Peoples-Pantry/website/issues)
 
-### Not a fan of Docker
-
-1. Make sure you have the correct version of pythong installed
-
-    `python --version` > 3
-
-2. Install the project dependencies
-
-    `pip install -r requirements.txt`
-
-3. Collect the static files from all your django applications into one location
-    
-    `python website/manage.py collectstatic`
-
-4. Run the DB migrations
-
-    `python website/manage.py migrate`
-
-5. Run the dev server (by default listens on port 8000)
-    
-    `python website/manage.py runserver`
+[django]: https://www.djangoproject.com/
+[gunicorn]: https://gunicorn.org/
+[heroku]: https://www.heroku.com/
+[postgres]: https://www.postgresql.org/
+[landkit]: https://landkit.goodthemes.co/

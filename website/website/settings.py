@@ -20,6 +20,12 @@ from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
 
 
+# Helper method for retrieving True/False value from environment variables
+# - XYZ="true" will evaluate to True
+# - XYZ="1" will evaluate to True
+# - XYZ="false" will evaluate to False
+# - XYZ="0" will evaluate to True
+# - If XYZ is unset, the default will be used
 def getenv_bool(key, default=False):
     """Retrieve an environment variable with a value like "1" or "0" and cast to boolean."""
     val = getenv(key)
@@ -67,7 +73,6 @@ INSTALLED_APPS = [
     'recipients',
     'landkit_theme',
 ]
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -78,9 +83,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'csp.middleware.CSPMiddleware',
 ]
-
 ROOT_URLCONF = 'website.urls'
-
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -97,9 +100,7 @@ TEMPLATES = [
         },
     },
 ]
-
 WSGI_APPLICATION = 'website.wsgi.application'
-
 SITE_ID = 1
 
 # Database
@@ -135,15 +136,10 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'America/Toronto'
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
-
 TIME_INPUT_FORMATS = ['%H:%M']
 
 # Static files (CSS, JavaScript, Images)
@@ -221,16 +217,40 @@ if SENTRY_DSN:
 
 # django-sql-explorer
 # https://django-sql-explorer.readthedocs.io/en/latest/install.html
+
 EXPLORER_CONNECTIONS = {'Default': 'default'}
 EXPLORER_DEFAULT_CONNECTION = 'default'
 EXPLORER_PERMISSION_VIEW = lambda request: request.user.is_staff
 EXPLORER_PERMISSION_CHANGE = lambda request: request.user.is_superuser
 
 
+# django_heroku
+# https://devcenter.heroku.com/articles/django-app-configuration
 # Configure hosted settings automatically using django_heroku
 # Don't run this in a CI test environment though, because it overrides DB settings
+
 if not getenv_bool("CI"):
     django_heroku.settings(locals())
+
+
+# Maps API keys
+# https://developer.mapquest.com/documentation/
+# https://developers.google.com/maps/documentation
+# Credentials maintained in 1Password
+
+MAPQUEST_API_KEY = getenv("MAPQUEST_API_KEY")
+GOOGLE_MAPS_PRODUCTION_KEY = getenv("GOOGLE_MAPS_API_KEY")
+
+
+# Textline API
+# https://textline.docs.apiary.io/
+# Credentials maintained in 1Password
+
+TEXTLINE_ACCESS_TOKEN = getenv("TEXTLINE_ACCESS_TOKEN")
+
+
+# Custom application settings
+# Used throughout this application but centralized here as constants
 
 # Model constants
 DEFAULT_LENGTH = 256
@@ -254,16 +274,6 @@ DISABLE_MEALS_PERIOD = getenv_bool("DISABLE_MEALS_PERIOD", False)
 
 # Settings for figuring out delivery distances
 MAX_CHEF_DISTANCE = 10  # Chefs can't be more than this many km away from their recipients
-
-# Maps API keys
-MAPQUEST_API_KEY = getenv("MAPQUEST_API_KEY")  # Eric's dev account - 15k requests/month
-GOOGLE_MAPS_PRODUCTION_KEY = getenv("GOOGLE_MAPS_API_KEY")  # Env var refers to PPT Developer API key
-
-# Textline API
-# https://textline.docs.apiary.io/
-
-TEXTLINE_ACCESS_TOKEN = getenv("TEXTLINE_ACCESS_TOKEN")
-
 
 # Group Permissions
 # List of permissions that each group has

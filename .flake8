@@ -1,3 +1,6 @@
 [flake8]
-# Ignore error for "line too long"
+# Ignored errors:
+# E501: Line too long (we use long lines, and don't yet use an auto-formatter)
+# E731: Don't use lamdas (useful in settings, factories, and sorting)
+# W503: No line breaks before binary operators (Disagree, this looks neater)
 ignore = E501, E731, W503
