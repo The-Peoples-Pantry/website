@@ -236,13 +236,15 @@ if not getenv_bool("CI"):
 # Maps API keys
 # https://developer.mapquest.com/documentation/
 # https://developers.google.com/maps/documentation
+# Credentials maintained in 1Password
 
-MAPQUEST_API_KEY = getenv("MAPQUEST_API_KEY")  # Eric's dev account - 15k requests/month
-GOOGLE_MAPS_PRODUCTION_KEY = getenv("GOOGLE_MAPS_API_KEY")  # Env var refers to PPT Developer API key
+MAPQUEST_API_KEY = getenv("MAPQUEST_API_KEY")
+GOOGLE_MAPS_PRODUCTION_KEY = getenv("GOOGLE_MAPS_API_KEY")
 
 
 # Textline API
 # https://textline.docs.apiary.io/
+# Credentials maintained in 1Password
 
 TEXTLINE_ACCESS_TOKEN = getenv("TEXTLINE_ACCESS_TOKEN")
 
