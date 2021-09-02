@@ -1,8 +1,14 @@
 import random
 from datetime import date
+from django.shortcuts import redirect
+from django.templatetags.static import static
 from django.views.generic import TemplateView
 
 from recipients.models import MealRequest, GroceryRequest
+
+
+def logo(request):
+    return redirect(static('logo-black.png'))
 
 
 class IndexView(TemplateView):
