@@ -1,5 +1,4 @@
 from django.views.generic.base import RedirectView
-from django.templatetags.static import static
 from django.urls import path
 from . import views
 
@@ -11,7 +10,7 @@ urlpatterns = [
     path('recipes', views.RecipesView.as_view(), name='recipes'),
 
     # Stable redirect url to our (hashed) logo url
-    path('logo', RedirectView.as_view(url=static('logo-black.png')), name='logo'),
+    path('logo', views.logo, name='logo'),
 
     # External link redirects
     path('links/facebook', RedirectView.as_view(url='https://www.facebook.com/groups/675649626532144/'), name='facebook'),

@@ -1,0 +1,5 @@
+#!/bin/bash
+set -e
+
+docker build -t tpp:latest .
+docker run --rm --name tpp_devserver -p 8000:8000 tpp:latest

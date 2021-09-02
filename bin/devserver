@@ -1,0 +1,4 @@
+#!/bin/bash
+
+source /tmp/venv/bin/activate
+DEBUG=1 python website/manage.py runserver

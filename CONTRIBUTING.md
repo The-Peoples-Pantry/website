@@ -21,12 +21,12 @@ This application can be run within a [Docker][docker] container, or with Python 
 1. Build and run the Docker image
 
 ```sh
-docker build -t tpp:latest . && docker run -dp 8000:8000 tpp:latest
+bin/docker-devserver
 ```
 
 2. Access the server at http://0.0.0.0:8000
 
-If you need to run any other commands using the application (such as test commands, migrations, etc) you can execute them within the running Docker container using [`docker exec`](https://docs.docker.com/engine/reference/commandline/exec/)
+If you need to run any other commands using the application (such as test commands, migrations, etc) you can execute them within the running Docker container using [`bin/docker-shell`](https://docs.docker.com/engine/reference/commandline/exec/)
 
 ### With Python
 
@@ -39,29 +39,16 @@ python --version
 
 2. (Optionally) If you don't have the correct version of Python installed, install it using [pyenv][pyenv]
 
-3. Create a virtual environment to store your dependencies, then activate that virtual environment
+3. Run the setup script to create a virtual environment, install dependencies, and run migrations:
 
 ```sh
-python -m venv venv
-source venv/bin/activate
+bin/setup
 ```
 
-4. Install the Python dependencies
+4. Run the dev server (by default it listens on port 8000)
 
 ```sh
-pip install -r requirements.txt
-```
-
-5. Apply the database migrations to setup your database
-
-```sh
-python website/manage.py migrate
-```
-
-5. Run the dev server (by default it listens on port 8000)
-
-```sh
-DEBUG=1 python website/manage.py runserver
+bin/devserver
 ```
 
 6. Access the server at http://0.0.0.0:8000
@@ -71,7 +58,7 @@ DEBUG=1 python website/manage.py runserver
 The full test suite can be run with:
 
 ```sh
-python website/manage.py test website
+bin/test
 ```
 
 Django has [extensive documentation][django-testing] on testing practices, and we ask that contributors add tests with their functionality.
@@ -79,7 +66,7 @@ Django has [extensive documentation][django-testing] on testing practices, and w
 In addition to functional tests, we also test our style using the [flake8][flake8] linting tool. It can be run with:
 
 ```sh
-flake8 website
+bin/lint
 ```
 
 If any style violations are detected, they'll be printed to the console.
