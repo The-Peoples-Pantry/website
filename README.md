@@ -6,7 +6,7 @@
   </a>
 </p>
 
-This repo hosts the code that runs thepeoplespantryto.com
+This repo hosts the code that runs [thepeoplespantryto.com](https://www.thepeoplespantryto.com)
 
 The People's Pantry is a grassroots volunteer initiative dedicated to safely providing and delivering cooked meals and grocery packages to folks who have been disproportionately affected by the COVID-19 pandemic.
 
