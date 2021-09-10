@@ -131,6 +131,7 @@ class MealRequestAdmin(admin.ModelAdmin):
         'notify_deliverers_details',
     )
     search_fields = (
+        '=id',
         'name',
         'email',
         'phone_number',
@@ -331,6 +332,7 @@ class GroceryRequestAdmin(admin.ModelAdmin):
         GroceryRequestCommentInline,
     )
     search_fields = (
+        '=id',
         'name',
         'email',
         'phone_number'
