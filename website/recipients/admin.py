@@ -133,8 +133,8 @@ class MealRequestAdmin(admin.ModelAdmin):
     search_fields = (
         '=id',
         'name',
-        '=email',
-        '=phone_number',
+        'email',
+        'phone_number',
         'chef__volunteer__name',
         'deliverer__volunteer__name',
     )
@@ -334,8 +334,8 @@ class GroceryRequestAdmin(admin.ModelAdmin):
     search_fields = (
         '=id',
         'name',
-        '=email',
-        '=phone_number'
+        'email',
+        'phone_number'
     )
     actions = (
         'mark_complete',
