@@ -30,7 +30,7 @@ One area in which we have traded off some complexity for convenience is the use 
 
 ## Contributing
 
-We welcome contributions to this project! See our [Contributing guide](/contributing.md) and our [list of open issues](https://github.com/The-Peoples-Pantry/website/issues)
+We welcome contributions to this project! See our [Contributing guide](/CONTRIBUTING.md) and our [list of open issues](https://github.com/The-Peoples-Pantry/website/issues)
 
 [django]: https://www.djangoproject.com/
 [gunicorn]: https://gunicorn.org/
