@@ -55,3 +55,6 @@ html2text==2020.1.16
 # Allows us to work with geojson files and perform geographic analysis
 geojson==2.5.0
 Shapely==1.7.1
+
+# wysiwyg editor for flatpages
+django-ckeditor==6.1.0

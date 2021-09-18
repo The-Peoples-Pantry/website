@@ -63,6 +63,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+    'django.contrib.flatpages',
+    'ckeditor',
     'django_extensions',
     'bootstrap4',
     'django_filters',

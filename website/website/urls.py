@@ -30,6 +30,7 @@ urlpatterns = [
     # login redirects to accounts/profile on successful login
     path('accounts/profile/', UserProfileView.as_view(), name='profile'),
     path('admin/', admin.site.urls),
+    path('pages/', include('django.contrib.flatpages.urls')),
     path('recipients/', include('recipients.urls')),
     path('volunteers/', include('volunteers.urls')),
 ]
