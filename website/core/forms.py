@@ -47,7 +47,7 @@ class UserCreationForm(forms.ModelForm):
         # Django's user model does not apply a unique constraint on the DB field
         # so we need to perform a manual validation here
         email = self.cleaned_data.get("email")
-        if User.objects.filter(email=email).exists():
+        if User.objects.filter(email__iexact=email).exists():
             raise ValidationError(
                 self.error_messages['already_registered'],
                 code='already_registered',
