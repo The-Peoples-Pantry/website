@@ -11,6 +11,7 @@
 
 <form action="" method="post" class="form mb-6">
   {% csrf_token %}
+  {% bootstrap_form_errors form %}
   {% bootstrap_form form %}
   <button class="btn btn-block btn-primary mt-5" type="submit">Sign up</button>
 </form>
