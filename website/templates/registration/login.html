@@ -19,6 +19,8 @@
   {% csrf_token %}
   <input type="hidden" name="next" value="{{ next }}">
 
+  {% bootstrap_form_errors form %}
+
   {# Django uses the field "username" but we want to clarify that it's your email we're asking for #}
   {% bootstrap_label "Email address" %}
   {% bootstrap_field form.username placeholder="Email address" show_label=False bound_css_class="" %}
