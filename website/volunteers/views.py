@@ -133,7 +133,7 @@ class ChefTaskListView(LoginRequiredMixin, GroupRequiredMixin, ListView):
     """View for chefs to see the meals requests they've signed up for"""
 
     model = MealRequest
-    ordering = "delivery_date"
+    ordering = "-delivery_date"
     context_object_name = "meal_requests"
     template_name = "volunteers/chef_list.html"
     permission_group = "Chefs"
@@ -183,7 +183,7 @@ class DelivererTaskListView(LoginRequiredMixin, GroupRequiredMixin, ListView):
     """View for deliverers to see the meal requests they've signed up for"""
 
     model = MealRequest
-    ordering = "delivery_date"
+    ordering = "-delivery_date"
     context_object_name = "meal_requests"
     template_name = "volunteers/deliverer_list.html"
     permission_groups = ("Chefs", "Deliverers")
