@@ -40,6 +40,9 @@ sentry-sdk==0.19.3
 # Allows us to lint our code (https://flake8.pycqa.org/en/latest/)
 flake8== 3.8.4
 
+# Allows us to auto-format our code (https://black.readthedocs.io/en/stable/)
+black==21.9b0
+
 # Allows us to easily generate fake testing data
 factory_boy==3.2.0
 
