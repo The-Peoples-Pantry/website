@@ -2,4 +2,4 @@ from django.apps import AppConfig
 
 
 class LandkitThemeConfig(AppConfig):
-    name = 'landkit_theme'
+    name = "landkit_theme"

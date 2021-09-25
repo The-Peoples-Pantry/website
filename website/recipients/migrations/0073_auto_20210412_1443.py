@@ -7,28 +7,28 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('recipients', '0072_delete_mealdelivery'),
+        ("recipients", "0072_delete_mealdelivery"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='mealrequest',
-            name='dropoff_end',
+            model_name="mealrequest",
+            name="dropoff_end",
             field=models.TimeField(default=datetime.time(20, 0)),
         ),
         migrations.AlterField(
-            model_name='mealrequest',
-            name='dropoff_start',
+            model_name="mealrequest",
+            name="dropoff_start",
             field=models.TimeField(default=datetime.time(18, 0)),
         ),
         migrations.AlterField(
-            model_name='mealrequest',
-            name='pickup_end',
+            model_name="mealrequest",
+            name="pickup_end",
             field=models.TimeField(default=datetime.time(17, 0)),
         ),
         migrations.AlterField(
-            model_name='mealrequest',
-            name='pickup_start',
+            model_name="mealrequest",
+            name="pickup_start",
             field=models.TimeField(default=datetime.time(12, 0)),
         ),
     ]

@@ -6,14 +6,14 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('recipients', '0054_groceryrequest_senior'),
+        ("recipients", "0054_groceryrequest_senior"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='mealrequest',
-            name='senior',
-            field=models.BooleanField(default=False, verbose_name='Senior citizen'),
+            model_name="mealrequest",
+            name="senior",
+            field=models.BooleanField(default=False, verbose_name="Senior citizen"),
             preserve_default=False,
         ),
     ]

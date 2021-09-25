@@ -27,7 +27,7 @@ class VolunteerOutreachChefSignupsEmail(Email):
     @property
     def extra_context(self):
         return {
-            'call_to_action_url': f"https://www.thepeoplespantryto.com{reverse('volunteers:chef_signup_list')}",
+            "call_to_action_url": f"https://www.thepeoplespantryto.com{reverse('volunteers:chef_signup_list')}",
         }
 
     def mass_send(self):

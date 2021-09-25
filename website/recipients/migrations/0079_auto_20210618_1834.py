@@ -6,13 +6,27 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('recipients', '0078_remove_groceryrequest_gift_card'),
+        ("recipients", "0078_remove_groceryrequest_gift_card"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='mealrequest',
-            name='status',
-            field=models.CharField(choices=[('Submitted', 'Submitted'), ('Unconfirmed', 'Selected'), ('Chef Assigned', 'Chef Assigned'), ('Driver Assigned', 'Driver Assigned'), ('Delivery Date Confirmed', 'Delivery Date Confirmed'), ('Delivered', 'Delivered'), ('Unsuccessful', 'Unsuccessful'), ('Not Selected', 'Not Selected')], default='Submitted', max_length=256, verbose_name='Status'),
+            model_name="mealrequest",
+            name="status",
+            field=models.CharField(
+                choices=[
+                    ("Submitted", "Submitted"),
+                    ("Unconfirmed", "Selected"),
+                    ("Chef Assigned", "Chef Assigned"),
+                    ("Driver Assigned", "Driver Assigned"),
+                    ("Delivery Date Confirmed", "Delivery Date Confirmed"),
+                    ("Delivered", "Delivered"),
+                    ("Unsuccessful", "Unsuccessful"),
+                    ("Not Selected", "Not Selected"),
+                ],
+                default="Submitted",
+                max_length=256,
+                verbose_name="Status",
+            ),
         ),
     ]

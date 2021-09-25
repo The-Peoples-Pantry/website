@@ -6,13 +6,22 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('recipients', '0063_auto_20210317_1919'),
+        ("recipients", "0063_auto_20210317_1919"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='groceryrequest',
-            name='gift_card',
-            field=models.CharField(choices=[('Walmart', 'Walmart (Digital)'), ("President's Choice", "President's Choice (Physical)"), ('Food Share', 'Food Share (Digital)')], help_text='We offer both physical (mailed to you) and digital (emailed to you) gift cards. What type of gift card would you want?', max_length=256, verbose_name='Gift card'),
+            model_name="groceryrequest",
+            name="gift_card",
+            field=models.CharField(
+                choices=[
+                    ("Walmart", "Walmart (Digital)"),
+                    ("President's Choice", "President's Choice (Physical)"),
+                    ("Food Share", "Food Share (Digital)"),
+                ],
+                help_text="We offer both physical (mailed to you) and digital (emailed to you) gift cards. What type of gift card would you want?",
+                max_length=256,
+                verbose_name="Gift card",
+            ),
         ),
     ]

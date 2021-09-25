@@ -6,70 +6,76 @@ from django.conf import settings
 from multiselectfield import MultiSelectField
 
 from core.models import ContactMixin, AddressMixin, TimestampsMixin
-from .emails import VolunteerApplicationConfirmationEmail, VolunteerApplicationApprovalEmail
+from .emails import (
+    VolunteerApplicationConfirmationEmail,
+    VolunteerApplicationApprovalEmail,
+)
 
 
 class CookingTypes(models.TextChoices):
-    COOKING = 'Cooking', 'Cooking'
-    BAKING = 'Baking', 'Baking'
+    COOKING = "Cooking", "Cooking"
+    BAKING = "Baking", "Baking"
 
 
 class FoodTypes(models.TextChoices):
-    MEAT = 'Meat', 'Meat'
-    VEGAN = 'Vegan', 'Vegan'
-    VEGETARIAN = 'Vegetarian', 'Vegetarian'
-    DAIRY_FREE = 'Dairy-free', 'Dairy-free'
-    GLUTEN_FREE = 'Gluten-free', 'Gluten-free'
-    LOW_CARB = 'Low carb', 'Low carb'
-    HALAL = 'Halal', 'Halal'
-    KOSHER = 'Kosher', 'Kosher'
+    MEAT = "Meat", "Meat"
+    VEGAN = "Vegan", "Vegan"
+    VEGETARIAN = "Vegetarian", "Vegetarian"
+    DAIRY_FREE = "Dairy-free", "Dairy-free"
+    GLUTEN_FREE = "Gluten-free", "Gluten-free"
+    LOW_CARB = "Low carb", "Low carb"
+    HALAL = "Halal", "Halal"
+    KOSHER = "Kosher", "Kosher"
 
 
 class TransportationTypes(models.TextChoices):
-    SUV = 'SUV or Truck', 'SUV or Truck'
-    MED_CAR = 'Medium-sized car', 'Medium-sized car'
-    SM_CAR = 'Small car', 'Small car'
-    BIKE_SUMMER = 'Bike - Spring to Fall deliveries only', 'Bike - Spring to Fall deliveries only'
-    BIKE_ALL = 'Bike - Can deliver in snow', 'Bike - Can deliver in snow'
-    PEDESTRIAN = 'Pedestrian', 'Pedestrian'
-    PUBLIC_TRANSIT = 'Public Transit', 'Public Transit'
+    SUV = "SUV or Truck", "SUV or Truck"
+    MED_CAR = "Medium-sized car", "Medium-sized car"
+    SM_CAR = "Small car", "Small car"
+    BIKE_SUMMER = (
+        "Bike - Spring to Fall deliveries only",
+        "Bike - Spring to Fall deliveries only",
+    )
+    BIKE_ALL = "Bike - Can deliver in snow", "Bike - Can deliver in snow"
+    PEDESTRIAN = "Pedestrian", "Pedestrian"
+    PUBLIC_TRANSIT = "Public Transit", "Public Transit"
 
 
 class DaysOfWeek(models.TextChoices):
-    MONDAY = 'Monday'
-    TUESDAY = 'Tuesday'
-    WEDNESDAY = 'Wednesday'
-    THURSDAY = 'Thursday'
-    FRIDAY = 'Friday'
-    SATURDAY = 'Saturday'
-    SUNDAY = 'Sunday'
+    MONDAY = "Monday"
+    TUESDAY = "Tuesday"
+    WEDNESDAY = "Wednesday"
+    THURSDAY = "Thursday"
+    FRIDAY = "Friday"
+    SATURDAY = "Saturday"
+    SUNDAY = "Sunday"
 
 
 # These choice values must match up with the name of the Groups
 class VolunteerRoles(models.TextChoices):
-    CHEFS = 'Chefs'
-    DELIVERERS = 'Deliverers'
-    ORGANIZERS = 'Organizers'
+    CHEFS = "Chefs"
+    DELIVERERS = "Deliverers"
+    ORGANIZERS = "Organizers"
 
 
 # Organizer volunteers fall into the following categories
 class OrganizerTeams(models.TextChoices):
-    REQUESTS = ('Requests', 'Requests')
-    VOLUNTEER_INTAKE = ('Volunteer Intake', 'Central Volunteer Intake')
-    CHEF_COORDINATORS = ('Chef Coordinators', 'Chefs Coordinators')
-    DELIVERER_COORDINATORS = ('Deliverer Coordinators', 'Delivery Volunteers Coordinators')
-    FINANCES = ('Finances', 'Grants and Finances')
-    TECH = ('Tech', 'Tech')
-    SOCIAL_MEDIA = ('Social Media', 'Social Media')
-    OUTREACH = ('Outreach', 'Outreach')
+    REQUESTS = ("Requests", "Requests")
+    VOLUNTEER_INTAKE = ("Volunteer Intake", "Central Volunteer Intake")
+    CHEF_COORDINATORS = ("Chef Coordinators", "Chefs Coordinators")
+    DELIVERER_COORDINATORS = (
+        "Deliverer Coordinators",
+        "Delivery Volunteers Coordinators",
+    )
+    FINANCES = ("Finances", "Grants and Finances")
+    TECH = ("Tech", "Tech")
+    SOCIAL_MEDIA = ("Social Media", "Social Media")
+    OUTREACH = ("Outreach", "Outreach")
 
 
 class Volunteer(ContactMixin, AddressMixin, models.Model):
     user = models.OneToOneField(
-        User,
-        on_delete=models.CASCADE,
-        primary_key=True,
-        related_name="volunteer"
+        User, on_delete=models.CASCADE, primary_key=True, related_name="volunteer"
     )
     short_name = models.CharField(
         "Short name",
@@ -83,7 +89,7 @@ class Volunteer(ContactMixin, AddressMixin, models.Model):
         help_text="Please include all of your pronouns",
         max_length=settings.DEFAULT_LENGTH,
         null=True,
-        blank=True
+        blank=True,
     )
     days_available = MultiSelectField(
         "Days available",
@@ -91,31 +97,31 @@ class Volunteer(ContactMixin, AddressMixin, models.Model):
         max_length=settings.DEFAULT_LENGTH,
         choices=DaysOfWeek.choices,
         min_choices=1,
-        null=True
+        null=True,
     )
     total_hours_available = models.CharField(
         "Total commitment",
         help_text="How many hours a week are your willing to volunteer?",
         max_length=settings.DEFAULT_LENGTH,
-        null=True
+        null=True,
     )
     recurring_time_available = models.CharField(
         "Recurring availability",
         help_text="Are there any times when you're consistently available? E.g. Mondays from 1-6pm, etc.",
         max_length=settings.DEFAULT_LENGTH,
-        null=True
+        null=True,
     )
     have_ppe = models.BooleanField(
         "PPE",
         help_text="Do you have access to personal protective equipment such as masks, gloves, etc?",
-        default=False
+        default=False,
     )
     notes = models.CharField(
         "Notes",
         help_text="Please include any relevant info the coordinator may need to know, such as upcoming holidays, changes in circumstances, etc",
         max_length=settings.DEFAULT_LENGTH,
         null=True,
-        blank=True
+        blank=True,
     )
 
     # Fields for cooks only
@@ -126,7 +132,7 @@ class Volunteer(ContactMixin, AddressMixin, models.Model):
         choices=CookingTypes.choices,
         min_choices=1,
         null=True,
-        blank=True
+        blank=True,
     )
     food_types = MultiSelectField(
         "Food types",
@@ -135,20 +141,20 @@ class Volunteer(ContactMixin, AddressMixin, models.Model):
         choices=FoodTypes.choices,
         min_choices=1,
         null=True,
-        blank=True
+        blank=True,
     )
     have_cleaning_supplies = models.BooleanField(
         "Cleaning supplies",
         help_text="Do you have cleaning supplies (soap, disinfectant, etc.) to clean your hands and kitchen?",
         null=True,
-        blank=True
+        blank=True,
     )
     baking_volume = models.CharField(
         "Baking volume",
         help_text="For BAKERS: how many 'units' of baked goods can you bake each time? E.g. 48 cookies, 24 cinnamon buns, etc",
         max_length=settings.DEFAULT_LENGTH,
         null=True,
-        blank=True
+        blank=True,
     )
 
     # Fields for delivery people only
@@ -159,7 +165,7 @@ class Volunteer(ContactMixin, AddressMixin, models.Model):
         choices=TransportationTypes.choices,
         min_choices=1,
         blank=True,
-        null=True
+        null=True,
     )
     training_complete = models.BooleanField("Training Complete", default=False)
 
@@ -189,13 +195,13 @@ class Volunteer(ContactMixin, AddressMixin, models.Model):
 class VolunteerApplication(TimestampsMixin, models.Model):
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['user', 'role'], name='unique role per user application')
+            models.UniqueConstraint(
+                fields=["user", "role"], name="unique role per user application"
+            )
         ]
 
     user = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='volunteer_applications'
+        User, on_delete=models.CASCADE, related_name="volunteer_applications"
     )
     role = models.CharField(
         max_length=50,
@@ -229,15 +235,19 @@ class VolunteerApplication(TimestampsMixin, models.Model):
         return True
 
     def send_confirmation_email(self):
-        return VolunteerApplicationConfirmationEmail().send(self.user.email, {"application": self})
+        return VolunteerApplicationConfirmationEmail().send(
+            self.user.email, {"application": self}
+        )
 
     def send_approved_email(self):
-        return VolunteerApplicationApprovalEmail().send(self.user.email, {"application": self})
+        return VolunteerApplicationApprovalEmail().send(
+            self.user.email, {"application": self}
+        )
 
 
 # When user is created or saved, also save volunteer
 @receiver(post_save, sender=User)
 def save_volunteer(sender, instance, created, **kwargs):
-    if created and not hasattr(instance, 'volunteer'):
+    if created and not hasattr(instance, "volunteer"):
         Volunteer.objects.create(user=instance)
     instance.volunteer.save()

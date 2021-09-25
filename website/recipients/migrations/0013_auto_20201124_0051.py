@@ -7,23 +7,23 @@ import uuid
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('recipients', '0012_delivery_container_delivery'),
+        ("recipients", "0012_delivery_container_delivery"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='delivery',
-            name='dropoff_end',
+            model_name="delivery",
+            name="dropoff_end",
             field=models.TimeField(null=True),
         ),
         migrations.AlterField(
-            model_name='delivery',
-            name='uuid',
+            model_name="delivery",
+            name="uuid",
             field=models.UUIDField(default=uuid.uuid4),
         ),
         migrations.AlterField(
-            model_name='updatenote',
-            name='uuid',
+            model_name="updatenote",
+            name="uuid",
             field=models.UUIDField(default=uuid.uuid4),
         ),
     ]

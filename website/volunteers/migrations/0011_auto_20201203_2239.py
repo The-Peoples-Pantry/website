@@ -6,13 +6,24 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('volunteers', '0010_auto_20201129_2152'),
+        ("volunteers", "0010_auto_20201129_2152"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='volunteer',
-            name='city',
-            field=models.CharField(choices=[('East York', 'East York'), ('Etobicoke', 'Etobicoke'), ('North York', 'North York'), ('Scarborough', 'Scarborough'), ('Toronto', 'Toronto')], default='Toronto', max_length=50, verbose_name='City'),
+            model_name="volunteer",
+            name="city",
+            field=models.CharField(
+                choices=[
+                    ("East York", "East York"),
+                    ("Etobicoke", "Etobicoke"),
+                    ("North York", "North York"),
+                    ("Scarborough", "Scarborough"),
+                    ("Toronto", "Toronto"),
+                ],
+                default="Toronto",
+                max_length=50,
+                verbose_name="City",
+            ),
         ),
     ]

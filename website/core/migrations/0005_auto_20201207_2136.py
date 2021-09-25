@@ -4,19 +4,17 @@ from django.db import migrations
 
 
 def update_site_domain(apps, schema_editor):
-    Site = apps.get_model('sites', 'Site')
+    Site = apps.get_model("sites", "Site")
     db_alias = schema_editor.connection.alias
     site = Site.objects.using(db_alias).get(id=1)
-    site.domain = 'www.thepeoplespantryto.com'
+    site.domain = "www.thepeoplespantryto.com"
     site.save()
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0004_auto_20201207_2102'),
+        ("core", "0004_auto_20201207_2102"),
     ]
 
-    operations = [
-        migrations.RunPython(update_site_domain)
-    ]
+    operations = [migrations.RunPython(update_site_domain)]

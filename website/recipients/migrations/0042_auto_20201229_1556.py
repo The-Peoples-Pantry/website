@@ -6,18 +6,24 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('recipients', '0041_auto_20201220_2242'),
+        ("recipients", "0041_auto_20201220_2242"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='groceryrequest',
-            name='availability',
-            field=models.TextField(help_text="Our deliveries will be done on Fridays, Saturdays and Sundays between 12 and 8 PM. Please list the days and times that you're available to receive a delivery", verbose_name='Availability'),
+            model_name="groceryrequest",
+            name="availability",
+            field=models.TextField(
+                help_text="Our deliveries will be done on Fridays, Saturdays and Sundays between 12 and 8 PM. Please list the days and times that you're available to receive a delivery",
+                verbose_name="Availability",
+            ),
         ),
         migrations.AlterField(
-            model_name='mealrequest',
-            name='availability',
-            field=models.TextField(help_text="Our deliveries will be done on Fridays, Saturdays and Sundays between 12 and 8 PM. Please list the days and times that you're available to receive a delivery", verbose_name='Availability'),
+            model_name="mealrequest",
+            name="availability",
+            field=models.TextField(
+                help_text="Our deliveries will be done on Fridays, Saturdays and Sundays between 12 and 8 PM. Please list the days and times that you're available to receive a delivery",
+                verbose_name="Availability",
+            ),
         ),
     ]

@@ -6,12 +6,14 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('volunteers', '0004_volunteerapplication'),
+        ("volunteers", "0004_volunteerapplication"),
     ]
 
     operations = [
         migrations.AddConstraint(
-            model_name='volunteerapplication',
-            constraint=models.UniqueConstraint(fields=('user', 'role'), name='unique role per user application'),
+            model_name="volunteerapplication",
+            constraint=models.UniqueConstraint(
+                fields=("user", "role"), name="unique role per user application"
+            ),
         ),
     ]

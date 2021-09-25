@@ -10,36 +10,41 @@ from .models import MealRequest, GroceryRequest
 
 
 class RequestIndexView(TemplateView):
-    template_name = 'recipients/index.html'
+    template_name = "recipients/index.html"
 
 
 class RequestSuccessView(TemplateView):
-    template_name = 'recipients/success.html'
+    template_name = "recipients/success.html"
 
 
 class MealRequestView(FormView):
-    template_name = 'recipients/new_meal_request.html'
-    success_url = reverse_lazy('recipients:success')
+    template_name = "recipients/new_meal_request.html"
+    success_url = reverse_lazy("recipients:success")
     form_class = MealRequestForm
     initial = {
-        'num_children': 0,
+        "num_children": 0,
     }
 
     def dispatch(self, request):
         if MealRequest.requests_paused():
-            return render(request, 'recipients/meal_paused.html')
+            return render(request, "recipients/meal_paused.html")
         return super().dispatch(request)
 
     def get_duplicate(self, form):
-        phone = form.cleaned_data['phone_number']
+        phone = form.cleaned_data["phone_number"]
         return MealRequest.has_open_request(phone)
 
     def form_valid(self, form):
         if self.get_duplicate(form):
-            messages.warning(self.request, dedent("""
+            messages.warning(
+                self.request,
+                dedent(
+                    """
                 We're sorry, it looks like we currently have an unfulfilled request on file for you already.
                 Please give us some time to fulfill that request first before submitting another.
-            """))
+            """
+                ),
+            )
             return super().form_invalid(form)
 
         instance = form.save()
@@ -48,31 +53,36 @@ class MealRequestView(FormView):
 
 
 class GroceryRequestView(FormView):
-    template_name = 'recipients/new_grocery_request.html'
-    success_url = reverse_lazy('recipients:success')
+    template_name = "recipients/new_grocery_request.html"
+    success_url = reverse_lazy("recipients:success")
     form_class = GroceryRequestForm
     initial = {
-        'num_children': 0,
+        "num_children": 0,
     }
 
     def dispatch(self, request):
         # The Grocery request program is not running right now due to insufficient funds
-        return render(request, 'recipients/grocery_program_not_running.html')
+        return render(request, "recipients/grocery_program_not_running.html")
 
         if GroceryRequest.requests_paused():
-            return render(request, 'recipients/grocery_paused.html')
+            return render(request, "recipients/grocery_paused.html")
         return super().dispatch(request)
 
     def get_duplicate(self, form):
-        phone = form.cleaned_data['phone_number']
+        phone = form.cleaned_data["phone_number"]
         return GroceryRequest.has_open_request(phone)
 
     def form_valid(self, form):
         if self.get_duplicate(form):
-            messages.warning(self.request, dedent("""
+            messages.warning(
+                self.request,
+                dedent(
+                    """
                 We're sorry, it looks like we currently have an unfulfilled request on file for you already.
                 Please give us some time to fulfill that request first before submitting another.
-            """))
+            """
+                ),
+            )
             return super().form_invalid(form)
 
         instance = form.save()

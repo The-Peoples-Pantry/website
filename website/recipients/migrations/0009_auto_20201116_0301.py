@@ -11,43 +11,107 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('recipients', '0008_mealrequest_major_intersection'),
+        ("recipients", "0008_mealrequest_major_intersection"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='mealrequest',
-            name='major_intersection',
+            model_name="mealrequest",
+            name="major_intersection",
         ),
         migrations.AddField(
-            model_name='mealrequest',
-            name='delivery_date',
+            model_name="mealrequest",
+            name="delivery_date",
             field=models.DateField(blank=True, null=True),
         ),
         migrations.CreateModel(
-            name='UpdateNote',
+            name="UpdateNote",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('note', models.CharField(max_length=1024)),
-                ('uuid', models.UUIDField(default=uuid.uuid4, editable=False)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('author', models.ForeignKey(blank=True, on_delete=models.SET(core.models.get_sentinel_user), to=settings.AUTH_USER_MODEL)),
-                ('request_id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='recipients.mealrequest')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("note", models.CharField(max_length=1024)),
+                ("uuid", models.UUIDField(default=uuid.uuid4, editable=False)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                (
+                    "author",
+                    models.ForeignKey(
+                        blank=True,
+                        on_delete=models.SET(core.models.get_sentinel_user),
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "request_id",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="recipients.mealrequest",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Delivery',
+            name="Delivery",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('status', models.CharField(choices=[('Unconfirmed', 'Unconfirmed'), ('Chef Assigned', 'Chef Assigned'), ('Scheduled for Delivery', 'Scheduled for Delivery'), ('Delivery Confirmed', 'Delivery Confirmed'), ('Rescheduled', 'Rescheduled'), ('Delivered', 'Delivered')], default='Unconfirmed', max_length=256, verbose_name='Status')),
-                ('pickup_start', models.DateTimeField(blank=True)),
-                ('pickup_end', models.DateTimeField(blank=True)),
-                ('dropoff_start', models.DateTimeField(blank=True)),
-                ('uuid', models.UUIDField(default=uuid.uuid4, editable=False)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('chef', models.ForeignKey(on_delete=models.SET(core.models.get_sentinel_user), related_name='assigned_chef', to=settings.AUTH_USER_MODEL)),
-                ('deliverer', models.ForeignKey(on_delete=models.SET(core.models.get_sentinel_user), related_name='assigned_deliverer', to=settings.AUTH_USER_MODEL)),
-                ('request', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='recipients.mealrequest')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("Unconfirmed", "Unconfirmed"),
+                            ("Chef Assigned", "Chef Assigned"),
+                            ("Scheduled for Delivery", "Scheduled for Delivery"),
+                            ("Delivery Confirmed", "Delivery Confirmed"),
+                            ("Rescheduled", "Rescheduled"),
+                            ("Delivered", "Delivered"),
+                        ],
+                        default="Unconfirmed",
+                        max_length=256,
+                        verbose_name="Status",
+                    ),
+                ),
+                ("pickup_start", models.DateTimeField(blank=True)),
+                ("pickup_end", models.DateTimeField(blank=True)),
+                ("dropoff_start", models.DateTimeField(blank=True)),
+                ("uuid", models.UUIDField(default=uuid.uuid4, editable=False)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                (
+                    "chef",
+                    models.ForeignKey(
+                        on_delete=models.SET(core.models.get_sentinel_user),
+                        related_name="assigned_chef",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "deliverer",
+                    models.ForeignKey(
+                        on_delete=models.SET(core.models.get_sentinel_user),
+                        related_name="assigned_deliverer",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "request",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="recipients.mealrequest",
+                    ),
+                ),
             ],
         ),
     ]

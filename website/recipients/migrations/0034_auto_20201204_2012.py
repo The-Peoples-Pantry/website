@@ -6,28 +6,28 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('recipients', '0033_auto_20201203_2239'),
+        ("recipients", "0033_auto_20201203_2239"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='groceryrequest',
-            name='anonymized_latitude',
+            model_name="groceryrequest",
+            name="anonymized_latitude",
             field=models.FloatField(blank=True, default=43.65107),
         ),
         migrations.AlterField(
-            model_name='groceryrequest',
-            name='anonymized_longitude',
+            model_name="groceryrequest",
+            name="anonymized_longitude",
             field=models.FloatField(blank=True, default=-79.347015),
         ),
         migrations.AlterField(
-            model_name='mealrequest',
-            name='anonymized_latitude',
+            model_name="mealrequest",
+            name="anonymized_latitude",
             field=models.FloatField(blank=True, default=43.65107),
         ),
         migrations.AlterField(
-            model_name='mealrequest',
-            name='anonymized_longitude',
+            model_name="mealrequest",
+            name="anonymized_longitude",
             field=models.FloatField(blank=True, default=-79.347015),
         ),
     ]

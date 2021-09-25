@@ -41,7 +41,9 @@ def random_sample_with_weight_and_cost(population, weights, costs, cost_limit):
     If cost exceeds the cost limit, we stop selecting
     Basically the knapsack problem, but with deliberately random selection rather than dynamic optimization
     """
-    population_weights = {request: weight for (request, weight) in zip(population, weights)}
+    population_weights = {
+        request: weight for (request, weight) in zip(population, weights)
+    }
     population_costs = {request: cost for (request, cost) in zip(population, costs)}
     selected = []
     not_selected = []
@@ -79,8 +81,7 @@ class MealRequestLottery:
 
     def num_to_select(self):
         return min(
-            self.k - self.already_selected().count(),
-            self.eligible_requests().count()
+            self.k - self.already_selected().count(), self.eligible_requests().count()
         )
 
     def candidates(self):
@@ -91,7 +92,9 @@ class MealRequestLottery:
 
     def select(self, dry_run=False):
         """Select k requests, reject the others, and mark each accordingly"""
-        selected, not_selected = random_sample_with_weight(self.candidates(), self.num_to_select())
+        selected, not_selected = random_sample_with_weight(
+            self.candidates(), self.num_to_select()
+        )
         if not dry_run:
             self.__process_selected(selected)
             self.__process_not_selected(not_selected)
@@ -133,7 +136,9 @@ class GroceryRequestLottery:
         population = list(self.eligible_requests())
         weights = [self.get_weight(request) for request in population]
         costs = [self.get_cost(request) for request in population]
-        selected, not_selected = random_sample_with_weight_and_cost(population, weights, costs, self.num_to_select())
+        selected, not_selected = random_sample_with_weight_and_cost(
+            population, weights, costs, self.num_to_select()
+        )
         if not dry_run:
             self.__process_selected(selected)
             self.__process_not_selected(not_selected)

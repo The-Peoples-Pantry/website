@@ -9,18 +9,28 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('recipients', '0028_auto_20201128_1603'),
+        ("recipients", "0028_auto_20201128_1603"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='mealdelivery',
-            name='chef',
-            field=models.ForeignKey(on_delete=models.SET(core.models.get_sentinel_user), related_name='cooked_meal_deliveries', to=settings.AUTH_USER_MODEL),
+            model_name="mealdelivery",
+            name="chef",
+            field=models.ForeignKey(
+                on_delete=models.SET(core.models.get_sentinel_user),
+                related_name="cooked_meal_deliveries",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.AlterField(
-            model_name='mealdelivery',
-            name='deliverer',
-            field=models.ForeignKey(blank=True, null=True, on_delete=models.SET(core.models.get_sentinel_user), related_name='delivered_meal_deliveries', to=settings.AUTH_USER_MODEL),
+            model_name="mealdelivery",
+            name="deliverer",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=models.SET(core.models.get_sentinel_user),
+                related_name="delivered_meal_deliveries",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
     ]

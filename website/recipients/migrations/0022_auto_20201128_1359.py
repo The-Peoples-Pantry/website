@@ -9,7 +9,7 @@ import django.db.models.deletion
 # Delete the container one
 # Because we are adding a unique constraint to this column
 def delete_container_deliveries(apps, schema_editor):
-    Delivery = apps.get_model('recipients', 'Delivery')
+    Delivery = apps.get_model("recipients", "Delivery")
     db_alias = schema_editor.connection.alias
     Delivery.objects.using(db_alias).filter(container_delivery=True).delete()
 
@@ -17,14 +17,16 @@ def delete_container_deliveries(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('recipients', '0021_auto_20201128_0900'),
+        ("recipients", "0021_auto_20201128_0900"),
     ]
 
     operations = [
         migrations.RunPython(delete_container_deliveries),
         migrations.AlterField(
-            model_name='delivery',
-            name='request',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='recipients.mealrequest'),
+            model_name="delivery",
+            name="request",
+            field=models.OneToOneField(
+                on_delete=django.db.models.deletion.CASCADE, to="recipients.mealrequest"
+            ),
         ),
     ]

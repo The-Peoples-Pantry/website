@@ -7,20 +7,20 @@ from django.db import migrations
 
 
 def guess_short_name(apps, schema_editor):
-    Volunteer = apps.get_model('volunteers', 'Volunteer')
+    Volunteer = apps.get_model("volunteers", "Volunteer")
     db_alias = schema_editor.connection.alias
 
     for volunteer in Volunteer.objects.using(db_alias).all():
         if not volunteer.name:
             continue
-        volunteer.short_name = volunteer.name.split(' ')[0]
+        volunteer.short_name = volunteer.name.split(" ")[0]
         volunteer.save()
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('volunteers', '0020_update_multiselectfields'),
+        ("volunteers", "0020_update_multiselectfields"),
     ]
 
     operations = [

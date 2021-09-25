@@ -7,18 +7,26 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('recipients', '0076_mealrequest_containers'),
+        ("recipients", "0076_mealrequest_containers"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='groceryrequest',
-            name='postal_code',
-            field=models.CharField(max_length=7, validators=[core.models.validate_toronto_postal_code], verbose_name='Postal code'),
+            model_name="groceryrequest",
+            name="postal_code",
+            field=models.CharField(
+                max_length=7,
+                validators=[core.models.validate_toronto_postal_code],
+                verbose_name="Postal code",
+            ),
         ),
         migrations.AlterField(
-            model_name='mealrequest',
-            name='postal_code',
-            field=models.CharField(max_length=7, validators=[core.models.validate_toronto_postal_code], verbose_name='Postal code'),
+            model_name="mealrequest",
+            name="postal_code",
+            field=models.CharField(
+                max_length=7,
+                validators=[core.models.validate_toronto_postal_code],
+                verbose_name="Postal code",
+            ),
         ),
     ]

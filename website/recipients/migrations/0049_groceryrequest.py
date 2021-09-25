@@ -7,52 +7,233 @@ import uuid
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('recipients', '0048_mealdelivery_meal'),
+        ("recipients", "0048_mealdelivery_meal"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='GroceryRequest',
+            name="GroceryRequest",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=256, verbose_name='Full name')),
-                ('phone_number', models.CharField(help_text='Use the format 555-555-5555', max_length=20, verbose_name='Phone number')),
-                ('email', models.EmailField(max_length=254, verbose_name='Email address')),
-                ('address_1', models.CharField(help_text='Street name and number', max_length=256, verbose_name='Address line 1')),
-                ('address_2', models.CharField(blank=True, help_text='Apartment, Unit, or Suite number', max_length=256, verbose_name='Address line 2')),
-                ('city', models.CharField(choices=[('East York', 'East York'), ('Etobicoke', 'Etobicoke'), ('North York', 'North York'), ('Scarborough', 'Scarborough'), ('Toronto', 'Toronto'), ('York', 'York')], default='Toronto', max_length=50, verbose_name='City')),
-                ('postal_code', models.CharField(max_length=7, verbose_name='Postal code')),
-                ('anonymized_latitude', models.FloatField(blank=True, default=43.65107)),
-                ('anonymized_longitude', models.FloatField(blank=True, default=-79.347015)),
-                ('can_receive_texts', models.BooleanField(help_text='Can the phone number provided receive text messages?', verbose_name='Can receive texts')),
-                ('notes', models.TextField(blank=True, help_text='Is there anything else we should know about you or the person you are requesting support for that will help us complete the request better?', verbose_name='Additional information')),
-                ('gift_card', models.CharField(choices=[('Walmart', 'Walmart'), ("President's Choice", 'Presidents Choice'), ('Food Share', 'Food Share')], help_text='What type of digital gift card would you want? We will send this to the email account you provided.', max_length=256, verbose_name='Gift card')),
-                ('num_adults', models.PositiveSmallIntegerField(verbose_name='Number of adults in the household')),
-                ('num_children', models.PositiveSmallIntegerField(verbose_name='Number of children in the household')),
-                ('children_ages', models.CharField(blank=True, help_text='When able, we will try to provide additional snacks for children. If this is something you would be interested in, please list the ages of any children in the household so we may try to provide appropriate snacks for their age group.', max_length=256, verbose_name='Ages of children')),
-                ('food_allergies', models.TextField(blank=True, help_text='Please list any allergies or dietary restrictions', verbose_name='Food allergies')),
-                ('bipoc', models.BooleanField(verbose_name='Black, Indigenous, and People of Colour (BIPOC)')),
-                ('lgbtq', models.BooleanField(verbose_name='Lesbian, Gay, Bisexual, Trans, Queer (LGBTQ), gender non-conforming or non-binary')),
-                ('has_disability', models.BooleanField(verbose_name='Living with disabilities')),
-                ('immigrant_or_refugee', models.BooleanField(verbose_name='Newly arrived immigrant or refugee')),
-                ('housing_issues', models.BooleanField(verbose_name='Precariously housed (no fixed address, living in a shelter, etc.)')),
-                ('sex_worker', models.BooleanField(verbose_name='Sex worker')),
-                ('single_parent', models.BooleanField(verbose_name='Single parent')),
-                ('can_meet_for_delivery', models.BooleanField(default=True, help_text='Please confirm that you / the person requiring support will be able to meet the delivery person in the lobby or door of the residence, while wearing protective equipment such as masks?', verbose_name='Able to meet delivery driver')),
-                ('delivery_details', models.TextField(blank=True, help_text='Please provide us with any details we may need to know for the delivery', verbose_name='Delivery details')),
-                ('on_behalf_of', models.BooleanField(help_text='Are you filling out this form on behalf of someone else?', verbose_name="On someone's behalf")),
-                ('recipient_notified', models.BooleanField(help_text="Has the person you're filling out the form for been informed they will get a delivery?", verbose_name='Recipient has been notified')),
-                ('requester_name', models.CharField(blank=True, max_length=256, verbose_name='Your full name')),
-                ('requester_email', models.EmailField(blank=True, max_length=254, verbose_name='Your email address')),
-                ('requester_phone_number', models.CharField(blank=True, help_text='Use the format 555-555-5555', max_length=20, verbose_name='Your phone number')),
-                ('accept_terms', models.BooleanField(verbose_name='Accept terms')),
-                ('completed', models.BooleanField(default=False, help_text='Has this request been completed?', verbose_name='Completed')),
-                ('uuid', models.UUIDField(default=uuid.uuid4, editable=False)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=256, verbose_name="Full name")),
+                (
+                    "phone_number",
+                    models.CharField(
+                        help_text="Use the format 555-555-5555",
+                        max_length=20,
+                        verbose_name="Phone number",
+                    ),
+                ),
+                (
+                    "email",
+                    models.EmailField(max_length=254, verbose_name="Email address"),
+                ),
+                (
+                    "address_1",
+                    models.CharField(
+                        help_text="Street name and number",
+                        max_length=256,
+                        verbose_name="Address line 1",
+                    ),
+                ),
+                (
+                    "address_2",
+                    models.CharField(
+                        blank=True,
+                        help_text="Apartment, Unit, or Suite number",
+                        max_length=256,
+                        verbose_name="Address line 2",
+                    ),
+                ),
+                (
+                    "city",
+                    models.CharField(
+                        choices=[
+                            ("East York", "East York"),
+                            ("Etobicoke", "Etobicoke"),
+                            ("North York", "North York"),
+                            ("Scarborough", "Scarborough"),
+                            ("Toronto", "Toronto"),
+                            ("York", "York"),
+                        ],
+                        default="Toronto",
+                        max_length=50,
+                        verbose_name="City",
+                    ),
+                ),
+                (
+                    "postal_code",
+                    models.CharField(max_length=7, verbose_name="Postal code"),
+                ),
+                (
+                    "anonymized_latitude",
+                    models.FloatField(blank=True, default=43.65107),
+                ),
+                (
+                    "anonymized_longitude",
+                    models.FloatField(blank=True, default=-79.347015),
+                ),
+                (
+                    "can_receive_texts",
+                    models.BooleanField(
+                        help_text="Can the phone number provided receive text messages?",
+                        verbose_name="Can receive texts",
+                    ),
+                ),
+                (
+                    "notes",
+                    models.TextField(
+                        blank=True,
+                        help_text="Is there anything else we should know about you or the person you are requesting support for that will help us complete the request better?",
+                        verbose_name="Additional information",
+                    ),
+                ),
+                (
+                    "gift_card",
+                    models.CharField(
+                        choices=[
+                            ("Walmart", "Walmart"),
+                            ("President's Choice", "Presidents Choice"),
+                            ("Food Share", "Food Share"),
+                        ],
+                        help_text="What type of digital gift card would you want? We will send this to the email account you provided.",
+                        max_length=256,
+                        verbose_name="Gift card",
+                    ),
+                ),
+                (
+                    "num_adults",
+                    models.PositiveSmallIntegerField(
+                        verbose_name="Number of adults in the household"
+                    ),
+                ),
+                (
+                    "num_children",
+                    models.PositiveSmallIntegerField(
+                        verbose_name="Number of children in the household"
+                    ),
+                ),
+                (
+                    "children_ages",
+                    models.CharField(
+                        blank=True,
+                        help_text="When able, we will try to provide additional snacks for children. If this is something you would be interested in, please list the ages of any children in the household so we may try to provide appropriate snacks for their age group.",
+                        max_length=256,
+                        verbose_name="Ages of children",
+                    ),
+                ),
+                (
+                    "food_allergies",
+                    models.TextField(
+                        blank=True,
+                        help_text="Please list any allergies or dietary restrictions",
+                        verbose_name="Food allergies",
+                    ),
+                ),
+                (
+                    "bipoc",
+                    models.BooleanField(
+                        verbose_name="Black, Indigenous, and People of Colour (BIPOC)"
+                    ),
+                ),
+                (
+                    "lgbtq",
+                    models.BooleanField(
+                        verbose_name="Lesbian, Gay, Bisexual, Trans, Queer (LGBTQ), gender non-conforming or non-binary"
+                    ),
+                ),
+                (
+                    "has_disability",
+                    models.BooleanField(verbose_name="Living with disabilities"),
+                ),
+                (
+                    "immigrant_or_refugee",
+                    models.BooleanField(
+                        verbose_name="Newly arrived immigrant or refugee"
+                    ),
+                ),
+                (
+                    "housing_issues",
+                    models.BooleanField(
+                        verbose_name="Precariously housed (no fixed address, living in a shelter, etc.)"
+                    ),
+                ),
+                ("sex_worker", models.BooleanField(verbose_name="Sex worker")),
+                ("single_parent", models.BooleanField(verbose_name="Single parent")),
+                (
+                    "can_meet_for_delivery",
+                    models.BooleanField(
+                        default=True,
+                        help_text="Please confirm that you / the person requiring support will be able to meet the delivery person in the lobby or door of the residence, while wearing protective equipment such as masks?",
+                        verbose_name="Able to meet delivery driver",
+                    ),
+                ),
+                (
+                    "delivery_details",
+                    models.TextField(
+                        blank=True,
+                        help_text="Please provide us with any details we may need to know for the delivery",
+                        verbose_name="Delivery details",
+                    ),
+                ),
+                (
+                    "on_behalf_of",
+                    models.BooleanField(
+                        help_text="Are you filling out this form on behalf of someone else?",
+                        verbose_name="On someone's behalf",
+                    ),
+                ),
+                (
+                    "recipient_notified",
+                    models.BooleanField(
+                        help_text="Has the person you're filling out the form for been informed they will get a delivery?",
+                        verbose_name="Recipient has been notified",
+                    ),
+                ),
+                (
+                    "requester_name",
+                    models.CharField(
+                        blank=True, max_length=256, verbose_name="Your full name"
+                    ),
+                ),
+                (
+                    "requester_email",
+                    models.EmailField(
+                        blank=True, max_length=254, verbose_name="Your email address"
+                    ),
+                ),
+                (
+                    "requester_phone_number",
+                    models.CharField(
+                        blank=True,
+                        help_text="Use the format 555-555-5555",
+                        max_length=20,
+                        verbose_name="Your phone number",
+                    ),
+                ),
+                ("accept_terms", models.BooleanField(verbose_name="Accept terms")),
+                (
+                    "completed",
+                    models.BooleanField(
+                        default=False,
+                        help_text="Has this request been completed?",
+                        verbose_name="Completed",
+                    ),
+                ),
+                ("uuid", models.UUIDField(default=uuid.uuid4, editable=False)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
             ],
             options={
-                'abstract': False,
+                "abstract": False,
             },
         ),
     ]

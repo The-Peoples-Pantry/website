@@ -36,28 +36,37 @@ class MealRequestTextTests(TestCase):
         )
 
     def test_send_recipient_meal_notification(self):
-        expected = dedent("""
+        expected = dedent(
+            """
             Hi Ryan,
             This is a message from The People's Pantry.
             A chef has been arranged to prepare a meal for you for Monday March 15 for request ID 1.
             Since we depend on volunteers for our deliveries, sometimes we are not able to do all deliveries scheduled for the day. If that’s the case with your delivery, we will inform you by 6 PM on the day of the delivery and your delivery will be rescheduled for the following day.
             Please confirm you got this message and let us know if you can accept the delivery.
             Thank you!
-        """).strip()
+        """
+        ).strip()
         self.request.send_recipient_meal_notification(self.api)
-        self.api.send_text.assert_called_with(self.request.phone_number, expected, "default")
+        self.api.send_text.assert_called_with(
+            self.request.phone_number, expected, "default"
+        )
 
     def test_send_recipient_reminder_notification(self):
-        expected = dedent("""
+        expected = dedent(
+            """
             Hi Ryan,
             This is a reminder about your delivery from The People’s Pantry today for request ID 1. Ophelia will be at your home between 02:00 PM and 03:00 PM.
             Thanks, and stay safe!
-        """).strip()
+        """
+        ).strip()
         self.request.send_recipient_reminder_notification(self.api)
-        self.api.send_text.assert_called_with(self.request.phone_number, expected, "default")
+        self.api.send_text.assert_called_with(
+            self.request.phone_number, expected, "default"
+        )
 
     def test_send_recipient_delivery_notification(self):
-        expected = dedent("""
+        expected = dedent(
+            """
             Hi Ryan,
             This is a message from The People's Pantry.
             Your delivery for request ID 1 is scheduled for Monday March 15 between 02:00 PM and 03:00 PM.
@@ -66,19 +75,27 @@ class MealRequestTextTests(TestCase):
             Thank you!
 
             Reply STOP to unsubscribe
-        """).strip()
+        """
+        ).strip()
         self.request.send_recipient_delivery_notification(self.api)
-        self.api.send_text.assert_called_with(self.request.phone_number, expected, "default")
+        self.api.send_text.assert_called_with(
+            self.request.phone_number, expected, "default"
+        )
 
     def test_send_recipient_feedback_request(self):
-        expected = dedent("""
+        expected = dedent(
+            """
             Hello Ryan How did you like your meals (1) this week? We appreciate any feedback you have. If you are comfortable with us sharing your anonymized feedback on social media, please let us know - it helps us raise money for the program. If not, that’s okay too.
-        """).strip()
+        """
+        ).strip()
         self.request.send_recipient_feedback_request(self.api)
-        self.api.send_text.assert_called_with(self.request.phone_number, expected, "default")
+        self.api.send_text.assert_called_with(
+            self.request.phone_number, expected, "default"
+        )
 
     def test_send_chef_reminder_notification(self):
-        expected = dedent("""
+        expected = dedent(
+            """
             Hi Philip,
             This is a message from The People's Pantry.
             Your cooked meals for request ID 1 will be picked up by Ophelia on Monday March 15 between 12:00 PM and 01:00 PM.
@@ -87,12 +104,16 @@ class MealRequestTextTests(TestCase):
             Let us know if you have any issues. Thanks!
 
             Reply STOP to unsubscribe
-        """).strip()
+        """
+        ).strip()
         self.request.send_chef_reminder_notification(self.api)
-        self.api.send_text.assert_called_with(self.chef.volunteer.phone_number, expected, "default")
+        self.api.send_text.assert_called_with(
+            self.chef.volunteer.phone_number, expected, "default"
+        )
 
     def test_send_deliverer_reminder_notification(self):
-        expected = dedent("""
+        expected = dedent(
+            """
             Hi Ophelia,
             This is a message from The People's Pantry.
             Just reminding you of the upcoming meal you're delivering for Monday March 15.
@@ -100,12 +121,16 @@ class MealRequestTextTests(TestCase):
             Thank you!
 
             Reply STOP to unsubscribe
-        """).strip()
+        """
+        ).strip()
         self.request.send_deliverer_reminder_notification(self.api)
-        self.api.send_text.assert_called_with(self.deliverer.volunteer.phone_number, expected, "default")
+        self.api.send_text.assert_called_with(
+            self.deliverer.volunteer.phone_number, expected, "default"
+        )
 
     def test_send_detailed_deliverer_notification(self):
-        expected = dedent("""
+        expected = dedent(
+            """
             Hi Ophelia,
             This is a reminder about your delivery (1) for The People’s Pantry today.
             Pick up the meals from Philip at   Toronto Ontario , phone number 5555551111, between 12:00 PM and 01:00 PM.
@@ -115,6 +140,9 @@ class MealRequestTextTests(TestCase):
 
             Send a text if you have any problems with your delivery, and please let us know when the delivery is completed.
             Thank you for your help!
-        """).strip()
+        """
+        ).strip()
         self.request.send_detailed_deliverer_notification(self.api)
-        self.api.send_text.assert_called_with(self.deliverer.volunteer.phone_number, expected, "default")
+        self.api.send_text.assert_called_with(
+            self.deliverer.volunteer.phone_number, expected, "default"
+        )

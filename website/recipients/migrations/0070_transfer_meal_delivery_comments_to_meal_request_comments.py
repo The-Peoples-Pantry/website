@@ -4,7 +4,7 @@ from django.db import migrations
 
 
 def copy_data_from_meal_delivery_comments_to_meal_request_comments(apps, schema_editor):
-    MealDeliveryComment = apps.get_model('recipients', 'MealDeliveryComment')
+    MealDeliveryComment = apps.get_model("recipients", "MealDeliveryComment")
     db_alias = schema_editor.connection.alias
 
     for meal_delivery_comment in MealDeliveryComment.objects.using(db_alias).all():
@@ -20,9 +20,11 @@ def copy_data_from_meal_delivery_comments_to_meal_request_comments(apps, schema_
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('recipients', '0069_transfer_meal_delivery_to_meal_request'),
+        ("recipients", "0069_transfer_meal_delivery_to_meal_request"),
     ]
 
     operations = [
-        migrations.RunPython(copy_data_from_meal_delivery_comments_to_meal_request_comments),
+        migrations.RunPython(
+            copy_data_from_meal_delivery_comments_to_meal_request_comments
+        ),
     ]

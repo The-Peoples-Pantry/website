@@ -21,7 +21,7 @@ class UserCreationView(SuccessURLAllowedHostsMixin, FormView):
     form_class = UserCreationForm
     template_name = "core/signup.html"
     redirect_field_name = REDIRECT_FIELD_NAME
-    success_url = reverse_lazy('profile')
+    success_url = reverse_lazy("profile")
 
     def form_valid(self, form):
         # Save the form to create the user
@@ -35,28 +35,30 @@ class UserCreationView(SuccessURLAllowedHostsMixin, FormView):
 
     def get_redirect_url(self):
         """Return the user-originating redirect URL if it's safe."""
-        redirect_to = self.request.GET.get(self.redirect_field_name, '')
+        redirect_to = self.request.GET.get(self.redirect_field_name, "")
         url_is_safe = url_has_allowed_host_and_scheme(
             url=redirect_to,
             allowed_hosts=self.get_success_url_allowed_hosts(),
             require_https=self.request.is_secure(),
         )
-        return redirect_to if url_is_safe else ''
+        return redirect_to if url_is_safe else ""
 
 
 class UserProfileView(LoginRequiredMixin, UpdateView):
     model = Volunteer
     form_class = VolunteerProfileForm
-    template_name = 'core/profile.html'
-    success_url = reverse_lazy('profile')
+    template_name = "core/profile.html"
+    success_url = reverse_lazy("profile")
 
     def get_object(self):
         return Volunteer.objects.get(user=self.request.user)
 
     def get_pending_group_names(self, user):
-        return list(user.volunteer_applications.filter(
-            approved=False,
-        ).values_list('role', flat=True))
+        return list(
+            user.volunteer_applications.filter(
+                approved=False,
+            ).values_list("role", flat=True)
+        )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -66,25 +68,33 @@ class UserProfileView(LoginRequiredMixin, UpdateView):
 
     def form_valid(self, form):
         form.save()
-        messages.success(self.request, 'Profile details updated')
+        messages.success(self.request, "Profile details updated")
         return super().form_valid(form)
 
 
 class GroupRequiredMixin(UserPassesTestMixin):
     def test_func(self):
-        return any(has_group(self.request.user, group) for group in self.get_permission_groups()) or self.request.user.is_staff
+        return (
+            any(
+                has_group(self.request.user, group)
+                for group in self.get_permission_groups()
+            )
+            or self.request.user.is_staff
+        )
 
     def get_permission_groups(self):
-        if hasattr(self, 'permission_groups'):
+        if hasattr(self, "permission_groups"):
             return self.permission_groups
-        elif hasattr(self, 'permission_group'):
+        elif hasattr(self, "permission_group"):
             return (self.permission_group,)
         else:
-            raise ImproperlyConfigured('GroupRequiredMixin requires either permission_group or permission_groups')
+            raise ImproperlyConfigured(
+                "GroupRequiredMixin requires either permission_group or permission_groups"
+            )
 
     def get_permission_group_redirect_url(self):
-        default = reverse('profile')
-        return getattr(self, 'permission_group_redirect_url', default)
+        default = reverse("profile")
+        return getattr(self, "permission_group_redirect_url", default)
 
     def handle_no_permission(self):
         return redirect(self.get_permission_group_redirect_url())
@@ -101,12 +111,15 @@ class LastVisitedMixin(MultipleObjectMixin, ContextMixin):
     Counts how many objects in the object list were created later than our
     timestamp to determine the context value "new_since_last_visited".
     """
+
     def get_session_key(self):
         return self.__class__.__name__
 
     def new_since_last_visited(self):
         """Count how many of object_list are new (created) since a given timestamp"""
-        return sum(self.last_visited < obj.created_at.timestamp() for obj in self.object_list)
+        return sum(
+            self.last_visited < obj.created_at.timestamp() for obj in self.object_list
+        )
 
     @functools.cached_property
     def last_visited(self):
@@ -119,8 +132,8 @@ class LastVisitedMixin(MultipleObjectMixin, ContextMixin):
 
     def get_context_data(self, *args, **kwargs):
         context = {
-            'last_visited': self.last_visited,
-            'new_since_last_visited': self.new_since_last_visited(),
+            "last_visited": self.last_visited,
+            "new_since_last_visited": self.new_since_last_visited(),
             **kwargs,
         }
         return super().get_context_data(**context)

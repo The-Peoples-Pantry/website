@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 def get_sentinel_user():
-    return get_user_model().objects.get_or_create(username='deleted')[0]
+    return get_user_model().objects.get_or_create(username="deleted")[0]
 
 
 def has_group(user, group_name: str):
@@ -23,7 +23,7 @@ def has_group(user, group_name: str):
 
 def group_names(user):
     """Returns a list of group names for the user"""
-    return list(user.groups.all().values_list('name', flat=True))
+    return list(user.groups.all().values_list("name", flat=True))
 
 
 def validate_toronto_postal_code(value):
@@ -31,20 +31,24 @@ def validate_toronto_postal_code(value):
     if value is None:
         return
 
-    if not value.upper().startswith('M'):
-        raise ValidationError('This postal code falls outside of the regions that we support')
+    if not value.upper().startswith("M"):
+        raise ValidationError(
+            "This postal code falls outside of the regions that we support"
+        )
 
 
 class TelephoneInput(forms.TextInput):
-    input_type = 'tel'
+    input_type = "tel"
 
     def __init__(self, attrs=None):
         attrs = {} if attrs is None else attrs
-        super().__init__(attrs={
-            'pattern': r'\(?[0-9]{3}\)?[- ]?[0-9]{3}[- ]?[0-9]{4}',
-            'title': 'Telephone input in the form xxx-xxx-xxxx',
-            **attrs,
-        })
+        super().__init__(
+            attrs={
+                "pattern": r"\(?[0-9]{3}\)?[- ]?[0-9]{3}[- ]?[0-9]{4}",
+                "title": "Telephone input in the form xxx-xxx-xxxx",
+                **attrs,
+            }
+        )
 
 
 class TelephoneFormField(forms.CharField):
@@ -56,7 +60,7 @@ class TelephoneFormField(forms.CharField):
             return value
 
         # Strip any extra characters from the phone number like ), (, space, or -
-        value = re.sub(r'[^0-9]', '', value)
+        value = re.sub(r"[^0-9]", "", value)
 
         # Then, re-format as 555-555-5555, as long as the right number of digits
         if len(value) == 10:
@@ -67,24 +71,26 @@ class TelephoneFormField(forms.CharField):
 
 class TelephoneField(models.CharField):
     def __init__(self, *args, **kwargs):
-        kwargs.setdefault('help_text', 'Use the format 555-555-5555')
-        kwargs.setdefault('max_length', settings.PHONE_NUMBER_LENGTH)
+        kwargs.setdefault("help_text", "Use the format 555-555-5555")
+        kwargs.setdefault("max_length", settings.PHONE_NUMBER_LENGTH)
         super().__init__(*args, **kwargs)
 
     def formfield(self, **kwargs):
-        return super().formfield(**{
-            'form_class': TelephoneFormField,
-            **kwargs,
-        })
+        return super().formfield(
+            **{
+                "form_class": TelephoneFormField,
+                **kwargs,
+            }
+        )
 
 
 class Cities(models.TextChoices):
-    EAST_YORK = 'East York', 'East York'
-    ETOBICOKE = 'Etobicoke', 'Etobicoke'
-    NORTH_YORK = 'North York', 'North York'
-    SCARBOROUGH = 'Scarborough', 'Scarborough'
-    TORONTO = 'Toronto', 'Toronto'
-    YORK = 'York', 'York'
+    EAST_YORK = "East York", "East York"
+    ETOBICOKE = "Etobicoke", "Etobicoke"
+    NORTH_YORK = "North York", "North York"
+    SCARBOROUGH = "Scarborough", "Scarborough"
+    TORONTO = "Toronto", "Toronto"
+    YORK = "York", "York"
 
 
 class ContactMixin(models.Model):
@@ -113,13 +119,19 @@ class DemographicMixin(models.Model):
 
     def in_any_demographic(self):
         """Are they a member of any of our tracked demographics?"""
-        return any(getattr(self, attribute) for attribute in self.DEMOGRAPHIC_ATTRIBUTES)
+        return any(
+            getattr(self, attribute) for attribute in self.DEMOGRAPHIC_ATTRIBUTES
+        )
 
     bipoc = models.BooleanField("Black, Indigenous, and People of Colour (BIPOC)")
-    lgbtq = models.BooleanField("Lesbian, Gay, Bisexual, Trans, Queer (LGBTQ), gender non-conforming or non-binary")
+    lgbtq = models.BooleanField(
+        "Lesbian, Gay, Bisexual, Trans, Queer (LGBTQ), gender non-conforming or non-binary"
+    )
     has_disability = models.BooleanField("Living with disabilities")
     immigrant_or_refugee = models.BooleanField("Newly arrived immigrant or refugee")
-    housing_issues = models.BooleanField("Precariously housed (no fixed address, living in a shelter, etc.)")
+    housing_issues = models.BooleanField(
+        "Precariously housed (no fixed address, living in a shelter, etc.)"
+    )
     sex_worker = models.BooleanField("Sex worker")
     single_parent = models.BooleanField("Single parent")
     senior = models.BooleanField("Senior citizen")
@@ -140,7 +152,7 @@ class AddressMixin(models.Model):
     address_1 = models.CharField(
         "Address line 1",
         help_text="Street name and number",
-        max_length=settings.ADDRESS_LENGTH
+        max_length=settings.ADDRESS_LENGTH,
     )
     address_2 = models.CharField(
         "Address line 2",
@@ -155,11 +167,14 @@ class AddressMixin(models.Model):
         default=Cities.TORONTO,
     )
     postal_code = models.CharField(
-        "Postal code",
-        max_length=settings.POSTAL_CODE_LENGTH
+        "Postal code", max_length=settings.POSTAL_CODE_LENGTH
     )
-    anonymized_latitude = models.FloatField(default=43.651070, blank=True)  # default: Toronto latitude
-    anonymized_longitude = models.FloatField(default=-79.347015, blank=True)  # default: Toronto longitude
+    anonymized_latitude = models.FloatField(
+        default=43.651070, blank=True
+    )  # default: Toronto latitude
+    anonymized_longitude = models.FloatField(
+        default=-79.347015, blank=True
+    )  # default: Toronto longitude
 
     @property
     def province(self):
@@ -171,7 +186,7 @@ class AddressMixin(models.Model):
 
     @property
     def address_link(self):
-        params = urllib.parse.urlencode({'api': 1, 'query': self.address})
+        params = urllib.parse.urlencode({"api": 1, "query": self.address})
         return f"https://www.google.com/maps/search/?{params}"
 
     @property
@@ -179,27 +194,33 @@ class AddressMixin(models.Model):
         if self.chef is None:
             return None
 
-        params = urllib.parse.urlencode({
-            'api': 1,
-            'destination': self.chef.volunteer.address,
-            'origin': self.address,
-        })
+        params = urllib.parse.urlencode(
+            {
+                "api": 1,
+                "destination": self.chef.volunteer.address,
+                "origin": self.address,
+            }
+        )
         return f"https://www.google.com/maps/dir/?{params}"
 
     @property
     def anonymous_address_link(self):
-        params = urllib.parse.urlencode({
-            'api': 1,
-            'query': f"{self.anonymized_latitude},{self.anonymized_longitude}",
-        })
+        params = urllib.parse.urlencode(
+            {
+                "api": 1,
+                "query": f"{self.anonymized_latitude},{self.anonymized_longitude}",
+            }
+        )
         return f"https://www.google.com/maps/search/?{params}"
 
     @property
     def anonymous_map_embed(self):
-        params = urllib.parse.urlencode({
-            'key': settings.GOOGLE_MAPS_PRODUCTION_KEY,
-            'q': f"{self.anonymized_latitude},{self.anonymized_longitude}",
-        })
+        params = urllib.parse.urlencode(
+            {
+                "key": settings.GOOGLE_MAPS_PRODUCTION_KEY,
+                "q": f"{self.anonymized_latitude},{self.anonymized_longitude}",
+            }
+        )
         return f"https://www.google.com/maps/embed/v1/place?{params}"
 
     @property
@@ -240,5 +261,5 @@ class TorontoAddressMixin(AddressMixin):
     postal_code = models.CharField(
         "Postal code",
         validators=[validate_toronto_postal_code],
-        max_length=settings.POSTAL_CODE_LENGTH
+        max_length=settings.POSTAL_CODE_LENGTH,
     )

@@ -5,36 +5,36 @@ from django.core.management.sql import emit_post_migrate_signal
 
 
 GROUP_PERMISSIONS = {
-    'Chefs': [
-        'add_delivery',
-        'view_delivery',
-        'view_mealrequest',
+    "Chefs": [
+        "add_delivery",
+        "view_delivery",
+        "view_mealrequest",
     ],
-    'Deliverers': [
-        'add_delivery',
-        'view_delivery',
-        'view_mealrequest',
+    "Deliverers": [
+        "add_delivery",
+        "view_delivery",
+        "view_mealrequest",
     ],
-    'Organizers': [
-        'add_delivery',
-        'change_delivery',
-        'delete_delivery',
-        'view_delivery',
-        'add_mealrequest',
-        'change_mealrequest',
-        'delete_mealrequest',
-        'view_mealrequest',
-        'add_updatenote',
-        'change_updatenote',
-        'delete_updatenote',
-        'view_updatenote',
-    ]
+    "Organizers": [
+        "add_delivery",
+        "change_delivery",
+        "delete_delivery",
+        "view_delivery",
+        "add_mealrequest",
+        "change_mealrequest",
+        "delete_mealrequest",
+        "view_mealrequest",
+        "add_updatenote",
+        "change_updatenote",
+        "delete_updatenote",
+        "view_updatenote",
+    ],
 }
 
 
 def assign_group_permissions(apps, schema_editor):
-    Group = apps.get_model('auth', 'Group')
-    Permission = apps.get_model('auth', 'Permission')
+    Group = apps.get_model("auth", "Group")
+    Permission = apps.get_model("auth", "Permission")
     db_alias = schema_editor.connection.alias
 
     # Workaround to ensure content types for Permissions have been loaded
@@ -51,8 +51,8 @@ def assign_group_permissions(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0001_initial'),
-        ('recipients', '0010_auto_20201116_2146'),
+        ("core", "0001_initial"),
+        ("recipients", "0010_auto_20201116_2146"),
     ]
 
     operations = [

@@ -6,23 +6,35 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('recipients', '0038_grocerydelivery_grocerydeliverycomment'),
+        ("recipients", "0038_grocerydelivery_grocerydeliverycomment"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='grocerydelivery',
-            name='date',
+            model_name="grocerydelivery",
+            name="date",
             field=models.DateField(blank=True, null=True),
         ),
         migrations.AlterField(
-            model_name='groceryrequest',
-            name='protein',
-            field=models.CharField(blank=True, choices=[('Beef', 'Beef'), ('Chicken', 'Chicken'), ('Tofu', 'Tofu'), ('Eggs', 'Eggs')], help_text='Select one of the following', max_length=256, null=True, verbose_name='Protein'),
+            model_name="groceryrequest",
+            name="protein",
+            field=models.CharField(
+                blank=True,
+                choices=[
+                    ("Beef", "Beef"),
+                    ("Chicken", "Chicken"),
+                    ("Tofu", "Tofu"),
+                    ("Eggs", "Eggs"),
+                ],
+                help_text="Select one of the following",
+                max_length=256,
+                null=True,
+                verbose_name="Protein",
+            ),
         ),
         migrations.AlterField(
-            model_name='mealdelivery',
-            name='date',
+            model_name="mealdelivery",
+            name="date",
             field=models.DateField(blank=True, null=True),
         ),
     ]

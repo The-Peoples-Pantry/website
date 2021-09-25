@@ -7,28 +7,46 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('recipients', '0060_auto_20210307_1449'),
+        ("recipients", "0060_auto_20210307_1449"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='groceryrequest',
-            name='phone_number',
-            field=core.models.TelephoneField(help_text='Use the format 555-555-5555', max_length=20, verbose_name='Phone number'),
+            model_name="groceryrequest",
+            name="phone_number",
+            field=core.models.TelephoneField(
+                help_text="Use the format 555-555-5555",
+                max_length=20,
+                verbose_name="Phone number",
+            ),
         ),
         migrations.AlterField(
-            model_name='groceryrequest',
-            name='requester_phone_number',
-            field=core.models.TelephoneField(blank=True, help_text='Use the format 555-555-5555', max_length=20, verbose_name='Your phone number'),
+            model_name="groceryrequest",
+            name="requester_phone_number",
+            field=core.models.TelephoneField(
+                blank=True,
+                help_text="Use the format 555-555-5555",
+                max_length=20,
+                verbose_name="Your phone number",
+            ),
         ),
         migrations.AlterField(
-            model_name='mealrequest',
-            name='phone_number',
-            field=core.models.TelephoneField(help_text='Use the format 555-555-5555', max_length=20, verbose_name='Phone number'),
+            model_name="mealrequest",
+            name="phone_number",
+            field=core.models.TelephoneField(
+                help_text="Use the format 555-555-5555",
+                max_length=20,
+                verbose_name="Phone number",
+            ),
         ),
         migrations.AlterField(
-            model_name='mealrequest',
-            name='requester_phone_number',
-            field=core.models.TelephoneField(blank=True, help_text='Use the format 555-555-5555', max_length=20, verbose_name='Your phone number'),
+            model_name="mealrequest",
+            name="requester_phone_number",
+            field=core.models.TelephoneField(
+                blank=True,
+                help_text="Use the format 555-555-5555",
+                max_length=20,
+                verbose_name="Your phone number",
+            ),
         ),
     ]

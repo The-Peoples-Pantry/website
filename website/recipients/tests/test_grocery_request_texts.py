@@ -16,7 +16,8 @@ class GroceryRequestTextTests(TestCase):
         )
 
     def test_send_recipient_scheduled_notification(self):
-        expected = dedent("""
+        expected = dedent(
+            """
             Hi Ryan,
             This is a message from The People's Pantry.
             Your delivery has been scheduled for Monday March 15. FoodShare will be delivering your box between 10 AM and 9 PM at your door and/or following your delivery instructions. Please make sure to check your phone regularly so the delivery driver can communicate with you easily.
@@ -24,47 +25,66 @@ class GroceryRequestTextTests(TestCase):
             Thank you and stay safe!
 
             Reply STOP to unsubscribe
-        """).strip()
+        """
+        ).strip()
         self.request.send_recipient_scheduled_notification(api=self.api)
-        self.api.send_text.assert_called_with(self.request.phone_number, expected, "groceries")
+        self.api.send_text.assert_called_with(
+            self.request.phone_number, expected, "groceries"
+        )
 
     def test_send_recipient_allergy_notification(self):
-        expected = dedent("""
+        expected = dedent(
+            """
             Hi Ryan,
             This is a message from The People's Pantry.
             The FoodShare boxes this week included a food which you listed as an allergy, please let us know if you would like to cancel the box.
             Please feel free to be in touch with any questions, comments, or concerns.
-        """).strip()
+        """
+        ).strip()
         self.request.send_recipient_allergy_notification(api=self.api)
-        self.api.send_text.assert_called_with(self.request.phone_number, expected, "groceries")
+        self.api.send_text.assert_called_with(
+            self.request.phone_number, expected, "groceries"
+        )
 
     def test_send_recipient_reminder_notification(self):
-        expected = dedent("""
+        expected = dedent(
+            """
             Hello Ryan,
             This is a message from The People's Pantry.
             Your FoodShare produce box is scheduled to be delivered today. Just a reminder that boxes are delivered until 9 PM.  Please let us know once you receive your grocery box.
             If you don’t receive your box by that time today, please let us know by replying to this message. When delivery drivers didn’t get to do the delivery because they ran out of time, they will schedule your delivery for the following day.
             Thanks, and stay safe!
-        """).strip()
+        """
+        ).strip()
         self.request.send_recipient_reminder_notification(api=self.api)
-        self.api.send_text.assert_called_with(self.request.phone_number, expected, "groceries")
+        self.api.send_text.assert_called_with(
+            self.request.phone_number, expected, "groceries"
+        )
 
     def test_send_recipient_rescheduled_notification(self):
-        expected = dedent("""
+        expected = dedent(
+            """
             Hello Ryan,
             This is a message from The People's Pantry.
             Your produce box delivery wasn’t made because the driver could not contact you or had a problem with your delivery instructions. Your box will be scheduled for the following week on the same day between 10 AM and 9 PM. Please, let us know if you have any issues with the delivery or if you would like to make changes to your delivery instructions.
             Thanks, and stay safe!
-        """).strip()
+        """
+        ).strip()
         self.request.send_recipient_rescheduled_notification(api=self.api)
-        self.api.send_text.assert_called_with(self.request.phone_number, expected, "groceries")
+        self.api.send_text.assert_called_with(
+            self.request.phone_number, expected, "groceries"
+        )
 
     def test_send_recipient_confirm_received_notification(self):
-        expected = dedent("""
+        expected = dedent(
+            """
             Hello Ryan,
             This is a message from The People's Pantry.
             Can you confirm that you received your produce box on Monday March 15?
             Thank you!
-        """).strip()
+        """
+        ).strip()
         self.request.send_recipient_confirm_received_notification(api=self.api)
-        self.api.send_text.assert_called_with(self.request.phone_number, expected, "groceries")
+        self.api.send_text.assert_called_with(
+            self.request.phone_number, expected, "groceries"
+        )

@@ -8,7 +8,7 @@ from recipients.models import MealRequest, GroceryRequest
 
 
 def logo(request):
-    return redirect(static('logo-black.png'))
+    return redirect(static("logo-black.png"))
 
 
 class IndexView(TemplateView):
@@ -19,125 +19,131 @@ class IndexView(TemplateView):
     @property
     def extra_context(self):
         return {
-            'volunteers_lower_bound': 500,
-            'meal_requests_count': self.MEAL_REQUESTS_COUNT_PRIOR_TO_WEBSITE + MealRequest.objects.count(),
-            'grocery_requests_count': self.GROCERY_REQUESTS_COUNT_PRIOR_TO_WEBSITE + GroceryRequest.objects.count(),
+            "volunteers_lower_bound": 500,
+            "meal_requests_count": self.MEAL_REQUESTS_COUNT_PRIOR_TO_WEBSITE
+            + MealRequest.objects.count(),
+            "grocery_requests_count": self.GROCERY_REQUESTS_COUNT_PRIOR_TO_WEBSITE
+            + GroceryRequest.objects.count(),
         }
 
 
 class MediaView(TemplateView):
     template_name = "public/media.html"
     extra_context = {
-        "stories": sorted([
-            {
-                'title': 'Food Justice, Sovereignty, & Security',
-                'author': "The People's Pantry",
-                'date': date.fromisoformat('2021-03-05'),
-                'link': 'https://www.youtube.com/watch?v=DR6SMDL4jYo',
-                'image': 'media/food-justice-panel.png',
-                'alt_text': 'Several people on a video conference call.',
-                'outlet': 'YouTube'
-            },
-            {
-                'title': "The People's Pantry in Toronto provides free home-cooked meals to those in need",
-                'author': 'Olivia Little',
-                'date': date.fromisoformat('2021-01-11'),
-                'link': 'https://www.blogto.com/eat_drink/2021/01/peoples-pantry-toronto-provides-free-home-cooked-meals-those-need/',
-                'image': 'media/blogto.png',
-                'alt_text': 'A delivery volunteer pointing to a trunk full of meal deliveries.',
-                'outlet': 'BlogTO'
-            },
-            {
-                'title': 'The Peoples Pantry is Helping Combat Food Insecurity',
-                'author': 'Stella Acquisto',
-                'date': date.fromisoformat('2020-07-28'),
-                'link': 'https://toronto.citynews.ca/video/2020/07/28/peoples-pantry-helping-combat-food-insecurity/#:~:text=combat%20food%20insecurity',
-                'image': 'media/citynews-1.jpg',
-                'alt_text': 'A knife dicing onions on a cutting board.',
-                'outlet': 'CityNews Toronto'
-            },
-            {
-                'title': 'Food is Love: Volunteers look to continue feeding Toronto with The People’s Pantry',
-                'author': 'Lyndsay Morrison',
-                'date': date.fromisoformat('2020-10-14'),
-                'link': 'https://toronto.ctvnews.ca/food-is-love-volunteers-look-to-continue-feeding-toronto-with-the-people-s-pantry-1.5145374',
-                'image': 'media/citynews-2.jpg',
-                'alt_text': 'A news anchor standing in front of the CTV logo.',
-                'outlet': 'CityNews Toronto'
-            },
-            {
-                'title': 'The Exception as the Rule: Toronto’s social reproduction organizing in the age of COVID-19',
-                'author': 'Lina Nasr, El Hag Ali, and Olena Lyubchienko',
-                'date': date.fromisoformat('2020-10-14'),
-                'link': 'https://spectrejournal.com/the-exception-as-the-rule/',
-                'image': 'media/spectre.jpg',
-                'alt_text': 'A photo of a public protest.',
-                'outlet': 'Spectre'
-            },
-            {
-                'title': 'People’s Pantry and creating inclusive spaces for migrants during the pandemic (PDF).',
-                'author': 'Dominik Formanowicz',
-                'date': date.fromisoformat('2020-11-03'),
-                'link': 'https://www.ryerson.ca/content/dam/centre-for-immigration-and-settlement/RCIS/publications/spotlightonmigration/2020_3_Formanowicz_Dominik_People\'s_Pantry_and_creating_inclusive_spaces_for_migrants_during_the_pandemic.pdf',
-                'image': 'media/ryerson.jpg',
-                'alt_text': 'An abstract image of the world.',
-                'outlet': 'Ryerson’s spotlight on migration'
-            },
-            {
-                'title': 'Sociology students build grassroots volunteer-run initiative to help those in need during COVID-19 pandemic.',
-                'author': 'Sherri Klassen',
-                'date': date.fromisoformat('2020-04-24'),
-                'link': 'https://sociology.utoronto.ca/sociology-students-build-grassroots-volunteer-run-initiative-to-help-those-in-need-during-covid-19-pandemic/',
-                'image': 'media/utoronto.jpg',
-                'alt_text': 'A variety of pantry foods like flour, oats, and spices.',
-                'outlet': 'University of Toronto'
-            },
-            {
-                'title': 'The People’s Pantry Gives Free Food to Torontonians Experiencing Food Insecurity.',
-                'author': 'Al Donato',
-                'date': date.fromisoformat('2020-06-03'),
-                'link': 'http://www.huffingtonpost.ca/entry/peoples-pantry-free-food-toronto_ca_5ed163a2c5b64d62dd502851',
-                'image': 'media/huffpo.jpg',
-                'alt_text': 'Two volunteers sitting with the meal they have cooked and packaged.',
-                'outlet': 'HuffPo Canada'
-            },
-            {
-                'title': 'Grad student addresses food insecurity in Ontario as co-founder of a grassroots community initiative.',
-                'author': 'Stephanie Shaw',
-                'date': date.fromisoformat('2020-08-13'),
-                'link': 'https://yfile.news.yorku.ca/2020/08/13/laps-student-addresses-food-insecurity-in-ontario-with-grassroots-community-initiative-note-use-they-their-pronouns/',
-                'image': 'media/yfile.jpg',
-                'alt_text': 'Two of our co-founders sitting in front of a trunk full of grocery bundles.',
-                'outlet': 'York University yFile'
-            },
-            {
-                'title': 'Reasons to Love Toronto. No. 1: Because our home chefs are feeding the hungry',
-                'author': 'Caroline Aksich',
-                'date': date.fromisoformat('2020-10-20'),
-                'link': 'https://torontolife.com/city/reasons-to-love-toronto/no-1-because-our-home-chefs-are-feeding-the-hungry/',
-                'image': 'media/torontolife.jpg',
-                'alt_text': 'One of our co-founders sitting in their kitchen and smiling.',
-                'outlet': 'Toronto Life'
-            },
-            {
-                'title': 'Covid-19: Food Justice and Mutual Aid in the Pandemic (Webinar)',
-                'author': '',
-                'date': date.fromisoformat('2020-05-19'),
-                'link': 'https://www.facebook.com/110190900641866/videos/2779922052293971',
-                'image': 'media/mutualaid.jpg',
-                'alt_text': 'Four faces in a video conference call.',
-                'outlet': 'Toronto/Tkaronto Mutual Aid'
-            },
-            {
-                'title': 'Organizing During a Pandemic: Lessons for the Left (Webinar)',
-                'author': '',
-                'date': date.fromisoformat('2020-06-23'),
-                'link': 'https://www.youtube.com/watch?v=s2uw5GWrTKI',
-                'image': 'media/sis.jpg',
-                'alt_text': 'Several faces in a video conference call.',
-                'outlet': 'SIS Salon'
-            },
-        ], key=lambda story: story['date'], reverse=True)
+        "stories": sorted(
+            [
+                {
+                    "title": "Food Justice, Sovereignty, & Security",
+                    "author": "The People's Pantry",
+                    "date": date.fromisoformat("2021-03-05"),
+                    "link": "https://www.youtube.com/watch?v=DR6SMDL4jYo",
+                    "image": "media/food-justice-panel.png",
+                    "alt_text": "Several people on a video conference call.",
+                    "outlet": "YouTube",
+                },
+                {
+                    "title": "The People's Pantry in Toronto provides free home-cooked meals to those in need",
+                    "author": "Olivia Little",
+                    "date": date.fromisoformat("2021-01-11"),
+                    "link": "https://www.blogto.com/eat_drink/2021/01/peoples-pantry-toronto-provides-free-home-cooked-meals-those-need/",
+                    "image": "media/blogto.png",
+                    "alt_text": "A delivery volunteer pointing to a trunk full of meal deliveries.",
+                    "outlet": "BlogTO",
+                },
+                {
+                    "title": "The Peoples Pantry is Helping Combat Food Insecurity",
+                    "author": "Stella Acquisto",
+                    "date": date.fromisoformat("2020-07-28"),
+                    "link": "https://toronto.citynews.ca/video/2020/07/28/peoples-pantry-helping-combat-food-insecurity/#:~:text=combat%20food%20insecurity",
+                    "image": "media/citynews-1.jpg",
+                    "alt_text": "A knife dicing onions on a cutting board.",
+                    "outlet": "CityNews Toronto",
+                },
+                {
+                    "title": "Food is Love: Volunteers look to continue feeding Toronto with The People’s Pantry",
+                    "author": "Lyndsay Morrison",
+                    "date": date.fromisoformat("2020-10-14"),
+                    "link": "https://toronto.ctvnews.ca/food-is-love-volunteers-look-to-continue-feeding-toronto-with-the-people-s-pantry-1.5145374",
+                    "image": "media/citynews-2.jpg",
+                    "alt_text": "A news anchor standing in front of the CTV logo.",
+                    "outlet": "CityNews Toronto",
+                },
+                {
+                    "title": "The Exception as the Rule: Toronto’s social reproduction organizing in the age of COVID-19",
+                    "author": "Lina Nasr, El Hag Ali, and Olena Lyubchienko",
+                    "date": date.fromisoformat("2020-10-14"),
+                    "link": "https://spectrejournal.com/the-exception-as-the-rule/",
+                    "image": "media/spectre.jpg",
+                    "alt_text": "A photo of a public protest.",
+                    "outlet": "Spectre",
+                },
+                {
+                    "title": "People’s Pantry and creating inclusive spaces for migrants during the pandemic (PDF).",
+                    "author": "Dominik Formanowicz",
+                    "date": date.fromisoformat("2020-11-03"),
+                    "link": "https://www.ryerson.ca/content/dam/centre-for-immigration-and-settlement/RCIS/publications/spotlightonmigration/2020_3_Formanowicz_Dominik_People's_Pantry_and_creating_inclusive_spaces_for_migrants_during_the_pandemic.pdf",
+                    "image": "media/ryerson.jpg",
+                    "alt_text": "An abstract image of the world.",
+                    "outlet": "Ryerson’s spotlight on migration",
+                },
+                {
+                    "title": "Sociology students build grassroots volunteer-run initiative to help those in need during COVID-19 pandemic.",
+                    "author": "Sherri Klassen",
+                    "date": date.fromisoformat("2020-04-24"),
+                    "link": "https://sociology.utoronto.ca/sociology-students-build-grassroots-volunteer-run-initiative-to-help-those-in-need-during-covid-19-pandemic/",
+                    "image": "media/utoronto.jpg",
+                    "alt_text": "A variety of pantry foods like flour, oats, and spices.",
+                    "outlet": "University of Toronto",
+                },
+                {
+                    "title": "The People’s Pantry Gives Free Food to Torontonians Experiencing Food Insecurity.",
+                    "author": "Al Donato",
+                    "date": date.fromisoformat("2020-06-03"),
+                    "link": "http://www.huffingtonpost.ca/entry/peoples-pantry-free-food-toronto_ca_5ed163a2c5b64d62dd502851",
+                    "image": "media/huffpo.jpg",
+                    "alt_text": "Two volunteers sitting with the meal they have cooked and packaged.",
+                    "outlet": "HuffPo Canada",
+                },
+                {
+                    "title": "Grad student addresses food insecurity in Ontario as co-founder of a grassroots community initiative.",
+                    "author": "Stephanie Shaw",
+                    "date": date.fromisoformat("2020-08-13"),
+                    "link": "https://yfile.news.yorku.ca/2020/08/13/laps-student-addresses-food-insecurity-in-ontario-with-grassroots-community-initiative-note-use-they-their-pronouns/",
+                    "image": "media/yfile.jpg",
+                    "alt_text": "Two of our co-founders sitting in front of a trunk full of grocery bundles.",
+                    "outlet": "York University yFile",
+                },
+                {
+                    "title": "Reasons to Love Toronto. No. 1: Because our home chefs are feeding the hungry",
+                    "author": "Caroline Aksich",
+                    "date": date.fromisoformat("2020-10-20"),
+                    "link": "https://torontolife.com/city/reasons-to-love-toronto/no-1-because-our-home-chefs-are-feeding-the-hungry/",
+                    "image": "media/torontolife.jpg",
+                    "alt_text": "One of our co-founders sitting in their kitchen and smiling.",
+                    "outlet": "Toronto Life",
+                },
+                {
+                    "title": "Covid-19: Food Justice and Mutual Aid in the Pandemic (Webinar)",
+                    "author": "",
+                    "date": date.fromisoformat("2020-05-19"),
+                    "link": "https://www.facebook.com/110190900641866/videos/2779922052293971",
+                    "image": "media/mutualaid.jpg",
+                    "alt_text": "Four faces in a video conference call.",
+                    "outlet": "Toronto/Tkaronto Mutual Aid",
+                },
+                {
+                    "title": "Organizing During a Pandemic: Lessons for the Left (Webinar)",
+                    "author": "",
+                    "date": date.fromisoformat("2020-06-23"),
+                    "link": "https://www.youtube.com/watch?v=s2uw5GWrTKI",
+                    "image": "media/sis.jpg",
+                    "alt_text": "Several faces in a video conference call.",
+                    "outlet": "SIS Salon",
+                },
+            ],
+            key=lambda story: story["date"],
+            reverse=True,
+        )
     }
 
 
@@ -242,8 +248,8 @@ class AboutView(TemplateView):
     @property
     def extra_context(self):
         return {
-            'testimonials': self.TESTIMONIAL_PHOTOS,
-            'photos': random.sample(self.VOLUNTEER_PHOTOS, k=12),
+            "testimonials": self.TESTIMONIAL_PHOTOS,
+            "photos": random.sample(self.VOLUNTEER_PHOTOS, k=12),
         }
 
 

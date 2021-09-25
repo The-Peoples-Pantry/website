@@ -6,36 +6,36 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('recipients', '0045_auto_20210124_2048'),
+        ("recipients", "0045_auto_20210124_2048"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='grocerydeliverycomment',
-            name='author',
+            model_name="grocerydeliverycomment",
+            name="author",
         ),
         migrations.RemoveField(
-            model_name='grocerydeliverycomment',
-            name='subject',
+            model_name="grocerydeliverycomment",
+            name="subject",
         ),
         migrations.RemoveField(
-            model_name='groceryrequestcomment',
-            name='author',
+            model_name="groceryrequestcomment",
+            name="author",
         ),
         migrations.RemoveField(
-            model_name='groceryrequestcomment',
-            name='subject',
+            model_name="groceryrequestcomment",
+            name="subject",
         ),
         migrations.DeleteModel(
-            name='GroceryDelivery',
+            name="GroceryDelivery",
         ),
         migrations.DeleteModel(
-            name='GroceryDeliveryComment',
+            name="GroceryDeliveryComment",
         ),
         migrations.DeleteModel(
-            name='GroceryRequest',
+            name="GroceryRequest",
         ),
         migrations.DeleteModel(
-            name='GroceryRequestComment',
+            name="GroceryRequestComment",
         ),
     ]

@@ -26,7 +26,7 @@ class GroceryDeliveryArea:
 
     @property
     def geojson_dir(self):
-        return settings.BASE_DIR / 'data'
+        return settings.BASE_DIR / "data"
 
     @property
     def geojson_filenames(self):
@@ -88,7 +88,7 @@ class Geocoder:
         try:
             response = requests.get(
                 f"{self.API_BASE_URL}/address",
-                params={"key": self.api_key, "location": address}
+                params={"key": self.api_key, "location": address},
             )
             response.raise_for_status()
             lat_lng = response.json()["results"][0]["locations"][0]["latLng"]
@@ -98,7 +98,9 @@ class Geocoder:
 
     def generate_noise(self):
         """Generate a random value in range, and randomly positive or negative"""
-        return uniform(self.DEGREE_RANGE_LOWER, self.DEGREE_RANGE_HIGHER) * choice([-1, 1])
+        return uniform(self.DEGREE_RANGE_LOWER, self.DEGREE_RANGE_HIGHER) * choice(
+            [-1, 1]
+        )
 
 
 def distance(point1, point2) -> float:

@@ -6,13 +6,16 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('recipients', '0059_auto_20210307_1440'),
+        ("recipients", "0059_auto_20210307_1440"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='groceryrequest',
-            name='num_adults',
-            field=models.PositiveSmallIntegerField(help_text='Adults/teenagers 13 years of age and above', verbose_name='Number of adults and teenagers in the household'),
+            model_name="groceryrequest",
+            name="num_adults",
+            field=models.PositiveSmallIntegerField(
+                help_text="Adults/teenagers 13 years of age and above",
+                verbose_name="Number of adults and teenagers in the household",
+            ),
         ),
     ]
