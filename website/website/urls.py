@@ -23,13 +23,13 @@ admin.site.site_header = "The People's Pantry"
 admin.site.site_title = "The People's Pantry admin"
 
 urlpatterns = [
-    path('', include('public.urls')),
-    path('explorer/', include('explorer.urls')),
-    path('signup', UserCreationView.as_view(), name='signup'),
-    path('accounts/', include('django.contrib.auth.urls')),
+    path("", include("public.urls")),
+    path("explorer/", include("explorer.urls")),
+    path("signup", UserCreationView.as_view(), name="signup"),
+    path("accounts/", include("django.contrib.auth.urls")),
     # login redirects to accounts/profile on successful login
-    path('accounts/profile/', UserProfileView.as_view(), name='profile'),
-    path('admin/', admin.site.urls),
-    path('recipients/', include('recipients.urls')),
-    path('volunteers/', include('volunteers.urls')),
+    path("accounts/profile/", UserProfileView.as_view(), name="profile"),
+    path("admin/", admin.site.urls),
+    path("recipients/", include("recipients.urls")),
+    path("volunteers/", include("volunteers.urls")),
 ]

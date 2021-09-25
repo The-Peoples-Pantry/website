@@ -8,7 +8,8 @@ class MealRequestForm(forms.ModelForm):
     # Force the terms to be accepted in order to submit the form
     accept_terms = forms.BooleanField(required=True)
 
-    terms_of_service_text = dedent("""
+    terms_of_service_text = dedent(
+        """
         I acknowledge that The People's Pantry IS NOT RESPONSIBLE FOR ANY ISSUES I MAY HAVE WITH THE FOOD THAT HAS BEEN DELIVERED TO ME. This may include, but is not limited to, allergies, food outside of dietary preferences or restrictions, or digestive tract issues caused by consuming the food. I understand that The People's Pantry will not knowingly provide me with food to which I have an allergy, is outside of my dietary restrictions, or foods that are otherwise unsafe to eat, but is not liable for any issues that may occur.
 
         I acknowledge that The People's Pantry IS NOT RESPONSIBLE FOR THE PRESERVATION OR PREPARATION OF ANY FOOD ONCE IT HAS BEEN DELIVERED TO ME. It is my sole responsibility to ensure that food is stored and cooked safely and that pre-cooked meals are reheated to safe temperatures.
@@ -20,24 +21,25 @@ class MealRequestForm(forms.ModelForm):
         I understand that meals are delivered by contact-free dropoff and that if I make alternative arrangements with the deliverer that I am required to wear a mask and follow appropriate social distancing guidelines during the delivery.
 
         I understand that IF I DO NOT CONFIRM READINESS TO ACCEPT A DELIVERY IN A TIMELY FASHION or ACT AGGRESSIVELY AGAINST A VOLUNTEER, MY DELIVERY WILL NOT BE SCHEDULED.
-    """)
+    """
+    )
 
     class Meta:
         model = MealRequest
         exclude = [
-            'created_at',
-            'updated_at',
-            'anonymized_latitude',
-            'anonymized_longitude',
-            'delivery_date',
-            'status',
-            'chef',
-            'deliverer',
-            'pickup_start',
-            'pickup_end',
-            'dropoff_start',
-            'dropoff_end',
-            'meal',
+            "created_at",
+            "updated_at",
+            "anonymized_latitude",
+            "anonymized_longitude",
+            "delivery_date",
+            "status",
+            "chef",
+            "deliverer",
+            "pickup_start",
+            "pickup_end",
+            "dropoff_start",
+            "dropoff_end",
+            "meal",
         ]
 
 
@@ -50,7 +52,8 @@ class GroceryRequestForm(forms.ModelForm):
         required=True,
     )
 
-    terms_of_service_text = dedent("""
+    terms_of_service_text = dedent(
+        """
         I acknowledge that MY NAME, EMAIL ADDRESS, PHONE NUMBER, ADDRESS, AND DELIVERY DETAILS WILL BE SHARED WITH FOODSHARE to set up my delivery.
 
         I acknowledge that The People's Pantry and FoodShare ARE NOT RESPONSIBLE FOR ANY ISSUES I MAY HAVE WITH THE FOOD THAT HAS BEEN DELIVERED TO ME. This may include, but is not limited to, allergies, food outside of dietary preferences or restrictions, or digestive tract issues caused by consuming the food. I understand that The People's Pantry and FoodShare are unable to assemble the produce boxes to suit my food allergies and sensitivities and dietary preferences and restrictions. The People’s Pantry will try to make sure I feel comfortable with the produce I receive, but is not liable for any issues that may occur.
@@ -62,8 +65,16 @@ class GroceryRequestForm(forms.ModelForm):
         I acknowledge that I AM NOT TO CONTACT THE DELIVERY PERSON OUTSIDE OF THE CONTEXT OF THE DELIVERY. I am not to disclose their name, phone number, or any other personal information to others.
 
         I understand that IF I DO NOT CONFIRM READINESS TO ACCEPT A DELIVERY IN A TIMELY FASHION or ACT AGGRESSIVELY AGAINST A VOLUNTEER, MY DELIVERY WILL NOT BE SCHEDULED.
-    """)
+    """
+    )
 
     class Meta:
         model = GroceryRequest
-        exclude = ['created_at', 'updated_at', 'anonymized_latitude', 'anonymized_longitude', 'delivery_date', 'status']
+        exclude = [
+            "created_at",
+            "updated_at",
+            "anonymized_latitude",
+            "anonymized_longitude",
+            "delivery_date",
+            "status",
+        ]

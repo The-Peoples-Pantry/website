@@ -4,11 +4,11 @@ from django.db import migrations
 
 
 def copy_data_from_meal_delivery_to_meal_request(apps, schema_editor):
-    MealRequest = apps.get_model('recipients', 'MealRequest')
+    MealRequest = apps.get_model("recipients", "MealRequest")
     db_alias = schema_editor.connection.alias
 
     for meal_request in MealRequest.objects.using(db_alias).all():
-        if not hasattr(meal_request, 'delivery'):
+        if not hasattr(meal_request, "delivery"):
             continue
 
         meal_request.chef = meal_request.delivery.chef
@@ -24,26 +24,26 @@ def copy_data_from_meal_delivery_to_meal_request(apps, schema_editor):
 
 
 def remove_meal_delivery_info_from_meal_request(apps, schema_editor):
-    MealRequest = apps.get_model('recipients', 'MealRequest')
+    MealRequest = apps.get_model("recipients", "MealRequest")
     db_alias = schema_editor.connection.alias
 
     for meal_request in MealRequest.objects.using(db_alias).all():
         meal_request.chef = None
         meal_request.deliverer = None
-        meal_request.status = MealRequest._meta.get_field('status').get_default()
+        meal_request.status = MealRequest._meta.get_field("status").get_default()
         meal_request.delivery_date = None
         meal_request.pickup_start = None
         meal_request.pickup_end = None
         meal_request.dropoff_start = None
         meal_request.dropoff_end = None
-        meal_request.meal = ''
+        meal_request.meal = ""
         meal_request.save()
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('recipients', '0068_auto_20210411_1008'),
+        ("recipients", "0068_auto_20210411_1008"),
     ]
 
     operations = [

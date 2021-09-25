@@ -6,13 +6,24 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('recipients', '0046_auto_20210212_1858'),
+        ("recipients", "0046_auto_20210212_1858"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='mealdelivery',
-            name='status',
-            field=models.CharField(choices=[('Unconfirmed', 'Unconfirmed'), ('Chef Assigned', 'Chef Assigned'), ('Driver Assigned', 'Driver Assigned'), ('Delivery Date Confirmed', 'Delivery Date Confirmed'), ('Delivered', 'Delivered')], default='Unconfirmed', max_length=256, verbose_name='Status'),
+            model_name="mealdelivery",
+            name="status",
+            field=models.CharField(
+                choices=[
+                    ("Unconfirmed", "Unconfirmed"),
+                    ("Chef Assigned", "Chef Assigned"),
+                    ("Driver Assigned", "Driver Assigned"),
+                    ("Delivery Date Confirmed", "Delivery Date Confirmed"),
+                    ("Delivered", "Delivered"),
+                ],
+                default="Unconfirmed",
+                max_length=256,
+                verbose_name="Status",
+            ),
         ),
     ]

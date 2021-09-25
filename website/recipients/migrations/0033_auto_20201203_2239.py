@@ -6,18 +6,40 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('recipients', '0032_auto_20201203_2201'),
+        ("recipients", "0032_auto_20201203_2201"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='groceryrequest',
-            name='city',
-            field=models.CharField(choices=[('East York', 'East York'), ('Etobicoke', 'Etobicoke'), ('North York', 'North York'), ('Scarborough', 'Scarborough'), ('Toronto', 'Toronto')], default='Toronto', max_length=50, verbose_name='City'),
+            model_name="groceryrequest",
+            name="city",
+            field=models.CharField(
+                choices=[
+                    ("East York", "East York"),
+                    ("Etobicoke", "Etobicoke"),
+                    ("North York", "North York"),
+                    ("Scarborough", "Scarborough"),
+                    ("Toronto", "Toronto"),
+                ],
+                default="Toronto",
+                max_length=50,
+                verbose_name="City",
+            ),
         ),
         migrations.AlterField(
-            model_name='mealrequest',
-            name='city',
-            field=models.CharField(choices=[('East York', 'East York'), ('Etobicoke', 'Etobicoke'), ('North York', 'North York'), ('Scarborough', 'Scarborough'), ('Toronto', 'Toronto')], default='Toronto', max_length=50, verbose_name='City'),
+            model_name="mealrequest",
+            name="city",
+            field=models.CharField(
+                choices=[
+                    ("East York", "East York"),
+                    ("Etobicoke", "Etobicoke"),
+                    ("North York", "North York"),
+                    ("Scarborough", "Scarborough"),
+                    ("Toronto", "Toronto"),
+                ],
+                default="Toronto",
+                max_length=50,
+                verbose_name="City",
+            ),
         ),
     ]

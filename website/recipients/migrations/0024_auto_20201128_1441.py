@@ -10,18 +10,28 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('recipients', '0023_containerdelivery'),
+        ("recipients", "0023_containerdelivery"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='containerdelivery',
-            name='chef',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='received_container_deliveries', to=settings.AUTH_USER_MODEL),
+            model_name="containerdelivery",
+            name="chef",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="received_container_deliveries",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.AlterField(
-            model_name='containerdelivery',
-            name='deliverer',
-            field=models.ForeignKey(blank=True, null=True, on_delete=models.SET(core.models.get_sentinel_user), related_name='delivered_container_deliveries', to=settings.AUTH_USER_MODEL),
+            model_name="containerdelivery",
+            name="deliverer",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=models.SET(core.models.get_sentinel_user),
+                related_name="delivered_container_deliveries",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
     ]

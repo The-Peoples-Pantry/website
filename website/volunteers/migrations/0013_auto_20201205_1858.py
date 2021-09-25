@@ -6,13 +6,19 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('volunteers', '0012_auto_20201204_2012'),
+        ("volunteers", "0012_auto_20201204_2012"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='volunteer',
-            name='pronouns',
-            field=models.CharField(blank=True, help_text='Please include all of your pronouns', max_length=256, null=True, verbose_name='Pronouns'),
+            model_name="volunteer",
+            name="pronouns",
+            field=models.CharField(
+                blank=True,
+                help_text="Please include all of your pronouns",
+                max_length=256,
+                null=True,
+                verbose_name="Pronouns",
+            ),
         ),
     ]

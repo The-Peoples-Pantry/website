@@ -30,8 +30,12 @@ class RunMealRequestCommandTests(TestCase):
         self.assertIn("Eligible MealRequests: 20", output)
 
     def test_selects_from_eligible(self):
-        eligible = MealRequestFactory.create_batch(20, status=MealRequest.Status.SUBMITTED)
-        ineligible = MealRequestFactory.create_batch(80, status=MealRequest.Status.DELIVERED)
+        eligible = MealRequestFactory.create_batch(
+            20, status=MealRequest.Status.SUBMITTED
+        )
+        ineligible = MealRequestFactory.create_batch(
+            80, status=MealRequest.Status.DELIVERED
+        )
         self.call_run_meal_request_lottery()
 
         selected, not_selected = [], []
@@ -50,7 +54,9 @@ class RunMealRequestCommandTests(TestCase):
 
     def test_selects_only_up_to_limit(self):
         """If we have a limit of 10 and 8 are already selected, select 2"""
-        eligible = MealRequestFactory.create_batch(20, status=MealRequest.Status.SUBMITTED)
+        eligible = MealRequestFactory.create_batch(
+            20, status=MealRequest.Status.SUBMITTED
+        )
         MealRequestFactory.create_batch(8, status=MealRequest.Status.SELECTED)
         output = self.call_run_meal_request_lottery()
         self.assertIn("Already Selected MealRequests: 8", output)
@@ -64,7 +70,9 @@ class RunMealRequestCommandTests(TestCase):
         self.assertEqual(2, len(newly_selected))
 
     def test_doesnt_perform_change_on_dry_run(self):
-        requests = MealRequestFactory.create_batch(20, status=MealRequest.Status.SUBMITTED)
+        requests = MealRequestFactory.create_batch(
+            20, status=MealRequest.Status.SUBMITTED
+        )
         self.call_run_meal_request_lottery(dry_run=True)
 
         for request in requests:

@@ -11,6 +11,7 @@ from recipients.models import MealRequest, GroceryRequest
 
 class AssertionMixin(TestCase):
     """Helper assertions for lottery tests"""
+
     def assertMoreLikely(self, a, b, selected):
         """Asserts that it is more likely to select from group a than group b"""
         self.assertGreater(
@@ -25,12 +26,15 @@ class AssertionMixin(TestCase):
             (email.subject == subject) and (recipient in email.to)
             for email in mail.outbox
         )
-        self.assertTrue(has_match, textwrap.dedent(
-            f"""
+        self.assertTrue(
+            has_match,
+            textwrap.dedent(
+                f"""
             Expected an email to have been sent to `{recipient}` with subject: `{subject}`
             No emails in the outbox matched
             There were {len(mail.outbox)} emails in the outbox
-            """)
+            """
+            ),
         )
 
     def assertEmailNotSent(self, subject, recipient):
@@ -39,12 +43,15 @@ class AssertionMixin(TestCase):
             (email.subject == subject) and (recipient in email.to)
             for email in mail.outbox
         )
-        self.assertFalse(has_match, textwrap.dedent(
-            f"""
+        self.assertFalse(
+            has_match,
+            textwrap.dedent(
+                f"""
             Expected an email not to have been sent to `{recipient}` with subject: `{subject}`
             A matching email was found in the outbox
             There were {len(mail.outbox)} emails in the outbox
-            """)
+            """
+            ),
         )
 
 
@@ -72,27 +79,32 @@ class MealRequestLotteryTests(AssertionMixin, TestCase):
         for request in selected:
             self.assertEmailSent(
                 "Your meal request for The People's Pantry has been selected",
-                request.email
+                request.email,
             )
             self.assertEmailNotSent(
                 "Your meal request for The People's Pantry was not selected",
-                request.email
+                request.email,
             )
         for request in not_selected:
             self.assertEmailSent(
                 "Your meal request for The People's Pantry was not selected",
-                request.email
+                request.email,
             )
             self.assertEmailNotSent(
                 "Your meal request for The People's Pantry has been selected",
-                request.email
+                request.email,
             )
 
     def test_dry_run_does_change_status_or_send_emails(self):
         MealRequestFactory.create_batch(50, status=MealRequest.Status.SUBMITTED)
         MealRequestLottery(10).select(dry_run=True)
-        self.assertEqual(MealRequest.objects.filter(status=MealRequest.Status.SELECTED).count(), 0)
-        self.assertEqual(MealRequest.objects.filter(status=MealRequest.Status.NOT_SELECTED).count(), 0)
+        self.assertEqual(
+            MealRequest.objects.filter(status=MealRequest.Status.SELECTED).count(), 0
+        )
+        self.assertEqual(
+            MealRequest.objects.filter(status=MealRequest.Status.NOT_SELECTED).count(),
+            0,
+        )
         self.assertEqual(len(mail.outbox), 0)
 
     def test_results_are_randomized(self):
@@ -132,35 +144,55 @@ class MealRequestLotteryTests(AssertionMixin, TestCase):
 
     def test_gives_additional_weight_to_demographics(self):
         """Requests any of our supported demographics should have additional weight"""
-        demographic_meal_requests = MealRequestFactory.create_batch(100, bipoc=True)  # Or any other demographic
+        demographic_meal_requests = MealRequestFactory.create_batch(
+            100, bipoc=True
+        )  # Or any other demographic
         non_demographic_meal_requests = MealRequestFactory.create_batch(
             100,
-            **{demographic: False for demographic in MealRequest.DEMOGRAPHIC_ATTRIBUTES},
+            **{
+                demographic: False for demographic in MealRequest.DEMOGRAPHIC_ATTRIBUTES
+            },
         )
         selected, _ = MealRequestLottery(100).select()
 
-        self.assertMoreLikely(demographic_meal_requests, non_demographic_meal_requests, selected)
+        self.assertMoreLikely(
+            demographic_meal_requests, non_demographic_meal_requests, selected
+        )
 
     def test_gives_additional_weight_to_previously_not_selected(self):
         """Requests from folks that were previously not selected should have additional weight"""
-        has_previous_unselected_requests = [MealRequestFactory(phone_number=f"555555555{i}") for i in range(100)]
-        no_previous_unselected_requests = [MealRequestFactory(phone_number=f"444444444{i}") for i in range(100)]
+        has_previous_unselected_requests = [
+            MealRequestFactory(phone_number=f"555555555{i}") for i in range(100)
+        ]
+        no_previous_unselected_requests = [
+            MealRequestFactory(phone_number=f"444444444{i}") for i in range(100)
+        ]
 
         # Add previously unselected requests
         for request in has_previous_unselected_requests:
-            for previous_request in MealRequestFactory.create_batch(5, phone_number=request.phone_number, status=MealRequest.Status.NOT_SELECTED):
-                previous_request.created_at = timezone.now() - datetime.timedelta(days=1)
+            for previous_request in MealRequestFactory.create_batch(
+                5,
+                phone_number=request.phone_number,
+                status=MealRequest.Status.NOT_SELECTED,
+            ):
+                previous_request.created_at = timezone.now() - datetime.timedelta(
+                    days=1
+                )
                 previous_request.save()
 
         selected, _ = MealRequestLottery(100).select()
 
-        self.assertMoreLikely(has_previous_unselected_requests, no_previous_unselected_requests, selected)
+        self.assertMoreLikely(
+            has_previous_unselected_requests, no_previous_unselected_requests, selected
+        )
 
 
 class GroceryRequestLotteryTests(AssertionMixin, TestCase):
     def test_result_selects_correct_number_when_all_requests_get_one_box(self):
         # When every request is eligible for exactly one box its easy to select the correct number of boxes - its the same as the number of requests
-        GroceryRequestFactory.create_batch(50, num_adults=1, status=GroceryRequest.Status.SUBMITTED)
+        GroceryRequestFactory.create_batch(
+            50, num_adults=1, status=GroceryRequest.Status.SUBMITTED
+        )
         selected, not_selected = GroceryRequestLottery(10).select()
         num_boxes_selected = sum(request.boxes for request in selected)
 
@@ -183,34 +215,43 @@ class GroceryRequestLotteryTests(AssertionMixin, TestCase):
         for request in selected:
             self.assertEmailSent(
                 "Your grocery request for The People's Pantry has been selected",
-                request.email
+                request.email,
             )
             self.assertEmailNotSent(
                 "Your grocery request for The People's Pantry was not selected",
-                request.email
+                request.email,
             )
         for request in not_selected:
             self.assertEmailSent(
                 "Your grocery request for The People's Pantry was not selected",
-                request.email
+                request.email,
             )
             self.assertEmailNotSent(
                 "Your grocery request for The People's Pantry has been selected",
-                request.email
+                request.email,
             )
 
     def test_dry_run_does_change_status_or_send_emails(self):
         GroceryRequestFactory.create_batch(50, status=GroceryRequest.Status.SUBMITTED)
         GroceryRequestLottery(10).select(dry_run=True)
-        self.assertEqual(MealRequest.objects.filter(status=GroceryRequest.Status.SELECTED).count(), 0)
-        self.assertEqual(MealRequest.objects.filter(status=GroceryRequest.Status.NOT_SELECTED).count(), 0)
+        self.assertEqual(
+            MealRequest.objects.filter(status=GroceryRequest.Status.SELECTED).count(), 0
+        )
+        self.assertEqual(
+            MealRequest.objects.filter(
+                status=GroceryRequest.Status.NOT_SELECTED
+            ).count(),
+            0,
+        )
         self.assertEqual(len(mail.outbox), 0)
 
     def test_result_selects_correct_number_when_they_do_not_add_up_to_exact_limit(self):
         # When all requests are for a number of boxes that the limit isn't evenly divisible by we can't select the exact limit
         # eg. if we're selecting 10 boxes but every request is for 3 boxes. 10 isn't evenly divisible by 3, so we'd select 9 instead
         # When number of adults is > 7 we give 3 boxes
-        GroceryRequestFactory.create_batch(50, num_adults=10, status=GroceryRequest.Status.SUBMITTED)
+        GroceryRequestFactory.create_batch(
+            50, num_adults=10, status=GroceryRequest.Status.SUBMITTED
+        )
         selected, not_selected = GroceryRequestLottery(10).select()
         num_boxes_selected = sum(request.boxes for request in selected)
 
@@ -221,7 +262,9 @@ class GroceryRequestLotteryTests(AssertionMixin, TestCase):
         # Slightly random test
         # When not given an explicit num_adults (to determine the number of boxes) assert that it nevertheless comes in within the limit
         for i in range(10):
-            GroceryRequestFactory.create_batch(50, status=GroceryRequest.Status.SUBMITTED)
+            GroceryRequestFactory.create_batch(
+                50, status=GroceryRequest.Status.SUBMITTED
+            )
             selected, not_selected = GroceryRequestLottery(10).select()
             num_boxes_selected = sum(request.boxes for request in selected)
             self.assertLessEqual(num_boxes_selected, 10)
@@ -235,7 +278,9 @@ class GroceryRequestLotteryTests(AssertionMixin, TestCase):
         # Not a true test of randomness, but works well enough for our purpose here
         results = set()
         for x in range(10):
-            GroceryRequestFactory.create_batch(50, status=GroceryRequest.Status.SUBMITTED)
+            GroceryRequestFactory.create_batch(
+                50, status=GroceryRequest.Status.SUBMITTED
+            )
             lottery = GroceryRequestLottery(10)
             selected, _ = lottery.select()
             selected_ids = tuple(sorted(request.id for request in selected))
@@ -259,7 +304,9 @@ class GroceryRequestLotteryTests(AssertionMixin, TestCase):
         self.assertTrue(selected_ids.isdisjoint(not_selected_ids))
 
     def test_selects_all_if_selection_size_is_larger_than_requests(self):
-        GroceryRequestFactory.create_batch(50, num_adults=1, status=GroceryRequest.Status.SUBMITTED)
+        GroceryRequestFactory.create_batch(
+            50, num_adults=1, status=GroceryRequest.Status.SUBMITTED
+        )
         selected, not_selected = GroceryRequestLottery(60).select()
 
         self.assertEqual(len(selected), 50)
@@ -267,26 +314,45 @@ class GroceryRequestLotteryTests(AssertionMixin, TestCase):
 
     def test_gives_additional_weight_to_demographics(self):
         """Requests any of our supported demographics should have additional weight"""
-        demographic_grocery_requests = GroceryRequestFactory.create_batch(100, bipoc=True)  # Or any other demographic
+        demographic_grocery_requests = GroceryRequestFactory.create_batch(
+            100, bipoc=True
+        )  # Or any other demographic
         non_demographic_grocery_requests = GroceryRequestFactory.create_batch(
             100,
-            **{demographic: False for demographic in GroceryRequest.DEMOGRAPHIC_ATTRIBUTES},
+            **{
+                demographic: False
+                for demographic in GroceryRequest.DEMOGRAPHIC_ATTRIBUTES
+            },
         )
         selected, _ = GroceryRequestLottery(100).select()
 
-        self.assertMoreLikely(demographic_grocery_requests, non_demographic_grocery_requests, selected)
+        self.assertMoreLikely(
+            demographic_grocery_requests, non_demographic_grocery_requests, selected
+        )
 
     def test_gives_additional_weight_to_previously_not_selected(self):
         """Requests from folks that were previously not selected should have additional weight"""
-        has_previous_unselected_requests = [GroceryRequestFactory(phone_number=f"555555555{i}") for i in range(100)]
-        no_previous_unselected_requests = [GroceryRequestFactory(phone_number=f"444444444{i}") for i in range(100)]
+        has_previous_unselected_requests = [
+            GroceryRequestFactory(phone_number=f"555555555{i}") for i in range(100)
+        ]
+        no_previous_unselected_requests = [
+            GroceryRequestFactory(phone_number=f"444444444{i}") for i in range(100)
+        ]
 
         # Add previously unselected requests
         for request in has_previous_unselected_requests:
-            for previous_request in GroceryRequestFactory.create_batch(5, phone_number=request.phone_number, status=GroceryRequest.Status.NOT_SELECTED):
-                previous_request.created_at = timezone.now() - datetime.timedelta(days=1)
+            for previous_request in GroceryRequestFactory.create_batch(
+                5,
+                phone_number=request.phone_number,
+                status=GroceryRequest.Status.NOT_SELECTED,
+            ):
+                previous_request.created_at = timezone.now() - datetime.timedelta(
+                    days=1
+                )
                 previous_request.save()
 
         selected, _ = GroceryRequestLottery(100).select()
 
-        self.assertMoreLikely(has_previous_unselected_requests, no_previous_unselected_requests, selected)
+        self.assertMoreLikely(
+            has_previous_unselected_requests, no_previous_unselected_requests, selected
+        )

@@ -6,13 +6,17 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('recipients', '0055_mealrequest_senior'),
+        ("recipients", "0055_mealrequest_senior"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='groceryrequest',
-            name='food_allergies',
-            field=models.TextField(blank=True, help_text='Because of logistics constraints, we are unable to assemble boxes according to your needs. If you have an allergy to a food item that is included in the produce box, we won’t be able to send you the box.', verbose_name='Food allergies'),
+            model_name="groceryrequest",
+            name="food_allergies",
+            field=models.TextField(
+                blank=True,
+                help_text="Because of logistics constraints, we are unable to assemble boxes according to your needs. If you have an allergy to a food item that is included in the produce box, we won’t be able to send you the box.",
+                verbose_name="Food allergies",
+            ),
         ),
     ]

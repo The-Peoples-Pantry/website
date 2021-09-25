@@ -6,13 +6,19 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('volunteers', '0016_volunteer_organizer_teams'),
+        ("volunteers", "0016_volunteer_organizer_teams"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='volunteer',
-            name='notes',
-            field=models.CharField(blank=True, help_text='Please include any relevant info the coordinator may need to know, such as upcoming holidays, changes in circumstances, etc', max_length=256, null=True, verbose_name='Notes'),
+            model_name="volunteer",
+            name="notes",
+            field=models.CharField(
+                blank=True,
+                help_text="Please include any relevant info the coordinator may need to know, such as upcoming holidays, changes in circumstances, etc",
+                max_length=256,
+                null=True,
+                verbose_name="Notes",
+            ),
         ),
     ]

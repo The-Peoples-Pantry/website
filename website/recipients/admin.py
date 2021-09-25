@@ -17,46 +17,46 @@ from django.utils.translation import ngettext
 
 def short_time(time_obj):
     try:
-        return time_obj.strftime('%-I %p')
+        return time_obj.strftime("%-I %p")
     except ValueError:
-        return time_obj.strftime('%I %p')
+        return time_obj.strftime("%I %p")
     except AttributeError:
-        return 'None'
+        return "None"
 
 
 class NotSelectedFilter(admin.SimpleListFilter):
-    title = 'Not Selected'
-    parameter_name = 'not_selected'
+    title = "Not Selected"
+    parameter_name = "not_selected"
 
     def lookups(self, request, model_admin):
-        return (
-            ('Hide "Not Selected"', 'Hide "Not Selected"'),
-        )
+        return (('Hide "Not Selected"', 'Hide "Not Selected"'),)
 
     def queryset(self, request, queryset):
         if self.value() == 'Hide "Not Selected"':
-            queryset = queryset.exclude(status__in=(
-                MealRequest.Status.NOT_SELECTED,
-                GroceryRequest.Status.NOT_SELECTED,
-            ))
+            queryset = queryset.exclude(
+                status__in=(
+                    MealRequest.Status.NOT_SELECTED,
+                    GroceryRequest.Status.NOT_SELECTED,
+                )
+            )
         return queryset
 
 
 class CompletedFilter(admin.SimpleListFilter):
-    title = 'Completed'
-    parameter_name = 'completed'
+    title = "Completed"
+    parameter_name = "completed"
 
     def lookups(self, request, model_admin):
-        return (
-            ('Hide Completed', 'Hide Completed'),
-        )
+        return (("Hide Completed", "Hide Completed"),)
 
     def queryset(self, request, queryset):
-        if self.value() == 'Hide Completed':
-            queryset = queryset.exclude(status__in=(
-                *MealRequest.COMPLETED_STATUSES,
-                *GroceryRequest.COMPLETED_STATUSES,
-            ))
+        if self.value() == "Hide Completed":
+            queryset = queryset.exclude(
+                status__in=(
+                    *MealRequest.COMPLETED_STATUSES,
+                    *GroceryRequest.COMPLETED_STATUSES,
+                )
+            )
         return queryset
 
 
@@ -73,13 +73,9 @@ class CommentInlineFormSet(forms.models.BaseInlineFormSet):
 # Abstract for all comment inlines
 class CommentInline(admin.TabularInline):
     extra = 0
-    ordering = (
-        'created_at',
-    )
+    ordering = ("created_at",)
     formset = CommentInlineFormSet
-    readonly_fields = (
-        'author',
-    )
+    readonly_fields = ("author",)
 
     # Add request to the formset so that we can access the logged-in user
     def get_formset(self, request, obj=None, **kwargs):
@@ -94,55 +90,53 @@ class MealRequestCommentInline(CommentInline):
 
 class MealRequestAdmin(admin.ModelAdmin):
     list_display = (
-        'edit_link',
-        'name',
-        'phone_number',
-        'texts',
-        'city',
-        'delivery_date',
-        'pickup_range',
-        'dropoff_range',
-        'distance',
-        'chef_link',
-        'deliverer_link',
-        'status',
-        'completed',
-        'created_at',
+        "edit_link",
+        "name",
+        "phone_number",
+        "texts",
+        "city",
+        "delivery_date",
+        "pickup_range",
+        "dropoff_range",
+        "distance",
+        "chef_link",
+        "deliverer_link",
+        "status",
+        "completed",
+        "created_at",
     )
     list_filter = (
         CompletedFilter,
         NotSelectedFilter,
-        'status',
-        'can_receive_texts',
-        'created_at',
+        "status",
+        "can_receive_texts",
+        "created_at",
     )
-    inlines = (
-        MealRequestCommentInline,
-    )
+    inlines = (MealRequestCommentInline,)
     actions = (
-        'copy',
-        'mark_as_confirmed',
-        'mark_as_delivered',
-        'notify_recipients_delivery',
-        'notify_recipients_reminder',
-        'notify_recipients_feedback',
-        'notify_chefs_reminder',
-        'notify_deliverers_reminder',
-        'notify_deliverers_details',
+        "copy",
+        "mark_as_confirmed",
+        "mark_as_delivered",
+        "notify_recipients_delivery",
+        "notify_recipients_reminder",
+        "notify_recipients_feedback",
+        "notify_chefs_reminder",
+        "notify_deliverers_reminder",
+        "notify_deliverers_details",
     )
     search_fields = (
-        '=id',
-        'name',
-        'email',
-        'phone_number',
-        'chef__volunteer__name',
-        'deliverer__volunteer__name',
+        "=id",
+        "name",
+        "email",
+        "phone_number",
+        "chef__volunteer__name",
+        "deliverer__volunteer__name",
     )
     list_select_related = (
-        'chef',
-        'chef__volunteer',
-        'deliverer',
-        'deliverer__volunteer',
+        "chef",
+        "chef__volunteer",
+        "deliverer",
+        "deliverer__volunteer",
     )
 
     def get_queryset(self, *args, **kwargs):
@@ -150,6 +144,7 @@ class MealRequestAdmin(admin.ModelAdmin):
 
     def texts(self, obj):
         return obj.can_receive_texts
+
     texts.boolean = True
     texts.short_description = "Texts"
     texts.admin_order_field = "can_receive_texts"
@@ -165,30 +160,36 @@ class MealRequestAdmin(admin.ModelAdmin):
         )
 
     def edit_link(self, request):
-        return 'Edit request %d' % request.id
-    edit_link.short_description = 'Edit link'
+        return "Edit request %d" % request.id
+
+    edit_link.short_description = "Edit link"
 
     def chef_link(self, obj):
         return user_link(obj.chef)
-    chef_link.short_description = 'Chef'
-    chef_link.admin_order_field = 'chef__volunteer__name'
+
+    chef_link.short_description = "Chef"
+    chef_link.admin_order_field = "chef__volunteer__name"
 
     def deliverer_link(self, obj):
         return user_link(obj.deliverer)
-    deliverer_link.short_description = 'Deliverer'
-    deliverer_link.admin_order_field = 'deliverer__volunteer__name'
+
+    deliverer_link.short_description = "Deliverer"
+    deliverer_link.admin_order_field = "deliverer__volunteer__name"
 
     def pickup_range(self, obj):
-        return short_time(obj.pickup_start) + ' - ' + short_time(obj.pickup_end)
-    pickup_range.short_description = 'Pickup range'
+        return short_time(obj.pickup_start) + " - " + short_time(obj.pickup_end)
+
+    pickup_range.short_description = "Pickup range"
 
     def dropoff_range(self, obj):
-        return short_time(obj.dropoff_start) + ' - ' + short_time(obj.dropoff_end)
-    dropoff_range.short_description = 'Dropoff range'
+        return short_time(obj.dropoff_start) + " - " + short_time(obj.dropoff_end)
+
+    dropoff_range.short_description = "Dropoff range"
 
     def completed(self, obj):
         return obj.status in MealRequest.COMPLETED_STATUSES
-    completed.admin_order_field = 'status'
+
+    completed.admin_order_field = "status"
     completed.boolean = True
 
     def copy(self, request, queryset):
@@ -199,6 +200,7 @@ class MealRequestAdmin(admin.ModelAdmin):
                 f"A copy of meal request {meal_request.id} has been created with new id {new_meal_request.id}",
                 messages.SUCCESS,
             )
+
     copy.short_description = "Create a copy of selected meal request"
 
     def mark_as_confirmed(self, request, queryset):
@@ -206,13 +208,19 @@ class MealRequestAdmin(admin.ModelAdmin):
         updated = queryset.update(status=MealRequest.Status.DATE_CONFIRMED)
 
         if updated:
-            self.message_user(request, ngettext(
-                "%d meal request has been marked confirmed with recipient",
-                "%d meal requests have been marked confirmed with recipient",
-                updated,
-            ) % updated, messages.SUCCESS)
+            self.message_user(
+                request,
+                ngettext(
+                    "%d meal request has been marked confirmed with recipient",
+                    "%d meal requests have been marked confirmed with recipient",
+                    updated,
+                )
+                % updated,
+                messages.SUCCESS,
+            )
         else:
             self.message_user(request, "No updates were made", messages.WARNING)
+
     mark_as_confirmed.short_description = "Mark as confirmed with the recipient"
 
     def mark_as_delivered(self, request, queryset):
@@ -220,13 +228,19 @@ class MealRequestAdmin(admin.ModelAdmin):
         updated = queryset.update(status=MealRequest.Status.DELIVERED)
 
         if updated:
-            self.message_user(request, ngettext(
-                "%d meal request has been marked as delivered",
-                "%d meal requests have been marked as delivered",
-                updated,
-            ) % updated, messages.SUCCESS)
+            self.message_user(
+                request,
+                ngettext(
+                    "%d meal request has been marked as delivered",
+                    "%d meal requests have been marked as delivered",
+                    updated,
+                )
+                % updated,
+                messages.SUCCESS,
+            )
         else:
             self.message_user(request, "No updates were made", messages.WARNING)
+
     mark_as_delivered.short_description = "Mark as delivered"
 
     def send_notifications(self, request, queryset, method_name):
@@ -256,53 +270,106 @@ class MealRequestAdmin(admin.ModelAdmin):
         unsent = len(errors)
         total = sent + unsent
 
-        prefix_message = ngettext(
-            "%d meal request was selected",
-            "%d meal requests were selected",
-            total,
-        ) % total
-        success_message = ngettext(
-            "%d text message was sent",
-            "%d text messages were sent",
-            sent,
-        ) % sent
+        prefix_message = (
+            ngettext(
+                "%d meal request was selected",
+                "%d meal requests were selected",
+                total,
+            )
+            % total
+        )
+        success_message = (
+            ngettext(
+                "%d text message was sent",
+                "%d text messages were sent",
+                sent,
+            )
+            % sent
+        )
 
         # An unordered list of grouped errors, along with the count of how many times the error happened
         error_messages = format_html_join(
-            "\n", "<p><strong>{} message(s) not sent because: {}</strong></p>",
-            ((count, error_message) for (error_message, count) in collections.Counter(errors).items()),
+            "\n",
+            "<p><strong>{} message(s) not sent because: {}</strong></p>",
+            (
+                (count, error_message)
+                for (error_message, count) in collections.Counter(errors).items()
+            ),
         )
 
         if sent and unsent:
-            self.message_user(request, format_html("<p>{}</p><p>{}</p>{}", prefix_message, success_message, error_messages), messages.WARNING)
+            self.message_user(
+                request,
+                format_html(
+                    "<p>{}</p><p>{}</p>{}",
+                    prefix_message,
+                    success_message,
+                    error_messages,
+                ),
+                messages.WARNING,
+            )
         elif sent:
-            self.message_user(request, format_html("<p>{}</p><p>{}</p>", prefix_message, success_message), messages.SUCCESS)
+            self.message_user(
+                request,
+                format_html("<p>{}</p><p>{}</p>", prefix_message, success_message),
+                messages.SUCCESS,
+            )
         elif unsent:
-            self.message_user(request, format_html("<p>{}</p>{}", prefix_message, error_messages), messages.ERROR)
+            self.message_user(
+                request,
+                format_html("<p>{}</p>{}", prefix_message, error_messages),
+                messages.ERROR,
+            )
 
     def notify_recipients_delivery(self, request, queryset):
-        self.send_notifications(request, queryset, 'send_recipient_delivery_notification')
-    notify_recipients_delivery.short_description = "Send text to recipients about delivery window"
+        self.send_notifications(
+            request, queryset, "send_recipient_delivery_notification"
+        )
+
+    notify_recipients_delivery.short_description = (
+        "Send text to recipients about delivery window"
+    )
 
     def notify_recipients_reminder(self, request, queryset):
-        self.send_notifications(request, queryset, 'send_recipient_reminder_notification')
-    notify_recipients_reminder.short_description = "Send text to recipients reminding them about TODAY's request"
+        self.send_notifications(
+            request, queryset, "send_recipient_reminder_notification"
+        )
+
+    notify_recipients_reminder.short_description = (
+        "Send text to recipients reminding them about TODAY's request"
+    )
 
     def notify_recipients_feedback(self, request, queryset):
-        self.send_notifications(request, queryset, 'send_recipient_feedback_request')
-    notify_recipients_feedback.short_description = "Send text to recipients requesting their feedback through form"
+        self.send_notifications(request, queryset, "send_recipient_feedback_request")
+
+    notify_recipients_feedback.short_description = (
+        "Send text to recipients requesting their feedback through form"
+    )
 
     def notify_chefs_reminder(self, request, queryset):
-        self.send_notifications(request, queryset, 'send_chef_reminder_notification')
-    notify_chefs_reminder.short_description = "Send text to chefs reminding them about the request"
+        self.send_notifications(request, queryset, "send_chef_reminder_notification")
+
+    notify_chefs_reminder.short_description = (
+        "Send text to chefs reminding them about the request"
+    )
 
     def notify_deliverers_reminder(self, request, queryset):
-        self.send_notifications(request, queryset, 'send_deliverer_reminder_notification')
-    notify_deliverers_reminder.short_description = "Send text to deliverers reminding them about the request"
+        self.send_notifications(
+            request, queryset, "send_deliverer_reminder_notification"
+        )
+
+    notify_deliverers_reminder.short_description = (
+        "Send text to deliverers reminding them about the request"
+    )
 
     def notify_deliverers_details(self, request, queryset):
-        self.send_notifications(request, queryset, 'send_detailed_deliverer_notification')
-    notify_deliverers_details.short_description = "Send text to deliverers with details about TODAY's request"
+        self.send_notifications(
+            request, queryset, "send_detailed_deliverer_notification"
+        )
+
+    notify_deliverers_details.short_description = (
+        "Send text to deliverers with details about TODAY's request"
+    )
 
 
 class GroceryRequestCommentInline(CommentInline):
@@ -311,55 +378,51 @@ class GroceryRequestCommentInline(CommentInline):
 
 class GroceryRequestAdmin(admin.ModelAdmin):
     list_display = (
-        'edit_link',
-        'name',
-        'phone_number',
-        'texts',
-        'city',
-        'delivery_date',
-        'status',
-        'completed',
-        'created_at',
+        "edit_link",
+        "name",
+        "phone_number",
+        "texts",
+        "city",
+        "delivery_date",
+        "status",
+        "completed",
+        "created_at",
     )
     list_filter = (
         CompletedFilter,
         NotSelectedFilter,
-        'status',
-        'can_receive_texts',
-        'created_at',
+        "status",
+        "can_receive_texts",
+        "created_at",
     )
-    inlines = (
-        GroceryRequestCommentInline,
-    )
-    search_fields = (
-        '=id',
-        'name',
-        'email',
-        'phone_number'
-    )
+    inlines = (GroceryRequestCommentInline,)
+    search_fields = ("=id", "name", "email", "phone_number")
     actions = (
-        'mark_complete',
-        'copy',
-        'notify_recipients_scheduled',
-        'notify_recipients_allergies',
-        'notify_recipients_reminder',
-        'notify_recipients_rescheduled',
-        'notify_recipients_confirm_received',
+        "mark_complete",
+        "copy",
+        "notify_recipients_scheduled",
+        "notify_recipients_allergies",
+        "notify_recipients_reminder",
+        "notify_recipients_rescheduled",
+        "notify_recipients_confirm_received",
     )
 
     def edit_link(self, request):
-        return 'Edit request G%d' % request.id
-    edit_link.short_description = 'Edit link'
+        return "Edit request G%d" % request.id
+
+    edit_link.short_description = "Edit link"
 
     def texts(self, obj):
         return obj.can_receive_texts
+
     texts.boolean = True
     texts.short_description = "Texts"
     texts.admin_order_field = "can_receive_texts"
 
     def completed(self, obj):
         return obj.status in GroceryRequest.COMPLETED_STATUSES
-    completed.admin_order_field = 'status'
+
+    completed.admin_order_field = "status"
     completed.boolean = True
 
     def send_notifications(self, request, queryset, method_name):
@@ -389,57 +452,115 @@ class GroceryRequestAdmin(admin.ModelAdmin):
         unsent = len(errors)
         total = sent + unsent
 
-        prefix_message = ngettext(
-            "%d request was selected",
-            "%d requests were selected",
-            total,
-        ) % total
-        success_message = ngettext(
-            "%d text message was sent",
-            "%d text messages were sent",
-            sent,
-        ) % sent
+        prefix_message = (
+            ngettext(
+                "%d request was selected",
+                "%d requests were selected",
+                total,
+            )
+            % total
+        )
+        success_message = (
+            ngettext(
+                "%d text message was sent",
+                "%d text messages were sent",
+                sent,
+            )
+            % sent
+        )
 
         # An unordered list of grouped errors, along with the count of how many times the error happened
         error_messages = format_html_join(
-            "\n", "<p><strong>{} message(s) not sent because: {}</strong></p>",
-            ((count, error_message) for (error_message, count) in collections.Counter(errors).items()),
+            "\n",
+            "<p><strong>{} message(s) not sent because: {}</strong></p>",
+            (
+                (count, error_message)
+                for (error_message, count) in collections.Counter(errors).items()
+            ),
         )
 
         if sent and unsent:
-            self.message_user(request, format_html("<p>{}</p><p>{}</p>{}", prefix_message, success_message, error_messages), messages.WARNING)
+            self.message_user(
+                request,
+                format_html(
+                    "<p>{}</p><p>{}</p>{}",
+                    prefix_message,
+                    success_message,
+                    error_messages,
+                ),
+                messages.WARNING,
+            )
         elif sent:
-            self.message_user(request, format_html("<p>{}</p><p>{}</p>", prefix_message, success_message), messages.SUCCESS)
+            self.message_user(
+                request,
+                format_html("<p>{}</p><p>{}</p>", prefix_message, success_message),
+                messages.SUCCESS,
+            )
         elif unsent:
-            self.message_user(request, format_html("<p>{}</p>{}", prefix_message, error_messages), messages.ERROR)
+            self.message_user(
+                request,
+                format_html("<p>{}</p>{}", prefix_message, error_messages),
+                messages.ERROR,
+            )
 
     def notify_recipients_scheduled(self, request, queryset):
-        self.send_notifications(request, queryset, 'send_recipient_scheduled_notification')
-    notify_recipients_scheduled.short_description = "Send text to recipients about scheduled date"
+        self.send_notifications(
+            request, queryset, "send_recipient_scheduled_notification"
+        )
+
+    notify_recipients_scheduled.short_description = (
+        "Send text to recipients about scheduled date"
+    )
 
     def notify_recipients_allergies(self, request, queryset):
-        self.send_notifications(request, queryset, 'send_recipient_allergy_notification')
-    notify_recipients_allergies.short_description = "Send text to recipients with allergy explanation"
+        self.send_notifications(
+            request, queryset, "send_recipient_allergy_notification"
+        )
+
+    notify_recipients_allergies.short_description = (
+        "Send text to recipients with allergy explanation"
+    )
 
     def notify_recipients_reminder(self, request, queryset):
-        self.send_notifications(request, queryset, 'send_recipient_reminder_notification')
-    notify_recipients_reminder.short_description = "Send text to remind recipients of today's delivery"
+        self.send_notifications(
+            request, queryset, "send_recipient_reminder_notification"
+        )
+
+    notify_recipients_reminder.short_description = (
+        "Send text to remind recipients of today's delivery"
+    )
 
     def notify_recipients_rescheduled(self, request, queryset):
-        self.send_notifications(request, queryset, 'send_recipient_rescheduled_notification')
-    notify_recipients_rescheduled.short_description = "Send text to recipients with rescheduled explanation"
+        self.send_notifications(
+            request, queryset, "send_recipient_rescheduled_notification"
+        )
+
+    notify_recipients_rescheduled.short_description = (
+        "Send text to recipients with rescheduled explanation"
+    )
 
     def notify_recipients_confirm_received(self, request, queryset):
-        self.send_notifications(request, queryset, 'send_recipient_confirm_received_notification')
-    notify_recipients_confirm_received.short_description = "Send text to recipients to confirm they received their delivery"
+        self.send_notifications(
+            request, queryset, "send_recipient_confirm_received_notification"
+        )
+
+    notify_recipients_confirm_received.short_description = (
+        "Send text to recipients to confirm they received their delivery"
+    )
 
     def mark_complete(self, request, queryset):
         updated = queryset.update(status=GroceryRequest.Status.DELIVERED)
-        self.message_user(request, ngettext(
-            "%d grocery request has been marked complete",
-            "%d grocery requests have been marked complete",
-            updated,
-        ) % updated, messages.SUCCESS)
+        self.message_user(
+            request,
+            ngettext(
+                "%d grocery request has been marked complete",
+                "%d grocery requests have been marked complete",
+                updated,
+            )
+            % updated,
+            messages.SUCCESS,
+        )
+
     mark_complete.short_description = "Mark selected grocery requests as complete"
 
     def copy(self, request, queryset):
@@ -450,6 +571,7 @@ class GroceryRequestAdmin(admin.ModelAdmin):
                 f"A copy of grocery request {grocery_request.id} has been created with new id {new_grocery_request.id}",
                 messages.SUCCESS,
             )
+
     copy.short_description = "Create a copy of selected grocery request"
 
 

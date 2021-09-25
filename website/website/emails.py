@@ -12,6 +12,7 @@ def html_to_text(html_content):
 
 class Email:
     """Mimics Django's TemplateView but for defining emails based on templates"""
+
     template = None
     subject = None
     reply_to = None
@@ -23,10 +24,10 @@ class Email:
 
     def get_context_data(self, **kwargs):
         base_context_data = {
-            'subject': self.subject,
-            'include_unsubscribe_link': self.include_unsubscribe_link,
+            "subject": self.subject,
+            "include_unsubscribe_link": self.include_unsubscribe_link,
         }
-        extra_context = getattr(self, 'extra_context', {})
+        extra_context = getattr(self, "extra_context", {})
         return {**base_context_data, **extra_context, **kwargs}
 
     def render_content(self, context):
@@ -45,6 +46,6 @@ class Email:
             reply_to=[self.reply_to],
             connection=self.connection,
         )
-        mail.attach_alternative(html_content, 'text/html')
+        mail.attach_alternative(html_content, "text/html")
         mail.send()
         return mail

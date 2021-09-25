@@ -63,13 +63,13 @@ bin/test
 
 Django has [extensive documentation][django-testing] on testing practices, and we ask that contributors add tests with their functionality.
 
-In addition to functional tests, we also test our style using the [flake8][flake8] linting tool. It can be run with:
+In addition to functional tests, we also test our style using the [flake8][flake8] and [black][black] linting tools. They can be run together with:
 
 ```sh
 bin/lint
 ```
 
-If any style violations are detected, they'll be printed to the console.
+If any style violations are detected, they'll be printed to the console. `black` ensures that our code is written in a consistent fashion, and can automatically format your code with `bin/format`.
 
 ### Pull requests
 
@@ -81,3 +81,4 @@ When a PR is merged, it will be automatically deployed to Heroku and you can exp
 [django-testing]: https://docs.djangoproject.com/en/stable/topics/testing/
 [docker]: https://www.docker.com/
 [pyenv]: https://github.com/pyenv/pyenv
+[black]: https://black.readthedocs.io/

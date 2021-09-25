@@ -6,24 +6,24 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('recipients', '0016_auto_20201125_0010'),
+        ("recipients", "0016_auto_20201125_0010"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='groceryrequest',
-            name='available_days',
+            model_name="groceryrequest",
+            name="available_days",
         ),
         migrations.RemoveField(
-            model_name='groceryrequest',
-            name='available_time_periods',
+            model_name="groceryrequest",
+            name="available_time_periods",
         ),
         migrations.RemoveField(
-            model_name='mealrequest',
-            name='available_days',
+            model_name="mealrequest",
+            name="available_days",
         ),
         migrations.RemoveField(
-            model_name='mealrequest',
-            name='available_time_periods',
+            model_name="mealrequest",
+            name="available_time_periods",
         ),
     ]

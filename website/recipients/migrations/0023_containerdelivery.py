@@ -11,24 +11,47 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('recipients', '0022_auto_20201128_1359'),
+        ("recipients", "0022_auto_20201128_1359"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='ContainerDelivery',
+            name="ContainerDelivery",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('date', models.DateField()),
-                ('dropoff_start', models.TimeField(blank=True, null=True)),
-                ('dropoff_end', models.TimeField(blank=True, null=True)),
-                ('uuid', models.UUIDField(default=uuid.uuid4, editable=False)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('chef', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
-                ('deliverer', models.ForeignKey(blank=True, null=True, on_delete=models.SET(core.models.get_sentinel_user), related_name='container_deliveries', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("date", models.DateField()),
+                ("dropoff_start", models.TimeField(blank=True, null=True)),
+                ("dropoff_end", models.TimeField(blank=True, null=True)),
+                ("uuid", models.UUIDField(default=uuid.uuid4, editable=False)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                (
+                    "chef",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "deliverer",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=models.SET(core.models.get_sentinel_user),
+                        related_name="container_deliveries",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'verbose_name_plural': 'container deliveries',
+                "verbose_name_plural": "container deliveries",
             },
         ),
     ]

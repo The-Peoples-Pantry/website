@@ -6,13 +6,17 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('recipients', '0006_auto_20201109_0008'),
+        ("recipients", "0006_auto_20201109_0008"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='mealrequest',
-            name='delivery_details',
-            field=models.TextField(blank=True, help_text='Please provide us with any details we may need to know for the delivery', verbose_name='Delivery details'),
+            model_name="mealrequest",
+            name="delivery_details",
+            field=models.TextField(
+                blank=True,
+                help_text="Please provide us with any details we may need to know for the delivery",
+                verbose_name="Delivery details",
+            ),
         ),
     ]

@@ -11,31 +11,77 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('recipients', '0027_auto_20201128_1512'),
+        ("recipients", "0027_auto_20201128_1512"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='MealDelivery',
+            name="MealDelivery",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('status', models.CharField(choices=[('Unconfirmed', 'Unconfirmed'), ('Chef Assigned', 'Chef Assigned'), ('Delivery Date Confirmed', 'Delivery Date Confirmed'), ('Driver Assigned', 'Driver Assigned'), ('Recipient Rescheduled', 'Recipient Rescheduled'), ('Delivered', 'Delivered')], default='Unconfirmed', max_length=256, verbose_name='Status')),
-                ('date', models.DateField()),
-                ('pickup_start', models.TimeField(blank=True, null=True)),
-                ('pickup_end', models.TimeField(blank=True, null=True)),
-                ('dropoff_start', models.TimeField(blank=True, null=True)),
-                ('dropoff_end', models.TimeField(blank=True, null=True)),
-                ('uuid', models.UUIDField(default=uuid.uuid4, editable=False)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('chef', models.ForeignKey(on_delete=models.SET(core.models.get_sentinel_user), related_name='assigned_chef', to=settings.AUTH_USER_MODEL)),
-                ('deliverer', models.ForeignKey(blank=True, null=True, on_delete=models.SET(core.models.get_sentinel_user), related_name='assigned_deliverer', to=settings.AUTH_USER_MODEL)),
-                ('request', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='delivery', to='recipients.mealrequest')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("Unconfirmed", "Unconfirmed"),
+                            ("Chef Assigned", "Chef Assigned"),
+                            ("Delivery Date Confirmed", "Delivery Date Confirmed"),
+                            ("Driver Assigned", "Driver Assigned"),
+                            ("Recipient Rescheduled", "Recipient Rescheduled"),
+                            ("Delivered", "Delivered"),
+                        ],
+                        default="Unconfirmed",
+                        max_length=256,
+                        verbose_name="Status",
+                    ),
+                ),
+                ("date", models.DateField()),
+                ("pickup_start", models.TimeField(blank=True, null=True)),
+                ("pickup_end", models.TimeField(blank=True, null=True)),
+                ("dropoff_start", models.TimeField(blank=True, null=True)),
+                ("dropoff_end", models.TimeField(blank=True, null=True)),
+                ("uuid", models.UUIDField(default=uuid.uuid4, editable=False)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                (
+                    "chef",
+                    models.ForeignKey(
+                        on_delete=models.SET(core.models.get_sentinel_user),
+                        related_name="assigned_chef",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "deliverer",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=models.SET(core.models.get_sentinel_user),
+                        related_name="assigned_deliverer",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "request",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="delivery",
+                        to="recipients.mealrequest",
+                    ),
+                ),
             ],
             options={
-                'verbose_name_plural': 'meal deliveries',
+                "verbose_name_plural": "meal deliveries",
             },
         ),
         migrations.DeleteModel(
-            name='Delivery',
+            name="Delivery",
         ),
     ]

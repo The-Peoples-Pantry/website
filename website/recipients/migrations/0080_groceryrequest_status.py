@@ -6,14 +6,25 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('recipients', '0079_auto_20210618_1834'),
+        ("recipients", "0079_auto_20210618_1834"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='groceryrequest',
-            name='status',
-            field=models.CharField(choices=[('Submitted', 'Submitted'), ('Selected', 'Selected'), ('Delivered', 'Delivered'), ('Unsuccessful', 'Unsuccessful'), ('Not Selected', 'Not Selected')], default='Submitted', max_length=256, verbose_name='Status'),
+            model_name="groceryrequest",
+            name="status",
+            field=models.CharField(
+                choices=[
+                    ("Submitted", "Submitted"),
+                    ("Selected", "Selected"),
+                    ("Delivered", "Delivered"),
+                    ("Unsuccessful", "Unsuccessful"),
+                    ("Not Selected", "Not Selected"),
+                ],
+                default="Submitted",
+                max_length=256,
+                verbose_name="Status",
+            ),
         ),
         # Set initial values from the existing `completed` field
         migrations.RunSQL(
@@ -22,5 +33,5 @@ class Migration(migrations.Migration):
                 "UPDATE recipients_groceryrequest SET status='Delivered' WHERE completed=true;",
             ],
             reverse_sql="UPDATE recipients_groceryrequest SET status='Submitted'",
-        )
+        ),
     ]

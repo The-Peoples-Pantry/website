@@ -6,20 +6,20 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('recipients', '0065_remove_groceryrequest_physical_gift_card'),
+        ("recipients", "0065_remove_groceryrequest_physical_gift_card"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='groceryrequest',
-            name='uuid',
+            model_name="groceryrequest",
+            name="uuid",
         ),
         migrations.RemoveField(
-            model_name='mealdelivery',
-            name='uuid',
+            model_name="mealdelivery",
+            name="uuid",
         ),
         migrations.RemoveField(
-            model_name='mealrequest',
-            name='uuid',
+            model_name="mealrequest",
+            name="uuid",
         ),
     ]

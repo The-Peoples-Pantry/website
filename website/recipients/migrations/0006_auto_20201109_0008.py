@@ -6,13 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('recipients', '0005_mealrequest_uuid'),
+        ("recipients", "0005_mealrequest_uuid"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='mealrequest',
-            name='address_2',
-            field=models.CharField(blank=True, help_text='Apartment, Unit, or Suite number', max_length=256, verbose_name='Address line 2'),
+            model_name="mealrequest",
+            name="address_2",
+            field=models.CharField(
+                blank=True,
+                help_text="Apartment, Unit, or Suite number",
+                max_length=256,
+                verbose_name="Address line 2",
+            ),
         ),
     ]

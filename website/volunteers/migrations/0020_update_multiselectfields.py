@@ -6,23 +6,21 @@ from django.db import migrations
 import ast
 
 VOLUNTEER_FIELDS = (
-    'cooking_prefs',
-    'days_available',
-    'food_types',
-    'organizer_teams',
-    'transportation_options',
+    "cooking_prefs",
+    "days_available",
+    "food_types",
+    "organizer_teams",
+    "transportation_options",
 )
 
-VOLUNTEER_APPLICATION_FIELDS = (
-    'organizer_teams',
-)
+VOLUNTEER_APPLICATION_FIELDS = ("organizer_teams",)
 
 
 def is_affected(field):
     """field would be ["[one", "two", "three]"] if affected"""
     if not isinstance(field, list):
         return False
-    return any('[' in entry for entry in field)
+    return any("[" in entry for entry in field)
 
 
 def fixed(field):
@@ -30,7 +28,7 @@ def fixed(field):
 
 
 def update_volunteer_fields(apps, schema_editor):
-    Volunteer = apps.get_model('volunteers', 'Volunteer')
+    Volunteer = apps.get_model("volunteers", "Volunteer")
     db_alias = schema_editor.connection.alias
 
     for volunteer in Volunteer.objects.using(db_alias).all():
@@ -45,19 +43,21 @@ def update_volunteer_fields(apps, schema_editor):
 
 
 def update_volunteerapplication_fields(apps, schema_editor):
-    VolunteerApplication = apps.get_model('volunteers', 'VolunteerApplication')
+    VolunteerApplication = apps.get_model("volunteers", "VolunteerApplication")
     db_alias = schema_editor.connection.alias
 
     for volunteer_application in VolunteerApplication.objects.using(db_alias).all():
         if is_affected(volunteer_application.organizer_teams):
-            volunteer_application.organizer_teams = fixed(volunteer_application.organizer_teams)
+            volunteer_application.organizer_teams = fixed(
+                volunteer_application.organizer_teams
+            )
             volunteer_application.save()
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('volunteers', '0019_auto_20210214_0906'),
+        ("volunteers", "0019_auto_20210214_0906"),
     ]
 
     operations = [

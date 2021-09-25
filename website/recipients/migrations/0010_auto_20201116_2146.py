@@ -6,18 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('recipients', '0009_auto_20201116_0301'),
+        ("recipients", "0009_auto_20201116_0301"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='mealrequest',
-            name='anonymized_latitude',
+            model_name="mealrequest",
+            name="anonymized_latitude",
             field=models.FloatField(default=43.65107),
         ),
         migrations.AddField(
-            model_name='mealrequest',
-            name='anonymized_longitude',
+            model_name="mealrequest",
+            name="anonymized_longitude",
             field=models.FloatField(default=-79.347015),
         ),
     ]

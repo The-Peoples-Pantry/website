@@ -10,7 +10,14 @@ from django.utils import timezone
 
 from website.maps import GroceryDeliveryArea, Geocoder
 from website.texts import TextMessage
-from core.models import get_sentinel_user, ContactMixin, TorontoAddressMixin, DemographicMixin, TimestampsMixin, TelephoneField
+from core.models import (
+    get_sentinel_user,
+    ContactMixin,
+    TorontoAddressMixin,
+    DemographicMixin,
+    TimestampsMixin,
+    TelephoneField,
+)
 from .emails import (
     MealRequestConfirmationEmail,
     GroceryRequestConfirmationEmail,
@@ -31,19 +38,22 @@ class SendNotificationException(Exception):
 
 class MealRequestQuerySet(models.QuerySet):
     def available_for_chef_signup(self):
-        return self.filter(
-            chef__isnull=True,
-        ).exclude(
+        return self.filter(chef__isnull=True,).exclude(
             status__in=(MealRequest.Status.SUBMITTED, *MealRequest.COMPLETED_STATUSES),
         )
 
     def available_for_deliverer_signup(self):
-        return self.filter(
-            deliverer__isnull=True,
-        ).exclude(
-            delivery_date__isnull=True
-        ).exclude(
-            status__in=(MealRequest.Status.SUBMITTED, *MealRequest.COMPLETED_STATUSES),
+        return (
+            self.filter(
+                deliverer__isnull=True,
+            )
+            .exclude(delivery_date__isnull=True)
+            .exclude(
+                status__in=(
+                    MealRequest.Status.SUBMITTED,
+                    *MealRequest.COMPLETED_STATUSES,
+                ),
+            )
         )
 
     def delivered(self):
@@ -64,27 +74,37 @@ class MealRequestQuerySet(models.QuerySet):
         if chef is not None:
             chef_latitude, chef_longitude = chef.volunteer.coordinates
         else:
-            chef_latitude = F('chef__volunteer__anonymized_latitude')
-            chef_longitude = F('chef__volunteer__anonymized_longitude')
+            chef_latitude = F("chef__volunteer__anonymized_latitude")
+            chef_longitude = F("chef__volunteer__anonymized_longitude")
 
-        latitude_distance = (F('anonymized_latitude') - chef_latitude) * Geocoder.LATITUDE_DEGREE_LENGTH
-        longitude_distance = (F('anonymized_longitude') - chef_longitude) * Geocoder.LONGITUDE_DEGREE_LENGTH
-        return self.annotate(delivery_distance=Sqrt(Power(latitude_distance, 2) + Power(longitude_distance, 2)))
+        latitude_distance = (
+            F("anonymized_latitude") - chef_latitude
+        ) * Geocoder.LATITUDE_DEGREE_LENGTH
+        longitude_distance = (
+            F("anonymized_longitude") - chef_longitude
+        ) * Geocoder.LONGITUDE_DEGREE_LENGTH
+        return self.annotate(
+            delivery_distance=Sqrt(
+                Power(latitude_distance, 2) + Power(longitude_distance, 2)
+            )
+        )
 
 
-class MealRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, TimestampsMixin, models.Model):
+class MealRequest(
+    DemographicMixin, ContactMixin, TorontoAddressMixin, TimestampsMixin, models.Model
+):
     STALE_AFTER_DAYS = 7
     objects = MealRequestQuerySet.as_manager()
 
     class Status(models.TextChoices):
-        SUBMITTED = 'Submitted', 'Submitted'
-        SELECTED = 'Unconfirmed', 'Selected'  # Previously called UNCONFIRMED
-        CHEF_ASSIGNED = 'Chef Assigned', 'Chef Assigned'
-        DRIVER_ASSIGNED = 'Driver Assigned', 'Driver Assigned'
-        DATE_CONFIRMED = 'Delivery Date Confirmed', 'Delivery Date Confirmed'
-        DELIVERED = 'Delivered', 'Delivered'
-        UNSUCCESSFUL = 'Unsuccessful', 'Unsuccessful'
-        NOT_SELECTED = 'Not Selected', 'Not Selected'
+        SUBMITTED = "Submitted", "Submitted"
+        SELECTED = "Unconfirmed", "Selected"  # Previously called UNCONFIRMED
+        CHEF_ASSIGNED = "Chef Assigned", "Chef Assigned"
+        DRIVER_ASSIGNED = "Driver Assigned", "Driver Assigned"
+        DATE_CONFIRMED = "Delivery Date Confirmed", "Delivery Date Confirmed"
+        DELIVERED = "Delivered", "Delivered"
+        UNSUCCESSFUL = "Unsuccessful", "Unsuccessful"
+        NOT_SELECTED = "Not Selected", "Not Selected"
 
     COMPLETED_STATUSES = (Status.DELIVERED, Status.UNSUCCESSFUL, Status.NOT_SELECTED)
 
@@ -101,7 +121,9 @@ class MealRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timestamp
 
     # Information about the request itself
     num_adults = models.PositiveSmallIntegerField("Number of adults in the household")
-    num_children = models.PositiveSmallIntegerField("Number of children in the household")
+    num_children = models.PositiveSmallIntegerField(
+        "Number of children in the household"
+    )
     children_ages = models.CharField(
         "Ages of children",
         help_text="When able, we will try to provide additional snacks for children. If this is something you would be interested in, please list the ages of any children in the household so we may try to provide appropriate snacks for their age group.",
@@ -203,7 +225,7 @@ class MealRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timestamp
         "Status",
         max_length=settings.DEFAULT_LENGTH,
         choices=Status.choices,
-        default=Status.SUBMITTED
+        default=Status.SUBMITTED,
     )
     pickup_details = models.TextField(
         "Pickup details",
@@ -237,30 +259,30 @@ class MealRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timestamp
     def within_signup_period(cls):
         """Requests are open from Friday at 9am until Sunday at 2pm"""
         now = timezone.localtime()
-        weekday = now.strftime('%A')
-        is_friday = weekday == 'Friday'
-        is_saturday = weekday == 'Saturday'
-        is_sunday = weekday == 'Sunday'
+        weekday = now.strftime("%A")
+        is_friday = weekday == "Friday"
+        is_saturday = weekday == "Saturday"
+        is_sunday = weekday == "Sunday"
         is_after_9am = now.hour >= 9
         is_before_2pm = now.hour < 14
         return (
-            (is_friday and is_after_9am)
-            or is_saturday
-            or (is_sunday and is_before_2pm)
+            (is_friday and is_after_9am) or is_saturday or (is_sunday and is_before_2pm)
         )
 
     @classmethod
     def active_requests(cls):
-        return cls.objects.exclude(status__in=(cls.Status.DATE_CONFIRMED, *cls.COMPLETED_STATUSES)).count()
+        return cls.objects.exclude(
+            status__in=(cls.Status.DATE_CONFIRMED, *cls.COMPLETED_STATUSES)
+        ).count()
 
     @classmethod
     def has_open_request(cls, phone: str):
         """Does the user with the given phone number already have open requests?"""
-        return cls.objects.filter(
-            phone_number=phone
-        ).exclude(
-            status__in=(cls.Status.DATE_CONFIRMED, *cls.COMPLETED_STATUSES)
-        ).exists()
+        return (
+            cls.objects.filter(phone_number=phone)
+            .exclude(status__in=(cls.Status.DATE_CONFIRMED, *cls.COMPLETED_STATUSES))
+            .exists()
+        )
 
     @property
     def stale(self):
@@ -272,17 +294,20 @@ class MealRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timestamp
 
     def copy(self):
         """Clone the request and treat it like a new submission"""
-        kwargs = model_to_dict(self, exclude=[
-            'id',
-            'chef',
-            'deliverer',
-            'delivery_date',
-            'pickup_start',
-            'pickup_end',
-            'dropoff_start',
-            'dropoff_end',
-            'status'
-        ])
+        kwargs = model_to_dict(
+            self,
+            exclude=[
+                "id",
+                "chef",
+                "deliverer",
+                "delivery_date",
+                "pickup_start",
+                "pickup_end",
+                "dropoff_start",
+                "dropoff_end",
+                "status",
+            ],
+        )
         return MealRequest.objects.create(**kwargs)
 
     def send_confirmation_email(self):
@@ -296,7 +321,9 @@ class MealRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timestamp
 
     def send_recipient_meal_notification(self, api=None):
         if not self.can_receive_texts:
-            raise SendNotificationException("Recipient cannot receive text messages at their phone number")
+            raise SendNotificationException(
+                "Recipient cannot receive text messages at their phone number"
+            )
 
         text = TextMessage(
             template="texts/meals/recipient/notification.txt",
@@ -308,11 +335,17 @@ class MealRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timestamp
 
     def send_recipient_reminder_notification(self, api=None):
         if not self.can_receive_texts:
-            raise SendNotificationException("Recipient cannot receive text messages at their phone number")
+            raise SendNotificationException(
+                "Recipient cannot receive text messages at their phone number"
+            )
         if not (self.dropoff_start and self.dropoff_end):
-            raise SendNotificationException("Delivery does not have a dropoff time range scheduled")
+            raise SendNotificationException(
+                "Delivery does not have a dropoff time range scheduled"
+            )
         if self.deliverer is None:
-            raise SendNotificationException("Delivery does not have a deliverer assigned")
+            raise SendNotificationException(
+                "Delivery does not have a deliverer assigned"
+            )
 
         text = TextMessage(
             template="texts/meals/recipient/reminder.txt",
@@ -324,11 +357,17 @@ class MealRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timestamp
 
     def send_recipient_delivery_notification(self, api=None):
         if not self.can_receive_texts:
-            raise SendNotificationException("Recipient cannot receive text messages at their phone number")
+            raise SendNotificationException(
+                "Recipient cannot receive text messages at their phone number"
+            )
         if not (self.dropoff_start and self.dropoff_end):
-            raise SendNotificationException("Delivery does not have a dropoff time range scheduled")
+            raise SendNotificationException(
+                "Delivery does not have a dropoff time range scheduled"
+            )
         if self.deliverer is None:
-            raise SendNotificationException("Delivery does not have a deliverer assigned")
+            raise SendNotificationException(
+                "Delivery does not have a deliverer assigned"
+            )
 
         text = TextMessage(
             template="texts/meals/recipient/delivery.txt",
@@ -340,7 +379,9 @@ class MealRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timestamp
 
     def send_recipient_feedback_request(self, api=None):
         if not self.can_receive_texts:
-            raise SendNotificationException("Recipient cannot receive text messages at their phone number")
+            raise SendNotificationException(
+                "Recipient cannot receive text messages at their phone number"
+            )
 
         text = TextMessage(
             template="texts/meals/recipient/feedback.txt",
@@ -356,7 +397,9 @@ class MealRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timestamp
         if not self.deliverer:
             raise SendNotificationException("No deliverer assigned to this delivery")
         if not (self.pickup_start and self.pickup_end):
-            raise SendNotificationException("Delivery does not have a pickup time range scheduled")
+            raise SendNotificationException(
+                "Delivery does not have a pickup time range scheduled"
+            )
 
         text = TextMessage(
             template="texts/meals/chef/reminder.txt",
@@ -387,9 +430,13 @@ class MealRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timestamp
         if not self.delivery_date:
             raise SendNotificationException("Delivery does not have a date scheduled")
         if not (self.pickup_start and self.pickup_end):
-            raise SendNotificationException("Delivery does not have a pickup time range scheduled")
+            raise SendNotificationException(
+                "Delivery does not have a pickup time range scheduled"
+            )
         if not (self.dropoff_start and self.dropoff_end):
-            raise SendNotificationException("Delivery does not have a dropoff time range scheduled")
+            raise SendNotificationException(
+                "Delivery does not have a dropoff time range scheduled"
+            )
 
         text = TextMessage(
             template="texts/meals/deliverer/details.txt",
@@ -403,7 +450,7 @@ class MealRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timestamp
         return self.__class__.objects.filter(
             phone_number=self.phone_number,
             created_at__lt=self.created_at,
-        ).order_by('-created_at')
+        ).order_by("-created_at")
 
     def count_consecutive_previously_unselected(self):
         """How many times did the same recipient consecutively submit and get NOT_SELECTED?"""
@@ -424,7 +471,11 @@ class MealRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timestamp
 
     def __str__(self):
         return "Request #%d (%s): %d adult(s) and %d kid(s) in %s " % (
-            self.id, self.name, self.num_adults, self.num_children, self.city,
+            self.id,
+            self.name,
+            self.num_adults,
+            self.num_children,
+            self.city,
         )
 
 
@@ -458,16 +509,20 @@ class CommentModel(models.Model):
 
 
 class MealRequestComment(CommentModel):
-    subject = models.ForeignKey(MealRequest, related_name="comments", on_delete=models.CASCADE)
+    subject = models.ForeignKey(
+        MealRequest, related_name="comments", on_delete=models.CASCADE
+    )
 
 
-class GroceryRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, TimestampsMixin, models.Model):
+class GroceryRequest(
+    DemographicMixin, ContactMixin, TorontoAddressMixin, TimestampsMixin, models.Model
+):
     class Status(models.TextChoices):
-        SUBMITTED = 'Submitted', 'Submitted'
-        SELECTED = 'Selected', 'Selected'
-        DELIVERED = 'Delivered', 'Delivered'
-        UNSUCCESSFUL = 'Unsuccessful', 'Unsuccessful'
-        NOT_SELECTED = 'Not Selected', 'Not Selected'
+        SUBMITTED = "Submitted", "Submitted"
+        SELECTED = "Selected", "Selected"
+        DELIVERED = "Delivered", "Delivered"
+        UNSUCCESSFUL = "Unsuccessful", "Unsuccessful"
+        NOT_SELECTED = "Not Selected", "Not Selected"
 
     COMPLETED_STATUSES = (Status.DELIVERED, Status.UNSUCCESSFUL, Status.NOT_SELECTED)
 
@@ -487,8 +542,7 @@ class GroceryRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timest
         help_text="Adults/teenagers 13 years of age and above",
     )
     num_children = models.PositiveSmallIntegerField(
-        "Number of children in the household",
-        help_text="Children under the age of 13"
+        "Number of children in the household", help_text="Children under the age of 13"
     )
     children_ages = models.CharField(
         "Ages of children",
@@ -552,14 +606,22 @@ class GroceryRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timest
         "Status",
         max_length=settings.DEFAULT_LENGTH,
         choices=Status.choices,
-        default=Status.SUBMITTED
+        default=Status.SUBMITTED,
     )
 
     def clean(self, *args, **kwargs):
         latitude, longitude = self.fetched_coordinates
         if not GroceryDeliveryArea.singleton().includes(longitude, latitude):
-            logger.warning("Address outside of delivery area", extra={'address': self.address, 'coordinates': self.fetched_coordinates})
-            raise ValidationError("Sorry, we don't currently offer grocery delivery in your area")
+            logger.warning(
+                "Address outside of delivery area",
+                extra={
+                    "address": self.address,
+                    "coordinates": self.fetched_coordinates,
+                },
+            )
+            raise ValidationError(
+                "Sorry, we don't currently offer grocery delivery in your area"
+            )
 
     @classmethod
     def requests_paused(cls):
@@ -572,27 +634,27 @@ class GroceryRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timest
     def within_signup_period(cls):
         """Requests are open from Friday at 9am until Sunday at 2pm"""
         now = timezone.localtime()
-        weekday = now.strftime('%A')
-        is_friday = weekday == 'Friday'
-        is_saturday = weekday == 'Saturday'
-        is_sunday = weekday == 'Sunday'
+        weekday = now.strftime("%A")
+        is_friday = weekday == "Friday"
+        is_saturday = weekday == "Saturday"
+        is_sunday = weekday == "Sunday"
         is_after_9am = now.hour >= 9
         is_before_2pm = now.hour < 14
         return (
-            (is_friday and is_after_9am)
-            or is_saturday
-            or (is_sunday and is_before_2pm)
+            (is_friday and is_after_9am) or is_saturday or (is_sunday and is_before_2pm)
         )
 
     @classmethod
     def has_open_request(cls, phone: str):
         """Does the user with the given phone number already have open requests?"""
-        return cls.objects.filter(
-            phone_number=phone,
-            delivery_date=None,
-        ).exclude(
-            status__in=cls.COMPLETED_STATUSES
-        ).exists()
+        return (
+            cls.objects.filter(
+                phone_number=phone,
+                delivery_date=None,
+            )
+            .exclude(status__in=cls.COMPLETED_STATUSES)
+            .exists()
+        )
 
     @property
     def boxes(self):
@@ -605,7 +667,7 @@ class GroceryRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timest
 
     def copy(self):
         """Clone the request and treat it like a new submission"""
-        kwargs = model_to_dict(self, exclude=['id', 'delivery_date', 'status'])
+        kwargs = model_to_dict(self, exclude=["id", "delivery_date", "status"])
         return GroceryRequest.objects.create(**kwargs)
 
     def send_confirmation_email(self):
@@ -615,11 +677,15 @@ class GroceryRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timest
         return GroceryRequestLotterySelectedEmail().send(self.email, {"request": self})
 
     def send_lottery_not_selected_email(self):
-        return GroceryRequestLotteryNotSelectedEmail().send(self.email, {"request": self})
+        return GroceryRequestLotteryNotSelectedEmail().send(
+            self.email, {"request": self}
+        )
 
     def send_recipient_scheduled_notification(self, api=None):
         if not self.can_receive_texts:
-            raise SendNotificationException("Recipient cannot receive text messages at their phone number")
+            raise SendNotificationException(
+                "Recipient cannot receive text messages at their phone number"
+            )
         if not (self.delivery_date):
             raise SendNotificationException("Delivery date is not specified")
 
@@ -634,7 +700,9 @@ class GroceryRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timest
 
     def send_recipient_allergy_notification(self, api=None):
         if not self.can_receive_texts:
-            raise SendNotificationException("Recipient cannot receive text messages at their phone number")
+            raise SendNotificationException(
+                "Recipient cannot receive text messages at their phone number"
+            )
 
         text = TextMessage(
             template="texts/groceries/allergy.txt",
@@ -647,7 +715,9 @@ class GroceryRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timest
 
     def send_recipient_reminder_notification(self, api=None):
         if not self.can_receive_texts:
-            raise SendNotificationException("Recipient cannot receive text messages at their phone number")
+            raise SendNotificationException(
+                "Recipient cannot receive text messages at their phone number"
+            )
 
         text = TextMessage(
             template="texts/groceries/reminder.txt",
@@ -660,7 +730,9 @@ class GroceryRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timest
 
     def send_recipient_rescheduled_notification(self, api=None):
         if not self.can_receive_texts:
-            raise SendNotificationException("Recipient cannot receive text messages at their phone number")
+            raise SendNotificationException(
+                "Recipient cannot receive text messages at their phone number"
+            )
 
         text = TextMessage(
             template="texts/groceries/rescheduled.txt",
@@ -673,7 +745,9 @@ class GroceryRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timest
 
     def send_recipient_confirm_received_notification(self, api=None):
         if not self.can_receive_texts:
-            raise SendNotificationException("Recipient cannot receive text messages at their phone number")
+            raise SendNotificationException(
+                "Recipient cannot receive text messages at their phone number"
+            )
         if not (self.delivery_date):
             raise SendNotificationException("Delivery date is not specified")
 
@@ -690,7 +764,7 @@ class GroceryRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timest
         return self.__class__.objects.filter(
             phone_number=self.phone_number,
             created_at__lt=self.created_at,
-        ).order_by('-created_at')
+        ).order_by("-created_at")
 
     def count_consecutive_previously_unselected(self):
         """How many times did the same recipient consecutively submit and get NOT_SELECTED?"""
@@ -711,9 +785,15 @@ class GroceryRequest(DemographicMixin, ContactMixin, TorontoAddressMixin, Timest
 
     def __str__(self):
         return "Request #G%d (%s): %d adult(s) and %d kid(s) in %s " % (
-            self.id, self.name, self.num_adults, self.num_children, self.city,
+            self.id,
+            self.name,
+            self.num_adults,
+            self.num_children,
+            self.city,
         )
 
 
 class GroceryRequestComment(CommentModel):
-    subject = models.ForeignKey(GroceryRequest, related_name="comments", on_delete=models.CASCADE)
+    subject = models.ForeignKey(
+        GroceryRequest, related_name="comments", on_delete=models.CASCADE
+    )
