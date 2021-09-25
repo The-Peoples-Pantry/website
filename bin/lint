@@ -1,4 +1,12 @@
 #!/bin/bash
 
 python -m venv /tmp/venv
-flake8 website && echo "OK" || echo "Failure"
+if ! black --check website ; then
+  echo "Format failed: Run bin/format"
+  exit 1
+elif ! flake8 website ; then
+  echo "Linting failed"
+  exit 1
+else
+  echo "OK"
+fi
