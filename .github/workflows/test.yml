@@ -31,6 +31,13 @@ jobs:
           python -m pip install --upgrade pip wheel setuptools
           pip install -r requirements.txt
 
+      # We use black to automatically format our code to a consistent
+      # format. It can format code automatically by running bin/format
+      # https://black.readthedocs.io/
+      - name: Check code formatting with black
+        working-directory: ./website
+        run: black .
+
       # We use flake8 to lint our code so that developers working
       # together on the project can write in a consistent style
       # https://flake8.pycqa.org/en/latest/
