@@ -1,4 +1,4 @@
 #!/bin/bash
 
 python -m venv /tmp/venv
-python website/manage.py test website
+python website/manage.py test "${@:-website}"
