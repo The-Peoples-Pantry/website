@@ -49,7 +49,7 @@ jobs:
       # https://docs.djangoproject.com/en/stable/topics/testing/overview/
       - name: Run tests
         working-directory: ./website
-        run: python manage.py test
+        run: python manage.py test --settings=website.test_settings
 
       # Double-check that migrations have been created
       # After making a change to a model, the developer should
