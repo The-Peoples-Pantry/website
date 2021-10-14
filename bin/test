@@ -2,4 +2,4 @@
 
 python -m venv /tmp/venv
 python website/manage.py collectstatic --link --noinput  # static files need to exist for route tests
-python website/manage.py test "${@:-website}"
+python website/manage.py test --settings=website.test_settings "${@:-website}"
