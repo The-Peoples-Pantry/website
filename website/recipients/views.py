@@ -61,6 +61,9 @@ class GroceryRequestView(FormView):
     }
 
     def dispatch(self, request):
+        # The Grocery request program is not running right now due to insufficient funds
+        return render(request, "recipients/grocery_program_not_running.html")
+
         if GroceryRequest.requests_paused():
             return render(request, "recipients/grocery_paused.html")
         return super().dispatch(request)
