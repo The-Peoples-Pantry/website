@@ -5,6 +5,9 @@
 {% block body_attributes %}data-aos-easing="ease-out-quad" data-aos-duration="700" data-aos-delay="0"{% endblock %}
 {% block content %}
 
+{# Add a modal to the main page explaining our currently paused service, delete this when we re-open #}
+{% include "public/modal_notice_of_paused_service.html" %}
+
 <!-- WELCOME
 ================================================== -->
 <section class="border-bottom">
