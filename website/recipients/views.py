@@ -26,6 +26,9 @@ class MealRequestView(FormView):
     }
 
     def dispatch(self, request):
+        # The Meal request program is not running right now due to insufficient funds
+        return render(request, "recipients/meal_program_not_running.html")
+
         if MealRequest.requests_paused():
             return render(request, "recipients/meal_paused.html")
         return super().dispatch(request)
