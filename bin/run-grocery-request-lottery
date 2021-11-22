@@ -10,10 +10,5 @@ if [ "${WEEKDAY}" != "Sunday" ]; then
 	exit 0
 fi
 
-# Run the lottery and send me an email to see if it succeeded or failed
 echo "Running Grocery Request Lottery"
-if python website/manage.py run_grocery_request_lottery; then
-	python website/manage.py sendtestemail ryanwilsonperkin+success@gmail.com
-else
-	python website/manage.py sendtestemail ryanwilsonperkin+failure@gmail.com
-fi
+python website/manage.py run_grocery_request_lottery
