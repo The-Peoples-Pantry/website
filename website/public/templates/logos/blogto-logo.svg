@@ -1,4 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 265">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 265" role="img" aria-labelledby="blogto-title">
+<title id="blogto-title">blogto logo</title>
 <g>
 	<path fill="currentColor" fill-rule="nonzero" d="M98.1,62.5c-17.8,0-29.6,6.9-38,17V34.9V2H2v32.9h14.4v168.9h42.3v-14.7c8.4,10.8,20.7,18.4,39.4,18.4
 		c36.7,0,64-31.8,64-72.6C162.1,94.5,134.8,62.5,98.1,62.5z M87.5,166.5c-17.2,0-29.3-13.3-29.3-31.5c0-18.2,12.1-31.5,29.3-31.5

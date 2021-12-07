@@ -75,10 +75,10 @@
   {% block terms %}
     <div class="card shadow-lift mb-3">
       <div class="card-body">
-        <h5 class="card-title">Terms and conditions</h5>
+        <h5 class="card-title" id="terms-and-conditions">Terms and conditions</h5>
         <div class="row">
           <div class="col">
-            <textarea class="form-control mb-3" readonly rows="10">{{ form.policy_text }}</textarea>
+            <textarea class="form-control mb-3" readonly rows="10" aria-labelledby="terms-and-conditions">{{ form.policy_text }}</textarea>
             {% bootstrap_field form.accept_terms %}
             {% bootstrap_field form.have_ppe %}
           </div>
