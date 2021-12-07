@@ -40,3 +40,26 @@ textarea.terms-of-service {
   width: 100%;
   position: absolute;
 }
+
+/* 
+  Custom CSS to improve accessibility/override landkit defaults
+*/
+.text-muted,
+.blockquote-footer {
+  color: #54647c!important;
+}
+
+.text-light-700 {
+  color:#8f9eb8;
+  font-weight: 700;
+}
+
+.alert-success,
+.btn-success {
+  background-color:#1a8061!important;
+  border-color:#1a8061!important;
+}
+
+.text-success {
+  color:#1a8061!important;
+}
