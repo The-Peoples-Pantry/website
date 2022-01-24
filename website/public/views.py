@@ -4,8 +4,6 @@ from django.shortcuts import redirect
 from django.templatetags.static import static
 from django.views.generic import TemplateView
 
-from recipients.models import MealRequest, GroceryRequest
-
 
 def logo(request):
     return redirect(static("logo-black.png"))
@@ -13,18 +11,6 @@ def logo(request):
 
 class IndexView(TemplateView):
     template_name = "public/index.html"
-    MEAL_REQUESTS_COUNT_PRIOR_TO_WEBSITE = 15_000
-    GROCERY_REQUESTS_COUNT_PRIOR_TO_WEBSITE = 1_988
-
-    @property
-    def extra_context(self):
-        return {
-            "volunteers_lower_bound": 500,
-            "meal_requests_count": self.MEAL_REQUESTS_COUNT_PRIOR_TO_WEBSITE
-            + MealRequest.objects.count(),
-            "grocery_requests_count": self.GROCERY_REQUESTS_COUNT_PRIOR_TO_WEBSITE
-            + GroceryRequest.objects.count(),
-        }
 
 
 class MediaView(TemplateView):
