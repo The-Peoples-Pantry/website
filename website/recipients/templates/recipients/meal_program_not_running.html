@@ -1,5 +1,10 @@
 {% extends 'base.html' %}
 
+{% block modal %}
+{# Add a modal to the page explaining our currently paused service, delete this when we re-open #}
+{% include "public/modal_notice_of_paused_service.html" %}
+{% endblock %}
+
 {% block content %}
 <h1>Our meal program is paused</h1>
 <p>Dear Meals community,</p>
