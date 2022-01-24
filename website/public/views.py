@@ -126,6 +126,15 @@ class MediaView(TemplateView):
                     "alt_text": "Several faces in a video conference call.",
                     "outlet": "SIS Salon",
                 },
+                {
+                    "title": "‘Solidarity, not charity’: The People’s Pantry connects volunteer cooks with those experiencing food insecurity in the GTA",
+                    "author": "Michelle Kay",
+                    "date": date.fromisoformat("2021-05-20"),
+                    "link": "https://www.thestar.com/life/food_wine/2021/05/20/solidarity-not-charity-the-peoples-pantry-connects-volunteer-cooks-with-those-experiencing-food-insecurity-in-the-gta.html",
+                    "image": "media/thestar.jpeg",
+                    "alt_text": "Woman wearing a mask and standing in front of an array of soups and salad.",
+                    "outlet": "Toronto Star",
+                }
             ],
             key=lambda story: story["date"],
             reverse=True,
