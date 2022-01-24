@@ -604,7 +604,7 @@ class GroceryRequest(
         "Status",
         max_length=settings.DEFAULT_LENGTH,
         choices=Status.choices,
-        default=Status.SUBMITTED,
+        default=Status.SELECTED,
     )
 
     def clean(self, *args, **kwargs):
