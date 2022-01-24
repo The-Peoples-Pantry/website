@@ -4,8 +4,6 @@ from django.shortcuts import redirect
 from django.templatetags.static import static
 from django.views.generic import TemplateView
 
-from recipients.models import MealRequest, GroceryRequest
-
 
 def logo(request):
     return redirect(static("logo-black.png"))
@@ -13,18 +11,6 @@ def logo(request):
 
 class IndexView(TemplateView):
     template_name = "public/index.html"
-    MEAL_REQUESTS_COUNT_PRIOR_TO_WEBSITE = 15_000
-    GROCERY_REQUESTS_COUNT_PRIOR_TO_WEBSITE = 1_988
-
-    @property
-    def extra_context(self):
-        return {
-            "volunteers_lower_bound": 500,
-            "meal_requests_count": self.MEAL_REQUESTS_COUNT_PRIOR_TO_WEBSITE
-            + MealRequest.objects.count(),
-            "grocery_requests_count": self.GROCERY_REQUESTS_COUNT_PRIOR_TO_WEBSITE
-            + GroceryRequest.objects.count(),
-        }
 
 
 class MediaView(TemplateView):
@@ -140,6 +126,15 @@ class MediaView(TemplateView):
                     "alt_text": "Several faces in a video conference call.",
                     "outlet": "SIS Salon",
                 },
+                {
+                    "title": "‘Solidarity, not charity’: The People’s Pantry connects volunteer cooks with those experiencing food insecurity in the GTA",
+                    "author": "Michelle Kay",
+                    "date": date.fromisoformat("2021-05-20"),
+                    "link": "https://www.thestar.com/life/food_wine/2021/05/20/solidarity-not-charity-the-peoples-pantry-connects-volunteer-cooks-with-those-experiencing-food-insecurity-in-the-gta.html",
+                    "image": "media/thestar.jpeg",
+                    "alt_text": "Woman wearing a mask and standing in front of an array of soups and salad.",
+                    "outlet": "Toronto Star",
+                }
             ],
             key=lambda story: story["date"],
             reverse=True,
