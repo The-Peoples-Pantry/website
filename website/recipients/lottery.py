@@ -2,7 +2,7 @@ import collections
 import random
 from django.conf import settings
 
-from recipients.models import MealRequest, GroceryRequest
+from recipients.models import MealRequest
 
 
 def random_sample_with_weight(population_weights, k):
@@ -109,52 +109,5 @@ class MealRequestLottery:
     def __process_not_selected(self, not_selected):
         for request in not_selected:
             request.status = MealRequest.Status.NOT_SELECTED
-            request.send_lottery_not_selected_email()
-            request.save()
-
-
-class GroceryRequestLottery:
-    """Select/reject grocery requests"""
-
-    def __init__(self, k=None):
-        self.k = k or settings.GROCERIES_LIMIT
-
-    def eligible_requests(self):
-        return GroceryRequest.objects.filter(status=GroceryRequest.Status.SUBMITTED)
-
-    def num_to_select(self):
-        return min(self.k, self.__boxes_sum(self.eligible_requests()))
-
-    def get_weight(self, request):
-        return request.get_lottery_weight()
-
-    def get_cost(self, request):
-        return request.boxes
-
-    def select(self, dry_run=False):
-        """Select k requests, reject the others, and mark each accordingly"""
-        population = list(self.eligible_requests())
-        weights = [self.get_weight(request) for request in population]
-        costs = [self.get_cost(request) for request in population]
-        selected, not_selected = random_sample_with_weight_and_cost(
-            population, weights, costs, self.num_to_select()
-        )
-        if not dry_run:
-            self.__process_selected(selected)
-            self.__process_not_selected(not_selected)
-        return selected, not_selected
-
-    def __boxes_sum(self, requests):
-        return sum(request.boxes for request in requests)
-
-    def __process_selected(self, selected):
-        for request in selected:
-            request.status = GroceryRequest.Status.SELECTED
-            request.send_lottery_selected_email()
-            request.save()
-
-    def __process_not_selected(self, not_selected):
-        for request in not_selected:
-            request.status = GroceryRequest.Status.NOT_SELECTED
             request.send_lottery_not_selected_email()
             request.save()

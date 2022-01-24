@@ -23,8 +23,6 @@ from .emails import (
     GroceryRequestConfirmationEmail,
     MealRequestLotterySelectedEmail,
     MealRequestLotteryNotSelectedEmail,
-    GroceryRequestLotterySelectedEmail,
-    GroceryRequestLotteryNotSelectedEmail,
 )
 
 
@@ -606,7 +604,7 @@ class GroceryRequest(
         "Status",
         max_length=settings.DEFAULT_LENGTH,
         choices=Status.choices,
-        default=Status.SUBMITTED,
+        default=Status.SELECTED,
     )
 
     def clean(self, *args, **kwargs):
@@ -672,14 +670,6 @@ class GroceryRequest(
 
     def send_confirmation_email(self):
         return GroceryRequestConfirmationEmail().send(self.email, {"request": self})
-
-    def send_lottery_selected_email(self):
-        return GroceryRequestLotterySelectedEmail().send(self.email, {"request": self})
-
-    def send_lottery_not_selected_email(self):
-        return GroceryRequestLotteryNotSelectedEmail().send(
-            self.email, {"request": self}
-        )
 
     def send_recipient_scheduled_notification(self, api=None):
         if not self.can_receive_texts:
@@ -759,29 +749,6 @@ class GroceryRequest(
         )
         text.send(self.phone_number)
         self.comments.create(comment=f"Sent a text to recipient: {text.message}")
-
-    def get_previous_requests(self):
-        return self.__class__.objects.filter(
-            phone_number=self.phone_number,
-            created_at__lt=self.created_at,
-        ).order_by("-created_at")
-
-    def count_consecutive_previously_unselected(self):
-        """How many times did the same recipient consecutively submit and get NOT_SELECTED?"""
-        count = 0
-        for request in self.get_previous_requests():
-            if request.status == GroceryRequest.Status.NOT_SELECTED:
-                count += 1
-            else:
-                break
-        return count
-
-    def get_lottery_weight(self):
-        weight = 1
-        weight += self.count_consecutive_previously_unselected()
-        if self.in_any_demographic():
-            weight += 1
-        return weight
 
     def __str__(self):
         return "Request #G%d (%s): %d adult(s) and %d kid(s) in %s " % (
