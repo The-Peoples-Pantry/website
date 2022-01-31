@@ -703,6 +703,21 @@ class GroceryRequest(
         text.send(self.phone_number)
         self.comments.create(comment=f"Sent a text to recipient: {text.message}")
 
+    def send_recipient_notice_notification(self, api=None):
+        if not self.can_receive_texts:
+            raise SendNotificationException(
+                "Recipient cannot receive text messages at their phone number"
+            )
+
+        text = TextMessage(
+            template="texts/groceries/notice.txt",
+            context={"request": self},
+            group_name="groceries",
+            api=api,
+        )
+        text.send(self.phone_number)
+        self.comments.create(comment=f"Sent a text to recipient: {text.message}")
+
     def send_recipient_reminder_notification(self, api=None):
         if not self.can_receive_texts:
             raise SendNotificationException(
