@@ -403,6 +403,7 @@ class GroceryRequestAdmin(admin.ModelAdmin):
         "notify_recipients_scheduled",
         "notify_recipients_allergies",
         "notify_recipients_reminder",
+        "notify_recipients_notice",
         "notify_recipients_rescheduled",
         "notify_recipients_confirm_received",
     )
@@ -519,6 +520,15 @@ class GroceryRequestAdmin(admin.ModelAdmin):
 
     notify_recipients_allergies.short_description = (
         "Send text to recipients with allergy explanation"
+    )
+
+    def notify_recipients_notice(self, request, queryset):
+        self.send_notifications(
+            request, queryset, "send_recipient_notice_notification"
+        )
+
+    notify_recipients_notice.short_description = (
+        "Send text to recipients with notice of grocery delivery next week"
     )
 
     def notify_recipients_reminder(self, request, queryset):
