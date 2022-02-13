@@ -624,8 +624,6 @@ class GroceryRequest(
     @classmethod
     def requests_paused(cls):
         """Are requests currently paused?"""
-        # Temporary override, groceries need to be disabled right away
-        return True
         if settings.DISABLE_GROCERIES_PERIOD:
             return False
         return not cls.within_signup_period()
