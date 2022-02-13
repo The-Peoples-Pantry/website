@@ -275,6 +275,7 @@ LONG_TEXT_LENGTH = 1024
 # This comes from a formula based on the number of people in the household
 GROCERIES_LIMIT = 50
 DISABLE_GROCERIES_PERIOD = getenv_bool("DISABLE_GROCERIES_PERIOD", False)
+DISABLE_GROCERIES = getenv_bool("DISABLE_GROCERIES", False)
 
 # Meal limit is on the number of requests submitted
 MEALS_LIMIT = 45
