@@ -273,7 +273,7 @@ LONG_TEXT_LENGTH = 1024
 # Settings for pausing requests
 # Grocery limit is on the number of "boxes" each request gets
 # This comes from a formula based on the number of people in the household
-GROCERIES_LIMIT = 50
+GROCERIES_LIMIT = 125
 DISABLE_GROCERIES_PERIOD = getenv_bool("DISABLE_GROCERIES_PERIOD", False)
 DISABLE_GROCERIES = getenv_bool("DISABLE_GROCERIES", False)
 
