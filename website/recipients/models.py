@@ -221,7 +221,7 @@ class MealRequest(
         "Status",
         max_length=settings.DEFAULT_LENGTH,
         choices=Status.choices,
-        default=Status.SUBMITTED,
+        default=Status.SELECTED,
     )
     pickup_details = models.TextField(
         "Pickup details",
