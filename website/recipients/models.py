@@ -431,12 +431,6 @@ class MealRequest(
         text.send(self.deliverer.volunteer.phone_number)
         self.comments.create(comment=f"Sent a text to the deliverer: {text.message}")
 
-    def get_previous_requests(self):
-        return self.__class__.objects.filter(
-            phone_number=self.phone_number,
-            created_at__lt=self.created_at,
-        ).order_by("-created_at")
-
     def __str__(self):
         return "Request #%d (%s): %d adult(s) and %d kid(s) in %s " % (
             self.id,
