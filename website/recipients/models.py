@@ -35,7 +35,7 @@ class SendNotificationException(Exception):
 class MealRequestQuerySet(models.QuerySet):
     def available_for_chef_signup(self):
         return self.filter(chef__isnull=True,).exclude(
-            status__in=(MealRequest.Status.SUBMITTED, *MealRequest.COMPLETED_STATUSES),
+            status__in=MealRequest.COMPLETED_STATUSES,
         )
 
     def available_for_deliverer_signup(self):
@@ -45,10 +45,7 @@ class MealRequestQuerySet(models.QuerySet):
             )
             .exclude(delivery_date__isnull=True)
             .exclude(
-                status__in=(
-                    MealRequest.Status.SUBMITTED,
-                    *MealRequest.COMPLETED_STATUSES,
-                ),
+                status__in=MealRequest.COMPLETED_STATUSES,
             )
         )
 
@@ -94,7 +91,6 @@ class MealRequest(
 
     class Status(models.TextChoices):
         SUBMITTED = "Submitted", "Submitted"
-        SELECTED = "Unconfirmed", "Selected"  # Previously called UNCONFIRMED
         CHEF_ASSIGNED = "Chef Assigned", "Chef Assigned"
         DRIVER_ASSIGNED = "Driver Assigned", "Driver Assigned"
         DATE_CONFIRMED = "Delivery Date Confirmed", "Delivery Date Confirmed"
@@ -220,7 +216,7 @@ class MealRequest(
         "Status",
         max_length=settings.DEFAULT_LENGTH,
         choices=Status.choices,
-        default=Status.SELECTED,
+        default=Status.SUBMITTED,
     )
     pickup_details = models.TextField(
         "Pickup details",
@@ -491,7 +487,6 @@ class GroceryRequest(
 ):
     class Status(models.TextChoices):
         SUBMITTED = "Submitted", "Submitted"
-        SELECTED = "Selected", "Selected"
         DELIVERED = "Delivered", "Delivered"
         UNSUCCESSFUL = "Unsuccessful", "Unsuccessful"
 
@@ -577,7 +572,7 @@ class GroceryRequest(
         "Status",
         max_length=settings.DEFAULT_LENGTH,
         choices=Status.choices,
-        default=Status.SELECTED,
+        default=Status.SUBMITTED,
     )
 
     def clean(self, *args, **kwargs):
