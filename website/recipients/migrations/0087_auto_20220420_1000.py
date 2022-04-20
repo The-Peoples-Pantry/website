@@ -6,18 +6,39 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('recipients', '0086_update_statuses_20220420_0948 '),
+        ("recipients", "0086_update_statuses_20220420_0948 "),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='groceryrequest',
-            name='status',
-            field=models.CharField(choices=[('Submitted', 'Submitted'), ('Delivered', 'Delivered'), ('Unsuccessful', 'Unsuccessful')], default='Submitted', max_length=256, verbose_name='Status'),
+            model_name="groceryrequest",
+            name="status",
+            field=models.CharField(
+                choices=[
+                    ("Submitted", "Submitted"),
+                    ("Delivered", "Delivered"),
+                    ("Unsuccessful", "Unsuccessful"),
+                ],
+                default="Submitted",
+                max_length=256,
+                verbose_name="Status",
+            ),
         ),
         migrations.AlterField(
-            model_name='mealrequest',
-            name='status',
-            field=models.CharField(choices=[('Submitted', 'Submitted'), ('Chef Assigned', 'Chef Assigned'), ('Driver Assigned', 'Driver Assigned'), ('Delivery Date Confirmed', 'Delivery Date Confirmed'), ('Delivered', 'Delivered'), ('Unsuccessful', 'Unsuccessful')], default='Submitted', max_length=256, verbose_name='Status'),
+            model_name="mealrequest",
+            name="status",
+            field=models.CharField(
+                choices=[
+                    ("Submitted", "Submitted"),
+                    ("Chef Assigned", "Chef Assigned"),
+                    ("Driver Assigned", "Driver Assigned"),
+                    ("Delivery Date Confirmed", "Delivery Date Confirmed"),
+                    ("Delivered", "Delivered"),
+                    ("Unsuccessful", "Unsuccessful"),
+                ],
+                default="Submitted",
+                max_length=256,
+                verbose_name="Status",
+            ),
         ),
     ]
