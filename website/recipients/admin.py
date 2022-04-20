@@ -24,24 +24,6 @@ def short_time(time_obj):
         return "None"
 
 
-class NotSelectedFilter(admin.SimpleListFilter):
-    title = "Not Selected"
-    parameter_name = "not_selected"
-
-    def lookups(self, request, model_admin):
-        return (('Hide "Not Selected"', 'Hide "Not Selected"'),)
-
-    def queryset(self, request, queryset):
-        if self.value() == 'Hide "Not Selected"':
-            queryset = queryset.exclude(
-                status__in=(
-                    MealRequest.Status.NOT_SELECTED,
-                    GroceryRequest.Status.NOT_SELECTED,
-                )
-            )
-        return queryset
-
-
 class CompletedFilter(admin.SimpleListFilter):
     title = "Completed"
     parameter_name = "completed"
@@ -107,7 +89,6 @@ class MealRequestAdmin(admin.ModelAdmin):
     )
     list_filter = (
         CompletedFilter,
-        NotSelectedFilter,
         "status",
         "can_receive_texts",
         "created_at",
@@ -390,7 +371,6 @@ class GroceryRequestAdmin(admin.ModelAdmin):
     )
     list_filter = (
         CompletedFilter,
-        NotSelectedFilter,
         "status",
         "can_receive_texts",
         "created_at",
