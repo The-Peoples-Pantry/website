@@ -134,7 +134,7 @@ class MediaView(TemplateView):
                     "image": "media/thestar.jpeg",
                     "alt_text": "Woman wearing a mask and standing in front of an array of soups and salad.",
                     "outlet": "Toronto Star",
-                }
+                },
             ],
             key=lambda story: story["date"],
             reverse=True,

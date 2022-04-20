@@ -21,8 +21,6 @@ from core.models import (
 from .emails import (
     MealRequestConfirmationEmail,
     GroceryRequestConfirmationEmail,
-    MealRequestLotterySelectedEmail,
-    MealRequestLotteryNotSelectedEmail,
 )
 
 
@@ -102,9 +100,8 @@ class MealRequest(
         DATE_CONFIRMED = "Delivery Date Confirmed", "Delivery Date Confirmed"
         DELIVERED = "Delivered", "Delivered"
         UNSUCCESSFUL = "Unsuccessful", "Unsuccessful"
-        NOT_SELECTED = "Not Selected", "Not Selected"
 
-    COMPLETED_STATUSES = (Status.DELIVERED, Status.UNSUCCESSFUL, Status.NOT_SELECTED)
+    COMPLETED_STATUSES = (Status.DELIVERED, Status.UNSUCCESSFUL)
 
     # Information about the recipient
     can_receive_texts = models.BooleanField(
@@ -223,7 +220,7 @@ class MealRequest(
         "Status",
         max_length=settings.DEFAULT_LENGTH,
         choices=Status.choices,
-        default=Status.SUBMITTED,
+        default=Status.SELECTED,
     )
     pickup_details = models.TextField(
         "Pickup details",
@@ -310,12 +307,6 @@ class MealRequest(
 
     def send_confirmation_email(self):
         return MealRequestConfirmationEmail().send(self.email, {"request": self})
-
-    def send_lottery_selected_email(self):
-        return MealRequestLotterySelectedEmail().send(self.email, {"request": self})
-
-    def send_lottery_not_selected_email(self):
-        return MealRequestLotteryNotSelectedEmail().send(self.email, {"request": self})
 
     def send_recipient_meal_notification(self, api=None):
         if not self.can_receive_texts:
@@ -450,23 +441,6 @@ class MealRequest(
             created_at__lt=self.created_at,
         ).order_by("-created_at")
 
-    def count_consecutive_previously_unselected(self):
-        """How many times did the same recipient consecutively submit and get NOT_SELECTED?"""
-        count = 0
-        for request in self.get_previous_requests():
-            if request.status == MealRequest.Status.NOT_SELECTED:
-                count += 1
-            else:
-                break
-        return count
-
-    def get_lottery_weight(self):
-        weight = 1
-        weight += self.count_consecutive_previously_unselected()
-        if self.in_any_demographic():
-            weight += 1
-        return weight
-
     def __str__(self):
         return "Request #%d (%s): %d adult(s) and %d kid(s) in %s " % (
             self.id,
@@ -520,9 +494,8 @@ class GroceryRequest(
         SELECTED = "Selected", "Selected"
         DELIVERED = "Delivered", "Delivered"
         UNSUCCESSFUL = "Unsuccessful", "Unsuccessful"
-        NOT_SELECTED = "Not Selected", "Not Selected"
 
-    COMPLETED_STATUSES = (Status.DELIVERED, Status.UNSUCCESSFUL, Status.NOT_SELECTED)
+    COMPLETED_STATUSES = (Status.DELIVERED, Status.UNSUCCESSFUL)
 
     can_receive_texts = models.BooleanField(
         "Can receive texts",

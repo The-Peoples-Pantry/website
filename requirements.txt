@@ -41,7 +41,7 @@ sentry-sdk==0.19.3
 flake8== 3.8.4
 
 # Allows us to auto-format our code (https://black.readthedocs.io/en/stable/)
-black==21.9b0
+black==22.3.0
 
 # Allows us to easily generate fake testing data
 factory_boy==3.2.0
