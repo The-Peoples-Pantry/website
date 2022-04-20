@@ -503,9 +503,7 @@ class GroceryRequestAdmin(admin.ModelAdmin):
     )
 
     def notify_recipients_notice(self, request, queryset):
-        self.send_notifications(
-            request, queryset, "send_recipient_notice_notification"
-        )
+        self.send_notifications(request, queryset, "send_recipient_notice_notification")
 
     notify_recipients_notice.short_description = (
         "Send text to recipients with notice of grocery delivery next week"

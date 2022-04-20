@@ -5,16 +5,16 @@ from django.db import migrations
 
 def update_statuses(apps, _schema_editor):
     # Getting rid of the "Not Selected" status, change all existing to "Unsuccessful"
-    GroceryRequest = apps.get_model('recipients', 'GroceryRequest')
-    GroceryRequest.objects.filter(status='Not Selected').update(status='Unsuccessful')
-    MealRequest = apps.get_model('recipients', 'MealRequest')
-    MealRequest.objects.filter(status='Not Selected').update(status='Unsuccessful')
+    GroceryRequest = apps.get_model("recipients", "GroceryRequest")
+    GroceryRequest.objects.filter(status="Not Selected").update(status="Unsuccessful")
+    MealRequest = apps.get_model("recipients", "MealRequest")
+    MealRequest.objects.filter(status="Not Selected").update(status="Unsuccessful")
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('recipients', '0083_auto_20220419_2219'),
+        ("recipients", "0083_auto_20220419_2219"),
     ]
 
     operations = [
