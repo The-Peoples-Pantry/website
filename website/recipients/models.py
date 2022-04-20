@@ -21,8 +21,6 @@ from core.models import (
 from .emails import (
     MealRequestConfirmationEmail,
     GroceryRequestConfirmationEmail,
-    MealRequestLotterySelectedEmail,
-    MealRequestLotteryNotSelectedEmail,
 )
 
 
@@ -311,12 +309,6 @@ class MealRequest(
     def send_confirmation_email(self):
         return MealRequestConfirmationEmail().send(self.email, {"request": self})
 
-    def send_lottery_selected_email(self):
-        return MealRequestLotterySelectedEmail().send(self.email, {"request": self})
-
-    def send_lottery_not_selected_email(self):
-        return MealRequestLotteryNotSelectedEmail().send(self.email, {"request": self})
-
     def send_recipient_meal_notification(self, api=None):
         if not self.can_receive_texts:
             raise SendNotificationException(
@@ -459,13 +451,6 @@ class MealRequest(
             else:
                 break
         return count
-
-    def get_lottery_weight(self):
-        weight = 1
-        weight += self.count_consecutive_previously_unselected()
-        if self.in_any_demographic():
-            weight += 1
-        return weight
 
     def __str__(self):
         return "Request #%d (%s): %d adult(s) and %d kid(s) in %s " % (
