@@ -6,18 +6,41 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('recipients', '0084_update_statuses_20220419_2224 '),
+        ("recipients", "0084_update_statuses_20220419_2224 "),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='groceryrequest',
-            name='status',
-            field=models.CharField(choices=[('Submitted', 'Submitted'), ('Selected', 'Selected'), ('Delivered', 'Delivered'), ('Unsuccessful', 'Unsuccessful')], default='Selected', max_length=256, verbose_name='Status'),
+            model_name="groceryrequest",
+            name="status",
+            field=models.CharField(
+                choices=[
+                    ("Submitted", "Submitted"),
+                    ("Selected", "Selected"),
+                    ("Delivered", "Delivered"),
+                    ("Unsuccessful", "Unsuccessful"),
+                ],
+                default="Selected",
+                max_length=256,
+                verbose_name="Status",
+            ),
         ),
         migrations.AlterField(
-            model_name='mealrequest',
-            name='status',
-            field=models.CharField(choices=[('Submitted', 'Submitted'), ('Unconfirmed', 'Selected'), ('Chef Assigned', 'Chef Assigned'), ('Driver Assigned', 'Driver Assigned'), ('Delivery Date Confirmed', 'Delivery Date Confirmed'), ('Delivered', 'Delivered'), ('Unsuccessful', 'Unsuccessful')], default='Unconfirmed', max_length=256, verbose_name='Status'),
+            model_name="mealrequest",
+            name="status",
+            field=models.CharField(
+                choices=[
+                    ("Submitted", "Submitted"),
+                    ("Unconfirmed", "Selected"),
+                    ("Chef Assigned", "Chef Assigned"),
+                    ("Driver Assigned", "Driver Assigned"),
+                    ("Delivery Date Confirmed", "Delivery Date Confirmed"),
+                    ("Delivered", "Delivered"),
+                    ("Unsuccessful", "Unsuccessful"),
+                ],
+                default="Unconfirmed",
+                max_length=256,
+                verbose_name="Status",
+            ),
         ),
     ]

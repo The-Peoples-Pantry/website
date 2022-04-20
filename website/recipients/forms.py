@@ -35,6 +35,7 @@ class GroceryRequestForm(forms.ModelForm):
         help_text="Are you (or someone in your household) able to receive the box on the delivery date assigned for your area?",
         required=True,
     )
+
     class Meta:
         model = GroceryRequest
         exclude = [
