@@ -590,7 +590,13 @@ class GroceryRequest(
             return True
         if settings.DISABLE_GROCERIES_PERIOD:
             return False
-        return not cls.within_signup_period()
+        if not cls.within_signup_period():
+            return True
+        # Need to subtract 3 because that's the max number of boxes that can be done in a single request
+        # We conservatively estimate that the next person to submit would be for 3 boxes
+        # This helps us avoid going over the limit, but has the downside that we might come up short
+        # We handle this after the fact by finding someone to give the remaining box or 2 to
+        return cls.active_requests() > (settings.GROCERIES_LIMIT - 3)
 
     @classmethod
     def within_signup_period(cls):
@@ -605,6 +611,10 @@ class GroceryRequest(
         return (
             (is_friday and is_after_9am) or is_saturday or (is_sunday and is_before_2pm)
         )
+
+    @classmethod
+    def active_requests(cls):
+        return sum(r.boxes for r in cls.objects.filter(status=cls.Status.SUBMITTED))
 
     @classmethod
     def has_open_request(cls, phone: str):
