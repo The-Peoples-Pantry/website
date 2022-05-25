@@ -41,19 +41,16 @@
 
         <div class="row no-gutters mb-2">
           <div class="col-6 pr-1">
-            <a href="{% url "signup" %}" class="btn btn-primary btn-block lift">
-              Join us <i class="fe fe-arrow-right ml-2"></i>
-            </a>
-          </div>
-          <div class="col-6 pl-1">
-            <a href="{% url "public:sponsor" %}" class="btn btn-success btn-block lift">
+            <a href="{% url "public:sponsor" %}" class="btn btn-primary btn-block lift">
               Donate <i class="fe fe-arrow-right ml-2"></i>
             </a>
           </div>
+          <div class="col-6 pl-1">
+            <a href="{% url "public:about" %}" class="btn btn-success btn-block lift">
+              Learn more <i class="fe fe-arrow-right ml-2"></i>
+            </a>
+          </div>
         </div>
-        <a href="{% url "public:about" %}" class="btn btn-primary-soft btn-block lift">
-          Learn more
-        </a>
       </div>
     </div>
   </div>
@@ -92,7 +89,7 @@
             <p class="text-muted">
               Help coordinate grocery deliveries with FoodShare Toronto.
             </p>
-            <a target="_blank" rel="noopener noreferrer" href="mailto:{{settings.VOLUNTEER_COORDINATORS_EMAIL}}?subject=Interested in helping to coordinate grocery deliveries"class="font-weight-bold text-success text-decoration-none">
+            <a target="_blank" rel="noopener noreferrer" href="mailto:{{settings.VOLUNTEER_COORDINATORS_EMAIL}}?subject=Interested in helping to coordinate grocery deliveries" class="font-weight-bold text-success text-decoration-none">
               Start coordinating&nbsp;<i class="fe fe-arrow-right ml-3"></i>
             </a>
           </div>
@@ -112,7 +109,7 @@
             <p class="text-muted">
               Create social media content and/or contribute to community outreach.
             </p>
-            <a target="_blank" rel="noopener noreferrer" href="mailto:{{settings.SOCIAL_COORDINATORS_EMAIL}}?subject=Interested in helping to create social media content"class="font-weight-bold text-success text-decoration-none">
+            <a target="_blank" rel="noopener noreferrer" href="mailto:{{settings.SOCIAL_COORDINATORS_EMAIL}}?subject=Interested in helping to create social media content" class="font-weight-bold text-success text-decoration-none">
               Start creating&nbsp;<i class="fe fe-arrow-right ml-3"></i>
             </a>
           </div>
@@ -319,7 +316,7 @@
                     <h4 class="font-weight-bold mb-0">Looking for Toronto Meals?</h4>
                     <p class="font-size-sm text-muted mb-0">
                       Due to restricted resources and funding, we are no longer able to provide homecooked meals to families within Toronto. However, we'd be happy to put you in contact with some of our community partners, such as
-                      <a target="_blank" rel="noopener noreferrer" href="{% url "public:unity-kitchen" %}">Unity Kitchen</a>
+                      <a target="_blank" rel="noopener noreferrer" href="{% url "public:unity_kitchen" %}">Unity Kitchen</a>
                       who have continued to provide meals services within the region.
                     </p>
                     <p class="font-size-sm text-muted mt-3">
