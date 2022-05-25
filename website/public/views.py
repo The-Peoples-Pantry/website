@@ -214,6 +214,7 @@ class AboutView(TemplateView):
         "photos/chef_volunteers/img_2423.jpg",
         "photos/chef_volunteers/image_from_ios-59.jpg",
         "photos/chef_volunteers/image3.jpeg",
+        "photos/chef_volunteers/2-chefs.jpg",
         "photos/delivery_volunteers/tppmaximg_3163.jpg",
         "photos/delivery_volunteers/tppimg_3167.jpg",
         "photos/delivery_volunteers/20210109_110836.jpg",
@@ -238,6 +239,7 @@ class AboutView(TemplateView):
         "photos/organizers/jade.jpg",
         "photos/organizers/michelle.jpg",
         "photos/organizers/andrea.jpg",
+        
     ]
 
     @property

@@ -9,5 +9,5 @@ class IndexViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(
             response,
-            "We provide home cooked meals and groceries to those who have been hit hardest by COVID-19",
+            "Founded in response to COVID-19, we provide homecooked meals and grocery care packages to those struggling with food insecurity.",
         )

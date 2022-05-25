@@ -36,7 +36,7 @@
         </h1>
 
         <p class="lead text-secondary mb-6 mb-md-8">
-          We provide home cooked meals and groceries to those who have been hit hardest by COVID-19
+          Founded in response to COVID-19, we provide homecooked meals and grocery care packages to those struggling with food insecurity.
         </p>
 
         <div class="row no-gutters mb-2">
@@ -73,73 +73,53 @@
           Many ways to uplift the community
         </h1>
         <p class="font-size-lg text-gray-700 mb-7 mb-md-9">
-          Whether you'd prefer to cook meals from your home, deliver to those in need, or coordinate our volunteers.
+          Whether you'd prefer to cook meals from your home, deliver to those in need, coordinate our volunteers, or help with social outreach.
         </p>
       </div>
     </div>
 
     <div class="row">
-      <div class="col-12 col-md-3" data-aos="fade-up">
+      <div class="col-12 col-md-4" data-aos="fade-up">
         <div class="card shadow-light-lg mb-6 mb-md-0 lift lift-lg">
-          <img src="{% static "cooking-splash.jpg" %}" alt="Photo of two cooking volunteers posing with a table full of packaged meals." class="card-img-top">
+          <img src="{% static "splash-food.jpg" %}" class="card-img-top">
           <div class="position-relative">
             <div class="shape shape-bottom shape-fluid-x svg-shim text-white">
               {% include "landkit_theme/shapes/curves/curve-1.svg" %}
             </div>
           </div>
           <div class="card-body position-relative">
-            <h3>Cooking</h3>
+            <h3>Groceries</h3>
             <p class="text-muted">
-              Prepare home cooked meals for others on your own schedule, we'll handle delivery.
+              Help coordinate grocery deliveries with FoodShare Toronto.
             </p>
-            <a href="{% url "signup" %}?next={% url "volunteers:chef_application" %}" class="font-weight-bold text-success text-decoration-none">
-              Start cooking&nbsp;<i class="fe fe-arrow-right ml-3"></i>
+            <a target="_blank" rel="noopener noreferrer" href="mailto:{{settings.VOLUNTEER_COORDINATORS_EMAIL}}?subject=Interested in helping to coordinate grocery deliveries"class="font-weight-bold text-success text-decoration-none">
+              Start coordinating&nbsp;<i class="fe fe-arrow-right ml-3"></i>
             </a>
           </div>
         </div>
       </div>
 
-      <div class="col-12 col-md-3" data-aos="fade-up" data-aos-delay="100">
+      <div class="col-12 col-md-4" data-aos="fade-up" data-aos-delay="100">
         <div class="card shadow-light-lg mb-6 mb-md-0 lift lift-lg">
-          <img src="{% static "delivery-splash.jpg" %}" alt="Photo of delivery volunteer loading up their bicycle." class="card-img-top">
+          <img src="{% static "splash-delivery.jpg" %}" class="card-img-top">
           <div class="position-relative">
             <div class="shape shape-bottom shape-fluid-x svg-shim text-white">
               {% include "landkit_theme/shapes/curves/curve-1.svg" %}
             </div>
           </div>
           <div class="card-body position-relative">
-            <h3>Delivering</h3>
+            <h3>Social Media &amp; Outreach</h3>
             <p class="text-muted">
-              Deliver meals by foot, by bike, by car, whatever works best for you.
+              Create social media content and/or contribute to community outreach.
             </p>
-            <a href="{% url "signup" %}?next={% url "volunteers:deliverer_application" %}" class="font-weight-bold text-success text-decoration-none">
-              Start delivering&nbsp;<i class="fe fe-arrow-right ml-3"></i>
+            <a target="_blank" rel="noopener noreferrer" href="mailto:{{settings.SOCIAL_COORDINATORS_EMAIL}}?subject=Interested in helping to create social media content"class="font-weight-bold text-success text-decoration-none">
+              Start creating&nbsp;<i class="fe fe-arrow-right ml-3"></i>
             </a>
           </div>
         </div>
       </div>
 
-      <div class="col-12 col-md-3" data-aos="fade-up" data-aos-delay="200">
-        <div class="card shadow-light-lg lift lift-lg">
-          <img src="{% static "organizing-splash.jpg" %}" alt="Photo of an organizing volunteer working on a laptop." class="card-img-top">
-          <div class="position-relative">
-            <div class="shape shape-bottom shape-fluid-x svg-shim text-white">
-              {% include "landkit_theme/shapes/curves/curve-1.svg" %}
-            </div>
-          </div>
-          <div class="card-body position-relative">
-            <h3>Organizing</h3>
-            <p class="text-muted">
-              Coordinate meal and grocery deliveries, and help us tell our story to the world.
-            </p>
-            <a href="{% url "signup" %}?next={% url "volunteers:organizer_application" %}" class="font-weight-bold text-success text-decoration-none">
-              Start organizing&nbsp;<i class="fe fe-arrow-right ml-3"></i>
-            </a>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-12 col-md-3" data-aos="fade-up">
+      <div class="col-12 col-md-4" data-aos="fade-up">
         <div class="card shadow-light-lg mb-6 mb-md-0 lift lift-lg">
           <img src="{% static "sister-initiative-splash.jpg" %}" alt="Photo of two organizing volunteers in a grassy field holding gift baskets." class="card-img-top">
           <div class="position-relative">
@@ -148,12 +128,12 @@
             </div>
           </div>
           <div class="card-body position-relative">
-            <h3>Sister Initiative</h3>
+            <h3>Cooking & Delivering</h3>
             <p class="text-muted">
-              Volunteer to support families in Mississauga, Halton, Hamilton, and Tri-Cities-Guelph.
+              Interested in cooking, baking, or delivering? Volunteer to support families in Mississauga, Halton, Hamilton, and Tri-Cities-Guelph.
             </p>
             <a href="{% url "signup" %}?next={% url "volunteers:chef_application" %}" class="font-weight-bold text-success text-decoration-none">
-              Join us&nbsp;<i class="fe fe-arrow-right ml-3"></i>
+              Start volunteering&nbsp;<i class="fe fe-arrow-right ml-3"></i>
             </a>
           </div>
         </div>
@@ -179,7 +159,7 @@
           COVID 19 has left many in our community struggling to access food. We are faced with loss of income, unemployment, restricted transportation, and more.
           <br />
           <br />
-          We focus on particularly hard-hit communities, including <abbr title="Queer, Trans*, Black, Indigenous, and People of Colour">QTBIPOC</abbr>, single parents, sex workers, precariously housed persons, those with medical conditions or disabilities, newly-arrived immigrants, and the elderly.
+          Recognizing that COVID-19 is by no means "over", we focus on particularly hard-hit communities, including QTBIPOC, single parents, sex workers, precariously housed persons, those with medical conditions or disabilities, newly-arrived immigrants, and the elderly.
         </p>
       </div>
     </div>
@@ -197,14 +177,14 @@
         <!-- Image (mobile) -->
         <div class="d-md-none img-cover">
           <div class="w-100">
-            <img src="{% static "splash-toronto.jpg" %}" alt="Photo of the Toronto skyline." class="img-fluid">
+            <img src="{% static "splash-volunteer-bbq.jpg" %}" alt="Photo of our volunteers gathered in a park." class="img-fluid">
           </div>
         </div>
 
         <!-- Image (desktop) -->
         <div class="position-relative h-100 vw-50 float-right d-none d-md-block">
           <div class="w-100 h-100">
-            <div class="w-100 h-100 bg-cover" style="background-image: url({% static "splash-toronto.jpg" %});"></div>
+            <div class="w-100 h-100 bg-cover" style="background-image: url({% static "splash-volunteer-bbq.jpg" %});"></div>
           </div>
           <div class="shape shape-right shape-fluid-y svg-shim text-white">
             {% include "landkit_theme/shapes/angles/angle-right.svg" %}
@@ -217,7 +197,7 @@
         <!-- Heading -->
         <h2>
           Over <span data-toggle="countup" data-from="100" data-to="500" data-aos data-aos-id="countup:in">{{ volunteers_lower_bound }}</span> volunteers spread <br>
-          <span class="text-success">across Toronto and surrounding areas</span>.
+          <span class="text-success">across the Greater Toronto-Hamilton Area and beyond.</span>.
         </h2>
 
         <!-- Text -->
@@ -269,7 +249,7 @@
       <div class="col-12 col-md-10 col-lg-8 text-center">
         <h2>Looking for <span class="text-primary">mutual aid?</span></h2>
         <p class="font-size-lg text-muted mb-7 mb-md-9 px-md-9">
-          Each week we deliver home cooked meals and grocery bundles throughout Toronto
+          Each week we deliver home cooked meals and grocery bundles to families in Mississauga, Halton, Hamilton, and Tri-Cities-Guelph, while providing periodic grocery care packages to families across Toronto.
         </p>
       </div>
     </div>
@@ -281,38 +261,11 @@
             <div class="list-group list-group-flush">
               <div class="list-group-item">
                 <!-- Toggle -->
-                <a class="d-flex align-items-center text-reset text-decoration-none" data-toggle="collapse" href="#featuresOne" role="button" aria-expanded="true" aria-controls="featuresOne">
-                  <div class="mr-auto">
-                    <h4 class="font-weight-bold mb-0">Meals</h4>
-                    <p class="font-size-sm text-muted mb-0">
-                      Home cooked meals prepared by volunteers
-                    </p>
-                  </div>
-                  <span class="collapse-chevron text-muted ml-4">
-                    <i class="fe fe-lg fe-chevron-down"></i>
-                  </span>
-                </a>
-                <!-- Collapse -->
-                <div class="collapse show" id="featuresOne" data-parent="#featuresAccordion">
-                  <div class="py-5 py-mb-6">
-                    <p>
-                      Our volunteer chefs have prepared hundreds of meals. Each meal is customized based on the number of people in your household, your preferences, and any dietary restrictions. Our volunteers then deliver these meals directly to you for a non-contact drop-off.
-                      If you're in need of a meal, we encourage you to apply through our request form. Our request form is open from Friday at 9am until Sunday at 2pm. Once the request form closes, we randomly select {{settings.MEALS_LIMIT}} recipients for the week.
-                    </p>
-                    <a href="{% url "recipients:new_meal_request" %}" class="font-weight-bold text-decoration-none">
-                      Request meals <i class="fe fe-arrow-right ml-3"></i>
-                    </a>
-                  </div>
-                </div>
-              </div>
-
-              <div class="list-group-item">
-                <!-- Toggle -->
                 <a class="d-flex align-items-center text-reset text-decoration-none" data-toggle="collapse" href="#featuresTwo" role="button" aria-expanded="false" aria-controls="featuresTwo">
                   <div class="mr-auto">
                     <h4 class="font-weight-bold mb-0">Groceries</h4>
                     <p class="font-size-sm text-muted mb-0">
-                      Healthy grocery bundles from FoodShare
+                      Nutritious and delicious grocery bundles from FoodShare.
                     </p>
                   </div>
                   <span class="collapse-chevron text-muted ml-4">
@@ -326,7 +279,7 @@
                       We've partnered with <a href="https://foodshare.net/" target="_blank" rel="noopener noreferrer">FoodShare</a> to provide boxes of fresh produce all across Toronto. These boxes are delivered directly to you for a non-contact drop-off.
                       If you're in need of groceries, we encourage you to apply through our request form. Our request form is open from Friday at 9am until Sunday at 2pm.
                     </p>
-                    <a href="{% url "recipients:new_grocery_request" %}" class="font-weight-bold text-decoration-none">
+                    <a target="_blank" rel="noopener noreferrer" href="mailto:{{settings.REQUEST_COORDINATORS_EMAIL}}?subject=Requesting groceries"class="font-weight-bold text-decoration-none">
                       Request groceries <i class="fe fe-arrow-right ml-3"></i>
                     </a>
                   </div>
@@ -337,9 +290,9 @@
                 <!-- Toggle -->
                 <a class="d-flex align-items-center text-reset text-decoration-none" data-toggle="collapse" href="#featuresThree" role="button" aria-expanded="false" aria-controls="featuresThree">
                   <div class="mr-auto">
-                    <h4 class="font-weight-bold mb-0">Outside of Toronto?</h4>
+                    <h4 class="font-weight-bold mb-0">Meals and Groceries</h4>
                     <p class="font-size-sm text-muted mb-0">
-                      Our sister initative may be able to help
+                      Request meals or groceries for Mississauga, Halton, Hamilton, and Tri-Cities- Guelph.
                     </p>
                   </div>
                   <span class="collapse-chevron text-muted ml-4">
@@ -355,6 +308,26 @@
                     <a href="{% url "public:sister_initiative" %}" class="font-weight-bold text-decoration-none">
                       Request support <i class="fe fe-arrow-right ml-3"></i>
                     </a>
+                  </div>
+                </div>
+              </div>
+
+              <div class="list-group-item">
+                <!-- Toggle -->
+                <div class="d-flex align-items-center text-reset text-decoration-none">
+                  <div class="mr-auto">
+                    <h4 class="font-weight-bold mb-0">Looking for Toronto Meals?</h4>
+                    <p class="font-size-sm text-muted mb-0">
+                      Due to restricted resources and funding, we are no longer able to provide homecooked meals to families within Toronto. However, we'd be happy to put you in contact with some of our community partners, such as
+                      <a target="_blank" rel="noopener noreferrer" href="{% url "public:unity-kitchen" %}">Unity Kitchen</a>
+                      who have continued to provide meals services within the region.
+                    </p>
+                    <p class="font-size-sm text-muted mt-3">
+                      You can also reach us at
+                      <a target="_blank" rel="noopener noreferrer" href="mailto:{{settings.REQUEST_COORDINATORS_EMAIL}}"class="font-weight-bold">
+                        {{settings.REQUEST_COORDINATORS_EMAIL}}
+                      </a>
+                    </p>
                   </div>
                 </div>
               </div>

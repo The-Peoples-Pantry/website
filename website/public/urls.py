@@ -128,4 +128,9 @@ urlpatterns = [
         ),
         name="halal_resource",
     ),
+    path(
+        "links/unity-kitchen",
+        RedirectView.as_view(url="https://www.instagram.com/unitykitchento/"),
+        name="unity-kitchen",
+    )
 ]
