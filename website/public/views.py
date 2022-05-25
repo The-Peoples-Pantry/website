@@ -159,7 +159,31 @@ class AboutView(TemplateView):
         },
         {
             "source": "testimonials/wanyi.png",
-            "alt_text": "Testimonial from Wanyi: THe pandemic has exacerbated food insecurity in our communities, and volunteering with TPP is the direct way to help people in need. We help because we care. Come join or donate today so we can secure our communities and deal with the crisis together.",
+            "alt_text": "Testimonial from Wanyi: The pandemic has exacerbated food insecurity in our communities, and volunteering with TPP is the direct way to help people in need. We help because we care. Come join or donate today so we can secure our communities and deal with the crisis together.",
+        },
+        {
+            "source": "testimonials/nico.jpg",
+            "alt_text": "Testimonial from Nico: I started volunteering with The People's Pantry because we are directly helping people in our own communities. We are neighbours taking care of neighbours. Anyone looking to help make an immediate impact in their neighbourhood should consider joining the volunteer team or donating today.",
+        },
+        {
+            "source": "testimonials/ashley.jpg",
+            "alt_text": "Testimonial from Ashley: I volunteer with TPP because I am privileged to be able to purcahse and utilize nutritious food everyday. However, food accessibility and affordability should not be a privilege - it is a human right. Food privilege is influenced by social determinants of health such as where people live, education levels, employment status, and economic stability. TPP initiative works against these barriers to minimize food insecurity and hunger in our community. Words cannot express how important this is.",
+        },
+        {
+            "source": "testimonials/karen.jpg",
+            "alt_text": "Testimonial from Karen: Being able to help our drivers behind the scenes has been one of my life's biggest passions. The intere team is like a family that honestly touches on one of the few positives of the pandemic; mutual aid. Food banks have been around forever but they don't personally touch their recipients in the way that The People's Pantry does. The personal touch that our chefs and delivery teams bring to recipients is unheard of. As long as there is a need I hope to be part of TPP's family of volunteers.",
+        },
+        {
+            "source": "testimonials/zainab.jpg",
+            "alt_text": "Testimonial from Zainab: Working with the TPP is great because it combines two of my passions: intersectional feminism and a beliefe that everyone should be able to have cake. It is wonderful to be part of a queer and BWOC-led mission that works with those in our community who experience food insecurity. You can support the Pantry by volunteering or donating to help us continue to empower our communities!",
+        },
+        {
+            "source": "testimonials/sabrina.jpg",
+            "alt_text": "Testimonial from Sabrina: I volunteer with TPP because I love cooking and food and feel passionately that everyone has the right to nourish their body without barriers. TPP has done amazing things for our communities during the pandemic and I'm grateful for the opportunity to help and support in whatever way I can, especially if that means baking cookies! If you're looking for ways to directly help your community, please consider donating, volunteering, or spreading the word about TPP.",
+        },
+        {
+            "source": "testimonials/mary-ann.jpg",
+            "alt_text": "Testimonial from Mary-Ann: The pandemic really made visible the inequities and injustices that exists in modern society around how we care for one another. Cooking has always been an easy way for me to care for, and show love to others in my life. When I saw multiple calls for cooking volunteers for the TPP sister initiative in Halton/Hamilton, I knew I could help. Cooking and shopping for the TPP has given me an opportunity to not only show love and care for those in need in my community, but also to the local coordinator and volunteers by helping carry some  of the weight of their labour. A valuable and fulfilling experience all around. If you too feel called to help, don't hesitate - volunteer or donate today!",
         },
     ]
     VOLUNTEER_PHOTOS = [
@@ -239,7 +263,27 @@ class AboutView(TemplateView):
         "photos/organizers/jade.jpg",
         "photos/organizers/michelle.jpg",
         "photos/organizers/andrea.jpg",
-        
+        "photos/photo-1.jpg",
+        "photos/photo-2.jpg",
+        "photos/photo-3.jpg",
+        "photos/photo-4.jpg",
+        "photos/photo-5.jpg",
+        "photos/photo-6.jpg",
+        "photos/photo-7.jpg",
+        "photos/photo-8.jpg",
+        "photos/photo-9.jpg",
+        "photos/photo-10.jpg",
+        "photos/photo-11.jpg",
+        "photos/photo-12.jpg",
+        "photos/photo-13.jpg",
+        "photos/photo-14.jpg",
+        "photos/photo-15.jpg",
+        "photos/photo-16.jpg",
+        "photos/photo-17.jpg",
+        "photos/photo-18.jpg",
+        "photos/photo-19.jpg",
+        "photos/photo-20.jpg",
+        "photos/photo-21.jpg",
     ]
 
     @property
