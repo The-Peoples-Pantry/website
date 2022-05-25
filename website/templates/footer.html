@@ -34,14 +34,14 @@
   
         <!-- Heading -->
         <h6 class="font-weight-bold text-uppercase text-light-700">
-          Access help
+          Access aid
         </h6>
 
         <!-- List -->
         <ul class="list-unstyled text-light mb-6 mb-md-8 mb-lg-0">
           <li class="mb-3">
-            <a href="{% url "recipients:new_meal_request" %}" class="text-reset">
-              Meals
+            <a href="{% url "public:unity_kitchen" %}" class="text-reset">
+              Unity Kitchen
             </a>
           </li>
           <li class="mb-3">
@@ -67,28 +67,28 @@
         <!-- List -->
         <ul class="list-unstyled text-light mb-6 mb-md-8 mb-lg-0">
           <li class="mb-3">
-            <a href="{% url "signup" %}?next={% url "volunteers:chef_application" %}" class="text-reset">
-              Cook
+            <a target="_blank" rel="noopener noreferrer" href="mailto:{{settings.VOLUNTEER_COORDINATORS_EMAIL}}?subject=Interested in helping to coordinate grocery deliveries" class="text-reset">
+              Coordinate
             </a>
           </li>
           <li class="mb-3">
-            <a href="{% url "signup" %}?next={% url "volunteers:deliverer_application" %}" class="text-reset">
-              Deliver
+            <a target="_blank" rel="noopener noreferrer" href="mailto:{{settings.SOCIAL_COORDINATORS_EMAIL}}?subject=Interested in helping to create social media content" class="text-reset">
+              Outreach
             </a>
           </li>
           <li class="mb-3">
-            <a href="{% url "signup" %}?next={% url "volunteers:organizer_application" %}" class="text-reset">
-              Organize
+            <a href="{% url "public:sister_initiative" %}" class="text-reset">
+              Cook & Deliver
             </a>
           </li>
           <li class="mb-3">
             <a target="_blank" rel="noopener noreferrer" href="{% url "public:donate" %}" class="text-reset">
-              Donate
+              GoFundMe
             </a>
           </li>
           <li class="mb-3">
             <a target="_blank" rel="noopener noreferrer" href="{% url "public:sponsor" %}" class="text-reset">
-              Sponsor
+              Donate
             </a>
           </li>
         </ul>
@@ -109,23 +109,13 @@
             </a>
           </li>
           <li class="mb-3">
-            <a target="_blank" rel="noopener noreferrer" href="{% url "public:delivery_guide" %}" class="text-reset">
-              Delivery guide
-            </a>
-          </li>
-          <li class="mb-3">
-            <a target="_blank" rel="noopener noreferrer" href="{% url "public:reimbursement" %}" class="text-reset">
-              Reimbursement
-            </a>
-          </li>
-          <li class="mb-3">
             <a target="_blank" rel="noopener noreferrer" href="{% url "public:recipes" %}" class="text-reset">
-              Recipes
+              Community Cookbook
             </a>
           </li>
           <li class="mb-3">
-            <a target="_blank" rel="noopener noreferrer" href="{% url "public:shop" %}" class="text-reset">
-              Shop
+            <a target="_blank" rel="noopener noreferrer" href="{% url "public:anti_racism" %}" class="text-reset">
+              Anti-Racism
             </a>
           </li>
         </ul>
@@ -148,16 +138,6 @@
           <li class="mb-3">
             <a href="{% url "public:media" %}" class="text-reset">
               Media
-            </a>
-          </li>
-          <li class="mb-3">
-            <a class="text-reset" target="_blank" rel="noopener noreferrer" href="{% url "public:code_of_conduct" %}">
-              Code of Conduct
-            </a>
-          </li>
-          <li class="mb-3">
-            <a class="text-reset" target="_blank" rel="noopener noreferrer" href="{% url "public:sister_initiative_volunteers" %}">
-              Sister Initiative
             </a>
           </li>
           <li>

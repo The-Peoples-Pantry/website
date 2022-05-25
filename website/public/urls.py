@@ -131,6 +131,11 @@ urlpatterns = [
     path(
         "links/unity-kitchen",
         RedirectView.as_view(url="https://www.instagram.com/unitykitchento/"),
-        name="unity-kitchen",
+        name="unity_kitchen",
+    ),
+    path(
+        "links/anti-racism",
+        RedirectView.as_view(url="https://www.sundanceharvestfarm.com/learning-resources"),
+        name="anti_racism",
     )
 ]
