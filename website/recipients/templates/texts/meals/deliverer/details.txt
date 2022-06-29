@@ -1,9 +1,0 @@
-Hi {{request.deliverer.volunteer.preferred_name}},
-This is a reminder about your delivery ({{ request.id }}) for The People’s Pantry today.
-Pick up the meals from {{request.chef.volunteer.preferred_name}} at {{request.chef.volunteer.address}}, phone number {{request.chef.volunteer.phone_number}}, between {{request.pickup_start|time:"h:i A"}} and {{request.pickup_end|time:"h:i A"}}.
-
-The recipient, {{request.name}} is at {{request.address}}. Notify them when you arrive at {{request.phone_number}}{% if not request.can_receive_texts %} (Landline){% endif %}, between {{request.dropoff_start|time:"h:i A"}} and {{request.dropoff_end|time:"h:i A"}}.
-The delivery instructions are: {{request.delivery_details}}.
-
-Send a text if you have any problems with your delivery, and please let us know when the delivery is completed.
-Thank you for your help!

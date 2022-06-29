@@ -16,7 +16,6 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 
-from core.views import UserCreationView, UserProfileView
 
 # Customize Admin content
 admin.site.site_header = "The People's Pantry"
@@ -25,11 +24,7 @@ admin.site.site_title = "The People's Pantry admin"
 urlpatterns = [
     path("", include("public.urls")),
     path("explorer/", include("explorer.urls")),
-    path("signup", UserCreationView.as_view(), name="signup"),
     path("accounts/", include("django.contrib.auth.urls")),
     # login redirects to accounts/profile on successful login
-    path("accounts/profile/", UserProfileView.as_view(), name="profile"),
     path("admin/", admin.site.urls),
-    path("recipients/", include("recipients.urls")),
-    path("volunteers/", include("volunteers.urls")),
 ]
