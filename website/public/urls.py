@@ -135,7 +135,9 @@ urlpatterns = [
     ),
     path(
         "links/anti-racism",
-        RedirectView.as_view(url="https://www.sundanceharvestfarm.com/learning-resources"),
+        RedirectView.as_view(
+            url="https://www.sundanceharvestfarm.com/learning-resources"
+        ),
         name="anti_racism",
-    )
+    ),
 ]
