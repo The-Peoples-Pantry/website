@@ -25,6 +25,4 @@ urlpatterns = [
     path("", include("public.urls")),
     path("explorer/", include("explorer.urls")),
     path("accounts/", include("django.contrib.auth.urls")),
-    # login redirects to accounts/profile on successful login
-    path("admin/", admin.site.urls),
 ]
