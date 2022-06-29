@@ -65,8 +65,6 @@ INSTALLED_APPS = [
     "django.contrib.sites",
     "django_extensions",
     "bootstrap4",
-    "django_filters",
-    "explorer",
     "public",
     "landkit_theme",
 ]
