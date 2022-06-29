@@ -24,5 +24,4 @@ admin.site.site_title = "The People's Pantry admin"
 urlpatterns = [
     path("", include("public.urls")),
     path("explorer/", include("explorer.urls")),
-    path("accounts/", include("django.contrib.auth.urls")),
 ]
