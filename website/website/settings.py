@@ -65,12 +65,7 @@ INSTALLED_APPS = [
     "django.contrib.sites",
     "django_extensions",
     "bootstrap4",
-    "django_filters",
-    "explorer",
-    "core",
     "public",
-    "volunteers",
-    "recipients",
     "landkit_theme",
 ]
 MIDDLEWARE = [

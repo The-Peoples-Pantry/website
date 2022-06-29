@@ -1,8 +1,0 @@
-Hi {{request.chef.volunteer.preferred_name}},
-This is a message from The People's Pantry.
-Your cooked meals for request ID {{request.id}} will be picked up by {{request.deliverer.volunteer.preferred_name}} on {{request.delivery_date|date:"l F j"}} between {{request.pickup_start|time:"h:i A"}} and {{request.pickup_end|time:"h:i A"}}.
-You can contact them at {{request.deliverer.volunteer.phone_number}}.
-If you have more than one delivery, please make sure you are giving the food to the right volunteer.
-Let us know if you have any issues. Thanks!
-
-Reply STOP to unsubscribe

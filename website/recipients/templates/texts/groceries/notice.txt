@@ -1,4 +1,0 @@
-Hello {{request.name}},
-This is a message from The People's Pantry.
-Your FoodShare grocery box is scheduled to be delivered next week. We will send you the exact delivery date Sunday morning.
-Take care!

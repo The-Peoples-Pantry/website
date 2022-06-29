@@ -1,4 +1,0 @@
-Hello {{request.name}},
-This is a message from The People's Pantry.
-Your produce box delivery wasn’t made because the driver could not contact you or had a problem with your delivery instructions. Your box will be scheduled for the following week on the same day between 10 AM and 9 PM. Please, let us know if you have any issues with the delivery or if you would like to make changes to your delivery instructions.
-Thanks, and stay safe!
