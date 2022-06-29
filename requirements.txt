@@ -13,9 +13,6 @@ dj-database-url==0.5.0
 psycopg2==2.8.6
 whitenoise==5.2.0
 
-# External APIs
-requests==2.25.0
-
 # Helpful utilities
 # =================
 
@@ -24,12 +21,6 @@ django-extensions==3.0.9
 
 # Allow Bootstrap styling within Django
 django-bootstrap4==2.3.1
-
-# Allows us to use filter views
-django-filter==2.4.0
-
-# Allows us to do easy multiple-choice fields for TextChoices
-django-multiselectfield==0.1.12
 
 # Allows us to set Content-Security-Policy headers
 django-csp==3.7
@@ -42,19 +33,3 @@ flake8== 3.8.4
 
 # Allows us to auto-format our code (https://black.readthedocs.io/en/stable/)
 black==22.3.0
-
-# Allows us to easily generate fake testing data
-factory_boy==3.2.0
-
-# Allows us to mock out the current date when testing
-freezegun==1.1.0
-
-# Allows admins to browse interactive queries
-django-sql-explorer==2.1.2
-
-# Allows us to convert html templates to text for multipart emails
-html2text==2020.1.16
-
-# Allows us to work with geojson files and perform geographic analysis
-geojson==2.5.0
-Shapely==1.7.1
