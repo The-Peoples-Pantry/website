@@ -12,6 +12,11 @@ urlpatterns = [
     path("logo", views.logo, name="logo"),
     # External link redirects
     path(
+        "links/groceries",
+        RedirectView.as_view(url="https://forms.gle/nuEZVcncmtvMZwHw6"),
+        name="grocery_request_form",
+    ),
+    path(
         "links/facebook",
         RedirectView.as_view(url="https://www.facebook.com/groups/675649626532144/"),
         name="facebook",
