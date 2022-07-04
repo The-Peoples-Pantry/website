@@ -1,5 +1,5 @@
 from django.views.generic.base import RedirectView
-from django.urls import path
+from django.urls import path, reverse_lazy
 from . import views
 
 app_name = "public"
@@ -8,9 +8,16 @@ urlpatterns = [
     path("media", views.MediaView.as_view(), name="media"),
     path("about", views.AboutView.as_view(), name="about"),
     path("recipes", views.RecipesView.as_view(), name="recipes"),
+    path("community-cookbook", RedirectView.as_view(url=reverse_lazy("public:recipes"))),
     # Stable redirect url to our (hashed) logo url
     path("logo", views.logo, name="logo"),
+    path("community-cookbook-pdf", views.community_cookbook, name="community_cookbook_pdf"),
     # External link redirects
+    path(
+        "links/community-cookbook-order",
+        RedirectView.as_view(url="https://docs.google.com/forms/d/e/1FAIpQLSeJAh0pJNgrEzTQo8n7b13e-PfvDWFkL3a1owYZK1fhiJeTOw/viewform"),
+        name="community_cookbook_order",
+    ),
     path(
         "links/groceries",
         RedirectView.as_view(url="https://forms.gle/nuEZVcncmtvMZwHw6"),
