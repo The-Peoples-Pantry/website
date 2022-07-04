@@ -1,7 +1,16 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>Recipes coming soon...</h1>
-<p>We're in the progress of putting together a cookbook of recipes based on the meals that our volunteers have been cooking.</p>
-<p>We look forward to sharing it with you soon!</p>
+<h1>Community Cookbook</h1>
+<p>
+    The People's Pantry Community Cookbook has been in the works for over a year!
+    We're so excited to finally launch this project to honour and commemorate our work as a mutual aid organization and all the partnerships, friendships, and connections we've made along the way.
+    To keep supporting TPP you can download a PDF "Pay What You Can" version of our cookbook or you can purchase a hard copy for $20 by following the form below.
+    We hope you'll help us celebrate this milestone and help spread the word. 
+</p>
+<p>
+    With care and in solidarity, The People's Pantry.
+</p>
+<a class="btn btn-sm btn-secondary" download href="{% url "public:community_cookbook_pdf" %}" role="button">Download PDF</a>
+<a class="btn btn-sm btn-primary" href="{% url "public:community_cookbook_order" %}" role="button">Purchase hard copy</a>
 {% endblock %}

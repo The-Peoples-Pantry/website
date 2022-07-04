@@ -9,6 +9,10 @@ def logo(request):
     return redirect(static("logo-black.png"))
 
 
+def community_cookbook(request):
+    return redirect(static("The-Peoples-Pantry-Cookbook.pdf"))
+
+
 class IndexView(TemplateView):
     template_name = "public/index.html"
 
