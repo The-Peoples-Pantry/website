@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 python -m venv /tmp/venv
 if ! black --check website ; then
