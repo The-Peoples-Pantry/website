@@ -146,6 +146,8 @@ STATIC_ROOT = BASE_DIR / "static"
 # Email
 # https://docs.djangoproject.com/en/3.1/topics/email/
 
+# NOTE: The Mailgun account has been disabled (set a no-op password) since we're no longer sending emails
+# If we want to go back to sending emails through the system, we should create a new Mailgun account (requires CC)
 DEFAULT_FROM_EMAIL = "The People's Pantry Toronto <noreply@thepeoplespantryto.com>"
 EMAIL_HOST = getenv("MAILGUN_SMTP_SERVER")
 EMAIL_PORT = getenv("MAILGUN_SMTP_PORT")
