@@ -7,6 +7,8 @@ urlpatterns = [
     path("", views.IndexView.as_view(), name="index"),
     path("media", views.MediaView.as_view(), name="media"),
     path("about", views.AboutView.as_view(), name="about"),
+    path("recipes", views.RecipesView.as_view(), name="recipes"),
+    path("community-cookbook", RedirectView.as_view(url=reverse_lazy("public:recipes"))),
     # Stable redirect url to our (hashed) logo url
     path("logo", views.logo, name="logo"),
     path("community-cookbook-pdf", views.community_cookbook, name="community_cookbook_pdf"),

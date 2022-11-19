@@ -296,3 +296,7 @@ class AboutView(TemplateView):
             "testimonials": self.TESTIMONIAL_PHOTOS,
             "photos": random.sample(self.VOLUNTEER_PHOTOS, k=12),
         }
+
+
+class RecipesView(TemplateView):
+    template_name = "public/recipes.html"
